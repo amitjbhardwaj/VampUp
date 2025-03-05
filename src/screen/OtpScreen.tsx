@@ -3,6 +3,7 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet } from "react-nativ
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 import { RootStackParamList } from "../RootNavigator";
 import LottieView from "lottie-react-native";
+import Icon from "react-native-vector-icons/FontAwesome";
 
 type OtpScreenNavigationProp = NavigationProp<RootStackParamList>;
 
@@ -49,19 +50,24 @@ const OtpScreen = () => {
 
             <Text style={styles.title}>Enter OTP</Text>
 
-            <TextInput
-                placeholder="Enter OTP"
-                style={styles.input}
-                keyboardType="numeric"
-                maxLength={6}
-                onChangeText={handleOtpChange}
-                value={otp}
-            />
+            <View style={styles.inputContainer}>
+                <Icon name="key" size={20} color="#9A9A9A" style={styles.icon} />
+                <TextInput
+                    placeholder="Enter OTP"
+                    style={styles.input}
+                    keyboardType="numeric"
+                    maxLength={6}
+                    onChangeText={handleOtpChange}
+                    value={otp}
+                    placeholderTextColor="#9A9A9A"
+                />
+            </View>
 
             {error ? <Text style={styles.errorText}>{error}</Text> : null}
 
             <TouchableOpacity style={styles.button} onPress={handleOtpVerify}>
-                <Text style={styles.buttonText}>Verify OTP</Text>
+                <Icon name="lock" size={20} color="#fff" style={styles.buttonIcon} />
+                <Text style={styles.buttonText}> Verify OTP</Text>
             </TouchableOpacity>
         </View>
     );
@@ -70,34 +76,49 @@ const OtpScreen = () => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        padding: 20,
+        backgroundColor: "#fff",
         justifyContent: "center",
         alignItems: "center",
-        backgroundColor: "#F4F6F6",
+        paddingHorizontal: 20,
     },
     title: {
         fontSize: 24,
         fontWeight: "bold",
         marginBottom: 20,
-        color: "#1A1A1A",
+        color: "#000",
+    },
+    inputContainer: {
+        flexDirection: "row",
+        alignItems: "center",
+        backgroundColor: "#F0F1F0",
+        borderRadius: 15,
+        paddingHorizontal: 15,
+        height: 50,
+        elevation: 5,
+        marginBottom: 15,
+        width: "80%",
+    },
+    icon: {
+        marginRight: 10,
     },
     input: {
-        width: "80%",
-        padding: 15,
-        borderRadius: 10,
-        borderWidth: 1,
-        borderColor: "#ccc",
-        marginBottom: 20,
-        fontSize: 18,
+        flex: 1,
+        fontSize: 16,
         color: "#333",
         textAlign: "center",
     },
     button: {
-        backgroundColor: "#1A8F3B",
+        flexDirection: "row",
+        backgroundColor: "#000",
         padding: 15,
         borderRadius: 10,
         width: "80%",
         alignItems: "center",
+        justifyContent: "center",
+        marginTop: 20,
+    },
+    buttonIcon: {
+        marginRight: 10,
     },
     buttonText: {
         color: "#fff",

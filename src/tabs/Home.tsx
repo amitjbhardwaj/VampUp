@@ -25,7 +25,7 @@ const Home = () => {
                 style={styles.iconContainer}
                 onPress={() => navigation.navigate({ name: "WorkerActiveWorkScreen" } as never)}
             >
-                <Icon name="work" size={60} color="#00796b" />
+                <Icon name="work" size={60} color="#000" />
                 <Text style={styles.iconText}>Active Work</Text>
             </TouchableOpacity>
 
@@ -34,7 +34,7 @@ const Home = () => {
                 style={styles.iconContainer}
                 onPress={() => navigation.navigate({ name: "WorkerWorkHistoryScreen" } as never)}
             >
-                <Icon name="history" size={60} color="#00796b" />
+                <Icon name="history" size={60} color="#000" />
                 <Text style={styles.iconText}>Work History</Text>
             </TouchableOpacity>
 
@@ -43,7 +43,7 @@ const Home = () => {
                 style={styles.iconContainer}
                 onPress={() => navigation.navigate({ name: "WorkerPaymentScreen" } as never)}
             >
-                <Icon name="payment" size={60} color="#00796b" />
+                <Icon name="payment" size={60} color="#000" />
                 <Text style={styles.iconText}>Payment History</Text>
             </TouchableOpacity>
 
@@ -52,7 +52,7 @@ const Home = () => {
                 style={styles.iconContainer}
                 onPress={() => navigation.navigate({ name: "WorkerComplaintHistoryScreen" } as never)}
             >
-                <Icon name="report" size={60} color="#00796b" />
+                <Icon name="report" size={60} color="#000" />
                 <Text style={styles.iconText}>Complaint History</Text>
             </TouchableOpacity>
         </View>
@@ -88,7 +88,7 @@ const styles = StyleSheet.create({
         marginTop: 10,
         fontSize: 14,
         fontWeight: "600",
-        color: "#00796b",
+        color: "#000",
     },
 });
 

@@ -128,7 +128,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-    backgroundColor: "#F4F6F6",
+    backgroundColor: "#fff",
   },
   title: {
     fontSize: 22,
@@ -178,7 +178,7 @@ const styles = StyleSheet.create({
   },
   button: {
     flexDirection: "row",
-    backgroundColor: "#1A8F3B",
+    backgroundColor: "#000",
     padding: 15,
     borderRadius: 10,
     alignItems: "center",
@@ -207,7 +207,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   backButtonText: {
-    color: "#1A8F3B",
+    color: "#000",
     fontSize: 16,
     fontWeight: "bold",
   },

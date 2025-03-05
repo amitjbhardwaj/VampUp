@@ -24,7 +24,7 @@ const ContractorHomeScreen = ({ route }: any) => {
 
 const styles = StyleSheet.create({
     header: { flex: 1 },
-    headerText: { textAlign: "center", fontSize: 20, padding: 10, backgroundColor: "#eee" },
+    headerText: { textAlign: "center", fontSize: 20, padding: 10, backgroundColor: "#fff" },
 });
 
 export default ContractorHomeScreen;

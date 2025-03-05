@@ -1,4 +1,4 @@
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Modal } from "react-native";
+import { View, Text, TextInput, TouchableOpacity, StyleSheet } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { NavigationProp } from "@react-navigation/native";
 import { RootStackParamList } from "../RootNavigator";
@@ -18,31 +18,39 @@ const ForgotPasswordScreen = () => {
     const [confirmPassword, setConfirmPassword] = useState("");
     const [step, setStep] = useState<"aadhaar" | "otp" | "password">("aadhaar");
 
+    // Error states
+    const [aadhaarError, setAadhaarError] = useState("");
+    const [otpError, setOtpError] = useState("");
+    const [passwordError, setPasswordError] = useState("");
+
     // Handle Aadhaar Submission
     const handleSubmitAadhaar = () => {
-        if (/^\d{12}$/.test(aadhaar)) {
-            setStep("otp");
+        if (!/^\d{12}$/.test(aadhaar)) {
+            setAadhaarError("Invalid Aadhaar number!");
         } else {
-            alert("Invalid Aadhaar Number. Please enter a valid 12-digit Aadhaar number.");
+            setAadhaarError("");
+            setStep("otp");
         }
     };
 
     // Handle OTP Submission
     const handleSubmitOtp = () => {
-        if (/^\d{6}$/.test(otp)) {
-            setStep("password");
+        if (!/^\d{6}$/.test(otp)) {
+            setOtpError("Invalid OTP!");
         } else {
-            alert("Invalid OTP. Please enter a valid 6-digit OTP.");
+            setOtpError("");
+            setStep("password");
         }
     };
 
     // Handle Password Reset
     const handleResetPassword = () => {
-        if (newPassword.length < 6) {
-            alert("Password must be at least 6 characters long.");
+        if (!newPassword || !confirmPassword) {
+            setPasswordError("Please enter new password!");
         } else if (newPassword !== confirmPassword) {
-            alert("Passwords do not match. Please make sure both fields are identical.");
+            setPasswordError("Password did not match!");
         } else {
+            setPasswordError("");
             navigation.navigate("PasswordUpdatedScreen");
         }
     };
@@ -51,7 +59,7 @@ const ForgotPasswordScreen = () => {
         <View style={styles.container}>
             {step === "aadhaar" && (
                 <View>
-                    <LottieView source={require("../assets/phone-animation.json")} autoPlay loop style={styles.lottie} />
+                    <LottieView source={require("../assets/phone-animation.json")} style={styles.lottie} />
                     <Text style={styles.title}>Enter Aadhaar Number</Text>
                     <View style={styles.inputContainer}>
                         <FontAwesome name="id-card" size={24} color="#9A9A9A" style={styles.inputIcon} />
@@ -64,6 +72,7 @@ const ForgotPasswordScreen = () => {
                             onChangeText={setAadhaar}
                         />
                     </View>
+                    {aadhaarError ? <Text style={styles.errorText}>{aadhaarError}</Text> : null}
                     <TouchableOpacity style={styles.actionBtn} onPress={handleSubmitAadhaar}>
                         <Text style={styles.actionBtnText}>Submit</Text>
                     </TouchableOpacity>
@@ -72,7 +81,7 @@ const ForgotPasswordScreen = () => {
 
             {step === "otp" && (
                 <View>
-                    <LottieView source={require("../assets/phone-animation.json")} autoPlay loop style={styles.lottie} />
+                    <LottieView source={require("../assets/phone-animation.json")} style={styles.lottie} />
                     <Text style={styles.title}>Enter OTP</Text>
                     <View style={styles.inputContainer}>
                         <FontAwesome name="key" size={24} color="#9A9A9A" style={styles.inputIcon} />
@@ -85,6 +94,7 @@ const ForgotPasswordScreen = () => {
                             onChangeText={setOtp}
                         />
                     </View>
+                    {otpError ? <Text style={styles.errorText}>{otpError}</Text> : null}
                     <TouchableOpacity style={styles.actionBtn} onPress={handleSubmitOtp}>
                         <Text style={styles.actionBtnText}>Submit OTP</Text>
                     </TouchableOpacity>
@@ -93,7 +103,7 @@ const ForgotPasswordScreen = () => {
 
             {step === "password" && (
                 <View>
-                    <LottieView source={require("../assets/phone-animation.json")} autoPlay loop style={styles.lottie} />
+                    <LottieView source={require("../assets/phone-animation.json")} style={styles.lottie} />
                     <Text style={styles.title}>Reset Password</Text>
                     <View style={styles.inputContainer}>
                         <FontAwesome name="lock" size={24} color="#9A9A9A" style={styles.inputIcon} />
@@ -115,6 +125,7 @@ const ForgotPasswordScreen = () => {
                             onChangeText={setConfirmPassword}
                         />
                     </View>
+                    {passwordError ? <Text style={styles.errorText}>{passwordError}</Text> : null}
                     <TouchableOpacity style={styles.actionBtn} onPress={handleResetPassword}>
                         <Text style={styles.actionBtnText}>Reset Password</Text>
                     </TouchableOpacity>
@@ -129,7 +140,7 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: "center",
         paddingHorizontal: 20,
-        backgroundColor: "#E0E5E0",
+        backgroundColor: "#fff",
     },
     title: {
         fontSize: 26,
@@ -159,8 +170,14 @@ const styles = StyleSheet.create({
         paddingLeft: 10,
         color: "#333",
     },
+    errorText: {
+        color: "red",
+        fontSize: 14,
+        marginBottom: 10,
+        textAlign: "center",
+    },
     actionBtn: {
-        backgroundColor: "#257C25",
+        backgroundColor: "#000",
         paddingVertical: 15,
         borderRadius: 10,
         alignItems: "center",
@@ -179,7 +196,3 @@ const styles = StyleSheet.create({
 });
 
 export default ForgotPasswordScreen;
-function alert(arg0: string) {
-    throw new Error("Function not implemented.");
-}
-

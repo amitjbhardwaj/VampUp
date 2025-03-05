@@ -5,8 +5,6 @@ import {
     TextInput,
     TouchableOpacity,
     View,
-    useColorScheme,
-    Alert
 } from "react-native";
 import Icon from "react-native-vector-icons/FontAwesome";
 import Entypo from "react-native-vector-icons/Entypo";
@@ -21,71 +19,92 @@ const LoginScreen = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [secureText, setSecureText] = useState(true);
-    const scheme = useColorScheme();
-    const isDarkMode = scheme === "dark";
+    const [emailError, setEmailError] = useState("");
+    const [passwordError, setPasswordError] = useState("");
 
     const handleLogin = () => {
-        if (email === "worker" && password === "worker") {
-            navigation.navigate({ name: "WorkerHomeScreen" } as never);
+        let valid = true;
+        if (!email) {
+            setEmailError("Enter email address");
+            valid = false;
         } else {
-            Alert.alert("Login Failed", "Invalid email or password.");
+            setEmailError("");
+        }
+        
+        if (!password) {
+            setPasswordError("Enter password");
+            valid = false;
+        } else {
+            setPasswordError("");
+        }
+
+        if (valid) {
+            if (email === "worker" && password === "worker") {
+                navigation.navigate({ name: "WorkerHomeScreen" } as never);
+            } else {
+                setEmailError("Invalid email or password");
+                setPasswordError("Invalid email or password");
+            }
         }
     };
 
     return (
-        <View style={[styles.container, isDarkMode && styles.darkContainer]}>
+        <View style={styles.container}>
             {/* Header */}
             <View style={styles.headerContainer}>
-                <Text style={[styles.helloText, isDarkMode && styles.darkText]}>
-                    Hello <Entypo name="hand" size={24} color={isDarkMode ? "white" : "black"} />
+                <Text style={styles.helloText}>
+                    Hello <Entypo name="hand" size={24} color="black" />
                 </Text>
-                <Text style={[styles.signInText, isDarkMode && styles.darkText]}>Sign in to your account</Text>
+                <Text style={styles.signInText}>Sign in to your account</Text>
             </View>
 
             {/* Email Input */}
-            <View style={[styles.inputContainer, isDarkMode && styles.darkInputContainer]}>
-                <Icon name="user" size={20} color={isDarkMode ? "#fff" : "#9A9A9A"} style={styles.icon} />
+            <View style={styles.inputContainer}>
+                <Icon name="user" size={20} color="#9A9A9A" style={styles.icon} />
                 <TextInput
                     placeholder="Email"
-                    style={[styles.input, isDarkMode && styles.darkInput]}
+                    style={styles.input}
                     autoCapitalize="none"
                     value={email}
                     onChangeText={setEmail}
-                    placeholderTextColor={isDarkMode ? "#B0B0B0" : "#9A9A9A"}
+                    placeholderTextColor="#9A9A9A"
                 />
             </View>
+            {emailError ? <Text style={styles.errorText}>{emailError}</Text> : null}
 
             {/* Password Input */}
-            <View style={[styles.inputContainer, isDarkMode && styles.darkInputContainer]}>
-                <Icon name="lock" size={20} color={isDarkMode ? "#fff" : "#9A9A9A"} style={styles.icon} />
+            <View style={styles.inputContainer}>
+                <Icon name="lock" size={20} color="#9A9A9A" style={styles.icon} />
                 <TextInput
                     placeholder="Password"
-                    style={[styles.input, isDarkMode && styles.darkInput]}
+                    style={styles.input}
                     secureTextEntry={secureText}
                     autoCapitalize="none"
                     value={password}
                     onChangeText={setPassword}
-                    placeholderTextColor={isDarkMode ? "#B0B0B0" : "#9A9A9A"}
+                    placeholderTextColor="#9A9A9A"
                 />
                 <TouchableOpacity onPress={() => setSecureText(!secureText)} style={styles.eyeIcon}>
-                    <Icon name={secureText ? "eye-slash" : "eye"} size={20} color={isDarkMode ? "#fff" : "#9A9A9A"} />
+                    <Icon name={secureText ? "eye-slash" : "eye"} size={20} color="#9A9A9A" />
                 </TouchableOpacity>
             </View>
+            {passwordError ? <Text style={styles.errorText}>{passwordError}</Text> : null}
 
             {/* Forgot Password */}
             <TouchableOpacity onPress={() => navigation.navigate({ name: "ForgotPassword" } as never)}>
-                <Text style={[styles.forgotPassword, isDarkMode && styles.darkText]}>Forgot your password?</Text>
+                <Text style={styles.forgotPassword}>Forgot your password?</Text>
             </TouchableOpacity>
 
             {/* Login Button */}
             <TouchableOpacity style={styles.button} onPress={handleLogin}>
-                <Text style={styles.buttonText}>Login</Text>
+                <Icon name="lock" size={20} color="#fff" style={styles.buttonIcon} />
+                <Text style={styles.buttonText}> Login</Text>
             </TouchableOpacity>
 
             {/* Create Account Link */}
             <TouchableOpacity onPress={() => navigation.navigate("Signup")}>
-                <Text style={[styles.footerText, isDarkMode && styles.darkText]}>
-                    Don't have an account? <Text style={[styles.createText, isDarkMode && styles.darkCreateText]}>Create</Text>
+                <Text style={styles.footerText}>
+                    Don't have an account? <Text style={styles.createText}>Create</Text>
                 </Text>
             </TouchableOpacity>
         </View>
@@ -95,12 +114,9 @@ const LoginScreen = () => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: "rgb(255, 255, 255)",
+        backgroundColor: "#fff",
         justifyContent: "center",
         paddingHorizontal: 20,
-    },
-    darkContainer: {
-        backgroundColor: "#121212",
     },
     headerContainer: {
         alignItems: "center",
@@ -115,9 +131,6 @@ const styles = StyleSheet.create({
         color: "#020E02",
         marginTop: 5,
     },
-    darkText: {
-        color: "#fff",
-    },
     inputContainer: {
         flexDirection: "row",
         alignItems: "center",
@@ -128,9 +141,6 @@ const styles = StyleSheet.create({
         elevation: 5,
         marginBottom: 15,
     },
-    darkInputContainer: {
-        backgroundColor: "#333333",
-    },
     icon: {
         marginRight: 10,
     },
@@ -138,9 +148,6 @@ const styles = StyleSheet.create({
         flex: 1,
         fontSize: 16,
         color: "#333",
-    },
-    darkInput: {
-        color: "#fff",
     },
     eyeIcon: {
         padding: 10,
@@ -151,13 +158,10 @@ const styles = StyleSheet.create({
         color: "#333",
         marginBottom: 20,
     },
-    darkCreateText: {
-        color: "#B2B2B2",
-    },
     createText: {
         fontWeight: "bold",
         textDecorationLine: "underline",
-        color: "#1A8F3B",
+        color: "#000",
     },
     footerText: {
         textAlign: "center",
@@ -166,17 +170,26 @@ const styles = StyleSheet.create({
     },
     button: {
         flexDirection: "row",
-        backgroundColor: "#1A8F3B",
+        backgroundColor: "#000",
         padding: 15,
         borderRadius: 10,
         alignItems: "center",
         justifyContent: "center",
         marginTop: 20,
     },
+    buttonIcon: {
+        marginRight: 10,
+    },
     buttonText: {
         color: "#fff",
         fontSize: 18,
         fontWeight: "bold",
+    },
+    errorText: {
+        color: "red",
+        fontSize: 14,
+        marginBottom: 10,
+        marginLeft: 10,
     },
 });
 
