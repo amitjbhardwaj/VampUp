@@ -73,3 +73,77 @@ yarn-error.log
 !.yarn/releases
 !.yarn/sdks
 !.yarn/versions
+
+### Node.js / React Native ###
+node_modules/
+npm-debug.log
+yarn-error.log
+yarn.lock
+package-lock.json
+
+### macOS ###
+.DS_Store
+
+### Android ###
+android/app/build/
+android/.gradle/
+android/.idea/
+android/local.properties
+android/app/src/debug/
+android/app/src/androidTest/
+android/app/src/test/
+android/keystore/
+*.keystore
+
+### iOS ###
+ios/Pods/
+ios/build/
+ios/.DS_Store
+ios/.idea/
+ios/.vscode/
+ios/*/xcuserdata/
+ios/*/xcshareddata/
+ios/*/DerivedData/
+ios/*/Build/
+*.pbxuser
+*.mode1v3
+*.mode2v3
+*.perspectivev3
+xcuserdata/
+
+### Metro / React Native ###
+.expo/
+.expo-shared/
+dist/
+build/
+debug/
+coverage/
+
+### Logs and Debug ###
+*.log
+*.lock
+*.tmp
+*.swp
+*.swo
+*.swn
+
+### Environment Variables ###
+.env
+.env.local
+.env.production
+.env.test
+.env.*
+
+### Misc ###
+*.bak
+*.orig
+
+### Firebase ###
+firebase.json
+
+### Fastlane ###
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/screenshots
+fastlane/test_output
+
