@@ -20,41 +20,7 @@ const Home = () => {
     return (
         <View style={styles.container}>
 
-            {/* Active Work Icon */}
-            <TouchableOpacity
-                style={styles.iconContainer}
-                onPress={() => navigation.navigate({ name: "WorkerActiveWorkScreen" } as never)}
-            >
-                <Icon name="work" size={60} color="#000" />
-                <Text style={styles.iconText}>Active Work</Text>
-            </TouchableOpacity>
-
-            {/* Work History Icon */}
-            <TouchableOpacity
-                style={styles.iconContainer}
-                onPress={() => navigation.navigate({ name: "WorkerWorkHistoryScreen" } as never)}
-            >
-                <Icon name="history" size={60} color="#000" />
-                <Text style={styles.iconText}>Work History</Text>
-            </TouchableOpacity>
-
-            {/* Payment History Icon */}
-            <TouchableOpacity
-                style={styles.iconContainer}
-                onPress={() => navigation.navigate({ name: "WorkerPaymentScreen" } as never)}
-            >
-                <Icon name="payment" size={60} color="#000" />
-                <Text style={styles.iconText}>Payment History</Text>
-            </TouchableOpacity>
-
-            {/* Complaint History Icon */}
-            <TouchableOpacity
-                style={styles.iconContainer}
-                onPress={() => navigation.navigate({ name: "WorkerComplaintHistoryScreen" } as never)}
-            >
-                <Icon name="report" size={60} color="#000" />
-                <Text style={styles.iconText}>Complaint History</Text>
-            </TouchableOpacity>
+            
         </View>
     );
 };
