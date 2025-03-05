@@ -1,160 +1,142 @@
-import { useNavigation } from "@react-navigation/native";
-import React, { useEffect, useState } from "react";
-import Icon from "react-native-vector-icons/MaterialIcons";
-import { View, Text, StyleSheet, TouchableOpacity, FlatList } from "react-native";
+import React from 'react';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, Linking } from 'react-native';
+import Icon from 'react-native-vector-icons/FontAwesome';
 
-// Define the project interface
-interface Project {
-    project_Id: string;
-    project_description: string;
-    assigned_to: string;
-    project_start_date: string;
-    project_end_date: string;
-    completion_percentage: number;
-}
-
-// Helper function to determine project status
-const getProjectStatus = (completionPercentage: number, endDate: string): string => {
-    const currentDate = new Date();
-    const end = new Date(endDate);
-
-    // First, check if the project is overdue (i.e., current date > end date)
-    if (currentDate > end) {
-        return "red"; // If the project is overdue, it's at risk (red status)
-    }
-
-    // Then, determine the status based on completion percentage
-    if (completionPercentage >= 95) return "green"; // Green if completed 95% or more
-    if (completionPercentage >= 85) return "amber"; // Amber if completed between 85% and 94%
-    return "red"; // Red if less than 85%
-};
-
-// Dummy data for the projects with mixed statuses
-const projectData: Project[] = [
-    {
-        project_Id: "P001",
-        project_description: "Mobile App Development",
-        assigned_to: "John Doe",
-        project_start_date: "2024-01-01",
-        project_end_date: "2024-12-31",
-        completion_percentage: 96, // Green
-    },
-    {
-        project_Id: "P002",
-        project_description: "Website Redesign",
-        assigned_to: "Jane Smith",
-        project_start_date: "2024-03-01",
-        project_end_date: "2024-10-01",
-        completion_percentage: 88, // Amber
-    },
-    {
-        project_Id: "P003",
-        project_description: "API Integration",
-        assigned_to: "Alice Johnson",
-        project_start_date: "2024-04-15",
-        project_end_date: "2024-08-30",
-        completion_percentage: 80, // Red
-    },
-    {
-        project_Id: "P004",
-        project_description: "Database Migration",
-        assigned_to: "Bob Lee",
-        project_start_date: "2024-02-01",
-        project_end_date: "2024-09-15",
-        completion_percentage: 90, // Amber
-    },
-    {
-        project_Id: "P005",
-        project_description: "Cloud Infrastructure Setup",
-        assigned_to: "Eve Adams",
-        project_start_date: "2024-06-01",
-        project_end_date: "2024-12-01",
-        completion_percentage: 97, // Green
-    },
-    {
-        project_Id: "P006",
-        project_description: "E-commerce Platform",
-        assigned_to: "James Brown",
-        project_start_date: "2024-01-15",
-        project_end_date: "2024-07-15",
-        completion_percentage: 75, // Red
-    },
+const projectData = [
+  {
+    project_Id: 'P001',
+    project_description: 'Road Cleaning - Street 12',
+    assigned_to: 'John Doe',
+    project_start_date: '2025-03-01',
+    project_end_date: '2025-03-10',
+    completion_percentage: 96,
+    contractor_phone: '+919876543210'
+  },
+  {
+    project_Id: 'P002',
+    project_description: 'Drainage Maintenance',
+    assigned_to: 'John Doe',
+    project_start_date: '2025-03-05',
+    project_end_date: '2025-03-15',
+    completion_percentage: 90,
+    contractor_phone: '+919876543211'
+  },
+  {
+    project_Id: 'P003',
+    project_description: 'Garbage Collection - Sector 4',
+    assigned_to: 'John Doe',
+    project_start_date: '2025-03-03',
+    project_end_date: '2025-03-12',
+    completion_percentage: 70,
+    contractor_phone: '+919876543212'
+  },
+  {
+    project_Id: 'P004',
+    project_description: 'Park Cleaning - Central Park',
+    assigned_to: 'Jane Smith',
+    project_start_date: '2025-03-02',
+    project_end_date: '2025-03-14',
+    completion_percentage: 80,
+    contractor_phone: '+919876543213'
+  },
+  {
+    project_Id: 'P005',
+    project_description: 'Street Light Installation - Avenue 5',
+    assigned_to: 'David Green',
+    project_start_date: '2025-03-06',
+    project_end_date: '2025-03-20',
+    completion_percentage: 85,
+    contractor_phone: '+919876543214'
+  },
+  {
+    project_Id: 'P006',
+    project_description: 'Storm Drain Cleaning - Sector 2',
+    assigned_to: 'Sarah Brown',
+    project_start_date: '2025-03-07',
+    project_end_date: '2025-03-18',
+    completion_percentage: 50,
+    contractor_phone: '+919876543215'
+  }
 ];
 
+const getStatusColor = (percentage: number) => {
+  if (percentage >= 95) return 'green';
+  if (percentage >= 85 && percentage < 95) return 'amber';
+  return 'red';
+};
+
 const WorkerActiveWorkScreen = () => {
-    const navigation = useNavigation();
-    const [projects, setProjects] = useState<Project[]>(projectData);
+  const makeCall = (phone: string) => {
+    Linking.openURL(`tel:${phone}`);
+  };
 
-    // Set the back button in the header
-    useEffect(() => {
-        navigation.setOptions({
-            headerLeft: () => (
-                <TouchableOpacity onPress={() => navigation.goBack()}>
-                    <Icon name="arrow-back" size={30} color="#000" style={{ marginLeft: 10 }} />
-                </TouchableOpacity>
-            ),
-        });
-    }, [navigation]);
+  const renderItem = ({ item }: { item: typeof projectData[0] }) => (
+    <View style={styles.card}>
+      <Text style={styles.title}>{item.project_description}</Text>
+      <Text>Project ID: {item.project_Id}</Text>
+      <Text>Assigned To: {item.assigned_to}</Text>
+      <Text>Start Date: {item.project_start_date}</Text>
+      <Text>End Date: {item.project_end_date}</Text>
+      <View style={[styles.status, { backgroundColor: getStatusColor(item.completion_percentage) }]}>
+        <Text style={styles.statusText}>{item.completion_percentage}% Completed</Text>
+      </View>
+      <TouchableOpacity style={styles.callButton} onPress={() => makeCall(item.contractor_phone)}>
+        <Icon name="phone" size={20} color="#fff" />
+        <Text style={styles.callButtonText}>Call Contractor</Text>
+      </TouchableOpacity>
+    </View>
+  );
 
-    // Render each project row
-    const renderItem = ({ item }: { item: Project }) => {
-        const status = getProjectStatus(item.completion_percentage, item.project_end_date);
-        return (
-            <View style={[styles.tableRow, { backgroundColor: status === "green" ? "#d4edda" : status === "amber" ? "#fff3cd" : "#f8d7da" }]}>
-                <Text style={styles.tableCell}>{item.project_Id}</Text>
-                <Text style={styles.tableCell}>{item.project_description}</Text>
-                <Text style={styles.tableCell}>{item.assigned_to}</Text>
-                <Text style={styles.tableCell}>{item.project_start_date}</Text>
-                <Text style={styles.tableCell}>{item.project_end_date}</Text>
-                <Text style={[styles.tableCell, { color: status === "green" ? "green" : status === "amber" ? "orange" : "red" }]}>
-                    {status === "green" ? "Completed" : status === "amber" ? "Almost Done" : "At Risk"}
-                </Text>
-            </View>
-        );
-    };
-
-    return (
-        <View style={styles.container}>
-            <Text style={styles.headerText}>Active Projects</Text>
-            <FlatList
-                data={projects}
-                renderItem={renderItem}
-                keyExtractor={(item) => item.project_Id}
-            />
-        </View>
-    );
+  return (
+    <FlatList
+      data={projectData}
+      renderItem={renderItem}
+      keyExtractor={(item) => item.project_Id}
+      contentContainerStyle={styles.listContainer}
+    />
+  );
 };
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: "#fff",
-        padding: 10,
-    },
-    headerText: {
-        fontSize: 24,
-        fontWeight: "bold",
-        marginBottom: 20,
-        textAlign: "center",
-    },
-    tableRow: {
-        flexDirection: "row",
-        justifyContent: "space-between",
-        padding: 10,
-        marginVertical: 5,
-        borderRadius: 5,
-        shadowColor: "#000",
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.25,
-        shadowRadius: 3.5,
-        elevation: 5,
-    },
-    tableCell: {
-        flex: 1,
-        textAlign: "center",
-        fontSize: 14,
-        fontWeight: "600",
-    },
+  listContainer: {
+    padding: 20,
+  },
+  card: {
+    backgroundColor: '#f9f9f9',
+    padding: 20,
+    borderRadius: 10,
+    marginBottom: 15,
+    elevation: 5,
+  },
+  title: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 10,
+  },
+  status: {
+    padding: 10,
+    borderRadius: 5,
+    marginVertical: 10,
+    alignItems: 'center',
+  },
+  statusText: {
+    color: '#fff',
+    fontWeight: 'bold',
+  },
+  callButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 10,
+    backgroundColor: '#000',
+    borderRadius: 5,
+    marginTop: 10,
+  },
+  callButtonText: {
+    color: '#fff',
+    marginLeft: 10,
+    fontWeight: 'bold',
+  },
 });
 
 export default WorkerActiveWorkScreen;

@@ -19,7 +19,14 @@ const Home = () => {
 
     return (
         <View style={styles.container}>
-
+            {/* Active Work Icon */}
+            <TouchableOpacity
+                style={styles.iconContainer}
+                onPress={() => navigation.navigate({ name: "WorkerActiveWorkScreen" } as never)}
+            >
+                <Icon name="work" size={60} color="#000" />
+                <Text style={styles.iconText}>Active Work</Text>
+            </TouchableOpacity>
             
         </View>
     );
