@@ -10,11 +10,12 @@ import RegistrationDoneScreen from "./screen/RegistrationDoneScreen";
 import RegistrationFailedScreen from "./screen/RegistrationFailedScreen";
 import PasswordUpdatedScreen from "./screen/PasswordUpdatedScreen";
 import WorkerHomeScreen from "./screen/WorkerHomeScreen";
-import WorkerActiveWorkScreen from "./screen/worker/WorkerActiveWorkScreen";
+import WorkerActiveWorkScreen, { Project } from "./screen/worker/WorkerActiveWorkScreen";
 import WorkerWorkHistoryScreen from "./screen/worker/WorkerWorkHistoryScreen";
 import WorkerPaymentScreen from "./screen/worker/WorkerPaymentScreen";
 import WorkerComplaintHistoryScreen from "./screen/worker/WorkerComplaintHistoryScreen";
 import AppNavigator from "./screen/worker/WorkerActiveWorkScreen";
+import WorkUpdateStatusScreen from "./screen/worker/WorkUpdateStatusScreen";
 
 export type RootStackParamList = {
     Login: undefined;
@@ -31,6 +32,7 @@ export type RootStackParamList = {
     WorkerPaymentScreen: undefined;
     WorkerComplaintHistoryScreen: undefined;
     AppNavigator : undefined;
+    WorkUpdateStatus: { project: Project };
 };
 
 const Stack = createStackNavigator<RootStackParamList>();
@@ -53,6 +55,7 @@ const RootNavigator: React.FC = () => {
                 <Stack.Screen name="WorkerPaymentScreen" component={WorkerPaymentScreen} />
                 <Stack.Screen name="WorkerComplaintHistoryScreen" component={WorkerComplaintHistoryScreen} />
                 <Stack.Screen name="AppNavigator" component={AppNavigator} />
+                <Stack.Screen name="WorkUpdateStatus" component={WorkUpdateStatusScreen} />
             </Stack.Navigator>
         </NavigationContainer>
     );

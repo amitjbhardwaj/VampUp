@@ -1,14 +1,19 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, StyleSheet, FlatList, TouchableOpacity, Linking, Modal, TouchableWithoutFeedback, Keyboard } from 'react-native';
-import { useNavigation } from "@react-navigation/native";
+import { NavigationProp, useNavigation } from "@react-navigation/native";
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NavigationContainer } from '@react-navigation/native';
+import WorkUpdateStatusScreen from "./WorkUpdateStatusScreen";
+import { RootStackParamList } from "../../RootNavigator";
+
+
+type WorkerActiveWorkScreenNavigationProp = NavigationProp<RootStackParamList>;
 
 // Bottom Tab Navigator
 const Tab = createBottomTabNavigator();
 
-interface Project {
+export interface Project {
   project_Id: string;
   project_description: string;
   long_project_description: string;
@@ -42,7 +47,7 @@ const getStatusColor = (percentage: number) => {
 };
 
 const WorkerActiveWorkScreen = () => {
-  const navigation = useNavigation();
+  const navigation = useNavigation<WorkerActiveWorkScreenNavigationProp>();
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedProject, setSelectedProject] = useState<Project | null>(null); // Type for selectedProject
 
@@ -77,17 +82,17 @@ const WorkerActiveWorkScreen = () => {
       }}
     >
 
-  
+
       <Text style={styles.title}>{item.project_description}</Text>
       <Text>Project ID: {item.project_Id}</Text>
       <Text>Assigned To: {item.assigned_to}</Text>
       <Text>Start Date: {item.project_start_date}</Text>
       <Text>End Date: {item.project_end_date}</Text>
-            {/* Update Status Button - Visible only for Red and Amber projects */}
-            {getStatusCategory(item.completion_percentage) !== 'green' && (
+      {/* Update Status Button - Visible only for Red and Amber projects */}
+      {getStatusCategory(item.completion_percentage) !== 'green' && (
         <TouchableOpacity
           style={styles.updateStatusButton}
-          onPress={() => console.log("Update Status clicked")}
+          onPress={() => navigation.navigate("WorkUpdateStatus", { project: item })}
         >
           <Icon name="refresh" size={20} color="#fff" />
           <Text style={styles.buttonText}>Update Status</Text>

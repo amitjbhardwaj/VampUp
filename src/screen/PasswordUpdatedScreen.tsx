@@ -24,7 +24,7 @@ const PasswordUpdatedScreen = () => {
             <LottieView
                 source={require("../assets/registration_successfully.json")}
                 autoPlay
-                loop={true} // Play animation once
+                loop={false} // Play animation once
                 style={styles.animation}
             />
         </View>
