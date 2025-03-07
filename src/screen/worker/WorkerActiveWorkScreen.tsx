@@ -76,11 +76,23 @@ const WorkerActiveWorkScreen = () => {
         setModalVisible(true);
       }}
     >
+
+  
       <Text style={styles.title}>{item.project_description}</Text>
       <Text>Project ID: {item.project_Id}</Text>
       <Text>Assigned To: {item.assigned_to}</Text>
       <Text>Start Date: {item.project_start_date}</Text>
       <Text>End Date: {item.project_end_date}</Text>
+            {/* Update Status Button - Visible only for Red and Amber projects */}
+            {getStatusCategory(item.completion_percentage) !== 'green' && (
+        <TouchableOpacity
+          style={styles.updateStatusButton}
+          onPress={() => console.log("Update Status clicked")}
+        >
+          <Icon name="refresh" size={20} color="#fff" />
+          <Text style={styles.buttonText}>Update Status</Text>
+        </TouchableOpacity>
+      )}
       <View style={[styles.status, { backgroundColor: getStatusColor(item.completion_percentage) }]}>
         <Text style={styles.statusText}>{item.completion_percentage}% Completed</Text>
       </View>
@@ -135,6 +147,8 @@ const WorkerActiveWorkScreen = () => {
                       <Text style={styles.buttonText}>View Payment</Text>
                     </TouchableOpacity>
                   )}
+
+
 
                   {/* Show "Call Contractor" button for projects less than 100% completed */}
                   {selectedProject.completion_percentage < 100 && (
@@ -243,6 +257,15 @@ const styles = StyleSheet.create({
   },
   paymentButton: {
     backgroundColor: '#28a745',
+    padding: 12,
+    borderRadius: 5,
+    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    marginTop: 20,
+  },
+  updateStatusButton: {
+    backgroundColor: '#ffc107', // Amber color for visibility
     padding: 12,
     borderRadius: 5,
     alignItems: 'center',
