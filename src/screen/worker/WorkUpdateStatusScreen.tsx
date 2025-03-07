@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { View, Text, StyleSheet, TouchableOpacity, TextInput, Modal } from "react-native";
 import { useRoute, useNavigation, RouteProp } from "@react-navigation/native";
 import Icon from "react-native-vector-icons/FontAwesome";
@@ -21,14 +21,27 @@ const WorkUpdateStatusScreen = () => {
     const [endDate, setEndDate] = useState(project.project_end_date);
     const [completion, setCompletion] = useState(project.completion_percentage.toString());
     const [contractorPhone, setContractorPhone] = useState(project.contractor_phone);
+    const [status, setStatus] = useState(getStatus(project.completion_percentage)); // Initial status
 
     const [modalVisible, setModalVisible] = useState(false);
     const [reason, setReason] = useState("");
 
     const completionValues = Array.from({ length: 11 }, (_, i) => (i * 10).toString()); // 0 to 100 in steps of 10
 
+    // Helper function to determine the status
+    function getStatus(completion: number) {
+        if (completion === 100) {
+            return "Completed";
+        } else if (completion < 100) {
+            return "In-progress";
+        } else {
+            return "On-Hold";
+        }
+    }
+
     const handleHoldWork = () => {
         setModalVisible(true);
+        setStatus("On-Hold"); // Set status to "On-Hold" when Hold Work is triggered
     };
 
     const handleSubmitHoldWork = () => {
@@ -44,6 +57,10 @@ const WorkUpdateStatusScreen = () => {
         });
         setModalVisible(false); // Close the modal after submitting
     };
+
+    useEffect(() => {
+        setStatus(getStatus(parseInt(completion))); // Update status when completion changes
+    }, [completion]);
 
     return (
         <View style={styles.container}>
@@ -101,6 +118,9 @@ const WorkUpdateStatusScreen = () => {
                     placeholder="Contractor Phone"
                     keyboardType="phone-pad"
                 />
+
+                {/* Status Field */}
+                <Text style={styles.label}>Status: {status}</Text>
             </View>
 
             {/* Hold Work Button */}
@@ -113,6 +133,7 @@ const WorkUpdateStatusScreen = () => {
                     <Text style={styles.buttonText}>Hold Work</Text>
                 </TouchableOpacity>
 
+                {/* Update Button */}
                 <TouchableOpacity
                     style={styles.updateButton}
                     onPress={() => {
@@ -259,6 +280,7 @@ const styles = StyleSheet.create({
         alignItems: "center",
         flexDirection: "row",
         justifyContent: "center",
+        marginTop: 10,
         marginLeft: 20,
         marginRight: 20,
     },
