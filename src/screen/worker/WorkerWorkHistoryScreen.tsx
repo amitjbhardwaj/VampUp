@@ -18,7 +18,7 @@ const WorkerWorkHistoryScreen = () => {
     }, [navigation]);
     return (
         <View style={styles.container}>
-            <Text style={styles.text}>Help & Contact Screen</Text>
+            <Text style={styles.text}>Worker Work History Screen</Text>
         </View>
     );
 };

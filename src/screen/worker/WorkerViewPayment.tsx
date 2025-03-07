@@ -3,7 +3,7 @@ import React, { useEffect } from "react";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 
-const Services = () => {
+const WorkerViewPayment = () => {
         const navigation = useNavigation();
     
         // Set the back button in the header
@@ -19,7 +19,7 @@ const Services = () => {
 
     return (
         <View style={styles.container}>
-            <Text style={styles.text}>Service Screen</Text>
+            <Text style={styles.text}>Payment</Text>
         </View>
     );
 };
@@ -37,4 +37,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default Services;
+export default WorkerViewPayment;

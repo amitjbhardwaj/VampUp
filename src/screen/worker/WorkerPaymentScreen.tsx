@@ -18,7 +18,7 @@ const WorkerPaymentScreen = () => {
     }, [navigation]);
     return (
         <View style={styles.container}>
-            <Text style={styles.text}>Help & Contact Screen</Text>
+            <Text style={styles.text}>Payment Screen</Text>
         </View>
     );
 };

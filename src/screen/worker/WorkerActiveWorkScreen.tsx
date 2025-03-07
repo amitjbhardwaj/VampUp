@@ -143,7 +143,7 @@ const WorkerActiveWorkScreen = () => {
                   {selectedProject.completion_percentage === 100 && (
                     <TouchableOpacity
                       style={styles.paymentButton}
-                      onPress={() => console.log("Navigating to Payment Screen")}
+                      onPress={() => navigation.navigate('WorkerPaymentScreen')}
                     >
                       <Icon name="credit-card" size={20} color="#fff" />
                       <Text style={styles.buttonText}>View Payment</Text>

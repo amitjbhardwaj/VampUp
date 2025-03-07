@@ -25,7 +25,7 @@ const Home = () => {
                 onPress={() => navigation.navigate({ name: "WorkerActiveWorkScreen" } as never)}
             >
                 <Icon name="work" size={60} color="#000" />
-                <Text style={styles.iconText}>Active Work</Text>
+                <Text style={styles.iconText}>Home Screen</Text>
             </TouchableOpacity>
             
         </View>

@@ -19,7 +19,7 @@ const Post = () => {
 
     return (
         <View style={styles.container}>
-            <Text style={styles.text}>Help & Contact Screen</Text>
+            <Text style={styles.text}>Post Screen</Text>
         </View>
     );
 };

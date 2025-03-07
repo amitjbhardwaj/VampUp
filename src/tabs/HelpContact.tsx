@@ -19,7 +19,7 @@ const HelpContact = () => {
 
     return (
         <View style={styles.container}>
-            <Text style={styles.text}>Help & Contact Screen</Text>
+            <Text style={styles.text}>ABC Screen</Text>
         </View>
     );
 };
