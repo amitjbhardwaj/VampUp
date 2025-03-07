@@ -195,17 +195,21 @@ const WorkUpdateStatusScreen = () => {
                 </TouchableOpacity>
             )}
 
-            {/* Hold Work Button */}
-            <View style={styles.bottomContainer}>
-                <TouchableOpacity
-                    style={styles.holdButton}
-                    onPress={handleHoldWork}
-                >
-                    <Icon name="pause" size={20} color="#fff" />
-                    <Text style={styles.buttonText}>Hold Work</Text>
-                </TouchableOpacity>
+            {/* Hold Work Button: Only show if completion is not 100 */}
+            {completion !== "100" && (
+                <View style={styles.bottomContainer}>
+                    <TouchableOpacity
+                        style={styles.holdButton}
+                        onPress={handleHoldWork}
+                    >
+                        <Icon name="pause" size={20} color="#fff" />
+                        <Text style={styles.buttonText}>Hold Work</Text>
+                    </TouchableOpacity>
+                </View>
+            )}
 
-                {/* Update Button */}
+            {/* Update Button */}
+            <View style={styles.bottomContainer}>
                 <TouchableOpacity
                     style={styles.updateButton}
                     onPress={() => {
@@ -352,6 +356,7 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         justifyContent: "center",
         marginTop: 10,
+        marginBottom: -25,
         marginLeft: 20,
         marginRight: 20,
     },
