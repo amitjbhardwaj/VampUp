@@ -26,7 +26,7 @@ const WorkUpdateStatusScreen = () => {
     const [modalVisible, setModalVisible] = useState(false);
     const [reason, setReason] = useState("");
 
-    const [timer, setTimer] = useState(0); // To hold the time elapsed during hold
+    const [timer, setTimer] = useState(1); // Start timer from 1 second
     const [isTimerRunning, setIsTimerRunning] = useState(false);
 
     const completionValues = Array.from({ length: 11 }, (_, i) => (i * 10).toString()); // 0 to 100 in steps of 10
@@ -47,6 +47,7 @@ const WorkUpdateStatusScreen = () => {
     const handleHoldWork = () => {
         setModalVisible(true);
         setStatus("On-Hold"); // Set status to "On-Hold" when Hold Work is triggered
+        setTimer(1); // Reset timer to 1 second
         setIsTimerRunning(true); // Start the timer when work is on hold
     };
 
@@ -67,6 +68,7 @@ const WorkUpdateStatusScreen = () => {
     const handleResumeWork = () => {
         setStatus("In-progress"); // Change status back to In-progress when Resume Work is pressed
         setIsTimerRunning(false); // Stop the timer when work is resumed
+        setTimer(1); // Reset the timer to 1 second when resuming work
     };
 
     useEffect(() => {
@@ -85,6 +87,26 @@ const WorkUpdateStatusScreen = () => {
     useEffect(() => {
         setStatus(getStatus(parseInt(completion))); // Update status when completion changes
     }, [completion]);
+
+    // Function to format the time in a human-readable format (years, months, days, hours, minutes, seconds)
+    const formatTime = (seconds: number) => {
+        const years = Math.floor(seconds / (365 * 24 * 60 * 60));
+        const months = Math.floor((seconds % (365 * 24 * 60 * 60)) / (30 * 24 * 60 * 60));
+        const days = Math.floor((seconds % (30 * 24 * 60 * 60)) / (24 * 60 * 60));
+        const hours = Math.floor((seconds % (24 * 60 * 60)) / (60 * 60));
+        const minutes = Math.floor((seconds % (60 * 60)) / 60);
+        const secs = seconds % 60;
+
+        let timeString = "";
+        if (years > 0) timeString += `${years} year${years > 1 ? "s" : ""} `;
+        if (months > 0) timeString += `${months} month${months > 1 ? "s" : ""} `;
+        if (days > 0) timeString += `${days} day${days > 1 ? "s" : ""} `;
+        if (hours > 0) timeString += `${hours} hour${hours > 1 ? "s" : ""} `;
+        if (minutes > 0) timeString += `${minutes} minute${minutes > 1 ? "s" : ""} `;
+        if (secs > 0 || timeString === "") timeString += `${secs} second${secs > 1 ? "s" : ""}`;
+
+        return timeString;
+    };
 
     return (
         <View style={styles.container}>
@@ -146,7 +168,7 @@ const WorkUpdateStatusScreen = () => {
                 {/* Status Field */}
                 <Text style={styles.label}>Status: {status}</Text>
                 {status === "On-Hold" && (
-                    <Text style={styles.timer}>Time on Hold: {timer}s</Text>
+                    <Text style={styles.timer}>Time on Hold: {formatTime(timer)}</Text>
                 )}
             </View>
 
@@ -396,7 +418,7 @@ const styles = StyleSheet.create({
         fontSize: 18,
         fontWeight: "bold",
         marginTop: 20,
-    }
+    },
 });
 
 export default WorkUpdateStatusScreen;
