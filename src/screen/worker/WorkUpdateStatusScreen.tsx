@@ -28,6 +28,7 @@ const WorkUpdateStatusScreen = () => {
 
     const [timer, setTimer] = useState(1); // Start timer from 1 second
     const [isTimerRunning, setIsTimerRunning] = useState(false);
+    const [isWorkHeld, setIsWorkHeld] = useState(false); // Track if work is held
 
     const completionValues = Array.from({ length: 11 }, (_, i) => (i * 10).toString()); // 0 to 100 in steps of 10
 
@@ -47,11 +48,10 @@ const WorkUpdateStatusScreen = () => {
     const handleHoldWork = () => {
         setModalVisible(true);
         setStatus("On-Hold"); // Set status to "On-Hold" when Hold Work is triggered
-        setTimer(1); // Reset timer to 1 second
-        setIsTimerRunning(true); // Start the timer when work is on hold
     };
 
     const handleSubmitHoldWork = () => {
+        // Submit the "Hold Work" details
         console.log("Hold Work Details:", {
             projectId,
             description,
@@ -62,13 +62,25 @@ const WorkUpdateStatusScreen = () => {
             contractorPhone,
             reason,
         });
-        setModalVisible(false); // Close the modal after submitting
+
+        // Start the timer when Hold Work is submitted
+        setTimer(1); // Reset timer to 1 second
+        setIsWorkHeld(true); // Mark that work is held
+        setIsTimerRunning(true); // Start the timer
+        setModalVisible(false); // Close the modal
+    };
+
+    const handleCancelHoldWork = () => {
+        // If Hold Work is cancelled, reset to "In-progress" and do not start the timer
+        setModalVisible(false);
+        setStatus("In-progress"); // Keep the status as In-progress
     };
 
     const handleResumeWork = () => {
-        setStatus("In-progress"); // Change status back to In-progress when Resume Work is pressed
+        // Change status back to "In-progress" when Resume Work is pressed
+        setStatus("In-progress");
         setIsTimerRunning(false); // Stop the timer when work is resumed
-        setTimer(1); // Reset the timer to 1 second when resuming work
+        setIsWorkHeld(false); // Mark work as not held anymore
     };
 
     useEffect(() => {
@@ -173,7 +185,7 @@ const WorkUpdateStatusScreen = () => {
             </View>
 
             {/* Resume Work Button */}
-            {status === "On-Hold" && (
+            {isWorkHeld && status === "On-Hold" && (
                 <TouchableOpacity
                     style={styles.resumeButton}
                     onPress={handleResumeWork}
@@ -281,11 +293,11 @@ const WorkUpdateStatusScreen = () => {
                             <Text style={styles.buttonText}>Submit</Text>
                         </TouchableOpacity>
 
-                        {/* Close Button */}
+                        {/* Cancel Button */}
                         <TouchableOpacity
                             style={styles.backButton}
-                            onPress={() => setModalVisible(false)}>
-                            <Text style={styles.backButtonText}>Close</Text>
+                            onPress={handleCancelHoldWork}>
+                            <Text style={styles.backButtonText}>Cancel</Text>
                         </TouchableOpacity>
                     </View>
                 </View>
