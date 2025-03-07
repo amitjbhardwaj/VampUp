@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { View, Text, StyleSheet, TouchableOpacity, TextInput, Modal } from "react-native";
 import { useRoute, useNavigation, RouteProp } from "@react-navigation/native";
 import Icon from "react-native-vector-icons/FontAwesome";
@@ -26,6 +26,9 @@ const WorkUpdateStatusScreen = () => {
     const [modalVisible, setModalVisible] = useState(false);
     const [reason, setReason] = useState("");
 
+    const [timer, setTimer] = useState(0); // To hold the time elapsed during hold
+    const [isTimerRunning, setIsTimerRunning] = useState(false);
+
     const completionValues = Array.from({ length: 11 }, (_, i) => (i * 10).toString()); // 0 to 100 in steps of 10
 
     // Helper function to determine the status
@@ -39,9 +42,12 @@ const WorkUpdateStatusScreen = () => {
         }
     }
 
+    let interval: NodeJS.Timeout;
+
     const handleHoldWork = () => {
         setModalVisible(true);
         setStatus("On-Hold"); // Set status to "On-Hold" when Hold Work is triggered
+        setIsTimerRunning(true); // Start the timer when work is on hold
     };
 
     const handleSubmitHoldWork = () => {
@@ -60,7 +66,21 @@ const WorkUpdateStatusScreen = () => {
 
     const handleResumeWork = () => {
         setStatus("In-progress"); // Change status back to In-progress when Resume Work is pressed
+        setIsTimerRunning(false); // Stop the timer when work is resumed
     };
+
+    useEffect(() => {
+        if (isTimerRunning) {
+            interval = setInterval(() => {
+                setTimer((prevTimer) => prevTimer + 1); // Increment time by 1 second every interval
+            }, 1000);
+        } else {
+            clearInterval(interval); // Clear interval when the timer is not running
+        }
+
+        // Cleanup function to clear the interval on unmount
+        return () => clearInterval(interval);
+    }, [isTimerRunning]); // This effect runs when isTimerRunning changes
 
     useEffect(() => {
         setStatus(getStatus(parseInt(completion))); // Update status when completion changes
@@ -125,18 +145,21 @@ const WorkUpdateStatusScreen = () => {
 
                 {/* Status Field */}
                 <Text style={styles.label}>Status: {status}</Text>
+                {status === "On-Hold" && (
+                    <Text style={styles.timer}>Time on Hold: {timer}s</Text>
+                )}
             </View>
 
-             {/* Resume Work Button */}
-             {status === "On-Hold" && (
-                    <TouchableOpacity
-                        style={styles.resumeButton}
-                        onPress={handleResumeWork}
-                    >
-                        <Icon name="play" size={20} color="#fff" />
-                        <Text style={styles.buttonText}>Resume Work</Text>
-                    </TouchableOpacity>
-                )}
+            {/* Resume Work Button */}
+            {status === "On-Hold" && (
+                <TouchableOpacity
+                    style={styles.resumeButton}
+                    onPress={handleResumeWork}
+                >
+                    <Icon name="play" size={20} color="#fff" />
+                    <Text style={styles.buttonText}>Resume Work</Text>
+                </TouchableOpacity>
+            )}
 
             {/* Hold Work Button */}
             <View style={styles.bottomContainer}>
@@ -147,8 +170,6 @@ const WorkUpdateStatusScreen = () => {
                     <Icon name="pause" size={20} color="#fff" />
                     <Text style={styles.buttonText}>Hold Work</Text>
                 </TouchableOpacity>
-
-               
 
                 {/* Update Button */}
                 <TouchableOpacity
@@ -239,7 +260,6 @@ const WorkUpdateStatusScreen = () => {
                         </TouchableOpacity>
 
                         {/* Close Button */}
-
                         <TouchableOpacity
                             style={styles.backButton}
                             onPress={() => setModalVisible(false)}>
@@ -372,6 +392,11 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: "bold",
     },
+    timer: {
+        fontSize: 18,
+        fontWeight: "bold",
+        marginTop: 20,
+    }
 });
 
 export default WorkUpdateStatusScreen;
