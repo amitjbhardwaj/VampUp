@@ -21,9 +21,9 @@ interface Project {
 
 const projectData: Project[] = [
   { project_Id: 'P001', project_description: 'Road Cleaning - Street 12', long_project_description: 'Road Cleaning - Street 12,Road Cleaning - Street 12,Road Cleaning - Street 12,Road Cleaning - Street 12', assigned_to: 'John Doe', project_start_date: '2025-03-01', project_end_date: '2025-03-10', completion_percentage: 100, contractor_phone: '+919876543210' },
-  { project_Id: 'P002', project_description: 'Drainage Maintenance', long_project_description: 'Road Cleaning - Street 12,Road Cleaning - Street 12,Road Cleaning - Street 12',assigned_to: 'John Doe', project_start_date: '2025-03-05', project_end_date: '2025-03-15', completion_percentage: 90, contractor_phone: '+919876543211' },
-  { project_Id: 'P003', project_description: 'Road Paving - Street 15',long_project_description: 'Road Cleaning - Street 12,Road Cleaning - Street 12,Road Cleaning - Street 12', assigned_to: 'Jane Smith', project_start_date: '2025-03-03', project_end_date: '2025-03-14', completion_percentage: 80, contractor_phone: '+919876543212' },
-  { project_Id: 'P004', project_description: 'Bridge Repair',long_project_description: 'Road Cleaning - Street 12,Road Cleaning - Street 12', assigned_to: 'Jane Smith', project_start_date: '2025-03-10', project_end_date: '2025-03-20', completion_percentage: 70, contractor_phone: '+919876543213' },
+  { project_Id: 'P002', project_description: 'Drainage Maintenance', long_project_description: 'Road Cleaning - Street 12,Road Cleaning - Street 12,Road Cleaning - Street 12', assigned_to: 'John Doe', project_start_date: '2025-03-05', project_end_date: '2025-03-15', completion_percentage: 90, contractor_phone: '+919876543211' },
+  { project_Id: 'P003', project_description: 'Road Paving - Street 15', long_project_description: 'Road Cleaning - Street 12,Road Cleaning - Street 12,Road Cleaning - Street 12', assigned_to: 'Jane Smith', project_start_date: '2025-03-03', project_end_date: '2025-03-14', completion_percentage: 80, contractor_phone: '+919876543212' },
+  { project_Id: 'P004', project_description: 'Bridge Repair', long_project_description: 'Road Cleaning - Street 12,Road Cleaning - Street 12', assigned_to: 'Jane Smith', project_start_date: '2025-03-10', project_end_date: '2025-03-20', completion_percentage: 70, contractor_phone: '+919876543213' },
 ];
 
 // Function to categorize completion percentages
@@ -69,8 +69,8 @@ const WorkerActiveWorkScreen = () => {
   });
 
   const renderItem = ({ item }: { item: Project }) => (
-    <TouchableOpacity 
-      style={styles.card} 
+    <TouchableOpacity
+      style={styles.card}
       onPress={() => {
         setSelectedProject(item);
         setModalVisible(true);
@@ -107,18 +107,17 @@ const WorkerActiveWorkScreen = () => {
           <View style={styles.modalContainer}>
             <View style={styles.modalContent}>
               {/* Close Modal Button */}
-              <TouchableOpacity 
+              <TouchableOpacity
                 style={styles.closeButton}
                 onPress={() => setModalVisible(false)} // Close modal
               >
                 <Icon name="times" size={24} color="#fff" />
               </TouchableOpacity>
 
-              {/* Modal Content */}
               {selectedProject && (
                 <View style={styles.modalDetails}>
                   {/* Project Description */}
-                  <Text style={styles.modalTitle}>{selectedProject.project_description}</Text> 
+                  <Text style={styles.modalTitle}>{selectedProject.project_description}</Text>
                   <Text style={styles.modalText}>Project ID: {selectedProject.project_Id}</Text>
                   <Text style={styles.modalText}>Project Long Description: {selectedProject.long_project_description}</Text>
                   <Text style={styles.modalText}>Assigned To: {selectedProject.assigned_to}</Text>
@@ -126,25 +125,40 @@ const WorkerActiveWorkScreen = () => {
                   <Text style={styles.modalText}>End Date: {selectedProject.project_end_date}</Text>
                   <Text style={styles.modalText}>Completion: {selectedProject.completion_percentage}%</Text>
 
-                  {/* Call Contractor Button */}
-                  <TouchableOpacity
-                    style={styles.callButton}
-                    onPress={() => Linking.openURL(`tel:${selectedProject.contractor_phone}`)}
-                  >
-                    <Icon name="phone" size={20} color="#fff" />
-                    <Text style={styles.buttonText}>Call Contractor</Text>
-                  </TouchableOpacity>
+                  {/* Show "View Payment" button for 100% completed projects */}
+                  {selectedProject.completion_percentage === 100 && (
+                    <TouchableOpacity
+                      style={styles.paymentButton}
+                      onPress={() => console.log("Navigating to Payment Screen")}
+                    >
+                      <Icon name="credit-card" size={20} color="#fff" />
+                      <Text style={styles.buttonText}>View Payment</Text>
+                    </TouchableOpacity>
+                  )}
 
-                  {/* Back Button underneath Call Contractor */}
+                  {/* Show "Call Contractor" button for projects less than 100% completed */}
+                  {selectedProject.completion_percentage < 100 && (
+                    <TouchableOpacity
+                      style={styles.callButton}
+                      onPress={() => Linking.openURL(`tel:${selectedProject.contractor_phone}`)}
+                    >
+                      <Icon name="phone" size={20} color="#fff" />
+                      <Text style={styles.buttonText}>Call Contractor</Text>
+                    </TouchableOpacity>
+                  )}
+
+                  {/* Back Button */}
                   <TouchableOpacity
                     style={styles.backButton}
-                    onPress={() => setModalVisible(false)} // Close modal
+                    onPress={() => setModalVisible(false)}
                   >
                     <Icon name="arrow-left" size={20} color="#fff" />
                     <Text style={styles.buttonText}>Back</Text>
                   </TouchableOpacity>
                 </View>
               )}
+
+
             </View>
           </View>
         </TouchableWithoutFeedback>
@@ -226,6 +240,15 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontWeight: 'bold',
     marginLeft: 10,
+  },
+  paymentButton: {
+    backgroundColor: '#28a745',
+    padding: 12,
+    borderRadius: 5,
+    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    marginTop: 20,
   },
 });
 
