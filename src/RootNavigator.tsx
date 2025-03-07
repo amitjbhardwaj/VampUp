@@ -12,11 +12,10 @@ import PasswordUpdatedScreen from "./screen/PasswordUpdatedScreen";
 import WorkerHomeScreen from "./screen/WorkerHomeScreen";
 import WorkerActiveWorkScreen, { Project } from "./screen/worker/WorkerActiveWorkScreen";
 import WorkerWorkHistoryScreen from "./screen/worker/WorkerWorkHistoryScreen";
-import WorkerPaymentScreen from "./screen/worker/WorkerPaymentScreen";
 import WorkerComplaintHistoryScreen from "./screen/worker/WorkerComplaintHistoryScreen";
 import AppNavigator from "./screen/worker/WorkerActiveWorkScreen";
 import WorkUpdateStatusScreen from "./screen/worker/WorkUpdateStatusScreen";
-import WorkerViewPayment from "./screen/worker/WorkerViewPayment";
+import WorkerPaymentScreen from "./screen/worker/WorkerPaymentScreen";
 
 export type RootStackParamList = {
     Login: undefined;
@@ -30,11 +29,10 @@ export type RootStackParamList = {
     WorkerHomeScreen: undefined;
     WorkerActiveWorkScreen: undefined;
     WorkerWorkHistoryScreen: undefined;
-    WorkerPaymentScreen: undefined;
     WorkerComplaintHistoryScreen: undefined;
     AppNavigator : undefined;
     WorkUpdateStatus: { project: Project };
-    WorkerViewPayment : undefined;
+    WorkerPayment: { project: Project };
 };
 
 const Stack = createStackNavigator<RootStackParamList>();
@@ -54,11 +52,11 @@ const RootNavigator: React.FC = () => {
                 <Stack.Screen name="WorkerHomeScreen" component={WorkerHomeScreen} />
                 <Stack.Screen name="WorkerActiveWorkScreen" component={WorkerActiveWorkScreen} />
                 <Stack.Screen name="WorkerWorkHistoryScreen" component={WorkerWorkHistoryScreen} />
-                <Stack.Screen name="WorkerPaymentScreen" component={WorkerPaymentScreen} />
                 <Stack.Screen name="WorkerComplaintHistoryScreen" component={WorkerComplaintHistoryScreen} />
                 <Stack.Screen name="AppNavigator" component={AppNavigator} />
-                <Stack.Screen name="WorkUpdateStatus" component={WorkUpdateStatusScreen} />
-                <Stack.Screen name="WorkerViewPayment" component={WorkerViewPayment} />
+                <Stack.Screen name="WorkerPayment" component={WorkerPaymentScreen} /> 
+                <Stack.Screen name="WorkUpdateStatus" component={WorkUpdateStatusScreen} /> 
+                
             </Stack.Navigator>
         </NavigationContainer>
     );

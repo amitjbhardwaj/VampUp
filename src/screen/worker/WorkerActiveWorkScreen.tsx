@@ -1,10 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { View, Text, StyleSheet, FlatList, TouchableOpacity, Linking, Modal, TouchableWithoutFeedback, Keyboard, Button } from 'react-native';
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 import Icon from 'react-native-vector-icons/FontAwesome';
-import { BottomTabNavigationProp, createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { NavigationContainer } from '@react-navigation/native';
-import WorkUpdateStatusScreen from "./WorkUpdateStatusScreen";
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { RootStackParamList } from "../../RootNavigator";
 
 
@@ -143,7 +141,8 @@ const WorkerActiveWorkScreen = () => {
                   {selectedProject.completion_percentage === 100 && (
                     <TouchableOpacity
                       style={styles.paymentButton}
-                      onPress={() => navigation.navigate('WorkerPaymentScreen')}
+                      onPress={() => navigation.navigate('WorkerPayment', { project: selectedProject })}
+
                     >
                       <Icon name="credit-card" size={20} color="#fff" />
                       <Text style={styles.buttonText}>View Payment</Text>
