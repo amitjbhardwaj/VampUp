@@ -58,6 +58,10 @@ const WorkUpdateStatusScreen = () => {
         setModalVisible(false); // Close the modal after submitting
     };
 
+    const handleResumeWork = () => {
+        setStatus("In-progress"); // Change status back to In-progress when Resume Work is pressed
+    };
+
     useEffect(() => {
         setStatus(getStatus(parseInt(completion))); // Update status when completion changes
     }, [completion]);
@@ -123,6 +127,17 @@ const WorkUpdateStatusScreen = () => {
                 <Text style={styles.label}>Status: {status}</Text>
             </View>
 
+             {/* Resume Work Button */}
+             {status === "On-Hold" && (
+                    <TouchableOpacity
+                        style={styles.resumeButton}
+                        onPress={handleResumeWork}
+                    >
+                        <Icon name="play" size={20} color="#fff" />
+                        <Text style={styles.buttonText}>Resume Work</Text>
+                    </TouchableOpacity>
+                )}
+
             {/* Hold Work Button */}
             <View style={styles.bottomContainer}>
                 <TouchableOpacity
@@ -132,6 +147,8 @@ const WorkUpdateStatusScreen = () => {
                     <Icon name="pause" size={20} color="#fff" />
                     <Text style={styles.buttonText}>Hold Work</Text>
                 </TouchableOpacity>
+
+               
 
                 {/* Update Button */}
                 <TouchableOpacity
@@ -222,11 +239,11 @@ const WorkUpdateStatusScreen = () => {
                         </TouchableOpacity>
 
                         {/* Close Button */}
+
                         <TouchableOpacity
-                            style={styles.closeButton}
-                            onPress={() => setModalVisible(false)}
-                        >
-                            <Icon name="times" size={24} color="#fff" />
+                            style={styles.backButton}
+                            onPress={() => setModalVisible(false)}>
+                            <Text style={styles.backButtonText}>Close</Text>
                         </TouchableOpacity>
                     </View>
                 </View>
@@ -275,6 +292,17 @@ const styles = StyleSheet.create({
     },
     holdButton: {
         backgroundColor: "#000",
+        padding: 12,
+        borderRadius: 5,
+        alignItems: "center",
+        flexDirection: "row",
+        justifyContent: "center",
+        marginTop: 10,
+        marginLeft: 20,
+        marginRight: 20,
+    },
+    resumeButton: {
+        backgroundColor: "#28a745", // Green color for Resume Work
         padding: 12,
         borderRadius: 5,
         alignItems: "center",
@@ -333,6 +361,16 @@ const styles = StyleSheet.create({
         position: "absolute",
         top: 10,
         right: 10,
+    },
+    backButton: {
+        marginTop: 15,
+        padding: 10,
+        alignItems: "center",
+    },
+    backButtonText: {
+        color: "#000",
+        fontSize: 16,
+        fontWeight: "bold",
     },
 });
 
