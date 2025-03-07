@@ -1,15 +1,16 @@
 import React, { useState, useEffect, useRef } from "react";
 import { View, Text, StyleSheet, TouchableOpacity, TextInput, Modal } from "react-native";
-import { useRoute, useNavigation, RouteProp } from "@react-navigation/native";
+import { useRoute, useNavigation, RouteProp, NavigationProp } from "@react-navigation/native";
 import Icon from "react-native-vector-icons/FontAwesome";
 import { Picker } from "@react-native-picker/picker";
 import { RootStackParamList } from "../../RootNavigator";
 
 type WorkUpdateStatusScreenRouteProp = RouteProp<RootStackParamList, 'WorkUpdateStatus'>;
+type WorkUpdateStatusScreenNavigationProp = NavigationProp<RootStackParamList>;
 
 const WorkUpdateStatusScreen = () => {
     const route = useRoute<WorkUpdateStatusScreenRouteProp>();
-    const navigation = useNavigation();
+    const navigation = useNavigation<WorkUpdateStatusScreenNavigationProp>();
 
     const { project } = route.params;
 
@@ -212,17 +213,7 @@ const WorkUpdateStatusScreen = () => {
             <View style={styles.bottomContainer}>
                 <TouchableOpacity
                     style={styles.updateButton}
-                    onPress={() => {
-                        console.log("Updated project:", {
-                            projectId,
-                            description,
-                            assignedTo,
-                            startDate,
-                            endDate,
-                            completion,
-                            contractorPhone,
-                        });
-                    }}
+                   onPress={()=>navigation.navigate('WorkerActiveWorkScreen')}
                 >
                     <Icon name="refresh" size={20} color="#fff" />
                     <Text style={styles.buttonText}>Update</Text>
