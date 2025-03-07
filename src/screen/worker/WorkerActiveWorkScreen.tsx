@@ -28,7 +28,7 @@ export interface Project {
 }
 
 const projectData: Project[] = [
-  { project_Id: 'P001', project_description: 'Road Cleaning - Street 12', long_project_description: 'Road Cleaning - Street 12,Road Cleaning - Street 12,Road Cleaning - Street 12,Road Cleaning - Street 12', assigned_to: 'John Doe', project_start_date: '2025-03-01', project_end_date: '2025-03-10', completion_percentage: 0, contractor_phone: '+919876543210' },
+  { project_Id: 'P001', project_description: 'Road Cleaning - Street 12', long_project_description: 'Road Cleaning - Street 12,Road Cleaning - Street 12,Road Cleaning - Street 12,Road Cleaning - Street 12', assigned_to: 'John Doe', project_start_date: '2025-03-01', project_end_date: '2025-03-10', completion_percentage: 100, contractor_phone: '+919876543210' },
   { project_Id: 'P002', project_description: 'Drainage Maintenance', long_project_description: 'Road Cleaning - Street 12,Road Cleaning - Street 12,Road Cleaning - Street 12', assigned_to: 'John Doe', project_start_date: '2025-03-05', project_end_date: '2025-03-15', completion_percentage: 10, contractor_phone: '+919876543211' },
   { project_Id: 'P003', project_description: 'Road Paving - Street 15', long_project_description: 'Road Cleaning - Street 12,Road Cleaning - Street 12,Road Cleaning - Street 12', assigned_to: 'Jane Smith', project_start_date: '2025-03-03', project_end_date: '2025-03-14', completion_percentage: 90, contractor_phone: '+919876543212' },
   { project_Id: 'P004', project_description: 'Bridge Repair', long_project_description: 'Road Cleaning - Street 12,Road Cleaning - Street 12', assigned_to: 'Jane Smith', project_start_date: '2025-03-10', project_end_date: '2025-03-20', completion_percentage: 100, contractor_phone: '+919876543213' },
