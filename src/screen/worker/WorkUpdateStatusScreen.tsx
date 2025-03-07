@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Text, StyleSheet, TouchableOpacity, TextInput } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, TextInput, Modal } from "react-native";
 import { useRoute, useNavigation, RouteProp } from "@react-navigation/native";
 import Icon from "react-native-vector-icons/FontAwesome";
 import { Picker } from "@react-native-picker/picker";
@@ -22,7 +22,28 @@ const WorkUpdateStatusScreen = () => {
     const [completion, setCompletion] = useState(project.completion_percentage.toString());
     const [contractorPhone, setContractorPhone] = useState(project.contractor_phone);
 
+    const [modalVisible, setModalVisible] = useState(false);
+    const [reason, setReason] = useState("");
+
     const completionValues = Array.from({ length: 11 }, (_, i) => (i * 10).toString()); // 0 to 100 in steps of 10
+
+    const handleHoldWork = () => {
+        setModalVisible(true);
+    };
+
+    const handleSubmitHoldWork = () => {
+        console.log("Hold Work Details:", {
+            projectId,
+            description,
+            assignedTo,
+            startDate,
+            endDate,
+            completion,
+            contractorPhone,
+            reason,
+        });
+        setModalVisible(false); // Close the modal after submitting
+    };
 
     return (
         <View style={styles.container}>
@@ -82,8 +103,16 @@ const WorkUpdateStatusScreen = () => {
                 />
             </View>
 
-            {/* Update Button */}
+            {/* Hold Work Button */}
             <View style={styles.bottomContainer}>
+                <TouchableOpacity
+                    style={styles.holdButton}
+                    onPress={handleHoldWork}
+                >
+                    <Icon name="pause" size={20} color="#fff" />
+                    <Text style={styles.buttonText}>Hold Work</Text>
+                </TouchableOpacity>
+
                 <TouchableOpacity
                     style={styles.updateButton}
                     onPress={() => {
@@ -109,6 +138,78 @@ const WorkUpdateStatusScreen = () => {
                 onPress={() => navigation.goBack()}>
                 <Text style={styles.backToCardsText}>Back</Text>
             </TouchableOpacity>
+
+            {/* Hold Work Modal */}
+            <Modal
+                visible={modalVisible}
+                transparent={true}
+                animationType="slide"
+                onRequestClose={() => setModalVisible(false)}
+            >
+                <View style={styles.modalContainer}>
+                    <View style={styles.modalContent}>
+                        <Text style={styles.modalTitle}>Hold Work</Text>
+
+                        {/* Project details */}
+                        <TextInput
+                            style={styles.input}
+                            value={projectId}
+                            onChangeText={setProjectId}
+                            placeholder="Project ID"
+                            editable={false}
+                        />
+                        <TextInput
+                            style={styles.input}
+                            value={description}
+                            onChangeText={setDescription}
+                            placeholder="Description"
+                        />
+                        <TextInput
+                            style={styles.input}
+                            value={assignedTo}
+                            onChangeText={setAssignedTo}
+                            placeholder="Assigned To"
+                        />
+                        <TextInput
+                            style={styles.input}
+                            value={startDate}
+                            onChangeText={setStartDate}
+                            placeholder="Start Date"
+                        />
+                        <TextInput
+                            style={styles.input}
+                            value={endDate}
+                            onChangeText={setEndDate}
+                            placeholder="End Date"
+                        />
+
+                        {/* Reason Input */}
+                        <Text style={styles.label}>Reason for Hold</Text>
+                        <TextInput
+                            style={styles.input}
+                            value={reason}
+                            onChangeText={setReason}
+                            placeholder="Enter reason"
+                        />
+
+                        {/* Submit Button */}
+                        <TouchableOpacity
+                            style={styles.updateButton}
+                            onPress={handleSubmitHoldWork}
+                        >
+                            <Text style={styles.buttonText}>Submit</Text>
+                        </TouchableOpacity>
+
+                        {/* Close Button */}
+                        <TouchableOpacity
+                            style={styles.closeButton}
+                            onPress={() => setModalVisible(false)}
+                        >
+                            <Icon name="times" size={24} color="#fff" />
+                        </TouchableOpacity>
+                    </View>
+                </View>
+            </Modal>
         </View>
     );
 };
@@ -117,7 +218,7 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: "#fff",
-        marginTop: 40
+        marginTop: 40,
     },
     content: {
         flex: 1,
@@ -131,11 +232,11 @@ const styles = StyleSheet.create({
     label: {
         fontWeight: "bold",
         marginBottom: 5,
-        fontSize: 16
+        fontSize: 16,
     },
     input: {
         height: 40,
-        borderColor: '#ccc',
+        borderColor: "#ccc",
         borderWidth: 1,
         borderRadius: 5,
         paddingLeft: 10,
@@ -148,24 +249,34 @@ const styles = StyleSheet.create({
         marginBottom: 15,
     },
     bottomContainer: {
-        justifyContent: 'flex-end',
+        justifyContent: "flex-end",
         paddingBottom: 25,
     },
-    updateButton: {
-        backgroundColor: '#000',
+    holdButton: {
+        backgroundColor: "#000",
         padding: 12,
         borderRadius: 5,
-        alignItems: 'center',
-        flexDirection: 'row',
-        justifyContent: 'center',
-        marginTop: 10,
+        alignItems: "center",
+        flexDirection: "row",
+        justifyContent: "center",
         marginLeft: 20,
-        marginRight: 20
+        marginRight: 20,
     },
     buttonText: {
         color: "#fff",
         fontWeight: "bold",
         marginLeft: 10,
+    },
+    updateButton: {
+        backgroundColor: "#000",
+        padding: 12,
+        borderRadius: 5,
+        alignItems: "center",
+        flexDirection: "row",
+        justifyContent: "center",
+        marginTop: 10,
+        marginLeft: 20,
+        marginRight: 20,
     },
     backToCardsButton: {
         marginTop: 15,
@@ -176,7 +287,30 @@ const styles = StyleSheet.create({
         color: "#000",
         fontSize: 16,
         fontWeight: "bold",
-        marginBottom : 50
+        marginBottom: 50,
+    },
+    modalContainer: {
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+        backgroundColor: "rgba(0, 0, 0, 0.5)",
+    },
+    modalContent: {
+        backgroundColor: "#fff",
+        borderRadius: 20,
+        padding: 20,
+        width: "80%",
+        elevation: 10,
+    },
+    modalTitle: {
+        fontSize: 22,
+        fontWeight: "bold",
+        marginBottom: 20,
+    },
+    closeButton: {
+        position: "absolute",
+        top: 10,
+        right: 10,
     },
 });
 
