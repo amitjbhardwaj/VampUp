@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, Linking, Modal, TouchableWithoutFeedback, Keyboard } from 'react-native';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, Linking, Modal, TouchableWithoutFeedback, Keyboard, Button } from 'react-native';
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 import Icon from 'react-native-vector-icons/FontAwesome';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { BottomTabNavigationProp, createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NavigationContainer } from '@react-navigation/native';
 import WorkUpdateStatusScreen from "./WorkUpdateStatusScreen";
 import { RootStackParamList } from "../../RootNavigator";
@@ -10,8 +10,13 @@ import { RootStackParamList } from "../../RootNavigator";
 
 type WorkerActiveWorkScreenNavigationProp = NavigationProp<RootStackParamList>;
 
-// Bottom Tab Navigator
+type WorkerTabsNavigationProp = any;
+
 const Tab = createBottomTabNavigator();
+
+interface WorkerTabsProps {
+  navigation: WorkerTabsNavigationProp;
+}
 
 export interface Project {
   project_Id: string;
@@ -51,15 +56,7 @@ const WorkerActiveWorkScreen = () => {
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedProject, setSelectedProject] = useState<Project | null>(null); // Type for selectedProject
 
-  useEffect(() => {
-    navigation.setOptions({
-      headerLeft: () => (
-        <TouchableOpacity onPress={() => navigation.goBack()}>
-          <Icon name="arrow-back" size={30} color="#000" style={{ marginLeft: 10 }} />
-        </TouchableOpacity>
-      ),
-    });
-  }, [navigation]);
+
 
   // Sort the projectData based on completion percentage
   const sortedProjectData = [...projectData].sort((a, b) => {
@@ -183,17 +180,39 @@ const WorkerActiveWorkScreen = () => {
   );
 };
 
-// Bottom Tab Navigation
+
+
+
 const WorkerTabs = () => {
   return (
     <Tab.Navigator
       screenOptions={{
-        tabBarStyle: { display: 'none' }, // Hide bottom tabs
-        headerShown: true, // Show the header
+        headerShown: true,
       }}
     >
-      <Tab.Screen name="WorkDetails" component={WorkerActiveWorkScreen} />
+      <Tab.Screen
+        name="Work Details"
+        component={WorkerActiveWorkScreen}
+        options={{
+          tabBarLabel: 'Go back', // Label for the tab
+          tabBarButton: (props) => <CustomTabButton {...props} />
+        }}
+      />
     </Tab.Navigator>
+  );
+};
+
+// Custom Tab Button Component
+const CustomTabButton = (props: any) => {
+  const navigation = useNavigation<WorkerTabsNavigationProp>();
+
+  return (
+    <TouchableOpacity
+      style={styles.goBackButton}
+      onPress={() => navigation.goBack()} // Go back action
+    >
+      <Text style={styles.goBackText}>Go Back</Text>
+    </TouchableOpacity>
   );
 };
 
@@ -275,6 +294,32 @@ const styles = StyleSheet.create({
     color: "#000",
     fontSize: 16,
     fontWeight: "bold",
+  },
+  fabButton: {
+    position: 'absolute',
+    bottom: 10,
+    left: '50%',
+    transform: [{ translateX: -30 }], // Adjust the button to the center horizontally
+    backgroundColor: '#28a745', // Green color for the button
+    padding: 15,
+    borderRadius: 50,
+    elevation: 5, // Add shadow effect to make the button float
+  },
+  goBackButton: {
+    backgroundColor: '#000', // Green background for the button
+    padding: 13,
+    borderRadius: 15,
+    marginBottom:-6,
+    marginTop:6,
+    marginLeft : 90,
+    marginRight: 90,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  goBackText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
   },
 });
 
