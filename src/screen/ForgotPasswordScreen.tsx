@@ -76,6 +76,9 @@ const ForgotPasswordScreen = () => {
                     <TouchableOpacity style={styles.actionBtn} onPress={handleSubmitAadhaar}>
                         <Text style={styles.actionBtnText}>Submit</Text>
                     </TouchableOpacity>
+                    <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
+                        <Text style={styles.backButtonText}>Back</Text>
+                    </TouchableOpacity>
                 </View>
             )}
 
@@ -97,6 +100,9 @@ const ForgotPasswordScreen = () => {
                     {otpError ? <Text style={styles.errorText}>{otpError}</Text> : null}
                     <TouchableOpacity style={styles.actionBtn} onPress={handleSubmitOtp}>
                         <Text style={styles.actionBtnText}>Submit OTP</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
+                        <Text style={styles.backButtonText}>Back</Text>
                     </TouchableOpacity>
                 </View>
             )}
@@ -128,6 +134,9 @@ const ForgotPasswordScreen = () => {
                     {passwordError ? <Text style={styles.errorText}>{passwordError}</Text> : null}
                     <TouchableOpacity style={styles.actionBtn} onPress={handleResetPassword}>
                         <Text style={styles.actionBtnText}>Reset Password</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
+                        <Text style={styles.backButtonText}>Back</Text>
                     </TouchableOpacity>
                 </View>
             )}
@@ -192,7 +201,17 @@ const styles = StyleSheet.create({
     },
     inputIcon: {
         marginRight: 10,
-    }
+    },
+    backButton: {
+        marginTop: 15,
+        padding: 10,
+        alignItems: "center",
+    },
+    backButtonText: {
+        color: "#000",
+        fontSize: 16,
+        fontWeight: "bold",
+    },
 });
 
 export default ForgotPasswordScreen;

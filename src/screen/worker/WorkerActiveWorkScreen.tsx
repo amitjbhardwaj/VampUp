@@ -25,10 +25,10 @@ export interface Project {
 }
 
 const projectData: Project[] = [
-  { project_Id: 'P001', project_description: 'Road Cleaning - Street 12', long_project_description: 'Road Cleaning - Street 12,Road Cleaning - Street 12,Road Cleaning - Street 12,Road Cleaning - Street 12', assigned_to: 'John Doe', project_start_date: '2025-03-01', project_end_date: '2025-03-10', completion_percentage: 100, contractor_phone: '+919876543210' },
-  { project_Id: 'P002', project_description: 'Drainage Maintenance', long_project_description: 'Road Cleaning - Street 12,Road Cleaning - Street 12,Road Cleaning - Street 12', assigned_to: 'John Doe', project_start_date: '2025-03-05', project_end_date: '2025-03-15', completion_percentage: 90, contractor_phone: '+919876543211' },
-  { project_Id: 'P003', project_description: 'Road Paving - Street 15', long_project_description: 'Road Cleaning - Street 12,Road Cleaning - Street 12,Road Cleaning - Street 12', assigned_to: 'Jane Smith', project_start_date: '2025-03-03', project_end_date: '2025-03-14', completion_percentage: 80, contractor_phone: '+919876543212' },
-  { project_Id: 'P004', project_description: 'Bridge Repair', long_project_description: 'Road Cleaning - Street 12,Road Cleaning - Street 12', assigned_to: 'Jane Smith', project_start_date: '2025-03-10', project_end_date: '2025-03-20', completion_percentage: 70, contractor_phone: '+919876543213' },
+  { project_Id: 'P001', project_description: 'Road Cleaning - Street 12', long_project_description: 'Road Cleaning - Street 12,Road Cleaning - Street 12,Road Cleaning - Street 12,Road Cleaning - Street 12', assigned_to: 'John Doe', project_start_date: '2025-03-01', project_end_date: '2025-03-10', completion_percentage: 0, contractor_phone: '+919876543210' },
+  { project_Id: 'P002', project_description: 'Drainage Maintenance', long_project_description: 'Road Cleaning - Street 12,Road Cleaning - Street 12,Road Cleaning - Street 12', assigned_to: 'John Doe', project_start_date: '2025-03-05', project_end_date: '2025-03-15', completion_percentage: 10, contractor_phone: '+919876543211' },
+  { project_Id: 'P003', project_description: 'Road Paving - Street 15', long_project_description: 'Road Cleaning - Street 12,Road Cleaning - Street 12,Road Cleaning - Street 12', assigned_to: 'Jane Smith', project_start_date: '2025-03-03', project_end_date: '2025-03-14', completion_percentage: 90, contractor_phone: '+919876543212' },
+  { project_Id: 'P004', project_description: 'Bridge Repair', long_project_description: 'Road Cleaning - Street 12,Road Cleaning - Street 12', assigned_to: 'Jane Smith', project_start_date: '2025-03-10', project_end_date: '2025-03-20', completion_percentage: 100, contractor_phone: '+919876543213' },
 ];
 
 // Function to categorize completion percentages
@@ -167,12 +167,9 @@ const WorkerActiveWorkScreen = () => {
                   )}
 
                   {/* Back Button */}
-                  <TouchableOpacity
-                    style={styles.backButton}
-                    onPress={() => setModalVisible(false)}
-                  >
-                    <Icon name="arrow-left" size={20} color="#fff" />
-                    <Text style={styles.buttonText}>Back</Text>
+                  
+                  <TouchableOpacity style={styles.backButton} onPress={() => setModalVisible(false)}>
+                    <Text style={styles.backButtonText}>Back</Text>
                   </TouchableOpacity>
                 </View>
               )}
@@ -246,15 +243,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginTop: 20,
   },
-  backButton: {
-    backgroundColor: '#007bff',
-    padding: 12,
-    borderRadius: 5,
-    alignItems: 'center',
-    flexDirection: 'row',
-    justifyContent: 'center',
-    marginTop: 10,
-  },
   buttonText: {
     color: '#fff',
     fontWeight: 'bold',
@@ -270,13 +258,23 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   updateStatusButton: {
-    backgroundColor: '#ffc107', // Amber color for visibility
+    backgroundColor: 'rgb(95, 95, 95)', // Amber color for visibility
     padding: 12,
     borderRadius: 5,
     alignItems: 'center',
     flexDirection: 'row',
     justifyContent: 'center',
     marginTop: 20,
+  },
+  backButton: {
+    marginTop: 15,
+    padding: 10,
+    alignItems: "center",
+  },
+  backButtonText: {
+    color: "#000",
+    fontSize: 16,
+    fontWeight: "bold",
   },
 });
 

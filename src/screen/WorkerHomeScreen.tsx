@@ -149,14 +149,13 @@ const WorkerHomeScreen = () => {
 
             {/* Submit Button */}
             <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
-              <Text style={styles.buttonText}>Submit</Text>
+              <Text style={styles.submitButtonText}>Submit</Text>
             </TouchableOpacity>
 
             {/* Close Button (Same size as Submit button, color black) */}
             <TouchableOpacity
-              style={styles.closeButton}
-              onPress={() => setModalVisible(false)}
-            >
+              style={styles.backButton}
+              onPress={() => setModalVisible(false)}>
               <Text style={styles.buttonText}>Close</Text>
             </TouchableOpacity>
           </View>
@@ -241,24 +240,30 @@ const styles = StyleSheet.create({
     textAlignVertical: "top",
   },
   submitButton: {
-    backgroundColor: "#28a745",
+    backgroundColor: "#000",
     padding: 12,
     borderRadius: 5,
     alignItems: "center",
     width: "100%",
-    marginBottom: 20,
+    marginBottom: 10,
   },
-  buttonText: {
+  submitButtonText: {
     color: "#fff",
     fontWeight: "bold",
   },
-  closeButton: {
-    backgroundColor: "#000", // Black background for close button
-    padding: 12,
-    borderRadius: 5,
+  buttonText: {
+    color: "#000",
+    fontWeight: "bold",
+  },
+  backButton: {
+    marginTop: 15,
+    padding: 10,
     alignItems: "center",
-    width: "100%", // Same width as submit button
-    marginBottom: 20,
+  },
+  backButtonText: {
+    color: "#000",
+    fontSize: 16,
+    fontWeight: "bold",
   },
 });
 

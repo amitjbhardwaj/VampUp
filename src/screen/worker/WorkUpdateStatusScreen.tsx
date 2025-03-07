@@ -60,7 +60,7 @@ const WorkUpdateStatusScreen = () => {
                     onChangeText={setEndDate}
                     placeholder="End Date"
                 />
-                
+
                 {/* Dropdown for Completion */}
                 <Text style={styles.label}>Completion (%)</Text>
                 <Picker
@@ -85,7 +85,7 @@ const WorkUpdateStatusScreen = () => {
             {/* Update Button */}
             <View style={styles.bottomContainer}>
                 <TouchableOpacity
-                    style={styles.backButton}
+                    style={styles.updateButton}
                     onPress={() => {
                         console.log("Updated project:", {
                             projectId,
@@ -104,22 +104,18 @@ const WorkUpdateStatusScreen = () => {
             </View>
 
             {/* Back Button */}
-            <View style={styles.bottomContainer}>
-                <TouchableOpacity
-                    style={styles.backButton}
-                    onPress={() => navigation.goBack()}
-                >
-                    <Icon name="arrow-left" size={20} color="#fff" />
-                    <Text style={styles.buttonText}>Back</Text>
-                </TouchableOpacity>
-            </View>
+            <TouchableOpacity
+                style={styles.backToCardsButton}
+                onPress={() => navigation.goBack()}>
+                <Text style={styles.backToCardsText}>Back</Text>
+            </TouchableOpacity>
         </View>
     );
 };
 
 const styles = StyleSheet.create({
     container: {
-        flex: 2,
+        flex: 1,
         backgroundColor: "#fff",
         marginTop: 40
     },
@@ -155,15 +151,14 @@ const styles = StyleSheet.create({
         justifyContent: 'flex-end',
         paddingBottom: 25,
     },
-    backButton: {
+    updateButton: {
         backgroundColor: '#000',
         padding: 12,
         borderRadius: 5,
         alignItems: 'center',
         flexDirection: 'row',
         justifyContent: 'center',
-        marginTop: -30,
-        marginBottom: 30,
+        marginTop: 10,
         marginLeft: 20,
         marginRight: 20
     },
@@ -171,6 +166,17 @@ const styles = StyleSheet.create({
         color: "#fff",
         fontWeight: "bold",
         marginLeft: 10,
+    },
+    backToCardsButton: {
+        marginTop: 15,
+        padding: 10,
+        alignItems: "center",
+    },
+    backToCardsText: {
+        color: "#000",
+        fontSize: 16,
+        fontWeight: "bold",
+        marginBottom : 50
     },
 });
 
