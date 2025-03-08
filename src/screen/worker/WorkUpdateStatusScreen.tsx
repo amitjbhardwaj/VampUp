@@ -4,9 +4,12 @@ import { useRoute, useNavigation, RouteProp, NavigationProp } from "@react-navig
 import Icon from "react-native-vector-icons/FontAwesome";
 import { Picker } from "@react-native-picker/picker";
 import { RootStackParamList } from "../../RootNavigator";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
 
 type WorkUpdateStatusScreenRouteProp = RouteProp<RootStackParamList, 'WorkUpdateStatus'>;
 type WorkUpdateStatusScreenNavigationProp = NavigationProp<RootStackParamList>;
+
 
 const WorkUpdateStatusScreen = () => {
     const route = useRoute<WorkUpdateStatusScreenRouteProp>();
@@ -14,13 +17,13 @@ const WorkUpdateStatusScreen = () => {
 
     const { project } = route.params;
 
+
     // States
     const [projectId, setProjectId] = useState(project.project_Id);
     const [description, setDescription] = useState(project.project_description);
     const [assignedTo, setAssignedTo] = useState(project.assigned_to);
     const [startDate, setStartDate] = useState(project.project_start_date);
     const [endDate, setEndDate] = useState(project.project_end_date);
-    const [completion, setCompletion] = useState(project.completion_percentage.toString());
     const [contractorPhone, setContractorPhone] = useState(project.contractor_phone);
     const [status, setStatus] = useState(getStatus(project.completion_percentage)); // Initial status
 
@@ -31,8 +34,45 @@ const WorkUpdateStatusScreen = () => {
     const [isTimerRunning, setIsTimerRunning] = useState(false);
     const [isWorkHeld, setIsWorkHeld] = useState(false); // Track if work is held
 
+    const [completion, setCompletion] = useState<string>(project.completion_percentage.toString());
+
     const completionValues = Array.from({ length: 11 }, (_, i) => (i * 10).toString()); // 0 to 100 in steps of 10
 
+
+    const handleUpdate = async () => {
+        const updatedProject = { ...project, completion_percentage: parseInt(completion, 10) };
+
+        if (updatedProject.completion_percentage === 100) {
+            try {
+                // Retrieve existing completed projects
+                const storedProjects = await AsyncStorage.getItem("completedProjects");
+                const completedProjects = storedProjects ? JSON.parse(storedProjects) : [];
+
+                // Check if this project is already in the completed list
+                const isAlreadyCompleted = completedProjects.some(
+                    (p: any) => p.project_Id === updatedProject.project_Id
+                );
+
+                if (!isAlreadyCompleted) {
+                    // Add new completed project
+                    const updatedProjects = [...completedProjects, updatedProject];
+
+                    // Save updated list to AsyncStorage
+                    await AsyncStorage.setItem("completedProjects", JSON.stringify(updatedProjects));
+                }
+
+                //Alert.alert("Success", "Project marked as completed!");
+                navigation.navigate("WorkerWorkHistoryScreen");
+            } catch (error) {
+                //Alert.alert("Error", "Failed to save completed project");
+            }
+        } else {
+            // Navigate back to Active Work screen for incomplete projects
+            navigation.navigate("WorkerActiveWorkScreen");
+        }
+    };
+
+    
     // Helper function to determine the status
     function getStatus(completion: number) {
         if (completion === 100) {
@@ -213,7 +253,7 @@ const WorkUpdateStatusScreen = () => {
             <View style={styles.bottomContainer}>
                 <TouchableOpacity
                     style={styles.updateButton}
-                   onPress={()=>navigation.navigate('WorkerActiveWorkScreen')}
+                    onPress={handleUpdate}
                 >
                     <Icon name="refresh" size={20} color="#fff" />
                     <Text style={styles.buttonText}>Update</Text>

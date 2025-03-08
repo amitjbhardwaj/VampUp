@@ -71,7 +71,7 @@ const styles = StyleSheet.create({
     iconContainer: {
         alignItems: "center",
         marginVertical: 20,
-        width: "30%", // Ensures 3 icons per row
+        width: "60%", // Ensures 3 icons per row
         padding: 10,
         borderRadius: 10,
         backgroundColor: "#ffffff",
