@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, Linking, Modal, TouchableWithoutFeedback, Keyboard, Button } from 'react-native';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, Linking, Modal, TouchableWithoutFeedback, Keyboard, Button, ScrollView } from 'react-native';
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
@@ -28,10 +28,22 @@ export interface Project {
 }
 
 const projectData: Project[] = [
-  { project_Id: 'P001', project_description: 'Road Cleaning - Street 12', long_project_description: 'Road Cleaning - Street 12,Road Cleaning - Street 12,Road Cleaning - Street 12,Road Cleaning - Street 12', assigned_to: 'John Doe', project_start_date: '2025-03-01', project_end_date: '2025-03-10', completion_percentage: 100, contractor_phone: '+919876543210' },
-  { project_Id: 'P002', project_description: 'Drainage Maintenance', long_project_description: 'Road Cleaning - Street 12,Road Cleaning - Street 12,Road Cleaning - Street 12', assigned_to: 'John Doe', project_start_date: '2025-03-05', project_end_date: '2025-03-15', completion_percentage: 10, contractor_phone: '+919876543211' },
-  { project_Id: 'P003', project_description: 'Road Paving - Street 15', long_project_description: 'Road Cleaning - Street 12,Road Cleaning - Street 12,Road Cleaning - Street 12', assigned_to: 'Jane Smith', project_start_date: '2025-03-03', project_end_date: '2025-03-14', completion_percentage: 90, contractor_phone: '+919876543212' },
-  { project_Id: 'P004', project_description: 'Bridge Repair', long_project_description: 'Road Cleaning - Street 12,Road Cleaning - Street 12', assigned_to: 'Jane Smith', project_start_date: '2025-03-10', project_end_date: '2025-03-20', completion_percentage: 100, contractor_phone: '+919876543213' },
+  { project_Id: 'P0001', project_description: 'Road Cleaning - Street 12', long_project_description: 'Road Cleaning - Street 12,Road Cleaning - Street 12,Road Cleaning - Street 12,Road Cleaning - Street 12', assigned_to: 'John Doe', project_start_date: '2025-03-01', project_end_date: '2025-03-10', completion_percentage: 10, contractor_phone: '+919876543210' },
+  { project_Id: 'P0002', project_description: 'Drainage Maintenance', long_project_description: 'Road Cleaning - Street 12,Road Cleaning - Street 12,Road Cleaning - Street 12', assigned_to: 'John Doe', project_start_date: '2025-03-05', project_end_date: '2025-03-15', completion_percentage: 10, contractor_phone: '+919876543211' },
+  { project_Id: 'P0003', project_description: 'Road Paving - Street 15', long_project_description: 'Road Cleaning - Street 12,Road Cleaning - Street 12,Road Cleaning - Street 12', assigned_to: 'Jane Smith', project_start_date: '2025-03-03', project_end_date: '2025-03-14', completion_percentage: 90, contractor_phone: '+919876543212' },
+  { project_Id: 'P0004', project_description: 'Bridge Repair', long_project_description: 'Road Cleaning - Street 12,Road Cleaning - Street 12', assigned_to: 'Jane Smith', project_start_date: '2025-03-10', project_end_date: '2025-03-20', completion_percentage: 10, contractor_phone: '+919876543213' },
+  { project_Id: 'P0005', project_description: 'Road Cleaning - Street 12', long_project_description: 'Road Cleaning - Street 12,Road Cleaning - Street 12,Road Cleaning - Street 12,Road Cleaning - Street 12', assigned_to: 'John Doe', project_start_date: '2025-03-01', project_end_date: '2025-03-10', completion_percentage: 10, contractor_phone: '+919876543210' },
+  { project_Id: 'P0006', project_description: 'Drainage Maintenance', long_project_description: 'Road Cleaning - Street 12,Road Cleaning - Street 12,Road Cleaning - Street 12', assigned_to: 'John Doe', project_start_date: '2025-03-05', project_end_date: '2025-03-15', completion_percentage: 10, contractor_phone: '+919876543211' },
+  { project_Id: 'P0007', project_description: 'Road Paving - Street 15', long_project_description: 'Road Cleaning - Street 12,Road Cleaning - Street 12,Road Cleaning - Street 12', assigned_to: 'Jane Smith', project_start_date: '2025-03-03', project_end_date: '2025-03-14', completion_percentage: 10, contractor_phone: '+919876543212' },
+  { project_Id: 'P0008', project_description: 'Bridge Repair', long_project_description: 'Road Cleaning - Street 12,Road Cleaning - Street 12', assigned_to: 'Jane Smith', project_start_date: '2025-03-10', project_end_date: '2025-03-20', completion_percentage: 10, contractor_phone: '+919876543213' },
+  { project_Id: 'P0009', project_description: 'Road Cleaning - Street 12', long_project_description: 'Road Cleaning - Street 12,Road Cleaning - Street 12,Road Cleaning - Street 12,Road Cleaning - Street 12', assigned_to: 'John Doe', project_start_date: '2025-03-01', project_end_date: '2025-03-10', completion_percentage: 10, contractor_phone: '+919876543210' },
+  { project_Id: 'P0010', project_description: 'Drainage Maintenance', long_project_description: 'Road Cleaning - Street 12,Road Cleaning - Street 12,Road Cleaning - Street 12', assigned_to: 'John Doe', project_start_date: '2025-03-05', project_end_date: '2025-03-15', completion_percentage: 10, contractor_phone: '+919876543211' },
+  { project_Id: 'P0011', project_description: 'Road Paving - Street 15', long_project_description: 'Road Cleaning - Street 12,Road Cleaning - Street 12,Road Cleaning - Street 12', assigned_to: 'Jane Smith', project_start_date: '2025-03-03', project_end_date: '2025-03-14', completion_percentage: 10, contractor_phone: '+919876543212' },
+  { project_Id: 'P0012', project_description: 'Bridge Repair', long_project_description: 'Road Cleaning - Street 12,Road Cleaning - Street 12', assigned_to: 'Jane Smith', project_start_date: '2025-03-10', project_end_date: '2025-03-20', completion_percentage: 10, contractor_phone: '+919876543213' },
+  { project_Id: 'P0013', project_description: 'Road Cleaning - Street 20', long_project_description: 'Road Cleaning - Street 12,Road Cleaning - Street 12,Road Cleaning - Street 12,Road Cleaning - Street 12 Road Cleaning - Street 12,Road Cleaning - Street 12,Road Cleaning - Street 12,Road Cleaning - Street 12 Road Cleaning - Street 12,Road Cleaning - Street 12,Road Cleaning - Street 12,Road Cleaning - Street 12 Road Cleaning - Street 12,Road Cleaning - Street 12,Road Cleaning - Street 12,Road Cleaning - Street 12 Road Cleaning - Street 12,Road Cleaning - Street 12,Road Cleaning - Street 12,Road Cleaning - Street 12 Road Cleaning - Street 12,Road Cleaning - Street 12,Road Cleaning - Street 12,Road Cleaning - Street 12 Road Cleaning - Street 12,Road Cleaning - Street 12,Road Cleaning - Street 12,Road Cleaning - Street 12 Road Cleaning - Street 12,Road Cleaning - Street 12,Road Cleaning - Street 12,Road Cleaning - Street 12 Road Cleaning - Street 12,Road Cleaning - Street 12,Road Cleaning - Street 12,Road Cleaning - Street 12 Road Cleaning - Street 12,Road Cleaning - Street 12,Road Cleaning - Street 12,Road Cleaning - Street 12 Road Cleaning - Street 12,Road Cleaning - Street 12,Road Cleaning - Street 12,Road Cleaning - Street 12 Road Cleaning - Street 12,Road Cleaning - Street 12,Road Cleaning - Street 12,Road Cleaning - Street 12', assigned_to: 'John Doe', project_start_date: '2025-03-01', project_end_date: '2025-03-10', completion_percentage: 10, contractor_phone: '+919876543210' },
+  { project_Id: 'P0014', project_description: 'Drainage Maintenance', long_project_description: 'Road Cleaning - Street 12,Road Cleaning - Street 12,Road Cleaning - Street 12', assigned_to: 'John Doe', project_start_date: '2025-03-05', project_end_date: '2025-03-15', completion_percentage: 100, contractor_phone: '+919876543211' },
+  { project_Id: 'P0015', project_description: 'Road Paving - Street 15', long_project_description: 'Road Cleaning - Street 12,Road Cleaning - Street 12,Road Cleaning - Street 12', assigned_to: 'Jane Smith', project_start_date: '2025-03-03', project_end_date: '2025-03-14', completion_percentage: 100, contractor_phone: '+919876543212' },
+  { project_Id: 'P0016', project_description: 'Bridge Repair', long_project_description: 'Road Cleaning - Street 12,Road Cleaning - Street 12', assigned_to: 'Jane Smith', project_start_date: '2025-03-10', project_end_date: '2025-03-20', completion_percentage: 100, contractor_phone: '+919876543213' },
 ];
 
 // Function to categorize completion percentages
@@ -57,15 +69,17 @@ const WorkerActiveWorkScreen = () => {
 
 
   // Sort the projectData based on completion percentage
-  const sortedProjectData = [...projectData].sort((a, b) => {
+  const sortedProjectData = [...projectData]
+  .filter(project => project.completion_percentage < 100) // Exclude 100% complete projects
+  .sort((a, b) => {
     const categoryA = getStatusCategory(a.completion_percentage);
     const categoryB = getStatusCategory(b.completion_percentage);
 
-    // Sort first by status category (red -> amber -> green)
+    // Sort first by status category (red -> amber)
     if (categoryA === categoryB) {
       return b.completion_percentage - a.completion_percentage;  // If same category, sort by completion percentage
     }
-    return categoryA === 'red' ? -1 : categoryA === 'amber' ? -1 : 1;  // Red -> Amber -> Green
+    return categoryA === 'red' ? -1 : categoryA === 'amber' ? -1 : 1;
   });
 
   const renderItem = ({ item }: { item: Project }) => (
@@ -127,31 +141,33 @@ const WorkerActiveWorkScreen = () => {
               </TouchableOpacity>
 
               {selectedProject && (
-                <View style={styles.modalDetails}>
-                  {/* Project Description */}
-                  <Text style={styles.modalTitle}>{selectedProject.project_description}</Text>
-                  <Text style={styles.modalText}>Project ID: {selectedProject.project_Id}</Text>
-                  <Text style={styles.modalText}>Project Long Description: {selectedProject.long_project_description}</Text>
-                  <Text style={styles.modalText}>Assigned To: {selectedProject.assigned_to}</Text>
-                  <Text style={styles.modalText}>Start Date: {selectedProject.project_start_date}</Text>
-                  <Text style={styles.modalText}>End Date: {selectedProject.project_end_date}</Text>
-                  <Text style={styles.modalText}>Completion: {selectedProject.completion_percentage}%</Text>
+                <>
+                  {/* Scrollable Content */}
+                  <ScrollView
+                    style={styles.modalScrollView}
+                    nestedScrollEnabled={true}
+                    contentContainerStyle={{ paddingBottom: 20 }}
+                  >
+                    <Text style={styles.modalTitle}>{selectedProject.project_description}</Text>
+                    <Text style={styles.modalText}><Text style={styles.label}>Project ID:</Text> {selectedProject.project_Id}</Text>
+                    <Text style={styles.modalText}><Text style={styles.label}>Project Long Description:</Text> {selectedProject.long_project_description}</Text>
+                    <Text style={styles.modalText}><Text style={styles.label}>Assigned To:</Text> {selectedProject.assigned_to}</Text>
+                    <Text style={styles.modalText}><Text style={styles.label}>Start Date:</Text> {selectedProject.project_start_date}</Text>
+                    <Text style={styles.modalText}><Text style={styles.label}>End Date:</Text> {selectedProject.project_end_date}</Text>
+                    <Text style={styles.modalText}><Text style={styles.label}>Completion:</Text> {selectedProject.completion_percentage}%</Text>
+                  </ScrollView>
 
-                  {/* Show "View Payment" button for 100% completed projects */}
+                  {/* Buttons (Always Visible) */}
                   {selectedProject.completion_percentage === 100 && (
                     <TouchableOpacity
                       style={styles.paymentButton}
                       onPress={() => navigation.navigate('WorkerPayment', { project: selectedProject })}
-
                     >
                       <Icon name="credit-card" size={20} color="#fff" />
                       <Text style={styles.buttonText}>View Payment</Text>
                     </TouchableOpacity>
                   )}
 
-
-
-                  {/* Show "Call Contractor" button for projects less than 100% completed */}
                   {selectedProject.completion_percentage < 100 && (
                     <TouchableOpacity
                       style={styles.callButton}
@@ -162,19 +178,16 @@ const WorkerActiveWorkScreen = () => {
                     </TouchableOpacity>
                   )}
 
-                  {/* Back Button */}
-                  
                   <TouchableOpacity style={styles.backButton} onPress={() => setModalVisible(false)}>
                     <Text style={styles.backButtonText}>Back</Text>
                   </TouchableOpacity>
-                </View>
+                </>
               )}
-
-
             </View>
           </View>
         </TouchableWithoutFeedback>
       </Modal>
+
     </View>
   );
 };
@@ -308,9 +321,9 @@ const styles = StyleSheet.create({
     backgroundColor: '#000', // Green background for the button
     padding: 13,
     borderRadius: 15,
-    marginBottom:-6,
-    marginTop:6,
-    marginLeft : 90,
+    marginBottom: -6,
+    marginTop: 6,
+    marginLeft: 90,
     marginRight: 90,
     alignItems: 'center',
     justifyContent: 'center',
@@ -320,6 +333,10 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
   },
+  modalScrollView: {
+    maxHeight: 300, // Set a fixed height for the scroll view
+  },
+  label: { fontWeight: 'bold', fontSize: 16, marginBottom: 5 },
 });
 
 export default App;

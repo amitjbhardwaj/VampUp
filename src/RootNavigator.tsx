@@ -16,6 +16,7 @@ import WorkerComplaintHistoryScreen from "./screen/worker/WorkerComplaintHistory
 import AppNavigator from "./screen/worker/WorkerActiveWorkScreen";
 import WorkUpdateStatusScreen from "./screen/worker/WorkUpdateStatusScreen";
 import WorkerPaymentScreen from "./screen/worker/WorkerPaymentScreen";
+import WorkerFullPaymentHistoryScreen from "./screen/worker/WorkerFullPaymentHistoryScreen";
 
 export type RootStackParamList = {
     Login: undefined;
@@ -33,6 +34,7 @@ export type RootStackParamList = {
     AppNavigator : undefined;
     WorkUpdateStatus: { project: Project };
     WorkerPayment: { project: Project };
+    WorkerFullPaymentHistoryScreen : undefined;
 };
 
 const Stack = createStackNavigator<RootStackParamList>();
@@ -56,7 +58,7 @@ const RootNavigator: React.FC = () => {
                 <Stack.Screen name="AppNavigator" component={AppNavigator} />
                 <Stack.Screen name="WorkerPayment" component={WorkerPaymentScreen} /> 
                 <Stack.Screen name="WorkUpdateStatus" component={WorkUpdateStatusScreen} /> 
-                
+                <Stack.Screen name="WorkerFullPaymentHistoryScreen" component={WorkerFullPaymentHistoryScreen} /> 
             </Stack.Navigator>
         </NavigationContainer>
     );

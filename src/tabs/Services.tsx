@@ -19,7 +19,7 @@ const Services = () => {
 
     return (
         <View style={styles.container}>
-            <Text style={styles.text}>Service Screen</Text>
+            <Text style={styles.text}>Help & Contact Screen</Text>
         </View>
     );
 };
