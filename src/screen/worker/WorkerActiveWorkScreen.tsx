@@ -1,13 +1,11 @@
 import React, { useState } from "react";
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, Linking, Modal, TouchableWithoutFeedback, Keyboard, Button, ScrollView } from 'react-native';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, Linking, Modal, TouchableWithoutFeedback, Keyboard, ScrollView } from 'react-native';
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { RootStackParamList } from "../../RootNavigator";
 
-
 type WorkerActiveWorkScreenNavigationProp = NavigationProp<RootStackParamList>;
-
 type WorkerTabsNavigationProp = any;
 
 const Tab = createBottomTabNavigator();
@@ -28,59 +26,102 @@ export interface Project {
 }
 
 const projectData: Project[] = [
-  { project_Id: 'P0001', project_description: 'Road Cleaning - Street 12', long_project_description: 'Road Cleaning - Street 12,Road Cleaning - Street 12,Road Cleaning - Street 12,Road Cleaning - Street 12', assigned_to: 'John Doe', project_start_date: '2025-03-01', project_end_date: '2025-03-10', completion_percentage: 10, contractor_phone: '+919876543210' },
-  { project_Id: 'P0002', project_description: 'Drainage Maintenance', long_project_description: 'Road Cleaning - Street 12,Road Cleaning - Street 12,Road Cleaning - Street 12', assigned_to: 'John Doe', project_start_date: '2025-03-05', project_end_date: '2025-03-15', completion_percentage: 10, contractor_phone: '+919876543211' },
-  { project_Id: 'P0003', project_description: 'Road Paving - Street 15', long_project_description: 'Road Cleaning - Street 12,Road Cleaning - Street 12,Road Cleaning - Street 12', assigned_to: 'Jane Smith', project_start_date: '2025-03-03', project_end_date: '2025-03-14', completion_percentage: 90, contractor_phone: '+919876543212' },
-  { project_Id: 'P0004', project_description: 'Bridge Repair', long_project_description: 'Road Cleaning - Street 12,Road Cleaning - Street 12', assigned_to: 'Jane Smith', project_start_date: '2025-03-10', project_end_date: '2025-03-20', completion_percentage: 10, contractor_phone: '+919876543213' },
-  { project_Id: 'P0005', project_description: 'Road Cleaning - Street 12', long_project_description: 'Road Cleaning - Street 12,Road Cleaning - Street 12,Road Cleaning - Street 12,Road Cleaning - Street 12', assigned_to: 'John Doe', project_start_date: '2025-03-01', project_end_date: '2025-03-10', completion_percentage: 10, contractor_phone: '+919876543210' },
-  { project_Id: 'P0006', project_description: 'Drainage Maintenance', long_project_description: 'Road Cleaning - Street 12,Road Cleaning - Street 12,Road Cleaning - Street 12', assigned_to: 'John Doe', project_start_date: '2025-03-05', project_end_date: '2025-03-15', completion_percentage: 10, contractor_phone: '+919876543211' },
-  { project_Id: 'P0007', project_description: 'Road Paving - Street 15', long_project_description: 'Road Cleaning - Street 12,Road Cleaning - Street 12,Road Cleaning - Street 12', assigned_to: 'Jane Smith', project_start_date: '2025-03-03', project_end_date: '2025-03-14', completion_percentage: 10, contractor_phone: '+919876543212' },
-  { project_Id: 'P0008', project_description: 'Bridge Repair', long_project_description: 'Road Cleaning - Street 12,Road Cleaning - Street 12', assigned_to: 'Jane Smith', project_start_date: '2025-03-10', project_end_date: '2025-03-20', completion_percentage: 10, contractor_phone: '+919876543213' },
-  { project_Id: 'P0009', project_description: 'Road Cleaning - Street 12', long_project_description: 'Road Cleaning - Street 12,Road Cleaning - Street 12,Road Cleaning - Street 12,Road Cleaning - Street 12', assigned_to: 'John Doe', project_start_date: '2025-03-01', project_end_date: '2025-03-10', completion_percentage: 10, contractor_phone: '+919876543210' },
-  { project_Id: 'P0010', project_description: 'Drainage Maintenance', long_project_description: 'Road Cleaning - Street 12,Road Cleaning - Street 12,Road Cleaning - Street 12', assigned_to: 'John Doe', project_start_date: '2025-03-05', project_end_date: '2025-03-15', completion_percentage: 10, contractor_phone: '+919876543211' },
-  { project_Id: 'P0011', project_description: 'Road Paving - Street 15', long_project_description: 'Road Cleaning - Street 12,Road Cleaning - Street 12,Road Cleaning - Street 12', assigned_to: 'Jane Smith', project_start_date: '2025-03-03', project_end_date: '2025-03-14', completion_percentage: 10, contractor_phone: '+919876543212' },
-  { project_Id: 'P0012', project_description: 'Bridge Repair', long_project_description: 'Road Cleaning - Street 12,Road Cleaning - Street 12', assigned_to: 'Jane Smith', project_start_date: '2025-03-10', project_end_date: '2025-03-20', completion_percentage: 10, contractor_phone: '+919876543213' },
-  { project_Id: 'P0013', project_description: 'Road Cleaning - Street 20', long_project_description: 'Road Cleaning - Street 12,Road Cleaning - Street 12,Road Cleaning - Street 12,Road Cleaning - Street 12 Road Cleaning - Street 12,Road Cleaning - Street 12,Road Cleaning - Street 12,Road Cleaning - Street 12 Road Cleaning - Street 12,Road Cleaning - Street 12,Road Cleaning - Street 12,Road Cleaning - Street 12 Road Cleaning - Street 12,Road Cleaning - Street 12,Road Cleaning - Street 12,Road Cleaning - Street 12 Road Cleaning - Street 12,Road Cleaning - Street 12,Road Cleaning - Street 12,Road Cleaning - Street 12 Road Cleaning - Street 12,Road Cleaning - Street 12,Road Cleaning - Street 12,Road Cleaning - Street 12 Road Cleaning - Street 12,Road Cleaning - Street 12,Road Cleaning - Street 12,Road Cleaning - Street 12 Road Cleaning - Street 12,Road Cleaning - Street 12,Road Cleaning - Street 12,Road Cleaning - Street 12 Road Cleaning - Street 12,Road Cleaning - Street 12,Road Cleaning - Street 12,Road Cleaning - Street 12 Road Cleaning - Street 12,Road Cleaning - Street 12,Road Cleaning - Street 12,Road Cleaning - Street 12 Road Cleaning - Street 12,Road Cleaning - Street 12,Road Cleaning - Street 12,Road Cleaning - Street 12 Road Cleaning - Street 12,Road Cleaning - Street 12,Road Cleaning - Street 12,Road Cleaning - Street 12', assigned_to: 'John Doe', project_start_date: '2025-03-01', project_end_date: '2025-03-10', completion_percentage: 10, contractor_phone: '+919876543210' },
-  { project_Id: 'P0014', project_description: 'Drainage Maintenance', long_project_description: 'Road Cleaning - Street 12,Road Cleaning - Street 12,Road Cleaning - Street 12', assigned_to: 'John Doe', project_start_date: '2025-03-05', project_end_date: '2025-03-15', completion_percentage: 100, contractor_phone: '+919876543211' },
-  { project_Id: 'P0015', project_description: 'Road Paving - Street 15', long_project_description: 'Road Cleaning - Street 12,Road Cleaning - Street 12,Road Cleaning - Street 12', assigned_to: 'Jane Smith', project_start_date: '2025-03-03', project_end_date: '2025-03-14', completion_percentage: 100, contractor_phone: '+919876543212' },
-  { project_Id: 'P0016', project_description: 'Bridge Repair', long_project_description: 'Road Cleaning - Street 12,Road Cleaning - Street 12', assigned_to: 'Jane Smith', project_start_date: '2025-03-10', project_end_date: '2025-03-20', completion_percentage: 100, contractor_phone: '+919876543213' },
+  {
+    project_Id: '1',
+    project_description: 'Project A',
+    long_project_description: 'A long description of Project A.',
+    assigned_to: 'John Doe',
+    project_start_date: '2025-01-01',
+    project_end_date: '2025-02-01',
+    completion_percentage: 75,
+    contractor_phone: '1234567890'
+  },
+  {
+    project_Id: '2',
+    project_description: 'Project B',
+    long_project_description: 'A long description of Project B.',
+    assigned_to: 'Jane Smith',
+    project_start_date: '2025-02-01',
+    project_end_date: '2025-03-01',
+    completion_percentage: 95,
+    contractor_phone: '0987654321'
+  },
+  {
+    project_Id: '3',
+    project_description: 'Project B',
+    long_project_description: 'A long description of Project B.',
+    assigned_to: 'Jane Smith',
+    project_start_date: '2025-02-01',
+    project_end_date: '2025-03-01',
+    completion_percentage: 5,
+    contractor_phone: '0987654321'
+  },
+  {
+    project_Id: '4',
+    project_description: 'Project B',
+    long_project_description: 'A long description of Project B.',
+    assigned_to: 'Jane Smith',
+    project_start_date: '2025-02-01',
+    project_end_date: '2025-03-01',
+    completion_percentage: 50,
+    contractor_phone: '0987654321'
+  },
+  {
+    project_Id: '5',
+    project_description: 'Project B',
+    long_project_description: 'A long description of Project B.',
+    assigned_to: 'Jane Smith',
+    project_start_date: '2025-02-01',
+    project_end_date: '2025-03-01',
+    completion_percentage: 75,
+    contractor_phone: '0987654321'
+  },
+  {
+    project_Id: '6',
+    project_description: 'Project B',
+    long_project_description: 'A long description of Project B.',
+    assigned_to: 'Jane Smith',
+    project_start_date: '2025-02-01',
+    project_end_date: '2025-03-01',
+    completion_percentage: 60,
+    contractor_phone: '0987654321'
+  },
+  // Add more data as needed
 ];
 
 // Function to categorize completion percentages
 const getStatusCategory = (percentage: number) => {
   if (percentage < 85) return 'red';     // Red
-  if (percentage < 95) return 'amber';   // Amber
+  if (percentage < 99) return 'amber';   // Amber
   return 'green';                        // Green
 };
 
 // Function to get the color based on status category
 const getStatusColor = (percentage: number) => {
   const category = getStatusCategory(percentage);
-  if (category === 'red') return 'red';
-  if (category === 'amber') return 'orange';
-  return 'green';
+  if (category === 'red') return '#e74c3c';  // Red
+  if (category === 'amber') return '#f39c12';  // Amber
+  return '#2ecc71';  // Green
 };
 
 const WorkerActiveWorkScreen = () => {
   const navigation = useNavigation<WorkerActiveWorkScreenNavigationProp>();
   const [modalVisible, setModalVisible] = useState(false);
-  const [selectedProject, setSelectedProject] = useState<Project | null>(null); // Type for selectedProject
-
-
+  const [selectedProject, setSelectedProject] = useState<Project | null>(null);
 
   // Sort the projectData based on completion percentage
   const sortedProjectData = [...projectData]
-  .filter(project => project.completion_percentage < 100) // Exclude 100% complete projects
-  .sort((a, b) => {
-    const categoryA = getStatusCategory(a.completion_percentage);
-    const categoryB = getStatusCategory(b.completion_percentage);
+    .filter(project => project.completion_percentage < 100)
+    .sort((a, b) => {
+      const categoryA = getStatusCategory(a.completion_percentage);
+      const categoryB = getStatusCategory(b.completion_percentage);
 
-    // Sort first by status category (red -> amber)
-    if (categoryA === categoryB) {
-      return b.completion_percentage - a.completion_percentage;  // If same category, sort by completion percentage
-    }
-    return categoryA === 'red' ? -1 : categoryA === 'amber' ? -1 : 1;
-  });
+      // Sort first by status category (red -> amber)
+      if (categoryA === categoryB) {
+        return b.completion_percentage - a.completion_percentage;  // If same category, sort by completion percentage
+      }
+      return categoryA === 'red' ? -1 : categoryA === 'amber' ? -1 : 1;
+    });
 
   const renderItem = ({ item }: { item: Project }) => (
     <TouchableOpacity
@@ -90,14 +131,12 @@ const WorkerActiveWorkScreen = () => {
         setModalVisible(true);
       }}
     >
-
-
       <Text style={styles.title}>{item.project_description}</Text>
-      <Text>Project ID: {item.project_Id}</Text>
-      <Text>Assigned To: {item.assigned_to}</Text>
-      <Text>Start Date: {item.project_start_date}</Text>
-      <Text>End Date: {item.project_end_date}</Text>
-      {/* Update Status Button - Visible only for Red and Amber projects */}
+      <Text style={styles.projectDetail}>Project ID: {item.project_Id}</Text>
+      <Text style={styles.projectDetail}>Assigned To: {item.assigned_to}</Text>
+      <Text style={styles.projectDetail}>Start Date: {item.project_start_date}</Text>
+      <Text style={styles.projectDetail}>End Date: {item.project_end_date}</Text>
+
       {getStatusCategory(item.completion_percentage) !== 'green' && (
         <TouchableOpacity
           style={styles.updateStatusButton}
@@ -107,6 +146,7 @@ const WorkerActiveWorkScreen = () => {
           <Text style={styles.buttonText}>Update Status</Text>
         </TouchableOpacity>
       )}
+
       <View style={[styles.status, { backgroundColor: getStatusColor(item.completion_percentage) }]}>
         <Text style={styles.statusText}>{item.completion_percentage}% Completed</Text>
       </View>
@@ -114,35 +154,38 @@ const WorkerActiveWorkScreen = () => {
   );
 
   return (
-    <View style={{ flex: 1 }}>
-      <FlatList
-        data={sortedProjectData} // Use sorted project data
-        renderItem={renderItem}
-        keyExtractor={(item) => item.project_Id}
-        contentContainerStyle={styles.listContainer}
-      />
+    <View style={styles.container}>
+      {sortedProjectData.length > 0 ? (
+        <FlatList
+          data={sortedProjectData}
+          renderItem={renderItem}
+          keyExtractor={(item) => item.project_Id}
+          contentContainerStyle={styles.listContainer}
+          ListEmptyComponent={<Text>No projects available.</Text>}
+        />
+      ) : (
+        <Text style={styles.noDataText}>No active projects available.</Text>
+      )}
 
       {/* Modal for detailed view */}
       <Modal
         visible={modalVisible}
         transparent={true}
         animationType="slide"
-        onRequestClose={() => setModalVisible(false)} // Close modal on back press
+        onRequestClose={() => setModalVisible(false)}
       >
         <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
           <View style={styles.modalContainer}>
             <View style={styles.modalContent}>
-              {/* Close Modal Button */}
               <TouchableOpacity
                 style={styles.closeButton}
-                onPress={() => setModalVisible(false)} // Close modal
+                onPress={() => setModalVisible(false)}
               >
                 <Icon name="times" size={24} color="#fff" />
               </TouchableOpacity>
 
               {selectedProject && (
                 <>
-                  {/* Scrollable Content */}
                   <ScrollView
                     style={styles.modalScrollView}
                     nestedScrollEnabled={true}
@@ -150,14 +193,13 @@ const WorkerActiveWorkScreen = () => {
                   >
                     <Text style={styles.modalTitle}>{selectedProject.project_description}</Text>
                     <Text style={styles.modalText}><Text style={styles.label}>Project ID:</Text> {selectedProject.project_Id}</Text>
-                    <Text style={styles.modalText}><Text style={styles.label}>Project Long Description:</Text> {selectedProject.long_project_description}</Text>
+                    <Text style={styles.modalText}><Text style={styles.label}>Long Description:</Text> {selectedProject.long_project_description}</Text>
                     <Text style={styles.modalText}><Text style={styles.label}>Assigned To:</Text> {selectedProject.assigned_to}</Text>
                     <Text style={styles.modalText}><Text style={styles.label}>Start Date:</Text> {selectedProject.project_start_date}</Text>
                     <Text style={styles.modalText}><Text style={styles.label}>End Date:</Text> {selectedProject.project_end_date}</Text>
                     <Text style={styles.modalText}><Text style={styles.label}>Completion:</Text> {selectedProject.completion_percentage}%</Text>
                   </ScrollView>
 
-                  {/* Buttons (Always Visible) */}
                   {selectedProject.completion_percentage === 100 && (
                     <TouchableOpacity
                       style={styles.paymentButton}
@@ -187,26 +229,18 @@ const WorkerActiveWorkScreen = () => {
           </View>
         </TouchableWithoutFeedback>
       </Modal>
-
     </View>
   );
 };
 
-
-
-
 const WorkerTabs = () => {
   return (
-    <Tab.Navigator
-      screenOptions={{
-        headerShown: true,
-      }}
-    >
+    <Tab.Navigator screenOptions={{ headerShown: true }}>
       <Tab.Screen
         name="Work Details"
         component={WorkerActiveWorkScreen}
         options={{
-          tabBarLabel: 'Go back', // Label for the tab
+          tabBarLabel: 'Go Back',
           tabBarButton: (props) => <CustomTabButton {...props} />
         }}
       />
@@ -214,129 +248,87 @@ const WorkerTabs = () => {
   );
 };
 
-// Custom Tab Button Component
 const CustomTabButton = (props: any) => {
   const navigation = useNavigation<WorkerTabsNavigationProp>();
-
   return (
     <TouchableOpacity
       style={styles.goBackButton}
-      onPress={() => navigation.goBack()} // Go back action
+      onPress={() => navigation.goBack()}
     >
       <Text style={styles.goBackText}>Go Back</Text>
     </TouchableOpacity>
   );
 };
 
-const App = () => {
-  return (
-    <WorkerTabs />
-  );
-};
+const App = () => <WorkerTabs />;
 
 // 🎨 Styles
 const styles = StyleSheet.create({
+  container: { flex: 1, backgroundColor: '#f3f3f3' },
   listContainer: { paddingBottom: 50, paddingHorizontal: 15 },
-  card: { backgroundColor: '#f9f9f9', padding: 20, borderRadius: 20, marginBottom: 18, elevation: 9 },
-  title: { fontSize: 18, fontWeight: 'bold', marginBottom: 10 },
+  card: { 
+    backgroundColor: '#fff', 
+    padding: 20, 
+    borderRadius: 12, 
+    marginBottom: 18, 
+    elevation: 8, 
+    shadowColor: '#000', 
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.15, 
+    shadowRadius: 8 
+  },
+  title: { fontSize: 18, fontWeight: 'bold', marginBottom: 8 },
+  projectDetail: { fontSize: 14, color: '#7f8c8d', marginBottom: 4 },
   status: { padding: 10, borderRadius: 5, marginVertical: 10, alignItems: 'center' },
   statusText: { color: '#fff', fontWeight: 'bold' },
-  modalContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)', // Semi-transparent background
-  },
-  modalContent: {
-    backgroundColor: '#fff',
-    borderRadius: 20,
-    padding: 20,
-    width: '80%',
-    elevation: 10,
-  },
-  closeButton: {
-    position: 'absolute',
-    top: 10,
-    right: 10,
-    zIndex: 1,
-  },
-  modalDetails: {
-    marginTop: 40,
-  },
+  modalContainer: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(0, 0, 0, 0.5)' },
+  modalContent: { backgroundColor: '#fff', borderRadius: 20, padding: 20, width: '80%', elevation: 10 },
+  closeButton: { position: 'absolute', top: 10, right: 10, zIndex: 1 },
   modalTitle: { fontSize: 22, fontWeight: 'bold', marginBottom: 10 },
   modalText: { fontSize: 16, marginBottom: 8 },
+  label: { fontWeight: 'bold', fontSize: 16, marginBottom: 5 },
   callButton: {
-    backgroundColor: '#28a745',
-    padding: 12,
-    borderRadius: 5,
-    alignItems: 'center',
-    flexDirection: 'row',
-    justifyContent: 'center',
-    marginTop: 20,
-  },
-  buttonText: {
-    color: '#fff',
-    fontWeight: 'bold',
-    marginLeft: 10,
+    backgroundColor: '#28a745', padding: 12, borderRadius: 5, alignItems: 'center', flexDirection: 'row', justifyContent: 'center', marginTop: 20
   },
   paymentButton: {
-    backgroundColor: '#28a745',
-    padding: 12,
-    borderRadius: 5,
-    alignItems: 'center',
-    flexDirection: 'row',
-    justifyContent: 'center',
-    marginTop: 20,
+    backgroundColor: '#007bff', padding: 12, borderRadius: 5, alignItems: 'center', flexDirection: 'row', justifyContent: 'center', marginTop: 20
   },
-  updateStatusButton: {
-    backgroundColor: 'rgb(95, 95, 95)', // Amber color for visibility
-    padding: 12,
-    borderRadius: 5,
-    alignItems: 'center',
-    flexDirection: 'row',
-    justifyContent: 'center',
-    marginTop: 20,
-  },
-  backButton: {
-    marginTop: 15,
-    padding: 10,
-    alignItems: "center",
-  },
-  backButtonText: {
-    color: "#000",
-    fontSize: 16,
-    fontWeight: "bold",
-  },
-  fabButton: {
-    position: 'absolute',
-    bottom: 10,
-    left: '50%',
-    transform: [{ translateX: -30 }], // Adjust the button to the center horizontally
-    backgroundColor: '#28a745', // Green color for the button
-    padding: 15,
-    borderRadius: 50,
-    elevation: 5, // Add shadow effect to make the button float
-  },
+  backButton: { marginTop: 15, alignSelf: 'center', paddingVertical: 10, paddingHorizontal: 25, backgroundColor: '#ccc', borderRadius: 10 },
+  backButtonText: { fontSize: 18, fontWeight: 'bold' },
+  buttonText: { color: '#fff', fontSize: 14, fontWeight: 'bold', marginLeft: 10 },
   goBackButton: {
-    backgroundColor: '#000', // Green background for the button
-    padding: 13,
-    borderRadius: 15,
-    marginBottom: -6,
-    marginTop: 6,
-    marginLeft: 90,
-    marginRight: 90,
-    alignItems: 'center',
-    justifyContent: 'center',
+    paddingVertical: 12, 
+    paddingHorizontal: 20, 
+    backgroundColor: '#3498db', 
+    borderRadius: 25, 
+    marginBottom: 1, 
+    marginTop: 1,
+    alignItems: 'center', 
+    justifyContent: 'center', 
+    elevation: 5, // Slight shadow for better emphasis
   },
   goBackText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: 'bold',
+    color: '#fff', 
+    fontWeight: 'bold', 
+    fontSize: 16, 
+    textAlign: 'center', 
   },
-  modalScrollView: {
-    maxHeight: 300, // Set a fixed height for the scroll view
+  updateStatusButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#FF9800',
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    borderRadius: 25,
+    marginVertical: 10,
+    justifyContent: 'center',
+    shadowColor: '#000',
+    shadowOpacity: 0.1,
+    shadowRadius: 5,
+    shadowOffset: { width: 0, height: 2 }
   },
-  label: { fontWeight: 'bold', fontSize: 16, marginBottom: 5 },
+  modalScrollView: { maxHeight: 400 },
+  noDataText: { textAlign: 'center', fontSize: 18, marginTop: 20 },
 });
 
 export default App;
