@@ -85,20 +85,6 @@ const WorkerHomeScreen = () => {
           }}
         />
         <Tab.Screen
-          name="Post"
-          component={Post}
-          options={{
-            tabBarIcon: () => (
-              <Icon
-                name="plus"
-                size={30}
-                color="#fff"
-              />
-            ),
-            tabBarButton: (props) => <CustomTabBarButton {...props} onPress={() => setModalVisible(true)} />,
-          }}
-        />
-        <Tab.Screen
           name="HelpContact"
           component={HelpContact}
           options={{
@@ -152,7 +138,7 @@ const WorkerHomeScreen = () => {
               <Text style={styles.submitButtonText}>Submit</Text>
             </TouchableOpacity>
 
-            {/* Close Button (Same size as Submit button, color black) */}
+            {/* Close Button */}
             <TouchableOpacity
               style={styles.backButton}
               onPress={() => setModalVisible(false)}>
@@ -161,6 +147,14 @@ const WorkerHomeScreen = () => {
           </View>
         </View>
       </Modal>
+
+      {/* Floating Plus Icon */}
+      <TouchableOpacity
+        style={styles.floatingButton}
+        onPress={() => setModalVisible(true)} // Open the modal when pressed
+      >
+        <Icon name="plus" size={30} color="#fff" />
+      </TouchableOpacity>
     </>
   );
 };
@@ -264,6 +258,18 @@ const styles = StyleSheet.create({
     color: "#000",
     fontSize: 16,
     fontWeight: "bold",
+  },
+
+  // Floating Button Styles
+  floatingButton: {
+    position: "absolute",
+    bottom: 115,
+    right: 30,
+    backgroundColor: "#000",
+    borderRadius: 30,
+    padding: 20,
+    elevation: 10,
+    zIndex: 999,
   },
 });
 
