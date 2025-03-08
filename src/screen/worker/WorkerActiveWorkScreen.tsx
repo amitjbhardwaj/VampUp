@@ -299,7 +299,7 @@ const styles = StyleSheet.create({
   goBackButton: {
     paddingVertical: 12, 
     paddingHorizontal: 20, 
-    backgroundColor: '#3498db', 
+    backgroundColor: '#000', 
     borderRadius: 25, 
     marginBottom: 1, 
     marginTop: 1,
@@ -316,7 +316,7 @@ const styles = StyleSheet.create({
   updateStatusButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#FF9800',
+    backgroundColor: '#000',
     paddingVertical: 12,
     paddingHorizontal: 20,
     borderRadius: 25,
