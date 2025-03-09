@@ -7,7 +7,7 @@
     "project_start_date": "2025-01-01",
     "project_end_date": "2025-12-31",
     "contractor_phone": "1234567890",
-    "completion_percentage": 65
+    "completion_percentage": 30
   },
   {
     "project_Id": "2",
@@ -97,6 +97,6 @@
     "project_start_date": "2025-03-01",
     "project_end_date": "2025-08-15",
     "contractor_phone": "1122334455",
-    "completion_percentage": 90
+    "completion_percentage": 100
   }
 ]

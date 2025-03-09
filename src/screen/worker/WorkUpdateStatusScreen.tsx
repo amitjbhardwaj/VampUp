@@ -7,7 +7,7 @@ import { RootStackParamList } from "../../RootNavigator";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 
-type WorkUpdateStatusScreenRouteProp = RouteProp<RootStackParamList, 'WorkUpdateStatus'>;
+type WorkUpdateStatusScreenRouteProp = RouteProp<RootStackParamList, 'WorkUpdateStatusScreen'>;
 type WorkUpdateStatusScreenNavigationProp = NavigationProp<RootStackParamList>;
 
 
@@ -70,9 +70,7 @@ const WorkUpdateStatusScreen = () => {
         } else {
             ToastAndroid.show('Navigating back to Active Work screen', ToastAndroid.SHORT);
             // Pass updated completion to WorkerActiveWorkScreen
-            navigation.navigate("WorkerActiveWorkScreen", {
-                updatedCompletion: updatedProject.completion_percentage,
-            });
+            navigation.navigate("WorkerActiveWorkScreen");
         }
     };
 

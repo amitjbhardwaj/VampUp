@@ -10,14 +10,12 @@ import RegistrationDoneScreen from "./screen/RegistrationDoneScreen";
 import RegistrationFailedScreen from "./screen/RegistrationFailedScreen";
 import PasswordUpdatedScreen from "./screen/PasswordUpdatedScreen";
 import WorkerHomeScreen from "./screen/WorkerHomeScreen";
-import WorkerActiveWorkScreen, { Project } from "./screen/worker/WorkerActiveWorkScreen";
 import WorkerWorkHistoryScreen from "./screen/worker/WorkerWorkHistoryScreen";
 import WorkerComplaintHistoryScreen from "./screen/worker/WorkerComplaintHistoryScreen";
-import AppNavigator from "./screen/worker/WorkerActiveWorkScreen";
 import WorkUpdateStatusScreen from "./screen/worker/WorkUpdateStatusScreen";
-import WorkerPaymentScreen from "./screen/worker/WorkerPaymentScreen";
 import WorkerFullPaymentHistoryScreen from "./screen/worker/WorkerFullPaymentHistoryScreen";
 import Home from "./tabs/Home";
+import WorkerActiveWorkScreen from "./screen/worker/WorkerActiveWorkScreen";
 
 export type RootStackParamList = {
     Login: undefined;
@@ -29,17 +27,13 @@ export type RootStackParamList = {
     RegistrationFailed: undefined;
     PasswordUpdatedScreen: undefined;
     WorkerHomeScreen: undefined;
-    WorkerActiveWorkScreen: { 
-        updatedCompletion?: number;
-        project_Id?: string;
-     };
-    WorkerComplaintHistoryScreen: undefined;
-    AppNavigator : undefined;
-    WorkUpdateStatus: { project: Project };
+    WorkerComplaintHistoryScreen: { updatedRequests: any[] };
+    WorkerActiveWorkScreen:  undefined;
     WorkerPayment: { project: any };
     WorkerFullPaymentHistoryScreen : { project: any };
     WorkerWorkHistoryScreen: undefined;
-    Home : undefined;
+    Home: { projectIds: string[] };
+    WorkUpdateStatusScreen : { project: any };
 };
 
 const Stack = createStackNavigator<RootStackParamList>();
@@ -57,14 +51,12 @@ const RootNavigator: React.FC = () => {
                 <Stack.Screen name="RegistrationFailed" component={RegistrationFailedScreen} />
                 <Stack.Screen name="PasswordUpdatedScreen" component={PasswordUpdatedScreen} />
                 <Stack.Screen name="WorkerHomeScreen" component={WorkerHomeScreen} />
-                <Stack.Screen name="WorkerActiveWorkScreen" component={WorkerActiveWorkScreen} />
                 <Stack.Screen name="WorkerWorkHistoryScreen" component={WorkerWorkHistoryScreen} />
                 <Stack.Screen name="WorkerComplaintHistoryScreen" component={WorkerComplaintHistoryScreen} />
-                <Stack.Screen name="AppNavigator" component={AppNavigator} />
-                <Stack.Screen name="WorkerPayment" component={WorkerPaymentScreen} /> 
-                <Stack.Screen name="WorkUpdateStatus" component={WorkUpdateStatusScreen} /> 
+                <Stack.Screen name="WorkUpdateStatusScreen" component={WorkUpdateStatusScreen} /> 
                 <Stack.Screen name="WorkerFullPaymentHistoryScreen" component={WorkerFullPaymentHistoryScreen} />
                 <Stack.Screen name="Home" component={Home} /> 
+                <Stack.Screen name="WorkerActiveWorkScreen" component={WorkerActiveWorkScreen}/>
             </Stack.Navigator>
         </NavigationContainer>
     );
