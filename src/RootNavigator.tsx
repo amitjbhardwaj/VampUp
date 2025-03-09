@@ -29,7 +29,10 @@ export type RootStackParamList = {
     RegistrationFailed: undefined;
     PasswordUpdatedScreen: undefined;
     WorkerHomeScreen: undefined;
-    WorkerActiveWorkScreen: undefined;
+    WorkerActiveWorkScreen: { 
+        updatedCompletion?: number;
+        project_Id?: string;
+     };
     WorkerComplaintHistoryScreen: undefined;
     AppNavigator : undefined;
     WorkUpdateStatus: { project: Project };

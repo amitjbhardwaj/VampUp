@@ -44,7 +44,8 @@ const WorkUpdateStatusScreen = () => {
 
         if (updatedProject.completion_percentage === 100) {
             try {
-                // Retrieve existing completed projects
+                // Retrieve existin
+                // \g completed projects
                 const storedProjects = await AsyncStorage.getItem("completedProjects");
                 const completedProjects = storedProjects ? JSON.parse(storedProjects) : [];
 
@@ -68,11 +69,14 @@ const WorkUpdateStatusScreen = () => {
             }
         } else {
             ToastAndroid.show('Navigating back to Active Work screen', ToastAndroid.SHORT);
-            navigation.navigate("WorkerActiveWorkScreen");
+            // Pass updated completion to WorkerActiveWorkScreen
+            navigation.navigate("WorkerActiveWorkScreen", {
+                updatedCompletion: updatedProject.completion_percentage,
+            });
         }
     };
 
-    
+
     // Helper function to determine the status
     function getStatus(completion: number) {
         if (completion === 100) {

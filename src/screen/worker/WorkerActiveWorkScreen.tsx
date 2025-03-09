@@ -1,18 +1,20 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet, FlatList, TouchableOpacity, Linking, Modal, TouchableWithoutFeedback, Keyboard, ScrollView } from 'react-native';
-import { NavigationProp, useNavigation } from "@react-navigation/native";
+import { NavigationProp, RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { RootStackParamList } from "../../RootNavigator";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+
+import project_data from "../../assets/projects.json";
 
 type WorkerActiveWorkScreenNavigationProp = NavigationProp<RootStackParamList>;
 type WorkerTabsNavigationProp = any;
+type WorkerActiveWorkScreenRouteProp = RouteProp<RootStackParamList, 'WorkerActiveWorkScreen'>;
+
 
 const Tab = createBottomTabNavigator();
-
-interface WorkerTabsProps {
-  navigation: WorkerTabsNavigationProp;
-}
 
 export interface Project {
   project_Id: string;
@@ -24,70 +26,6 @@ export interface Project {
   completion_percentage: number;
   contractor_phone: string;
 }
-
-const projectData: Project[] = [
-  {
-    project_Id: '1',
-    project_description: 'Project A',
-    long_project_description: 'A long description of Project A.',
-    assigned_to: 'John Doe',
-    project_start_date: '2025-01-01',
-    project_end_date: '2025-02-01',
-    completion_percentage: 75,
-    contractor_phone: '1234567890'
-  },
-  {
-    project_Id: '2',
-    project_description: 'Project B',
-    long_project_description: 'A long description of Project B.',
-    assigned_to: 'Jane Smith',
-    project_start_date: '2025-02-01',
-    project_end_date: '2025-03-01',
-    completion_percentage: 95,
-    contractor_phone: '0987654321'
-  },
-  {
-    project_Id: '3',
-    project_description: 'Project B',
-    long_project_description: 'A long description of Project B.',
-    assigned_to: 'Jane Smith',
-    project_start_date: '2025-02-01',
-    project_end_date: '2025-03-01',
-    completion_percentage: 5,
-    contractor_phone: '0987654321'
-  },
-  {
-    project_Id: '4',
-    project_description: 'Project B',
-    long_project_description: 'A long description of Project B.',
-    assigned_to: 'Jane Smith',
-    project_start_date: '2025-02-01',
-    project_end_date: '2025-03-01',
-    completion_percentage: 50,
-    contractor_phone: '0987654321'
-  },
-  {
-    project_Id: '5',
-    project_description: 'Project B',
-    long_project_description: 'A long description of Project B.',
-    assigned_to: 'Jane Smith',
-    project_start_date: '2025-02-01',
-    project_end_date: '2025-03-01',
-    completion_percentage: 75,
-    contractor_phone: '0987654321'
-  },
-  {
-    project_Id: '6',
-    project_description: 'Project B',
-    long_project_description: 'A long description of Project B.',
-    assigned_to: 'Jane Smith',
-    project_start_date: '2025-02-01',
-    project_end_date: '2025-03-01',
-    completion_percentage: 60,
-    contractor_phone: '0987654321'
-  },
-  // Add more data as needed
-];
 
 // Function to categorize completion percentages
 const getStatusCategory = (percentage: number) => {
@@ -106,8 +44,58 @@ const getStatusColor = (percentage: number) => {
 
 const WorkerActiveWorkScreen = () => {
   const navigation = useNavigation<WorkerActiveWorkScreenNavigationProp>();
+  const route = useRoute<WorkerActiveWorkScreenRouteProp>();
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
+  const [projectData, setProjectData] = useState<Project[]>([]);
+  const [completion, setCompletion] = useState<number>(0); // default value is 0 or the last known value
+
+  // Load project_data initially
+  useEffect(() => {
+    // Load data from AsyncStorage on initial render
+    AsyncStorage.getItem('project_data')
+      .then((storedData) => {
+        if (storedData) {
+          setProjectData(JSON.parse(storedData)); // Set the state with stored data
+        } else {
+          // Fallback to local project_data if nothing is stored
+          setProjectData(project_data);
+        }
+      })
+      .catch((error) => {
+        console.error('Error loading project data from AsyncStorage', error);
+      });
+  }, []);
+
+  // In your useEffect, after updating the project data:
+  useEffect(() => {
+    if (route.params?.updatedCompletion && route.params?.project_Id) {
+      const updatedProjectData = projectData.map((project) => {
+        if (project.project_Id === route.params.project_Id) {
+          // Convert to number, if it's undefined or any other type, it'll default to 0
+         const updatedCompletion = Number(route.params?.updatedCompletion)
+          return { 
+            ...project, 
+            completion_percentage: updatedCompletion
+          };
+        }
+        return project;
+      });
+  
+      // Update the state
+      setProjectData(updatedProjectData);
+  
+      // Save the updated data to AsyncStorage
+      AsyncStorage.setItem('project_data', JSON.stringify(updatedProjectData))
+        .then(() => {
+          console.log('Project data updated in AsyncStorage');
+        })
+        .catch((error) => {
+          console.error('Error updating project data in AsyncStorage', error);
+        });
+    }
+  }, [route.params?.updatedCompletion, route.params?.project_Id]);
+  
 
   // Sort the projectData based on completion percentage
   const sortedProjectData = [...projectData]
@@ -266,16 +254,16 @@ const App = () => <WorkerTabs />;
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#f3f3f3' },
   listContainer: { paddingBottom: 50, paddingHorizontal: 15 },
-  card: { 
-    backgroundColor: '#fff', 
-    padding: 20, 
-    borderRadius: 12, 
-    marginBottom: 18, 
-    elevation: 8, 
-    shadowColor: '#000', 
+  card: {
+    backgroundColor: '#fff',
+    padding: 20,
+    borderRadius: 12,
+    marginBottom: 18,
+    elevation: 8,
+    shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.15, 
-    shadowRadius: 8 
+    shadowOpacity: 0.15,
+    shadowRadius: 8
   },
   title: { fontSize: 18, fontWeight: 'bold', marginBottom: 8 },
   projectDetail: { fontSize: 14, color: '#7f8c8d', marginBottom: 4 },
@@ -297,26 +285,26 @@ const styles = StyleSheet.create({
   backButtonText: { fontSize: 18, fontWeight: 'bold' },
   buttonText: { color: '#fff', fontSize: 14, fontWeight: 'bold', marginLeft: 10 },
   goBackButton: {
-    paddingVertical: 12, 
-    paddingHorizontal: 20, 
-    backgroundColor: '#000', 
-    borderRadius: 25, 
-    marginBottom: 1, 
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+    backgroundColor: '#000',
+    borderRadius: 25,
+    marginBottom: 1,
     marginTop: 1,
-    alignItems: 'center', 
-    justifyContent: 'center', 
+    alignItems: 'center',
+    justifyContent: 'center',
     elevation: 5, // Slight shadow for better emphasis
   },
   goBackText: {
-    color: '#fff', 
-    fontWeight: 'bold', 
-    fontSize: 16, 
-    textAlign: 'center', 
+    color: '#fff',
+    fontWeight: 'bold',
+    fontSize: 16,
+    textAlign: 'center',
   },
   updateStatusButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#000',
+    backgroundColor: '#007BFF',
     paddingVertical: 12,
     paddingHorizontal: 20,
     borderRadius: 25,
