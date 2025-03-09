@@ -3,15 +3,50 @@ import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Button, Modal, Te
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import { RootStackParamList } from "../RootNavigator";
+import { Alert } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
 
 type HomeNavigationProp = NavigationProp<RootStackParamList>;
 
 const Home = () => {
    const navigation = useNavigation<HomeNavigationProp>(); 
    const [modalVisible, setModalVisible] = useState(false);
+   const [projectId, setProjectId] = useState("");
    const [subject, setSubject] = useState("");
    const [description, setDescription] = useState("");
- 
+   const [submittedRequests, setSubmittedRequests] = useState<{ projectId: string, subject: string, description: string }[]>([]);
+
+
+   const handleSubmit = async () => {
+    const newRequest = { projectId, subject, description };
+  
+    // Load existing requests from AsyncStorage
+    const storedRequests = await AsyncStorage.getItem("submittedRequests");
+    const parsedRequests = storedRequests ? JSON.parse(storedRequests) : [];
+  
+    // Check if the request already exists
+    const isDuplicate = parsedRequests.some(
+      (req: any) =>
+        req.projectId === newRequest.projectId &&
+        req.subject === newRequest.subject &&
+        req.description === newRequest.description
+    );
+  
+    if (isDuplicate) {
+      Alert.alert("Duplicate Request", "Same request has already been submitted!!");
+      return;
+    }
+  
+    // Save the new request list
+    const updatedRequests = [...parsedRequests, newRequest];
+    await AsyncStorage.setItem("submittedRequests", JSON.stringify(updatedRequests));
+  
+    // Close the modal and navigate
+    setModalVisible(false);
+    navigation.navigate({ name: "WorkerComplaintHistoryScreen" } as never);
+  };
+
    return (
        <View style={styles.screen}>
          <View style={styles.iconContainer}>
@@ -67,6 +102,12 @@ const Home = () => {
                <Text style={styles.modalHeader}>Request/Complaint</Text>
                <TextInput
                  style={styles.input}
+                 placeholder="ProjectId"
+                 value={projectId}
+                 onChangeText={setProjectId}
+               />
+               <TextInput
+                 style={styles.input}
                  placeholder="Subject"
                  value={subject}
                  onChangeText={setSubject}
@@ -79,7 +120,7 @@ const Home = () => {
                  multiline
                />
                <View style={styles.buttonContainer}>
-                 <Button title="Submit" onPress={() => setModalVisible(false)} />
+                 <Button title="Submit" onPress={handleSubmit} />
                  <Button title="Back" onPress={() => setModalVisible(false)} color="black" />
                </View>
              </View>
