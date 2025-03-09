@@ -20,16 +20,6 @@ import Settings from "../tabs/Settings";
 
 const Tab = createBottomTabNavigator();
 
-const MyServicesScreen = () => (
-  <View style={styles.screen}><Text>My Services Screen</Text></View>
-);
-const HelpContactScreen = () => (
-  <View style={styles.screen}><Text>Help & Contact Screen</Text></View>
-);
-const SettingsScreen = () => (
-  <View style={styles.screen}><Text>Settings Screen</Text></View>
-);
-
 const WorkerHomeScreen = () => {
   return (
     <Tab.Navigator
