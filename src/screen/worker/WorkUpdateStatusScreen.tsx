@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { View, Text, StyleSheet, TouchableOpacity, TextInput, Modal } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, TextInput, Modal, ToastAndroid } from "react-native";
 import { useRoute, useNavigation, RouteProp, NavigationProp } from "@react-navigation/native";
 import Icon from "react-native-vector-icons/FontAwesome";
 import { Picker } from "@react-native-picker/picker";
@@ -61,13 +61,13 @@ const WorkUpdateStatusScreen = () => {
                     await AsyncStorage.setItem("completedProjects", JSON.stringify(updatedProjects));
                 }
 
-                //Alert.alert("Success", "Project marked as completed!");
+                ToastAndroid.show('Project marked as completed!', ToastAndroid.SHORT);
                 navigation.navigate("WorkerWorkHistoryScreen");
             } catch (error) {
-                //Alert.alert("Error", "Failed to save completed project");
+                ToastAndroid.show('Failed to save completed project', ToastAndroid.SHORT);
             }
         } else {
-            // Navigate back to Active Work screen for incomplete projects
+            ToastAndroid.show('Navigating back to Active Work screen', ToastAndroid.SHORT);
             navigation.navigate("WorkerActiveWorkScreen");
         }
     };
