@@ -26,48 +26,59 @@ const WorkerComplaintHistoryScreen = () => {
                     const requests = JSON.parse(storedRequests);
                     console.log("Stored requests:", requests); // Log data to inspect
                     setSubmittedRequests(requests);
-                    setFilteredRequests(requests);
+                    setFilteredRequests(requests); // Initialize filteredRequests
                 }
             } catch (error) {
                 console.error("Error loading submitted requests", error);
             }
         };
-    
+
         loadSubmittedRequests();
-    }, []);
+    }, []); // This effect runs only once when the component mounts
 
+    // This effect runs once after `submittedRequests` has been loaded to ensure complaintId is consistent
     useEffect(() => {
-        // Filter requests based on the search term
-        if (searchTerm) {
-            const filtered = submittedRequests.filter((request) => {
-                return (
-                    request.complaintId?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                    request.projectId?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                    request.subject?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                    request.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                    request.projectDescription?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                    request.projectStartDate?.toLowerCase().includes(searchTerm.toLowerCase())
+        if (submittedRequests.length > 0) {
+            const updateComplaintIdForRequests = async () => {
+                const updatedRequests = await Promise.all(
+                    submittedRequests.map(async (request) => {
+                        const complaintId = await generateOrRetrieveComplaintId(request.complaintId);
+                        return { ...request, complaintId };
+                    })
                 );
-            });
-            setFilteredRequests(filtered);
-        } else {
-            setFilteredRequests(submittedRequests);
-        }
-    }, [searchTerm, submittedRequests]);
+                // Update only if there's a change
+                setSubmittedRequests((prevRequests) => {
+                    if (JSON.stringify(prevRequests) !== JSON.stringify(updatedRequests)) {
+                        return updatedRequests;
+                    }
+                    return prevRequests; // Prevent unnecessary re-renders
+                });
+                setFilteredRequests(updatedRequests);
+            };
 
-    const generateComplaintId = (existingComplaintId?: string) => {
-        // If a complaint ID already exists, return it, otherwise generate a new one
+            updateComplaintIdForRequests();
+        }
+    }, [submittedRequests]); // This effect runs only when `submittedRequests` changes
+
+    const generateOrRetrieveComplaintId = async (existingComplaintId?: string) => {
         if (existingComplaintId) {
             return existingComplaintId;
         }
 
-        // Generate a random 6-digit number and prefix with 'KTL'
-        const randomNumber = Math.floor(100000 + Math.random() * 900000); // Generate a 6-digit number
-        return `KTL${randomNumber}`; // Prefix with "KTL"
+        // Check if ComplaintId is already stored
+        const storedComplaintId = await AsyncStorage.getItem("complaintId");
+        if (storedComplaintId) {
+            return storedComplaintId;
+        }
+
+        // If ComplaintId doesn't exist in AsyncStorage, generate a new one
+        const uniqueComplaintId = `CMP-${Date.now()}`; // Prefix with "CMP-" or any other identifier
+        await AsyncStorage.setItem("complaintId", uniqueComplaintId); // Save it to AsyncStorage for future retrieval
+        return uniqueComplaintId;
     };
 
     const requestDetails = (request: any) => [
-        { label: 'Complaint ID', value: generateComplaintId(request.complaintId) || 'N/A', icon: 'id-badge' },
+        { label: 'Complaint ID', value: request.complaintId || 'N/A', icon: 'id-badge' },
         { label: 'Project ID', value: request.projectId || 'N/A', icon: 'info-circle' },
         { label: 'Subject', value: request.subject || 'N/A', icon: 'info-circle' },
         { label: 'Description', value: request.description || 'N/A', icon: 'file-text' },
@@ -93,6 +104,25 @@ const WorkerComplaintHistoryScreen = () => {
             />
         </View>
     );
+
+    useEffect(() => {
+        // Filter requests based on the search term
+        if (searchTerm) {
+            const filtered = submittedRequests.filter((request) => {
+                return (
+                    request.complaintId?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                    request.projectId?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                    request.subject?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                    request.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                    request.projectDescription?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                    request.projectStartDate?.toLowerCase().includes(searchTerm.toLowerCase())
+                );
+            });
+            setFilteredRequests(filtered);
+        } else {
+            setFilteredRequests(submittedRequests);
+        }
+    }, [searchTerm, submittedRequests]); // This effect runs only when `searchTerm` or `submittedRequests` changes
 
     return (
         <View style={styles.container}>
@@ -154,18 +184,6 @@ const styles = StyleSheet.create({
         borderRadius: 5,
         paddingLeft: 10,
         marginBottom: 20,
-    },
-    callButton: {
-        backgroundColor: '#28a745',
-        padding: 10,
-        marginTop: 10,
-        borderRadius: 5,
-        alignItems: 'center',
-    },
-    callButtonText: {
-        color: '#fff',
-        fontSize: 16,
-        fontWeight: 'bold',
     },
 });
 
