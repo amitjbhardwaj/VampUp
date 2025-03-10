@@ -61,10 +61,6 @@ const WorkerComplaintHistoryScreen = () => {
                 <Icon name="pencil" size={20} color="#28a745" style={styles.icon} />
                 <Text style={styles.itemText}>Complaint: {item.complaintDescription}</Text>
             </View>
-            <View style={styles.row}>
-                <Icon name="phone" size={20} color="#28a745" style={styles.icon} />
-                <Text style={styles.itemText}>Phone: {item.phoneNumber}</Text>
-            </View>
         </View>
     );
 
@@ -77,6 +73,7 @@ const WorkerComplaintHistoryScreen = () => {
                 renderItem={renderItem}
                 ListEmptyComponent={<Text style={styles.emptyText}>No complaints found.</Text>}
             />
+
             <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
                 <Text style={styles.backButtonText}>Go Back</Text>
             </TouchableOpacity>
@@ -108,21 +105,17 @@ const styles = StyleSheet.create({
         marginTop: 20,
     },
     backButton: {
-        position: "absolute",
-        bottom: 10, // Adjusted this to keep some space from the bottom
-        left: 20,
-        right: 20,
         backgroundColor: "#000",
-        padding: 15,
-        borderRadius: 8,
+        padding: 13,
+        marginTop: 20,
         alignItems: "center",
-        marginBottom: 10, // Added some margin to avoid overlap
-    },
-    backButtonText: {
+        borderRadius: 10,
+      },
+      backButtonText: {
         color: "#fff",
         fontWeight: "bold",
         fontSize: 16,
-    },
+      },
 });
 
 

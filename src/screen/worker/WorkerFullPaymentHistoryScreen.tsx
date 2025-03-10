@@ -71,7 +71,7 @@ const WorkerFullPaymentHistoryScreen = () => {
                 renderItem={renderProjectCard}
                 ListEmptyComponent={<Text style={styles.emptyText}>No completed projects yet.</Text>}
             />
-
+            
             <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
                 <Text style={styles.backButtonText}>Go Back</Text>
             </TouchableOpacity>

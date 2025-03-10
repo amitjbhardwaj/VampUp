@@ -21,8 +21,8 @@ type WorkerRequestHistoryScreenNavigationProp = NavigationProp<RootStackParamLis
 
 const WorkerRequestHistoryScreen = () => {
     const [requests, setRequests] = useState<PaymentRequest[]>([]);
-        const navigation = useNavigation<WorkerRequestHistoryScreenNavigationProp>(); // Explicitly set the type here
-    
+    const navigation = useNavigation<WorkerRequestHistoryScreenNavigationProp>(); // Explicitly set the type here
+
 
     useEffect(() => {
         const fetchRequests = async () => {
@@ -111,14 +111,11 @@ const styles = StyleSheet.create({
         marginTop: 20,
     },
     backButton: {
-        position: "absolute",
-        bottom: 20,
-        left: 20,
-        right: 20,
         backgroundColor: "#000",
-        padding: 15,
-        borderRadius: 8,
+        padding: 13,
+        marginTop: 20,
         alignItems: "center",
+        borderRadius: 10,
     },
     backButtonText: {
         color: "#fff",
