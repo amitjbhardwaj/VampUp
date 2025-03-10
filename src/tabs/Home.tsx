@@ -21,6 +21,7 @@ const Home = () => {
     const [projectStartDate, setProjectStartDate] = useState("");
     const [projects, setProjects] = useState<any[]>([]);
     const [selectedProject, setSelectedProject] = useState<any>(null);
+    const [phone, setPhone] = useState("");
 
     useEffect(() => {
         loadProjects();
@@ -41,22 +42,22 @@ const Home = () => {
         }
     };
 
-    const handleProjectChange = (selectedId: string) => {
-        setProjectId(selectedId);
-        const selected = projects.find(project => project.project_Id === selectedId);
+    const handleProjectChange = (selectedDescription: string) => {
+        setProjectDescription(selectedDescription);
+        const selected = projects.find(project => project.project_description === selectedDescription);
         setSelectedProject(selected);
         if (selected) {
-            setProjectDescription(selected.project_description || "");
+            setProjectId(selected.project_Id || "");
             setLongProjectDescription(selected.long_project_description || "");
             setProjectStartDate(selected.project_start_date || "");
+            setPhone(selected.contractor_phone || "");
         }
     };
 
-    // In Home screen
     const handleSubmit = async () => {
         // Generate a unique Complaint ID (you can improve this as per your need)
         const complaintId = `CMP-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
-    
+        
         const newRequest = {
             complaintId,  // Add the unique Complaint ID here
             projectId,
@@ -65,45 +66,46 @@ const Home = () => {
             projectDescription,
             longProjectDescription,
             projectStartDate,
+            phone,
         };
-    
+        
         const storedRequests = await AsyncStorage.getItem("submittedRequests");
         const parsedRequests = storedRequests ? JSON.parse(storedRequests) : [];
-    
+        
         const isDuplicate = parsedRequests.some(
             (req: any) =>
                 req.projectId === newRequest.projectId &&
                 req.subject === newRequest.subject &&
                 req.complaintDescription === newRequest.complaintDescription
         );
-    
+        
         if (isDuplicate) {
             Alert.alert("Duplicate Request", "Same request has already been submitted!!");
             return;
         }
-    
-        const updatedRequests = [...parsedRequests, newRequest];
+        
+        const updatedRequests = [...parsedRequests, newRequest];  // Here you define updatedRequests
         await AsyncStorage.setItem("submittedRequests", JSON.stringify(updatedRequests));
-    
+        
         setModalVisible(false);
+        
         // Pass the updatedRequests to WorkerComplaintHistoryScreen
-        navigation.navigate("WorkerComplaintHistoryScreen", { updatedRequests });
+        navigation.navigate("WorkerComplaintHistoryScreen", { updatedRequests });  // Now, updatedRequests exists
     };
     
-
 
     return (
         <View style={styles.screen}>
             <View style={styles.iconContainer}>
                 <View style={styles.iconRow}>
                     <View style={styles.iconItem}>
-                        <TouchableOpacity onPress={() => navigation.navigate({ name: 'WorkerActiveWorkScreen' } as never)}>
+                        <TouchableOpacity onPress={() => navigation.navigate('WorkerActiveWorkScreen')}>
                             <Ionicons name="briefcase" size={50} color="#000" />
                         </TouchableOpacity>
                         <Text>Active Work</Text>
                     </View>
                     <View style={styles.iconItem}>
-                        <TouchableOpacity onPress={() => navigation.navigate({ name: 'WorkerWorkHistoryScreen' } as never)}>
+                        <TouchableOpacity onPress={() => navigation.navigate('WorkerWorkHistoryScreen')}>
                             <Ionicons name="time" size={50} color="#000" />
                         </TouchableOpacity>
                         <Text>Work History</Text>
@@ -111,21 +113,21 @@ const Home = () => {
                 </View>
                 <View style={styles.iconRow}>
                     <View style={styles.iconItem}>
-                        <TouchableOpacity onPress={() => navigation.navigate({ name: 'WorkerFullPaymentHistoryScreen' } as never)}>
+                        <TouchableOpacity onPress={() => navigation.navigate('WorkerFullPaymentHistoryScreen', { project: selectedProject })}>
                             <Ionicons name="card" size={50} color="#000" />
                         </TouchableOpacity>
                         <Text>Payment History</Text>
                     </View>
                     <View style={styles.iconItem}>
-                        <TouchableOpacity onPress={() => navigation.navigate({ name: 'WorkerComplaintHistoryScreen' } as never)}>
+                        <TouchableOpacity onPress={() => navigation.navigate({name : "WorkerComplaintHistoryScreen"} as never)}>;
                             <Ionicons name="chatbox" size={50} color="#000" />
                         </TouchableOpacity>
                         <Text>Complaint History</Text>
                     </View>
                 </View>
-                 <View style={styles.iconRow}>
+                <View style={styles.iconRow}>
                     <View style={[styles.iconItem, styles.lastRowIcon]}>
-                        <TouchableOpacity onPress={() => navigation.navigate({ name: 'WorkerRequestHistoryScreen' } as never)}>
+                        <TouchableOpacity onPress={() => navigation.navigate('WorkerRequestHistoryScreen')}>
                             <Ionicons name="document-text" size={50} color="#000" />
                         </TouchableOpacity>
                         <Text>Request History</Text>
@@ -152,16 +154,16 @@ const Home = () => {
                         <Text style={styles.modalHeader}>Complaints</Text>
 
                         <Picker
-                            selectedValue={projectId}
+                            selectedValue={projectDescription}
                             onValueChange={handleProjectChange}
                             style={styles.input}
                         >
-                            <Picker.Item label="Select Project ID" value="" />
+                            <Picker.Item label="Select Project Description" value="" />
                             {projects.map((project: any) => (
                                 <Picker.Item
                                     key={project.project_Id}
-                                    label={project.project_Id}
-                                    value={project.project_Id}
+                                    label={project.project_description}
+                                    value={project.project_description}
                                 />
                             ))}
                         </Picker>
@@ -170,14 +172,21 @@ const Home = () => {
                             <>
                                 <TextInput
                                     style={styles.input}
-                                    placeholder="Project Description"
-                                    value={projectDescription}
+                                    placeholder="Project ID"
+                                    value={projectId}
                                     editable={false}
                                 />
                                 <TextInput
                                     style={styles.textArea}
                                     placeholder="Long Project Description"
                                     value={longProjectDescription}
+                                    editable={false}
+                                    multiline
+                                />
+                                <TextInput
+                                    style={styles.input}
+                                    placeholder="Phone"
+                                    value={phone}
                                     editable={false}
                                     multiline
                                 />
@@ -214,7 +223,6 @@ const Home = () => {
         </View>
     );
 };
-
 
 const styles = StyleSheet.create({
     screen: {

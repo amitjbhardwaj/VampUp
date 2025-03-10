@@ -9,10 +9,11 @@ interface Complaint {
     complaintId: string;
     projectId: string;
     projectDescription: string;
+    longProjectDescription: string;
     subject: string;
     complaintDescription: string;
     projectStartDate: string;
-    phoneNumber: string;
+    phone: string;
 }
 
 type WorkerComplaintHistoryScreenNavigationProp = NavigationProp<RootStackParamList, 'WorkerComplaintHistoryScreen'>;
@@ -48,6 +49,10 @@ const WorkerComplaintHistoryScreen = () => {
             <View style={styles.row}>
                 <Icon name="info-circle" size={20} color="#28a745" style={styles.icon} />
                 <Text style={styles.itemText}>Project Description: {item.projectDescription}</Text>
+            </View>
+            <View style={styles.row}>
+                <Icon name="info-circle" size={20} color="#28a745" style={styles.icon} />
+                <Text style={styles.itemText}>Project Long Description: {item.longProjectDescription}</Text>
             </View>
             <View style={styles.row}>
                 <Icon name="calendar" size={20} color="#28a745" style={styles.icon} />
