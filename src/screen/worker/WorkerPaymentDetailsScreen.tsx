@@ -47,11 +47,11 @@ const WorkerPaymentDetailsScreen = () => {
   }
 
   const projectDetails = [
-    { label: 'Project ID', value: project.project_Id, icon: 'id-badge' },
-    { label: 'Project Description', value: project.long_project_description, icon: 'info-circle', multiline: true },
-    { label: 'Assigned To', value: project.assigned_to, icon: 'user' },
-    { label: 'Start Date', value: project.project_start_date, icon: 'calendar' },
-    { label: 'End Date', value: project.project_end_date, icon: 'calendar' },
+    { label: 'Project ID', value: project.project_Id, icon: 'badge' },
+    { label: 'Project Description', value: project.long_project_description, icon: 'info' }, // Updated to 'info' for correct icon
+    { label: 'Assigned To', value: project.assigned_to, icon: 'person' }, // 'user' icon changed to 'person'
+    { label: 'Start Date', value: project.project_start_date, icon: 'calendar-today' }, // 'calendar' updated to 'calendar-today'
+    { label: 'End Date', value: project.project_end_date, icon: 'calendar-today' }, // Same change for end date
     { label: 'Completion', value: `${project.completion_percentage}%`, icon: 'check-circle' },
     { label: 'Payment Status', value: paymentStatus, icon: 'credit-card' }
   ];
@@ -72,10 +72,10 @@ const WorkerPaymentDetailsScreen = () => {
         keyExtractor={(item) => item.label}
         renderItem={({ item }) => (
           <View style={styles.card}>
-            <Icon name={item.icon} size={20} color="#28a745" style={styles.icon} />
+            <Icon name={item.icon} size={25} color="#28a745" style={styles.icon} />
             <View style={{ flex: 1 }}>
               <Text style={styles.label}>{item.label}</Text>
-              <Text style={[styles.value, item.label === 'Payment Status' && styles.boldText]} numberOfLines={item.multiline ? undefined : 1}>
+              <Text style={[styles.value, item.label === 'Payment Status' && styles.boldText]}>
                 {item.label === 'Payment Status' ? <Text style={styles.boldText}>{item.value}</Text> : item.value}
               </Text>
             </View>

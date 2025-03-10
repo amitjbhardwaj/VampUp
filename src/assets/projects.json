@@ -18,5 +18,85 @@
     "project_end_date": "2025-10-31",
     "contractor_phone": "0987654321",
     "completion_percentage": 100
+  },
+  {
+    "project_Id": "3",
+    "project_description": "Project B",
+    "long_project_description": "Description of Project B",
+    "assigned_to": "Worker 2",
+    "project_start_date": "2025-02-01",
+    "project_end_date": "2025-10-31",
+    "contractor_phone": "0987654321",
+    "completion_percentage": 76
+  },
+  {
+    "project_Id": "4",
+    "project_description": "Project B",
+    "long_project_description": "Description of Project B",
+    "assigned_to": "Worker 2",
+    "project_start_date": "2025-02-01",
+    "project_end_date": "2025-10-31",
+    "contractor_phone": "0987654321",
+    "completion_percentage": 100
+  },
+  {
+    "project_Id": "5",
+    "project_description": "Project B",
+    "long_project_description": "Description of Project B",
+    "assigned_to": "Worker 2",
+    "project_start_date": "2025-02-01",
+    "project_end_date": "2025-10-31",
+    "contractor_phone": "0987654321",
+    "completion_percentage": 99
+  },
+  {
+    "project_Id": "6",
+    "project_description": "Project B",
+    "long_project_description": "Description of Project B",
+    "assigned_to": "Worker 2",
+    "project_start_date": "2025-02-01",
+    "project_end_date": "2025-10-31",
+    "contractor_phone": "0987654321",
+    "completion_percentage": 65
+  },
+  {
+    "project_Id": "7",
+    "project_description": "Project B",
+    "long_project_description": "Description of Project B",
+    "assigned_to": "Worker 2",
+    "project_start_date": "2025-02-01",
+    "project_end_date": "2025-10-31",
+    "contractor_phone": "0987654321",
+    "completion_percentage": 100
+  },
+  {
+    "project_Id": "8",
+    "project_description": "Project B",
+    "long_project_description": "Description of Project B",
+    "assigned_to": "Worker 2",
+    "project_start_date": "2025-02-01",
+    "project_end_date": "2025-10-31",
+    "contractor_phone": "0987654321",
+    "completion_percentage": 100
+  },
+  {
+    "project_Id": "9",
+    "project_description": "Project B",
+    "long_project_description": "Description of Project B",
+    "assigned_to": "Worker 2",
+    "project_start_date": "2025-02-01",
+    "project_end_date": "2025-10-31",
+    "contractor_phone": "0987654321",
+    "completion_percentage": 40
+  },
+  {
+    "project_Id": "10",
+    "project_description": "Project B",
+    "long_project_description": "Description of Project B",
+    "assigned_to": "Worker 2",
+    "project_start_date": "2025-02-01",
+    "project_end_date": "2025-10-31",
+    "contractor_phone": "0987654321",
+    "completion_percentage": 10
   }
 ]

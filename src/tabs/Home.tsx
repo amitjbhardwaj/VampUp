@@ -15,7 +15,7 @@ const Home = () => {
     const [modalVisible, setModalVisible] = useState(false);
     const [projectId, setProjectId] = useState("");
     const [subject, setSubject] = useState("");
-    const [description, setDescription] = useState("");
+    const [complaintDescription, setComplaintDescription] = useState("");
     const [projectDescription, setProjectDescription] = useState("");
     const [longProjectDescription, setLongProjectDescription] = useState("");
     const [projectStartDate, setProjectStartDate] = useState("");
@@ -54,29 +54,42 @@ const Home = () => {
 
     // In Home screen
     const handleSubmit = async () => {
-        const newRequest = { projectId, subject, description, projectDescription, longProjectDescription, projectStartDate };
+        // Generate a unique Complaint ID (you can improve this as per your need)
+        const complaintId = `CMP-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+    
+        const newRequest = {
+            complaintId,  // Add the unique Complaint ID here
+            projectId,
+            subject,
+            complaintDescription,
+            projectDescription,
+            longProjectDescription,
+            projectStartDate,
+        };
+    
         const storedRequests = await AsyncStorage.getItem("submittedRequests");
         const parsedRequests = storedRequests ? JSON.parse(storedRequests) : [];
-
+    
         const isDuplicate = parsedRequests.some(
             (req: any) =>
                 req.projectId === newRequest.projectId &&
                 req.subject === newRequest.subject &&
-                req.description === newRequest.description
+                req.complaintDescription === newRequest.complaintDescription
         );
-
+    
         if (isDuplicate) {
             Alert.alert("Duplicate Request", "Same request has already been submitted!!");
             return;
         }
-
+    
         const updatedRequests = [...parsedRequests, newRequest];
         await AsyncStorage.setItem("submittedRequests", JSON.stringify(updatedRequests));
-
+    
         setModalVisible(false);
         // Pass the updatedRequests to WorkerComplaintHistoryScreen
         navigation.navigate("WorkerComplaintHistoryScreen", { updatedRequests });
     };
+    
 
 
     return (
@@ -136,7 +149,7 @@ const Home = () => {
             >
                 <View style={styles.modalContainer}>
                     <View style={styles.modalContent}>
-                        <Text style={styles.modalHeader}>Request/Complaint</Text>
+                        <Text style={styles.modalHeader}>Complaints</Text>
 
                         <Picker
                             selectedValue={projectId}
@@ -179,15 +192,15 @@ const Home = () => {
 
                         <TextInput
                             style={styles.input}
-                            placeholder="Subject"
+                            placeholder="Complaint Subject"
                             value={subject}
                             onChangeText={setSubject}
                         />
                         <TextInput
                             style={styles.textArea}
-                            placeholder="Description"
-                            value={description}
-                            onChangeText={setDescription}
+                            placeholder="Complaint Description"
+                            value={complaintDescription}
+                            onChangeText={setComplaintDescription}
                             multiline
                         />
 
