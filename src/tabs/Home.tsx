@@ -52,6 +52,7 @@ const Home = () => {
         }
     };
 
+    // In Home screen
     const handleSubmit = async () => {
         const newRequest = { projectId, subject, description, projectDescription, longProjectDescription, projectStartDate };
         const storedRequests = await AsyncStorage.getItem("submittedRequests");
@@ -73,8 +74,10 @@ const Home = () => {
         await AsyncStorage.setItem("submittedRequests", JSON.stringify(updatedRequests));
 
         setModalVisible(false);
+        // Pass the updatedRequests to WorkerComplaintHistoryScreen
         navigation.navigate("WorkerComplaintHistoryScreen", { updatedRequests });
     };
+
 
     return (
         <View style={styles.screen}>
@@ -107,14 +110,13 @@ const Home = () => {
                         <Text>Complaint History</Text>
                     </View>
                 </View>
-                <View style={styles.iconRow}>
+                 <View style={styles.iconRow}>
                     <View style={[styles.iconItem, styles.lastRowIcon]}>
                         <TouchableOpacity onPress={() => navigation.navigate({ name: 'WorkerRequestHistoryScreen' } as never)}>
                             <Ionicons name="document-text" size={50} color="#000" />
                         </TouchableOpacity>
                         <Text>Request History</Text>
                     </View>
-                    
                 </View>
             </View>
 

@@ -48,7 +48,7 @@ export type RootStackParamList = {
     WorkerRequestPaymentScreen : undefined;
     WorkerPaymentScreen : undefined;
     WorkerComplaintHistoryScreen: { updatedRequests: any[] };
-    WorkerRequestHistoryScreen : { updatedRequests: any[] };
+    WorkerRequestHistoryScreen : undefined;
     WorkerPaymentDetailsScreen : { project: any };
 };
 

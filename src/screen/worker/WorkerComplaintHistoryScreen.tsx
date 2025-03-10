@@ -94,18 +94,6 @@ const WorkerComplaintHistoryScreen = () => {
         </View>
     );
 
-    const saveNewRequest = async (newRequest: any) => {
-        const requestWithComplaintId = {
-            ...newRequest,
-            complaintId: generateComplaintId(newRequest.complaintId), // Check for existing Complaint ID, otherwise generate a new one
-        };
-
-        // Save the new request to AsyncStorage
-        const currentRequests = [...submittedRequests, requestWithComplaintId];
-        await AsyncStorage.setItem("submittedRequests", JSON.stringify(currentRequests));
-        setSubmittedRequests(currentRequests);
-    };
-
     return (
         <View style={styles.container}>
             <Text style={styles.title}>Submitted Complaints</Text>
