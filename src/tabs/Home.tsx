@@ -55,9 +55,20 @@ const Home = () => {
     };
 
     const handleSubmit = async () => {
+
+        if (!subject.trim()) {
+            Alert.alert("Validation Error", "Complaint Subject is required.");
+            return;
+        }
+    
+        if (!complaintDescription.trim()) {
+            Alert.alert("Validation Error", "Complaint Description is required.");
+            return;
+        }
+        
         // Generate a unique Complaint ID (you can improve this as per your need)
         const complaintId = `CMP-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
-        
+
         const newRequest = {
             complaintId,  // Add the unique Complaint ID here
             projectId,
@@ -68,31 +79,31 @@ const Home = () => {
             projectStartDate,
             phone,
         };
-        
+
         const storedRequests = await AsyncStorage.getItem("submittedRequests");
         const parsedRequests = storedRequests ? JSON.parse(storedRequests) : [];
-        
+
         const isDuplicate = parsedRequests.some(
             (req: any) =>
                 req.projectId === newRequest.projectId &&
                 req.subject === newRequest.subject &&
                 req.complaintDescription === newRequest.complaintDescription
         );
-        
+
         if (isDuplicate) {
             Alert.alert("Duplicate Request", "Same request has already been submitted!!");
             return;
         }
-        
+
         const updatedRequests = [...parsedRequests, newRequest];  // Here you define updatedRequests
         await AsyncStorage.setItem("submittedRequests", JSON.stringify(updatedRequests));
-        
+
         setModalVisible(false);
-        
+
         // Pass the updatedRequests to WorkerComplaintHistoryScreen
         navigation.navigate("WorkerComplaintHistoryScreen", { updatedRequests });  // Now, updatedRequests exists
     };
-    
+
 
     return (
         <View style={styles.screen}>
@@ -119,7 +130,7 @@ const Home = () => {
                         <Text>Payment History</Text>
                     </View>
                     <View style={styles.iconItem}>
-                        <TouchableOpacity onPress={() => navigation.navigate({name : "WorkerComplaintHistoryScreen"} as never)}>;
+                    <TouchableOpacity onPress={() => navigation.navigate({ name: 'WorkerComplaintHistoryScreen' } as never)}>
                             <Ionicons name="chatbox" size={50} color="#000" />
                         </TouchableOpacity>
                         <Text>Complaint History</Text>
