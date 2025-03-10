@@ -20,7 +20,7 @@ const ReportIssueScreen = () => {
             <TouchableOpacity style={styles.button} onPress={() => alert("Issue Reported")}>
                 <Text style={styles.buttonText}>Submit</Text>
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => navigation.navigate("Login")}>
+            <TouchableOpacity onPress={() => navigation.navigate("LoginScreen")}>
                 <Text style={styles.backText}>Back to Login</Text>
             </TouchableOpacity>
         </View>

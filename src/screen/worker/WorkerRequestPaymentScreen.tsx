@@ -1,23 +1,12 @@
 import { useNavigation } from "@react-navigation/native";
-import { StackNavigationProp } from "@react-navigation/stack";
 import React from "react";
+import { View, Text, StyleSheet, StatusBar, TouchableOpacity } from "react-native";
 import Icon from "react-native-vector-icons/MaterialIcons";
-import { View, Text, StyleSheet, TouchableOpacity, StatusBar } from "react-native";
 
-type WorkerPaymentStackParamList = {
-  WorkerRequestPaymentScreen: undefined;
-  WorkerFullPaymentHistoryScreen: undefined;
-};
+const WorkerRequestPaymentScreen = () => {
+        const navigation = useNavigation();
 
-const paymentOptions = [
-  { name: "Request Payment", icon: "attach-money", screen: "WorkerRequestPaymentScreen" },
-  { name: "Payment History", icon: "history", screen: "WorkerFullPaymentHistoryScreen" },
-];
-
-const WorkerPaymentScreen = () => {
-  const navigation = useNavigation<StackNavigationProp<any>>();
-
-  return (
+return (
     <View style={styles.container}>
       {/* Status bar for proper spacing */}
       <StatusBar backgroundColor="#fff" barStyle="dark-content" />
@@ -27,22 +16,9 @@ const WorkerPaymentScreen = () => {
         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
           <Icon name="arrow-back" size={30} color="#000" />
         </TouchableOpacity>
-        <Text style={styles.headerText}>Payments</Text>
+        <Text style={styles.headerText}>Request Payments</Text>
       </View>
 
-      {/* Payment Options */}
-      <View style={styles.content}>
-        {paymentOptions.map((option, index) => (
-          <TouchableOpacity
-            key={index}
-            style={styles.option}
-            onPress={() => navigation.navigate(option.screen as keyof WorkerPaymentStackParamList)}
-          >
-            <Icon name={option.icon} size={24} color="#000" />
-            <Text style={styles.optionText}>{option.name}</Text>
-          </TouchableOpacity>
-        ))}
-      </View>
     </View>
   );
 };
@@ -94,4 +70,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default WorkerPaymentScreen;
+export default WorkerRequestPaymentScreen;

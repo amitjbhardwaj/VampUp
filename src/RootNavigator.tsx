@@ -18,12 +18,13 @@ import Home from "./tabs/Home";
 import WorkerActiveWorkScreen from "./screen/worker/WorkerActiveWorkScreen";
 import WorkerNotificationScreen from "./screen/worker/WorkerNotificationScreen";
 import WorkerPersonalDetailsScreen from "./screen/worker/WorkerPersonalDetailsScreen";
-import WorkerPrivacyScreen from "./screen/worker/WorkerPrivacyScreen";
-import WorkerSecurityScreen from "./screen/worker/WorkerSecurityScreen";
+import WorkerSecurityAndPrivacyScreen from "./screen/worker/WorkerSecurityAndPrivacyScreen";
 import AboutAppScreen from "./screen/AboutAppScreen";
+import WorkerRequestPaymentScreen from "./screen/worker/WorkerRequestPaymentScreen";
+import WorkerPaymentScreen from "./screen/worker/WorkerPaymentScreen";
 
 export type RootStackParamList = {
-    Login: undefined;
+    LoginScreen: undefined;
     Signup: undefined;
     ReportIssue: undefined;
     ForgotPassword: undefined;
@@ -41,9 +42,10 @@ export type RootStackParamList = {
     WorkUpdateStatusScreen : { project: any };
     WorkerNotificationScreen : undefined;
     WorkerPersonalDetailsScreen : undefined;
-    WorkerPrivacyScreen : undefined;
-    WorkerSecurityScreen : undefined;
+    WorkerSecurityAndPrivacyScreen : undefined;
     AboutAppScreen : undefined;
+    WorkerRequestPaymentScreen : undefined;
+    WorkerPaymentScreen : undefined;
 };
 
 const Stack = createStackNavigator<RootStackParamList>();
@@ -52,7 +54,7 @@ const RootNavigator: React.FC = () => {
     return (
         <NavigationContainer>
             <Stack.Navigator screenOptions={{ headerShown: false }}>
-                <Stack.Screen name="Login" component={LoginScreen} />
+                <Stack.Screen name="LoginScreen" component={LoginScreen} />
                 <Stack.Screen name="Signup" component={SignupScreen} />
                 <Stack.Screen name="ReportIssue" component={ReportIssueScreen} />
                 <Stack.Screen name="ForgotPassword" component={ForgotPasswordScreen} />
@@ -70,9 +72,10 @@ const RootNavigator: React.FC = () => {
 
                 <Stack.Screen name="WorkerNotificationScreen" component={WorkerNotificationScreen} /> 
                 <Stack.Screen name="WorkerPersonalDetailsScreen" component={WorkerPersonalDetailsScreen} /> 
-                <Stack.Screen name="WorkerPrivacyScreen" component={WorkerPrivacyScreen} /> 
-                <Stack.Screen name="WorkerSecurityScreen" component={WorkerSecurityScreen} /> 
-                <Stack.Screen name="AboutAppScreen" component={AboutAppScreen} /> 
+                <Stack.Screen name="WorkerSecurityAndPrivacyScreen" component={WorkerSecurityAndPrivacyScreen} /> 
+                <Stack.Screen name="AboutAppScreen" component={AboutAppScreen} />
+                <Stack.Screen name="WorkerRequestPaymentScreen" component={WorkerRequestPaymentScreen} /> 
+                <Stack.Screen name="WorkerPaymentScreen" component={WorkerPaymentScreen} /> 
             </Stack.Navigator>
         </NavigationContainer>
     );

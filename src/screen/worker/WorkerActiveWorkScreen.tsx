@@ -88,7 +88,7 @@ const WorkerActiveWorkScreen = () => {
       {/* Search Bar */}
       <TextInput
         style={styles.searchBar}
-        placeholder="Search by Project ID, Description, Assigned To, Start Date, End Date"
+        placeholder="Search Projects..."
         value={searchText}
         onChangeText={handleSearch}
       />

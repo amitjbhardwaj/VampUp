@@ -12,7 +12,7 @@ const RegistrationFailedScreen = () => {
     useEffect(() => {
         // Auto-redirect to LoginScreen after 3 seconds
         const timeout = setTimeout(() => {
-            navigation.navigate("Login");
+            navigation.navigate("LoginScreen");
         }, 3000);
 
         return () => clearTimeout(timeout);

@@ -3,7 +3,7 @@ import React from "react";
 import { View, Text, StyleSheet, StatusBar, TouchableOpacity } from "react-native";
 import Icon from "react-native-vector-icons/MaterialIcons";
 
-const WorkerNotificationScreen = () => {
+const WorkerSecurityAndPrivacyScreen = () => {
     const navigation = useNavigation();
 
     return (
@@ -16,7 +16,7 @@ const WorkerNotificationScreen = () => {
                 <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
                     <Icon name="arrow-back" size={30} color="#000" />
                 </TouchableOpacity>
-                <Text style={styles.headerText}>Notifications</Text>
+                <Text style={styles.headerText}>Security & Privacy</Text>
             </View>
 
         </View>
@@ -70,4 +70,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default WorkerNotificationScreen;
+export default WorkerSecurityAndPrivacyScreen;
