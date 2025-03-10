@@ -18,6 +18,7 @@ interface Project {
     project_end_date: string;
     contractor_phone: string;
     completion_percentage: number;
+    
 }
 
 const WorkerRequestPaymentScreen = () => {
@@ -47,21 +48,35 @@ const WorkerRequestPaymentScreen = () => {
             return;
         }
     
+        if (!selectedProjectDetails?.project_Id) {
+            ToastAndroid.show("Project ID is missing", ToastAndroid.SHORT);
+            return;
+        }
+    
+        // Check if a request for the selected project already exists
+        const existingRequests = await AsyncStorage.getItem("worker_requests");
+        const requestList: { project_Id: string; amount: string }[] = existingRequests ? JSON.parse(existingRequests) : [];
+    
+        const isDuplicateRequest = requestList.some(
+            (request) => request.project_Id === selectedProjectDetails.project_Id && request.amount === amount
+        );
+    
+        if (isDuplicateRequest) {
+            ToastAndroid.show("A request with this amount has already been submitted for this project", ToastAndroid.SHORT);
+            return;
+        }
+    
         const requestId = `REQ-${Date.now()}`; // Unique Request Id
         const newRequest = {
             requestId,
-            project_Id: selectedProjectDetails?.project_Id,
-            project_description: selectedProjectDetails?.project_description,
+            project_Id: selectedProjectDetails.project_Id,  // Now this will always be a string
+            project_description: selectedProjectDetails.project_description,
             amount,
             request_date: new Date().toISOString(),
         };
     
         try {
-            // Get existing requests
-            const existingRequests = await AsyncStorage.getItem("worker_requests");
-            const requestList = existingRequests ? JSON.parse(existingRequests) : [];
-            
-            // Add new request
+            // Add new request to the list
             requestList.push(newRequest);
             await AsyncStorage.setItem("worker_requests", JSON.stringify(requestList));
     
@@ -71,6 +86,8 @@ const WorkerRequestPaymentScreen = () => {
             ToastAndroid.show("Failed to save request", ToastAndroid.SHORT);
         }
     };
+    
+    
 
     return (
         <View style={styles.container}>
