@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, StyleSheet, TouchableOpacity, Modal, TextInput, Button, Alert } from "react-native";
+import {
+    View, Text, StyleSheet, TouchableOpacity, Modal, TextInput, Button, Alert
+} from "react-native";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import { RootStackParamList } from "../RootNavigator";
@@ -14,19 +16,21 @@ const Home = () => {
     const [projectId, setProjectId] = useState("");
     const [subject, setSubject] = useState("");
     const [description, setDescription] = useState("");
-    const [projectDescription, setProjectDescription] = useState("");  // New state for project description
-    const [longProjectDescription, setLongProjectDescription] = useState("");  // New state for long project description
-    const [projectStartDate, setProjectStartDate] = useState("");  // New state for project start date
-    const [projects, setProjects] = useState<any[]>([]);  // State to hold filtered project data
-    const [selectedProject, setSelectedProject] = useState<any>(null); // New state for selected project
+    const [projectDescription, setProjectDescription] = useState("");
+    const [longProjectDescription, setLongProjectDescription] = useState("");
+    const [projectStartDate, setProjectStartDate] = useState("");
+    const [projects, setProjects] = useState<any[]>([]);
+    const [selectedProject, setSelectedProject] = useState<any>(null);
 
-    // Step 1: Load filtered projects from projects.json
+    useEffect(() => {
+        loadProjects();
+    }, []);
+
     const loadProjects = () => {
         try {
             const data = require('../assets/projects.json');
             console.log("Projects loaded:", data);
             if (Array.isArray(data)) {
-                // Filter out projects where completion_percentage is 100
                 const filteredProjects = data.filter(project => project.completion_percentage !== 100);
                 setProjects(filteredProjects);
             } else {
@@ -37,18 +41,10 @@ const Home = () => {
         }
     };
 
-    useEffect(() => {
-        loadProjects();
-    }, []);
-
     const handleProjectChange = (selectedId: string) => {
         setProjectId(selectedId);
-
-        // Find the selected project from the list of projects
         const selected = projects.find(project => project.project_Id === selectedId);
         setSelectedProject(selected);
-
-        // Set the values of the new fields from the selected project
         if (selected) {
             setProjectDescription(selected.project_description || "");
             setLongProjectDescription(selected.long_project_description || "");
@@ -58,12 +54,9 @@ const Home = () => {
 
     const handleSubmit = async () => {
         const newRequest = { projectId, subject, description, projectDescription, longProjectDescription, projectStartDate };
-
-        // Load existing requests from AsyncStorage
         const storedRequests = await AsyncStorage.getItem("submittedRequests");
         const parsedRequests = storedRequests ? JSON.parse(storedRequests) : [];
 
-        // Check if the request already exists
         const isDuplicate = parsedRequests.some(
             (req: any) =>
                 req.projectId === newRequest.projectId &&
@@ -76,11 +69,9 @@ const Home = () => {
             return;
         }
 
-        // Save the new request list
         const updatedRequests = [...parsedRequests, newRequest];
         await AsyncStorage.setItem("submittedRequests", JSON.stringify(updatedRequests));
 
-        // Close the modal and navigate
         setModalVisible(false);
         navigation.navigate("WorkerComplaintHistoryScreen", { updatedRequests });
     };
@@ -90,9 +81,7 @@ const Home = () => {
             <View style={styles.iconContainer}>
                 <View style={styles.iconRow}>
                     <View style={styles.iconItem}>
-                        <TouchableOpacity
-                            onPress={() => navigation.navigate({ name: 'WorkerActiveWorkScreen' } as never)}
-                        >
+                        <TouchableOpacity onPress={() => navigation.navigate({ name: 'WorkerActiveWorkScreen' } as never)}>
                             <Ionicons name="briefcase" size={50} color="#000" />
                         </TouchableOpacity>
                         <Text>Active Work</Text>
@@ -118,12 +107,20 @@ const Home = () => {
                         <Text>Complaint History</Text>
                     </View>
                 </View>
+                <View style={styles.iconRow}>
+                    <View style={[styles.iconItem, styles.lastRowIcon]}>
+                        <TouchableOpacity onPress={() => navigation.navigate({ name: 'WorkerRequestHistoryScreen' } as never)}>
+                            <Ionicons name="document-text" size={50} color="#000" />
+                        </TouchableOpacity>
+                        <Text>Request History</Text>
+                    </View>
+                    
+                </View>
             </View>
 
-            {/* Floating Button */}
             <TouchableOpacity
                 style={styles.floatingButton}
-                onPress={() => setModalVisible(true)}  // To show modal on button press
+                onPress={() => setModalVisible(true)}
             >
                 <Ionicons name="add" size={40} color="white" />
             </TouchableOpacity>
@@ -139,10 +136,9 @@ const Home = () => {
                     <View style={styles.modalContent}>
                         <Text style={styles.modalHeader}>Request/Complaint</Text>
 
-                        {/* ProjectId Dropdown */}
                         <Picker
                             selectedValue={projectId}
-                            onValueChange={handleProjectChange}  // Update on project selection
+                            onValueChange={handleProjectChange}
                             style={styles.input}
                         >
                             <Picker.Item label="Select Project ID" value="" />
@@ -155,27 +151,26 @@ const Home = () => {
                             ))}
                         </Picker>
 
-                        {/* Render dynamic inputs only if a project is selected */}
                         {selectedProject && (
                             <>
                                 <TextInput
                                     style={styles.input}
                                     placeholder="Project Description"
                                     value={projectDescription}
-                                    onChangeText={setProjectDescription}
+                                    editable={false}
                                 />
                                 <TextInput
                                     style={styles.textArea}
                                     placeholder="Long Project Description"
                                     value={longProjectDescription}
-                                    onChangeText={setLongProjectDescription}
+                                    editable={false}
                                     multiline
                                 />
                                 <TextInput
                                     style={styles.input}
                                     placeholder="Start Date"
                                     value={projectStartDate}
-                                    onChangeText={setProjectStartDate}
+                                    editable={false}
                                 />
                             </>
                         )}
@@ -280,6 +275,9 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         justifyContent: "space-between",
         marginTop: 10,
+    },
+    lastRowIcon: {
+        marginLeft: "-145%",  // Adjust the margin to position it correctly under the first icon
     },
 });
 

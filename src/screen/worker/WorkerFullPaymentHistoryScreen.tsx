@@ -53,7 +53,7 @@ const WorkerFullPaymentHistoryScreen = () => {
             />
             <TouchableOpacity
                 style={styles.paymentButton}
-                onPress={() => navigation.navigate("WorkerPayment", { project })}
+                onPress={() => navigation.navigate("WorkerPaymentDetailsScreen", { project })}
             >
                 <Text style={styles.paymentButtonText}>View Payment</Text>
             </TouchableOpacity>

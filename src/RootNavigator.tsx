@@ -22,6 +22,8 @@ import WorkerSecurityAndPrivacyScreen from "./screen/worker/WorkerSecurityAndPri
 import AboutAppScreen from "./screen/AboutAppScreen";
 import WorkerRequestPaymentScreen from "./screen/worker/WorkerRequestPaymentScreen";
 import WorkerPaymentScreen from "./screen/worker/WorkerPaymentScreen";
+import WorkerRequestHistoryScreen from "./screen/worker/WorkerRequestHistoryScreen";
+import WorkerPaymentDetailsScreen from "./screen/worker/WorkerPaymentDetailsScreen";
 
 export type RootStackParamList = {
     LoginScreen: undefined;
@@ -33,7 +35,6 @@ export type RootStackParamList = {
     RegistrationFailed: undefined;
     PasswordUpdatedScreen: undefined;
     WorkerHomeScreen: undefined;
-    WorkerComplaintHistoryScreen: { updatedRequests: any[] };
     WorkerActiveWorkScreen:  undefined;
     WorkerPayment: { project: any };
     WorkerFullPaymentHistoryScreen : { project: any };
@@ -46,6 +47,9 @@ export type RootStackParamList = {
     AboutAppScreen : undefined;
     WorkerRequestPaymentScreen : undefined;
     WorkerPaymentScreen : undefined;
+    WorkerComplaintHistoryScreen: { updatedRequests: any[] };
+    WorkerRequestHistoryScreen : { updatedRequests: any[] };
+    WorkerPaymentDetailsScreen : { project: any };
 };
 
 const Stack = createStackNavigator<RootStackParamList>();
@@ -75,7 +79,9 @@ const RootNavigator: React.FC = () => {
                 <Stack.Screen name="WorkerSecurityAndPrivacyScreen" component={WorkerSecurityAndPrivacyScreen} /> 
                 <Stack.Screen name="AboutAppScreen" component={AboutAppScreen} />
                 <Stack.Screen name="WorkerRequestPaymentScreen" component={WorkerRequestPaymentScreen} /> 
-                <Stack.Screen name="WorkerPaymentScreen" component={WorkerPaymentScreen} /> 
+                <Stack.Screen name="WorkerPaymentScreen" component={WorkerPaymentScreen} />
+                <Stack.Screen name="WorkerRequestHistoryScreen" component={WorkerRequestHistoryScreen} /> 
+                <Stack.Screen name="WorkerPaymentDetailsScreen" component={WorkerPaymentDetailsScreen} /> 
             </Stack.Navigator>
         </NavigationContainer>
     );
