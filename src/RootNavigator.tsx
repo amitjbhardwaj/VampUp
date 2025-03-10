@@ -16,6 +16,11 @@ import WorkUpdateStatusScreen from "./screen/worker/WorkUpdateStatusScreen";
 import WorkerFullPaymentHistoryScreen from "./screen/worker/WorkerFullPaymentHistoryScreen";
 import Home from "./tabs/Home";
 import WorkerActiveWorkScreen from "./screen/worker/WorkerActiveWorkScreen";
+import WorkerNotificationScreen from "./screen/worker/WorkerNotificationScreen";
+import WorkerPersonalDetailsScreen from "./screen/worker/WorkerPersonalDetailsScreen";
+import WorkerPrivacyScreen from "./screen/worker/WorkerPrivacyScreen";
+import WorkerSecurityScreen from "./screen/worker/WorkerSecurityScreen";
+import AboutAppScreen from "./screen/AboutAppScreen";
 
 export type RootStackParamList = {
     Login: undefined;
@@ -34,6 +39,11 @@ export type RootStackParamList = {
     WorkerWorkHistoryScreen: undefined;
     Home: { projectIds: string[] };
     WorkUpdateStatusScreen : { project: any };
+    WorkerNotificationScreen : undefined;
+    WorkerPersonalDetailsScreen : undefined;
+    WorkerPrivacyScreen : undefined;
+    WorkerSecurityScreen : undefined;
+    AboutAppScreen : undefined;
 };
 
 const Stack = createStackNavigator<RootStackParamList>();
@@ -57,6 +67,12 @@ const RootNavigator: React.FC = () => {
                 <Stack.Screen name="WorkerFullPaymentHistoryScreen" component={WorkerFullPaymentHistoryScreen} />
                 <Stack.Screen name="Home" component={Home} /> 
                 <Stack.Screen name="WorkerActiveWorkScreen" component={WorkerActiveWorkScreen}/>
+
+                <Stack.Screen name="WorkerNotificationScreen" component={WorkerNotificationScreen} /> 
+                <Stack.Screen name="WorkerPersonalDetailsScreen" component={WorkerPersonalDetailsScreen} /> 
+                <Stack.Screen name="WorkerPrivacyScreen" component={WorkerPrivacyScreen} /> 
+                <Stack.Screen name="WorkerSecurityScreen" component={WorkerSecurityScreen} /> 
+                <Stack.Screen name="AboutAppScreen" component={AboutAppScreen} /> 
             </Stack.Navigator>
         </NavigationContainer>
     );
