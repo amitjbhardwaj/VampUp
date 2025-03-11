@@ -51,7 +51,7 @@ const SignupScreen = () => {
 
   const handleSubmit = () => {
     if (validateForm()) {
-      navigation.navigate("Otp");
+      navigation.navigate("Otp", { userData: form }); 
     }
   };
 

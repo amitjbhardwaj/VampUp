@@ -1,13 +1,17 @@
 import React, { useState } from "react";
 import { View, Text, TextInput, TouchableOpacity, StyleSheet } from "react-native";
-import { NavigationProp, useNavigation } from "@react-navigation/native";
+import { NavigationProp, RouteProp, useNavigation } from "@react-navigation/native";
 import { RootStackParamList } from "../RootNavigator";
 import LottieView from "lottie-react-native";
 import Icon from "react-native-vector-icons/FontAwesome";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
 
 type OtpScreenNavigationProp = NavigationProp<RootStackParamList>;
+type OtpScreenRouteProp = RouteProp<RootStackParamList, "Otp">;
 
-const OtpScreen = () => {
+const OtpScreen = ({ route }: { route: OtpScreenRouteProp }) => {
+    const { userData } = route.params; // Get user data from params
     const [otp, setOtp] = useState<string>("");
     const [error, setError] = useState<string>("");
     const navigation = useNavigation<OtpScreenNavigationProp>();
@@ -20,21 +24,29 @@ const OtpScreen = () => {
         }
     };
 
-    const handleOtpVerify = () => {
+    const handleOtpVerify = async () => {
         if (!otp) {
             setError("OTP can't be empty");
             return;
         }
-
+    
         if (otp.length !== 6) {
             setError("OTP must be 6 digits");
             return;
         }
-
+    
         if (otp === "123456") {
             navigation.navigate("RegistrationFailed");
         } else {
-            navigation.navigate("RegistrationDone");
+            try {
+                // Store user data in AsyncStorage
+                await AsyncStorage.setItem("userData", JSON.stringify(userData));
+
+                // Navigate to RegistrationDoneScreen
+                navigation.navigate("RegistrationDone");
+            } catch (error) {
+                console.error("Error saving user data:", error);
+            }
         }
     };
 

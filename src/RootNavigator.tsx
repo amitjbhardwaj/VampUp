@@ -33,7 +33,7 @@ export type RootStackParamList = {
     Signup: undefined;
     ReportIssue: undefined;
     ForgotPassword: undefined;
-    Otp: undefined;
+    Otp: { userData: Record<string, string> };
     RegistrationDone: undefined;
     RegistrationFailed: undefined;
     PasswordUpdatedScreen: undefined;
@@ -45,7 +45,7 @@ export type RootStackParamList = {
     Home: { projectIds: string[] };
     WorkUpdateStatusScreen : { project: any };
     WorkerNotificationScreen : undefined;
-    WorkerPersonalDetailsScreen : undefined;
+    WorkerPersonalDetailsScreen : { userData: Record<string, string> };
     WorkerSecurityAndPrivacyScreen : undefined;
     AboutAppScreen : undefined;
     WorkerRequestPaymentScreen : undefined;
