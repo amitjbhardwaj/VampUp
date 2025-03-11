@@ -5,6 +5,7 @@ import {
     TextInput,
     TouchableOpacity,
     View,
+    Image,  // Import Image
 } from "react-native";
 import Icon from "react-native-vector-icons/FontAwesome";
 import Entypo from "react-native-vector-icons/Entypo";
@@ -50,10 +51,15 @@ const LoginScreen = () => {
 
     return (
         <View style={styles.container}>
-            {/* Header */}
+            {/* Logo */}
             <View style={styles.headerContainer}>
+                <Image
+                    source={require("../assets/logo.png")} // Replace with the correct path to your logo
+                    style={styles.logo}
+                    resizeMode="contain" // Ensure logo is fully visible and properly scaled
+                />
                 <Text style={styles.helloText}>
-                    Hello <Entypo name="hand" size={24} color="black" />
+                    Welcome 
                 </Text>
                 <Text style={styles.signInText}>Sign in to your account</Text>
             </View>
@@ -115,12 +121,18 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: "#fff",
-        justifyContent: "center",
+        justifyContent: "flex-start",  // Make sure to use flex-start to align content from top
         paddingHorizontal: 20,
     },
     headerContainer: {
         alignItems: "center",
-        marginBottom: 30,
+        marginTop: 50, // Adjusted top margin to ensure logo fits
+        marginBottom: 20, // Adjust the bottom margin for proper spacing
+    },
+    logo: {
+        width: 150,  // Adjust the size of the logo as needed
+        height: 150, // Adjust the size of the logo as needed
+        marginBottom: 30, // Reduced space between logo and text
     },
     helloText: {
         fontSize: 50,
