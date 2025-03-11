@@ -54,7 +54,7 @@ const WorkerPersonalDetailsScreen = ({ route }: { route: WorkerPersonalDetailsRo
     return (
         <View style={styles.container}>
             <StatusBar backgroundColor="#fff" barStyle="dark-content" />
-            
+
             {/* Header */}
             <View style={styles.header}>
                 <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
@@ -78,6 +78,18 @@ const WorkerPersonalDetailsScreen = ({ route }: { route: WorkerPersonalDetailsRo
                         <View style={styles.infoRow}>
                             <Icon name="work" size={20} color="#6200EE" />
                             <Text style={styles.infoText}>Role: {userData.role}</Text>
+                            <TouchableOpacity onPress={() => { /* Handle Edit for Role */ }}>
+                                <Icon name="edit" size={20} color="#6200EE" style={styles.editIcon} />
+                            </TouchableOpacity>
+                        </View>
+                        <View style={styles.infoRow}>
+                            <Icon name="person" size={20} color="#6200EE" />
+                            <Text style={styles.infoText}>First name: {userData.firstName} </Text>
+                        </View>
+
+                        <View style={styles.infoRow}>
+                            <Icon name="person" size={20} color="#6200EE" />
+                            <Text style={styles.infoText}>Last name: {userData.lastName}</Text>
                         </View>
 
                         <View style={styles.infoRow}>
@@ -91,14 +103,16 @@ const WorkerPersonalDetailsScreen = ({ route }: { route: WorkerPersonalDetailsRo
                         </View>
                     </View>
 
-                    {/* Divider between Personal Details and Bank Details */}
                     <Divider style={styles.divider} />
 
                     {/* Bank Details Section */}
                     <View style={styles.infoContainer}>
                         <View style={styles.infoRow}>
                             <Icon name="account-balance" size={20} color="#6200EE" />
-                            <Text style={styles.infoText}>Account Holder: {userData.accountHolder}</Text>
+                            <Text style={styles.infoText}>Account Holder: {userData.accountHolder} </Text>
+                            <TouchableOpacity onPress={() => { /* Handle Edit for Account Holder */ }}>
+                                <Icon name="edit" size={20} color="#6200EE" style={styles.editIcon} />
+                            </TouchableOpacity>
                         </View>
 
                         <View style={styles.infoRow}>
@@ -117,7 +131,6 @@ const WorkerPersonalDetailsScreen = ({ route }: { route: WorkerPersonalDetailsRo
                         </View>
                     </View>
 
-                    {/* Divider between Bank Details and Mobile Number */}
                     <Divider style={styles.divider} />
 
                     {/* Mobile Number Section */}
@@ -125,6 +138,9 @@ const WorkerPersonalDetailsScreen = ({ route }: { route: WorkerPersonalDetailsRo
                         <View style={styles.infoRow}>
                             <Icon name="phone" size={20} color="#6200EE" />
                             <Text style={styles.infoText}>Mobile: {userData.mobile}</Text>
+                            <TouchableOpacity onPress={() => { /* Handle Edit for Mobile */ }}>
+                                <Icon name="edit" size={20} color="#6200EE" style={styles.editIcon} />
+                            </TouchableOpacity>
                         </View>
                     </View>
                 </Card>
@@ -149,13 +165,13 @@ const styles = StyleSheet.create({
         alignItems: "center",
         flexDirection: "row",
         paddingTop: StatusBar.currentHeight,
-        zIndex: 1, // Make sure the header stays on top
+        zIndex: 1,
     },
     backButton: {
         position: "absolute",
         left: 20,
-        top: StatusBar.currentHeight ? StatusBar.currentHeight + 6 : 20, // Adjust based on the status bar height
-        zIndex: 2, // Make sure it's on top of everything else
+        top: StatusBar.currentHeight ? StatusBar.currentHeight + 6 : 20,
+        zIndex: 2,
     },
     headerText: {
         fontSize: 20,
@@ -194,17 +210,22 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         alignItems: "center",
         paddingVertical: 8,
+        justifyContent: "space-between", // Align the edit icon to the right
     },
     infoText: {
         fontSize: 16,
         marginLeft: 10,
         color: "#333",
+        flex: 1, // Allow text to take up space and push the icon to the right
     },
     divider: {
-        marginVertical: 15, // Increase the margin to ensure space around the divider
-        height: 1, // Set height for the divider to ensure it's visible
-        //backgroundColor: "#6200EE", // Set color for the divider
+        marginVertical: 15,
+        height: 1,
+    },
+    editIcon: {
+        marginLeft: 10, // Add space between the text and the icon
     },
 });
+
 
 export default WorkerPersonalDetailsScreen;
