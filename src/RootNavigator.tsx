@@ -24,7 +24,9 @@ import WorkerRequestPaymentScreen from "./screen/worker/WorkerRequestPaymentScre
 import WorkerPaymentScreen from "./screen/worker/WorkerPaymentScreen";
 import WorkerRequestHistoryScreen from "./screen/worker/WorkerRequestHistoryScreen";
 import WorkerPaymentDetailsScreen from "./screen/worker/WorkerPaymentDetailsScreen";
-import WorkerAttendanceScreen from "./screen/worker/WorkerAttendanceScreen";
+import WorkerAttendanceHistoryScreen from "./screen/worker/WorkerAttendanceHistoryScreen";
+import WorkerClockInScreen from "./screen/worker/WorkerClockInScreen";
+import WorkerClockOutScreen from "./screen/worker/WorkerClockOutScreen";
 
 export type RootStackParamList = {
     LoginScreen: undefined;
@@ -51,7 +53,20 @@ export type RootStackParamList = {
     WorkerComplaintHistoryScreen: { updatedRequests: any[] };
     WorkerRequestHistoryScreen : undefined;
     WorkerPaymentDetailsScreen : { project: any };
-    WorkerAttendanceScreen: undefined;
+    WorkerClockInScreen: undefined;
+    WorkerClockOutScreen: undefined;
+    WorkerAttendanceHistoryScreen: {
+        project_Id: string;
+        project_description: string;
+        long_project_description: string;
+        assigned_to: string;
+        project_start_date: string;
+        completion_percentage: number;
+        date: string;
+        login_time: string;
+        logout_time: string;
+        attendance_type: string;
+      };
 };
 
 const Stack = createStackNavigator<RootStackParamList>();
@@ -84,7 +99,9 @@ const RootNavigator: React.FC = () => {
                 <Stack.Screen name="WorkerPaymentScreen" component={WorkerPaymentScreen} />
                 <Stack.Screen name="WorkerRequestHistoryScreen" component={WorkerRequestHistoryScreen} /> 
                 <Stack.Screen name="WorkerPaymentDetailsScreen" component={WorkerPaymentDetailsScreen} /> 
-                <Stack.Screen name="WorkerAttendanceScreen" component={WorkerAttendanceScreen} /> 
+                <Stack.Screen name="WorkerClockInScreen" component={WorkerClockInScreen} /> 
+                <Stack.Screen name="WorkerClockOutScreen" component={WorkerClockOutScreen} /> 
+                <Stack.Screen name="WorkerAttendanceHistoryScreen" component={WorkerAttendanceHistoryScreen} /> 
 
             </Stack.Navigator>
         </NavigationContainer>

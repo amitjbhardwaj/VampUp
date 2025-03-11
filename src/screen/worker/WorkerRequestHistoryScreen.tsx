@@ -73,12 +73,12 @@ const WorkerRequestHistoryScreen = () => {
 
     return (
         <View style={styles.container}>
-            <Text style={styles.header}>Payment Requests</Text>
+            <Text style={styles.header}>Requests History</Text>
             <FlatList
                 data={requests}
                 keyExtractor={(item) => item.requestId}
                 renderItem={renderItem}
-                ListEmptyComponent={<Text style={styles.emptyText}>No payment requests found.</Text>}
+                ListEmptyComponent={<Text style={styles.emptyText}>No requests found.</Text>}
             />
             <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
                 <Text style={styles.backButtonText}>Go Back</Text>
