@@ -42,69 +42,6 @@ const Home = () => {
         }
     };
 
-    const handleProjectChange = (selectedDescription: string) => {
-        setProjectDescription(selectedDescription);
-        const selected = projects.find(project => project.project_description === selectedDescription);
-        setSelectedProject(selected);
-        if (selected) {
-            setProjectId(selected.project_Id || "");
-            setLongProjectDescription(selected.long_project_description || "");
-            setProjectStartDate(selected.project_start_date || "");
-            setPhone(selected.contractor_phone || "");
-        }
-    };
-
-    const handleSubmit = async () => {
-
-        if (!subject.trim()) {
-            Alert.alert("Validation Error", "Complaint Subject is required.");
-            return;
-        }
-    
-        if (!complaintDescription.trim()) {
-            Alert.alert("Validation Error", "Complaint Description is required.");
-            return;
-        }
-        
-        // Generate a unique Complaint ID (you can improve this as per your need)
-        const complaintId = `CMP-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
-
-        const newRequest = {
-            complaintId,  // Add the unique Complaint ID here
-            projectId,
-            subject,
-            complaintDescription,
-            projectDescription,
-            longProjectDescription,
-            projectStartDate,
-            phone,
-        };
-
-        const storedRequests = await AsyncStorage.getItem("submittedRequests");
-        const parsedRequests = storedRequests ? JSON.parse(storedRequests) : [];
-
-        const isDuplicate = parsedRequests.some(
-            (req: any) =>
-                req.projectId === newRequest.projectId &&
-                req.subject === newRequest.subject &&
-                req.complaintDescription === newRequest.complaintDescription
-        );
-
-        if (isDuplicate) {
-            Alert.alert("Duplicate Request", "Same request has already been submitted!!");
-            return;
-        }
-
-        const updatedRequests = [...parsedRequests, newRequest];  // Here you define updatedRequests
-        await AsyncStorage.setItem("submittedRequests", JSON.stringify(updatedRequests));
-
-        setModalVisible(false);
-
-        // Pass the updatedRequests to WorkerComplaintHistoryScreen
-        navigation.navigate("WorkerComplaintHistoryScreen", { updatedRequests });  // Now, updatedRequests exists
-    };
-
-
     return (
         <View style={styles.screen}>
             <View style={styles.iconContainer}>
@@ -130,18 +67,24 @@ const Home = () => {
                         <Text>Payment History</Text>
                     </View>
                     <View style={styles.iconItem}>
-                    <TouchableOpacity onPress={() => navigation.navigate({ name: 'WorkerComplaintHistoryScreen' } as never)}>
+                        <TouchableOpacity onPress={() => navigation.navigate({ name: 'WorkerComplaintHistoryScreen' } as never)}>
                             <Ionicons name="chatbox" size={50} color="#000" />
                         </TouchableOpacity>
                         <Text>Complaint History</Text>
                     </View>
                 </View>
                 <View style={styles.iconRow}>
-                    <View style={[styles.iconItem, styles.lastRowIcon]}>
+                    <View style={styles.iconItem}>
                         <TouchableOpacity onPress={() => navigation.navigate('WorkerRequestHistoryScreen')}>
                             <Ionicons name="document-text" size={50} color="#000" />
                         </TouchableOpacity>
                         <Text>Request History</Text>
+                    </View>
+                    <View style={styles.iconItem}>
+                        <TouchableOpacity onPress={() => navigation.navigate('WorkerAttendanceScreen')}>
+                            <Ionicons name="calendar" size={50} color="#000" />
+                        </TouchableOpacity>
+                        <Text>My Attendance</Text>
                     </View>
                 </View>
             </View>
@@ -152,85 +95,6 @@ const Home = () => {
             >
                 <Ionicons name="add" size={40} color="white" />
             </TouchableOpacity>
-
-            {/* Modal */}
-            <Modal
-                animationType="slide"
-                transparent={true}
-                visible={modalVisible}
-                onRequestClose={() => setModalVisible(false)}
-            >
-                <View style={styles.modalContainer}>
-                    <View style={styles.modalContent}>
-                        <Text style={styles.modalHeader}>Complaints</Text>
-
-                        <Picker
-                            selectedValue={projectDescription}
-                            onValueChange={handleProjectChange}
-                            style={styles.input}
-                        >
-                            <Picker.Item label="Select Project Description" value="" />
-                            {projects.map((project: any) => (
-                                <Picker.Item
-                                    key={project.project_Id}
-                                    label={project.project_description}
-                                    value={project.project_description}
-                                />
-                            ))}
-                        </Picker>
-
-                        {selectedProject && (
-                            <>
-                                <TextInput
-                                    style={styles.input}
-                                    placeholder="Project ID"
-                                    value={projectId}
-                                    editable={false}
-                                />
-                                <TextInput
-                                    style={styles.textArea}
-                                    placeholder="Long Project Description"
-                                    value={longProjectDescription}
-                                    editable={false}
-                                    multiline
-                                />
-                                <TextInput
-                                    style={styles.input}
-                                    placeholder="Phone"
-                                    value={phone}
-                                    editable={false}
-                                    multiline
-                                />
-                                <TextInput
-                                    style={styles.input}
-                                    placeholder="Start Date"
-                                    value={projectStartDate}
-                                    editable={false}
-                                />
-                            </>
-                        )}
-
-                        <TextInput
-                            style={styles.input}
-                            placeholder="Complaint Subject"
-                            value={subject}
-                            onChangeText={setSubject}
-                        />
-                        <TextInput
-                            style={styles.textArea}
-                            placeholder="Complaint Description"
-                            value={complaintDescription}
-                            onChangeText={setComplaintDescription}
-                            multiline
-                        />
-
-                        <View style={styles.buttonContainer}>
-                            <Button title="Submit" onPress={handleSubmit} />
-                            <Button title="Back" onPress={() => setModalVisible(false)} color="black" />
-                        </View>
-                    </View>
-                </View>
-            </Modal>
         </View>
     );
 };
@@ -270,48 +134,6 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.3,
         shadowRadius: 4,
         elevation: 5,
-    },
-    modalContainer: {
-        flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
-        backgroundColor: "rgba(0,0,0,0.5)",
-    },
-    modalContent: {
-        backgroundColor: "white",
-        padding: 20,
-        borderRadius: 10,
-        width: "80%",
-    },
-    modalHeader: {
-        fontSize: 18,
-        fontWeight: "bold",
-        marginBottom: 10,
-        textAlign: "center",
-    },
-    input: {
-        borderWidth: 1,
-        borderColor: "gray",
-        padding: 10,
-        marginBottom: 10,
-        borderRadius: 5,
-    },
-    textArea: {
-        borderWidth: 1,
-        borderColor: "gray",
-        padding: 10,
-        marginBottom: 10,
-        borderRadius: 5,
-        height: 100,
-        textAlignVertical: "top",
-    },
-    buttonContainer: {
-        flexDirection: "row",
-        justifyContent: "space-between",
-        marginTop: 10,
-    },
-    lastRowIcon: {
-        marginLeft: "-145%",  // Adjust the margin to position it correctly under the first icon
     },
 });
 
