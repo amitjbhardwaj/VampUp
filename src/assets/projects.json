@@ -27,7 +27,7 @@
     "project_start_date": "2025-02-01",
     "project_end_date": "2025-10-31",
     "contractor_phone": "0987654321",
-    "completion_percentage": 76
+    "completion_percentage": 70
   },
   {
     "project_Id": "4",
@@ -47,7 +47,7 @@
     "project_start_date": "2025-02-01",
     "project_end_date": "2025-10-31",
     "contractor_phone": "0987654321",
-    "completion_percentage": 99
+    "completion_percentage": 90
   },
   {
     "project_Id": "6",
@@ -57,7 +57,7 @@
     "project_start_date": "2025-02-01",
     "project_end_date": "2025-10-31",
     "contractor_phone": "0987654321",
-    "completion_percentage": 65
+    "completion_percentage": 60
   },
   {
     "project_Id": "7",
