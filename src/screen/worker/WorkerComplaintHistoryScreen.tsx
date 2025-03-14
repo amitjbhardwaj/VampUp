@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from "react";
 import {
-    View, Text, FlatList, StyleSheet, TouchableOpacity, Linking, Share
+    View, Text, FlatList, StyleSheet, TouchableOpacity, Linking, Share,
+    Alert,
+    TextInput,
+    Modal
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Icon from "react-native-vector-icons/FontAwesome";
@@ -21,12 +24,15 @@ interface Complaint {
 type WorkerComplaintHistoryScreenNavigationProp = NavigationProp<RootStackParamList, 'WorkerComplaintHistoryScreen'>;
 type WorkerComplaintHistoryScreenRouteProp = RouteProp<RootStackParamList, "WorkerComplaintHistoryScreen">;
 
-
 const WorkerComplaintHistoryScreen = () => {
     const [complaints, setComplaints] = useState<Complaint[]>([]);
     const navigation = useNavigation<WorkerComplaintHistoryScreenNavigationProp>();
     const route = useRoute<WorkerComplaintHistoryScreenRouteProp>();
 
+    const [modalVisible, setModalVisible] = useState(false);
+    const [selectedComplaint, setSelectedComplaint] = useState<Complaint | null>(null);
+    const [updatedSubject, setUpdatedSubject] = useState("");
+    const [updatedComplaint, setUpdatedComplaint] = useState("");
 
     useEffect(() => {
         const fetchComplaints = async () => {
@@ -59,14 +65,45 @@ const WorkerComplaintHistoryScreen = () => {
         📣 Subject: ${item.subject}
         📝 Complaint: ${item.complaintDescription}
         📞 Contact: ${item.phone}`;
-    
+
         try {
             await Share.share({ message });
         } catch (error) {
             console.error("Error sharing complaint:", error);
         }
     };
-    
+
+    const saveComplaints = async (updatedComplaints: Complaint[]) => {
+        await AsyncStorage.setItem("submittedRequests", JSON.stringify(updatedComplaints));
+        setComplaints(updatedComplaints);
+    };
+
+    const handleEdit = (item: Complaint) => {
+        setSelectedComplaint(item);
+        setUpdatedSubject(item.subject);
+        setUpdatedComplaint(item.complaintDescription);
+        setModalVisible(true);
+    };
+
+    const handleSaveEdit = () => {
+        const updatedComplaints = complaints.map(c =>
+            c.complaintId === selectedComplaint?.complaintId ? { ...c, subject: updatedSubject, complaintDescription: updatedComplaint } : c
+        );
+        saveComplaints(updatedComplaints);
+        setModalVisible(false);
+    };
+
+    const handleDelete = (complaintId: string) => {
+        Alert.alert("Confirm Delete", "Are you sure you want to delete this complaint?", [
+            { text: "Cancel", style: "cancel" },
+            {
+                text: "Delete", onPress: () => {
+                    const updatedComplaints = complaints.filter(c => c.complaintId !== complaintId);
+                    saveComplaints(updatedComplaints);
+                }
+            }
+        ]);
+    };
 
     const renderItem = ({ item }: { item: Complaint }) => (
         <View style={styles.item}>
@@ -101,22 +138,38 @@ const WorkerComplaintHistoryScreen = () => {
 
             {/* Buttons */}
             <View style={styles.buttonContainer}>
-                <TouchableOpacity style={styles.button} onPress={() => handleCall(item.phone)}>
-                    <Icon name="phone" size={16} color="white" />
-                    <Text style={styles.buttonText}>Call</Text>
-                </TouchableOpacity>
+                {/* First row: Call, Message, Share */}
+                <View style={styles.buttonRow}>
+                    <TouchableOpacity style={styles.button} onPress={() => handleCall(item.phone)}>
+                        <Icon name="phone" size={15} color="white" />
+                        <Text style={styles.buttonText}>Call</Text>
+                    </TouchableOpacity>
 
-                <TouchableOpacity style={styles.button} onPress={() => handleMessage(item.phone)}>
-                    <Icon name="comment" size={16} color="white" />
-                    <Text style={styles.buttonText}>Message</Text>
-                </TouchableOpacity>
+                    <TouchableOpacity style={styles.button} onPress={() => handleMessage(item.phone)}>
+                        <Icon name="comment" size={15} color="white" />
+                        <Text style={styles.buttonText}>Message</Text>
+                    </TouchableOpacity>
 
-                <TouchableOpacity style={styles.button} onPress={() => handleShare(item)}>
-                    <Icon name="share" size={16} color="white" />
-                    <Text style={styles.buttonText}>Share</Text>
-                </TouchableOpacity>
+                    <TouchableOpacity style={styles.button} onPress={() => handleShare(item)}>
+                        <Icon name="share" size={15} color="white" />
+                        <Text style={styles.buttonText}>Share</Text>
+                    </TouchableOpacity>
+                </View>
 
+                {/* Second row: Edit, Delete */}
+                <View style={styles.buttonRow}>
+                    <TouchableOpacity style={styles.button} onPress={() => handleEdit(item)}>
+                        <Icon name="edit" size={15} color="white" />
+                        <Text style={styles.buttonText}>Edit</Text>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity style={styles.buttonDelete} onPress={() => handleDelete(item.complaintId)}>
+                        <Icon name="trash" size={15} color="white" />
+                        <Text style={styles.buttonText}>Delete</Text>
+                    </TouchableOpacity>
+                </View>
             </View>
+
         </View>
     );
 
@@ -133,6 +186,35 @@ const WorkerComplaintHistoryScreen = () => {
             <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
                 <Text style={styles.backButtonText}>Go Back</Text>
             </TouchableOpacity>
+
+            <Modal visible={modalVisible} transparent>
+                <View style={styles.modalContainer}>
+                    <View style={styles.modalContent}>
+                        <Text style={styles.modalHeader}>Edit Complaint</Text>
+                        <TextInput
+                            style={styles.input}
+                            value={updatedSubject}
+                            onChangeText={setUpdatedSubject}
+                            placeholder="Update Subject"
+                        />
+                        <TextInput
+                            style={[styles.input, styles.textArea]}
+                            value={updatedComplaint}
+                            onChangeText={setUpdatedComplaint}
+                            placeholder="Update Complaint Description"
+                            multiline
+                        />
+                        <View style={styles.modalButtonRow}>
+                            <TouchableOpacity style={styles.button} onPress={handleSaveEdit}>
+                                <Text style={styles.buttonText}>Save</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity style={styles.buttonDelete} onPress={() => setModalVisible(false)}>
+                                <Text style={styles.buttonText}>Cancel</Text>
+                            </TouchableOpacity>
+                        </View>
+                    </View>
+                </View>
+            </Modal>
         </View>
     );
 };
@@ -147,12 +229,16 @@ const styles = StyleSheet.create({
         marginBottom: 10,
         elevation: 5, // Shadow effect
     },
-    row: { flexDirection: "row", alignItems: "center", marginBottom: 5 },
-    icon: { marginRight: 10 },
+    row: {
+        flexDirection: "row",
+        alignItems: "flex-start",  // Ensures proper text alignment
+        marginBottom: 5
+    },
+    icon: { marginRight: 10, marginTop: 2 }, // Adjusted for alignment
     itemText: {
         fontSize: 14,
         color: "#333",
-        flex: 1,
+        flexShrink: 1, // Prevents text from overflowing
     },
     emptyText: {
         fontSize: 16,
@@ -172,25 +258,75 @@ const styles = StyleSheet.create({
         fontWeight: "bold",
         fontSize: 16,
     },
-    buttonContainer: {
-        flexDirection: "row",
-        justifyContent: "space-between",
-        marginTop: 10,
-    },
     button: {
         flexDirection: "row",
         alignItems: "center",
         backgroundColor: "#28a745",
-        padding: 10,
-        borderRadius: 5,
-        flex: 1,
+        paddingVertical: 10,
+        paddingHorizontal: 10,
+        borderRadius: 10,
         justifyContent: "center",
-        marginHorizontal: 5,
+        flex: 1,
+        marginHorizontal: 1,
     },
     buttonText: {
         color: "#fff",
         fontSize: 14,
         marginLeft: 5,
+    },
+    buttonDelete: {
+        backgroundColor: "#dc3545",
+        paddingVertical: 10,
+        paddingHorizontal: 15,
+        borderRadius: 10,
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "center",
+        flex: 1,
+        marginHorizontal: 5,
+    },
+    modalContainer: {
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+        backgroundColor: "rgba(0,0,0,0.5)"
+    },
+    modalContent: {
+        backgroundColor: "white",
+        padding: 20,
+        borderRadius: 10,
+        width: "80%",
+        alignSelf: "center" // Ensures modal is centered properly
+    },
+    modalHeader: {
+        fontSize: 18,
+        fontWeight: "bold",
+        marginBottom: 15,
+        textAlign: "center",
+    },
+    input: {
+        borderWidth: 1,
+        borderColor: "#ccc",
+        padding: 10,
+        marginTop: 10,
+        borderRadius: 5,
+        width: "100%",
+    },
+    textArea: {
+        height: 100,
+    },
+    modalButtonRow: {
+        flexDirection: "row",
+        justifyContent: "space-between",
+        marginTop: 15,
+    },
+    buttonContainer: {
+        marginTop: 10,
+    },
+    buttonRow: {
+        flexDirection: "row",
+        justifyContent: "space-between",
+        marginBottom: 5, // Adds spacing between button rows
     },
 });
 
