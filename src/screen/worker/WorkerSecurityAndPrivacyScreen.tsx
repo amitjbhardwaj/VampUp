@@ -1,25 +1,26 @@
 import { useNavigation } from "@react-navigation/native";
 import React from "react";
-import { View, Text, StyleSheet, StatusBar, TouchableOpacity } from "react-native";
+import { View, Text, StyleSheet, StatusBar, TouchableOpacity, ScrollView } from "react-native";
 import Icon from "react-native-vector-icons/MaterialIcons";
 
 const WorkerSecurityAndPrivacyScreen = () => {
     const navigation = useNavigation();
 
     return (
-        <View style={styles.container}>
-            {/* Status bar for proper spacing */}
-            <StatusBar backgroundColor="#fff" barStyle="dark-content" />
+        <ScrollView>
+            <View style={styles.container}>
+                {/* Status bar for proper spacing */}
+                <StatusBar backgroundColor="#fff" barStyle="dark-content" />
 
-            {/* Full-width Header with Back Button */}
-            <View style={styles.header}>
-                <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-                    <Icon name="arrow-back" size={30} color="#000" />
-                </TouchableOpacity>
-                <Text style={styles.headerText}>Security & Privacy</Text>
+                {/* Full-width Header with Back Button */}
+                <View style={styles.header}>
+                    <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+                        <Icon name="arrow-back" size={30} color="#000" />
+                    </TouchableOpacity>
+                    <Text style={styles.headerText}>Security & Privacy</Text>
+                </View>
             </View>
-
-        </View>
+        </ScrollView>
     );
 };
 

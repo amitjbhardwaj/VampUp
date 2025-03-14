@@ -2,7 +2,7 @@ import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import React from "react";
 import Icon from "react-native-vector-icons/MaterialIcons";
-import { View, Text, StyleSheet, TouchableOpacity, StatusBar } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, StatusBar, ScrollView } from "react-native";
 
 type WorkerPaymentStackParamList = {
   WorkerRequestPaymentScreen: undefined;
@@ -18,32 +18,34 @@ const WorkerPaymentScreen = () => {
   const navigation = useNavigation<StackNavigationProp<any>>();
 
   return (
-    <View style={styles.container}>
-      {/* Status bar for proper spacing */}
-      <StatusBar backgroundColor="#fff" barStyle="dark-content" />
+    <ScrollView>
+      <View style={styles.container}>
+        {/* Status bar for proper spacing */}
+        <StatusBar backgroundColor="#fff" barStyle="dark-content" />
 
-      {/* Full-width Header with Back Button */}
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-          <Icon name="arrow-back" size={30} color="#000" />
-        </TouchableOpacity>
-        <Text style={styles.headerText}>Payments</Text>
-      </View>
-
-      {/* Payment Options */}
-      <View style={styles.content}>
-        {paymentOptions.map((option, index) => (
-          <TouchableOpacity
-            key={index}
-            style={styles.option}
-            onPress={() => navigation.navigate(option.screen as keyof WorkerPaymentStackParamList)}
-          >
-            <Icon name={option.icon} size={24} color="#000" />
-            <Text style={styles.optionText}>{option.name}</Text>
+        {/* Full-width Header with Back Button */}
+        <View style={styles.header}>
+          <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+            <Icon name="arrow-back" size={30} color="#000" />
           </TouchableOpacity>
-        ))}
+          <Text style={styles.headerText}>Payments</Text>
+        </View>
+
+        {/* Payment Options */}
+        <View style={styles.content}>
+          {paymentOptions.map((option, index) => (
+            <TouchableOpacity
+              key={index}
+              style={styles.option}
+              onPress={() => navigation.navigate(option.screen as keyof WorkerPaymentStackParamList)}
+            >
+              <Icon name={option.icon} size={24} color="#000" />
+              <Text style={styles.optionText}>{option.name}</Text>
+            </TouchableOpacity>
+          ))}
+        </View>
       </View>
-    </View>
+    </ScrollView>
   );
 };
 

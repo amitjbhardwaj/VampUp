@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet, FlatList, TouchableOpacity } from "react-native";
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, ScrollView } from "react-native";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Icon from "react-native-vector-icons/FontAwesome";
@@ -71,7 +71,7 @@ const WorkerFullPaymentHistoryScreen = () => {
                 renderItem={renderProjectCard}
                 ListEmptyComponent={<Text style={styles.emptyText}>No completed projects yet.</Text>}
             />
-            
+
             <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
                 <Text style={styles.backButtonText}>Go Back</Text>
             </TouchableOpacity>

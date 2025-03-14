@@ -5,7 +5,8 @@ import {
     TextInput,
     TouchableOpacity,
     View,
-    Image,  // Import Image
+    Image,
+    ScrollView,  // Import Image
 } from "react-native";
 import Icon from "react-native-vector-icons/FontAwesome";
 import Entypo from "react-native-vector-icons/Entypo";
@@ -31,7 +32,7 @@ const LoginScreen = () => {
         } else {
             setEmailError("");
         }
-        
+
         if (!password) {
             setPasswordError("Enter password");
             valid = false;
@@ -50,70 +51,72 @@ const LoginScreen = () => {
     };
 
     return (
-        <View style={styles.container}>
-            {/* Logo */}
-            <View style={styles.headerContainer}>
-                <Image
-                    source={require("../assets/logo.png")} // Replace with the correct path to your logo
-                    style={styles.logo}
-                    resizeMode="contain" // Ensure logo is fully visible and properly scaled
-                />
-                <Text style={styles.helloText}>
-                    Welcome 
-                </Text>
-                <Text style={styles.signInText}>Sign in to your account</Text>
-            </View>
+        <ScrollView>
+            <View style={styles.container}>
+                {/* Logo */}
+                <View style={styles.headerContainer}>
+                    <Image
+                        source={require("../assets/logo.png")} // Replace with the correct path to your logo
+                        style={styles.logo}
+                        resizeMode="contain" // Ensure logo is fully visible and properly scaled
+                    />
+                    <Text style={styles.helloText}>
+                        Welcome
+                    </Text>
+                    <Text style={styles.signInText}>Sign in to your account</Text>
+                </View>
 
-            {/* Email Input */}
-            <View style={styles.inputContainer}>
-                <Icon name="user" size={20} color="#9A9A9A" style={styles.icon} />
-                <TextInput
-                    placeholder="Email"
-                    style={styles.input}
-                    autoCapitalize="none"
-                    value={email}
-                    onChangeText={setEmail}
-                    placeholderTextColor="#9A9A9A"
-                />
-            </View>
-            {emailError ? <Text style={styles.errorText}>{emailError}</Text> : null}
+                {/* Email Input */}
+                <View style={styles.inputContainer}>
+                    <Icon name="user" size={20} color="#9A9A9A" style={styles.icon} />
+                    <TextInput
+                        placeholder="Email"
+                        style={styles.input}
+                        autoCapitalize="none"
+                        value={email}
+                        onChangeText={setEmail}
+                        placeholderTextColor="#9A9A9A"
+                    />
+                </View>
+                {emailError ? <Text style={styles.errorText}>{emailError}</Text> : null}
 
-            {/* Password Input */}
-            <View style={styles.inputContainer}>
-                <Icon name="lock" size={20} color="#9A9A9A" style={styles.icon} />
-                <TextInput
-                    placeholder="Password"
-                    style={styles.input}
-                    secureTextEntry={secureText}
-                    autoCapitalize="none"
-                    value={password}
-                    onChangeText={setPassword}
-                    placeholderTextColor="#9A9A9A"
-                />
-                <TouchableOpacity onPress={() => setSecureText(!secureText)} style={styles.eyeIcon}>
-                    <Icon name={secureText ? "eye-slash" : "eye"} size={20} color="#9A9A9A" />
+                {/* Password Input */}
+                <View style={styles.inputContainer}>
+                    <Icon name="lock" size={20} color="#9A9A9A" style={styles.icon} />
+                    <TextInput
+                        placeholder="Password"
+                        style={styles.input}
+                        secureTextEntry={secureText}
+                        autoCapitalize="none"
+                        value={password}
+                        onChangeText={setPassword}
+                        placeholderTextColor="#9A9A9A"
+                    />
+                    <TouchableOpacity onPress={() => setSecureText(!secureText)} style={styles.eyeIcon}>
+                        <Icon name={secureText ? "eye-slash" : "eye"} size={20} color="#9A9A9A" />
+                    </TouchableOpacity>
+                </View>
+                {passwordError ? <Text style={styles.errorText}>{passwordError}</Text> : null}
+
+                {/* Forgot Password */}
+                <TouchableOpacity onPress={() => navigation.navigate({ name: "ForgotPassword" } as never)}>
+                    <Text style={styles.forgotPassword}>Forgot your password?</Text>
+                </TouchableOpacity>
+
+                {/* Login Button */}
+                <TouchableOpacity style={styles.button} onPress={handleLogin}>
+                    <Icon name="lock" size={20} color="#fff" style={styles.buttonIcon} />
+                    <Text style={styles.buttonText}> Login</Text>
+                </TouchableOpacity>
+
+                {/* Create Account Link */}
+                <TouchableOpacity onPress={() => navigation.navigate("Signup")}>
+                    <Text style={styles.footerText}>
+                        Don't have an account? <Text style={styles.createText}>Create</Text>
+                    </Text>
                 </TouchableOpacity>
             </View>
-            {passwordError ? <Text style={styles.errorText}>{passwordError}</Text> : null}
-
-            {/* Forgot Password */}
-            <TouchableOpacity onPress={() => navigation.navigate({ name: "ForgotPassword" } as never)}>
-                <Text style={styles.forgotPassword}>Forgot your password?</Text>
-            </TouchableOpacity>
-
-            {/* Login Button */}
-            <TouchableOpacity style={styles.button} onPress={handleLogin}>
-                <Icon name="lock" size={20} color="#fff" style={styles.buttonIcon} />
-                <Text style={styles.buttonText}> Login</Text>
-            </TouchableOpacity>
-
-            {/* Create Account Link */}
-            <TouchableOpacity onPress={() => navigation.navigate("Signup")}>
-                <Text style={styles.footerText}>
-                    Don't have an account? <Text style={styles.createText}>Create</Text>
-                </Text>
-            </TouchableOpacity>
-        </View>
+        </ScrollView>
     );
 };
 

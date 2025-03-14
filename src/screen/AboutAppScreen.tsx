@@ -1,5 +1,6 @@
 import { useNavigation } from "@react-navigation/native";
 import React from "react";
+import { ScrollView } from "react-native";
 import { View, Text, StyleSheet, StatusBar, TouchableOpacity } from "react-native";
 import Icon from "react-native-vector-icons/MaterialIcons";
 
@@ -7,19 +8,20 @@ const AboutAppScreen = () => {
     const navigation = useNavigation();
 
     return (
-        <View style={styles.container}>
-            {/* Status bar for proper spacing */}
-            <StatusBar backgroundColor="#fff" barStyle="dark-content" />
+        <ScrollView>
+            <View style={styles.container}>
+                {/* Status bar for proper spacing */}
+                <StatusBar backgroundColor="#fff" barStyle="dark-content" />
 
-            {/* Full-width Header with Back Button */}
-            <View style={styles.header}>
-                <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-                    <Icon name="arrow-back" size={30} color="#000" />
-                </TouchableOpacity>
-                <Text style={styles.headerText}>About</Text>
+                {/* Full-width Header with Back Button */}
+                <View style={styles.header}>
+                    <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+                        <Icon name="arrow-back" size={30} color="#000" />
+                    </TouchableOpacity>
+                    <Text style={styles.headerText}>About</Text>
+                </View>
             </View>
-
-        </View>
+        </ScrollView>
     );
 };
 

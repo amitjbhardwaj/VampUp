@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { View, Text, StyleSheet, TouchableOpacity, TextInput, Modal, ToastAndroid } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, TextInput, Modal, ToastAndroid, ScrollView } from "react-native";
 import { useRoute, useNavigation, RouteProp, NavigationProp } from "@react-navigation/native";
 import Icon from "react-native-vector-icons/FontAwesome";
 import { Picker } from "@react-native-picker/picker";
@@ -164,182 +164,184 @@ const WorkUpdateStatusScreen = () => {
     };
 
     return (
-        <View style={styles.container}>
-            <View style={styles.content}>
-                <Text style={styles.title}>Update Status</Text>
+        <ScrollView>
+            <View style={styles.container}>
+                <View style={styles.content}>
+                    <Text style={styles.title}>Update Status</Text>
 
-                <TextInput
-                    style={styles.input}
-                    value={projectId}
-                    onChangeText={setProjectId}
-                    placeholder="Project ID"
-                    editable={false} // Project ID is usually non-editable
-                />
-                <TextInput
-                    style={styles.input}
-                    value={description}
-                    onChangeText={setDescription}
-                    placeholder="Description"
-                />
-                <TextInput
-                    style={styles.input}
-                    value={assignedTo}
-                    onChangeText={setAssignedTo}
-                    placeholder="Assigned To"
-                />
-                <TextInput
-                    style={styles.input}
-                    value={startDate}
-                    onChangeText={setStartDate}
-                    placeholder="Start Date"
-                />
-                <TextInput
-                    style={styles.input}
-                    value={endDate}
-                    onChangeText={setEndDate}
-                    placeholder="End Date"
-                />
+                    <TextInput
+                        style={styles.input}
+                        value={projectId}
+                        onChangeText={setProjectId}
+                        placeholder="Project ID"
+                        editable={false} // Project ID is usually non-editable
+                    />
+                    <TextInput
+                        style={styles.input}
+                        value={description}
+                        onChangeText={setDescription}
+                        placeholder="Description"
+                    />
+                    <TextInput
+                        style={styles.input}
+                        value={assignedTo}
+                        onChangeText={setAssignedTo}
+                        placeholder="Assigned To"
+                    />
+                    <TextInput
+                        style={styles.input}
+                        value={startDate}
+                        onChangeText={setStartDate}
+                        placeholder="Start Date"
+                    />
+                    <TextInput
+                        style={styles.input}
+                        value={endDate}
+                        onChangeText={setEndDate}
+                        placeholder="End Date"
+                    />
 
-                {/* Dropdown for Completion */}
-                <Text style={styles.label}>Completion (%)</Text>
-                <Picker
-                    selectedValue={completion}
-                    onValueChange={(value) => setCompletion(value)}
-                    style={styles.picker}
-                >
-                    {completionValues.map((value) => (
-                        <Picker.Item key={value} label={`${value}%`} value={value} />
-                    ))}
-                </Picker>
-
-                <TextInput
-                    style={styles.input}
-                    value={contractorPhone}
-                    onChangeText={setContractorPhone}
-                    placeholder="Contractor Phone"
-                    keyboardType="phone-pad"
-                />
-
-                {/* Status Field */}
-                <Text style={styles.label}>Status: {status}</Text>
-                {status === "On-Hold" && (
-                    <Text style={styles.timer}>Time on Hold: {formatTime(timer)}</Text>
-                )}
-            </View>
-
-            {/* Resume Work Button */}
-            {isWorkHeld && status === "On-Hold" && (
-                <TouchableOpacity
-                    style={styles.resumeButton}
-                    onPress={handleResumeWork}
-                >
-                    <Icon name="play" size={20} color="#fff" />
-                    <Text style={styles.buttonText}>Resume Work</Text>
-                </TouchableOpacity>
-            )}
-
-            {/* Hold Work Button: Only show if completion is not 100 */}
-            {completion !== "100" && (
-                <View style={styles.bottomContainer}>
-                    <TouchableOpacity
-                        style={styles.holdButton}
-                        onPress={handleHoldWork}
+                    {/* Dropdown for Completion */}
+                    <Text style={styles.label}>Completion (%)</Text>
+                    <Picker
+                        selectedValue={completion}
+                        onValueChange={(value) => setCompletion(value)}
+                        style={styles.picker}
                     >
-                        <Icon name="pause" size={20} color="#fff" />
-                        <Text style={styles.buttonText}>Hold Work</Text>
-                    </TouchableOpacity>
+                        {completionValues.map((value) => (
+                            <Picker.Item key={value} label={`${value}%`} value={value} />
+                        ))}
+                    </Picker>
+
+                    <TextInput
+                        style={styles.input}
+                        value={contractorPhone}
+                        onChangeText={setContractorPhone}
+                        placeholder="Contractor Phone"
+                        keyboardType="phone-pad"
+                    />
+
+                    {/* Status Field */}
+                    <Text style={styles.label}>Status: {status}</Text>
+                    {status === "On-Hold" && (
+                        <Text style={styles.timer}>Time on Hold: {formatTime(timer)}</Text>
+                    )}
                 </View>
-            )}
 
-            {/* Update Button */}
-            <View style={styles.bottomContainer}>
-                <TouchableOpacity
-                    style={styles.updateButton}
-                    onPress={handleUpdate}
-                >
-                    <Icon name="refresh" size={20} color="#fff" />
-                    <Text style={styles.buttonText}>Update</Text>
-                </TouchableOpacity>
-            </View>
+                {/* Resume Work Button */}
+                {isWorkHeld && status === "On-Hold" && (
+                    <TouchableOpacity
+                        style={styles.resumeButton}
+                        onPress={handleResumeWork}
+                    >
+                        <Icon name="play" size={20} color="#fff" />
+                        <Text style={styles.buttonText}>Resume Work</Text>
+                    </TouchableOpacity>
+                )}
 
-            {/* Back Button */}
-            <TouchableOpacity
-                style={styles.backToCardsButton}
-                onPress={() => navigation.goBack()}>
-                <Text style={styles.backToCardsText}>Back</Text>
-            </TouchableOpacity>
-
-            {/* Hold Work Modal */}
-            <Modal
-                visible={modalVisible}
-                transparent={true}
-                animationType="slide"
-                onRequestClose={() => setModalVisible(false)}
-            >
-                <View style={styles.modalContainer}>
-                    <View style={styles.modalContent}>
-                        <Text style={styles.modalTitle}>Hold Work</Text>
-
-                        {/* Project details */}
-                        <TextInput
-                            style={styles.input}
-                            value={projectId}
-                            onChangeText={setProjectId}
-                            placeholder="Project ID"
-                            editable={false}
-                        />
-                        <TextInput
-                            style={styles.input}
-                            value={description}
-                            onChangeText={setDescription}
-                            placeholder="Description"
-                        />
-                        <TextInput
-                            style={styles.input}
-                            value={assignedTo}
-                            onChangeText={setAssignedTo}
-                            placeholder="Assigned To"
-                        />
-                        <TextInput
-                            style={styles.input}
-                            value={startDate}
-                            onChangeText={setStartDate}
-                            placeholder="Start Date"
-                        />
-                        <TextInput
-                            style={styles.input}
-                            value={endDate}
-                            onChangeText={setEndDate}
-                            placeholder="End Date"
-                        />
-
-                        {/* Reason Input */}
-                        <Text style={styles.label}>Reason for Hold</Text>
-                        <TextInput
-                            style={styles.input}
-                            value={reason}
-                            onChangeText={setReason}
-                            placeholder="Enter reason"
-                        />
-
-                        {/* Submit Button */}
+                {/* Hold Work Button: Only show if completion is not 100 */}
+                {completion !== "100" && (
+                    <View style={styles.bottomContainer}>
                         <TouchableOpacity
-                            style={styles.updateButton}
-                            onPress={handleSubmitHoldWork}
+                            style={styles.holdButton}
+                            onPress={handleHoldWork}
                         >
-                            <Text style={styles.buttonText}>Submit</Text>
-                        </TouchableOpacity>
-
-                        {/* Cancel Button */}
-                        <TouchableOpacity
-                            style={styles.backButton}
-                            onPress={handleCancelHoldWork}>
-                            <Text style={styles.backButtonText}>Cancel</Text>
+                            <Icon name="pause" size={20} color="#fff" />
+                            <Text style={styles.buttonText}>Hold Work</Text>
                         </TouchableOpacity>
                     </View>
+                )}
+
+                {/* Update Button */}
+                <View style={styles.bottomContainer}>
+                    <TouchableOpacity
+                        style={styles.updateButton}
+                        onPress={handleUpdate}
+                    >
+                        <Icon name="refresh" size={20} color="#fff" />
+                        <Text style={styles.buttonText}>Update</Text>
+                    </TouchableOpacity>
                 </View>
-            </Modal>
-        </View>
+
+                {/* Back Button */}
+                <TouchableOpacity
+                    style={styles.backToCardsButton}
+                    onPress={() => navigation.goBack()}>
+                    <Text style={styles.backToCardsText}>Back</Text>
+                </TouchableOpacity>
+
+                {/* Hold Work Modal */}
+                <Modal
+                    visible={modalVisible}
+                    transparent={true}
+                    animationType="slide"
+                    onRequestClose={() => setModalVisible(false)}
+                >
+                    <View style={styles.modalContainer}>
+                        <View style={styles.modalContent}>
+                            <Text style={styles.modalTitle}>Hold Work</Text>
+
+                            {/* Project details */}
+                            <TextInput
+                                style={styles.input}
+                                value={projectId}
+                                onChangeText={setProjectId}
+                                placeholder="Project ID"
+                                editable={false}
+                            />
+                            <TextInput
+                                style={styles.input}
+                                value={description}
+                                onChangeText={setDescription}
+                                placeholder="Description"
+                            />
+                            <TextInput
+                                style={styles.input}
+                                value={assignedTo}
+                                onChangeText={setAssignedTo}
+                                placeholder="Assigned To"
+                            />
+                            <TextInput
+                                style={styles.input}
+                                value={startDate}
+                                onChangeText={setStartDate}
+                                placeholder="Start Date"
+                            />
+                            <TextInput
+                                style={styles.input}
+                                value={endDate}
+                                onChangeText={setEndDate}
+                                placeholder="End Date"
+                            />
+
+                            {/* Reason Input */}
+                            <Text style={styles.label}>Reason for Hold</Text>
+                            <TextInput
+                                style={styles.input}
+                                value={reason}
+                                onChangeText={setReason}
+                                placeholder="Enter reason"
+                            />
+
+                            {/* Submit Button */}
+                            <TouchableOpacity
+                                style={styles.updateButton}
+                                onPress={handleSubmitHoldWork}
+                            >
+                                <Text style={styles.buttonText}>Submit</Text>
+                            </TouchableOpacity>
+
+                            {/* Cancel Button */}
+                            <TouchableOpacity
+                                style={styles.backButton}
+                                onPress={handleCancelHoldWork}>
+                                <Text style={styles.backButtonText}>Cancel</Text>
+                            </TouchableOpacity>
+                        </View>
+                    </View>
+                </Modal>
+            </View>
+        </ScrollView>
     );
 };
 

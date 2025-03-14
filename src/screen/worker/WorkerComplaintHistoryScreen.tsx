@@ -3,7 +3,8 @@ import {
     View, Text, FlatList, StyleSheet, TouchableOpacity, Linking, Share,
     Alert,
     TextInput,
-    Modal
+    Modal,
+    ScrollView
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Icon from "react-native-vector-icons/FontAwesome";
