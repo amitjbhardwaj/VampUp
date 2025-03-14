@@ -6,10 +6,12 @@ import {
     TouchableOpacity,
     View,
     Image,
-    ScrollView,  // Import Image
+    ScrollView,
+    Alert
 } from "react-native";
 import Icon from "react-native-vector-icons/FontAwesome";
-import Entypo from "react-native-vector-icons/Entypo";
+import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+import TouchID from "react-native-touch-id";
 import { useNavigation } from "@react-navigation/native";
 import { NavigationProp } from "@react-navigation/native";
 import { RootStackParamList } from "../../App";
@@ -18,69 +20,58 @@ type LoginScreenNavigationProp = NavigationProp<RootStackParamList>;
 
 const LoginScreen = () => {
     const navigation = useNavigation<LoginScreenNavigationProp>();
-    const [email, setEmail] = useState("");
+    const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [secureText, setSecureText] = useState(true);
-    const [emailError, setEmailError] = useState("");
-    const [passwordError, setPasswordError] = useState("");
+    const [errorMessage, setErrorMessage] = useState("");
 
     const handleLogin = () => {
-        let valid = true;
-        if (!email) {
-            setEmailError("Enter email address");
-            valid = false;
-        } else {
-            setEmailError("");
+        if (!username || !password) {
+            setErrorMessage("Username and password are required");
+            return;
         }
-
-        if (!password) {
-            setPasswordError("Enter password");
-            valid = false;
+        
+        if (username === "worker" && password === "worker") {
+            navigation.navigate({ name: "WorkerHomeScreen" } as never);
         } else {
-            setPasswordError("");
+            setErrorMessage("Invalid username or password");
         }
+    };
 
-        if (valid) {
-            if (email === "worker" && password === "worker") {
+    const handleBiometricLogin = () => {
+        TouchID.authenticate("Login with Biometrics", {
+            title: "Authenticate",
+            sensorErrorDescription: "Biometric authentication failed",
+        })
+            .then(() => {
                 navigation.navigate({ name: "WorkerHomeScreen" } as never);
-            } else {
-                setEmailError("Invalid email or password");
-                setPasswordError("Invalid email or password");
-            }
-        }
+            })
+            .catch(() => {
+                Alert.alert("Authentication Failed", "Unable to authenticate using biometrics.");
+            });
     };
 
     return (
         <ScrollView>
             <View style={styles.container}>
-                {/* Logo */}
                 <View style={styles.headerContainer}>
-                    <Image
-                        source={require("../assets/logo.png")} // Replace with the correct path to your logo
-                        style={styles.logo}
-                        resizeMode="contain" // Ensure logo is fully visible and properly scaled
-                    />
-                    <Text style={styles.helloText}>
-                        Welcome
-                    </Text>
+                    <Image source={require("../assets/logo.png")} style={styles.logo} resizeMode="contain" />
+                    <Text style={styles.helloText}>Welcome</Text>
                     <Text style={styles.signInText}>Sign in to your account</Text>
                 </View>
 
-                {/* Email Input */}
                 <View style={styles.inputContainer}>
                     <Icon name="user" size={20} color="#9A9A9A" style={styles.icon} />
                     <TextInput
-                        placeholder="Email"
+                        placeholder="Username"
                         style={styles.input}
                         autoCapitalize="none"
-                        value={email}
-                        onChangeText={setEmail}
+                        value={username}
+                        onChangeText={setUsername}
                         placeholderTextColor="#9A9A9A"
                     />
                 </View>
-                {emailError ? <Text style={styles.errorText}>{emailError}</Text> : null}
 
-                {/* Password Input */}
                 <View style={styles.inputContainer}>
                     <Icon name="lock" size={20} color="#9A9A9A" style={styles.icon} />
                     <TextInput
@@ -96,20 +87,22 @@ const LoginScreen = () => {
                         <Icon name={secureText ? "eye-slash" : "eye"} size={20} color="#9A9A9A" />
                     </TouchableOpacity>
                 </View>
-                {passwordError ? <Text style={styles.errorText}>{passwordError}</Text> : null}
+                {errorMessage ? <Text style={styles.errorText}>{errorMessage}</Text> : null}
 
-                {/* Forgot Password */}
                 <TouchableOpacity onPress={() => navigation.navigate({ name: "ForgotPassword" } as never)}>
                     <Text style={styles.forgotPassword}>Forgot your password?</Text>
                 </TouchableOpacity>
 
-                {/* Login Button */}
                 <TouchableOpacity style={styles.button} onPress={handleLogin}>
-                    <Icon name="lock" size={20} color="#fff" style={styles.buttonIcon} />
+                    <Icon name="sign-in" size={20} color="#fff" style={styles.buttonIcon} />
                     <Text style={styles.buttonText}> Login</Text>
                 </TouchableOpacity>
 
-                {/* Create Account Link */}
+                <TouchableOpacity style={styles.biometricButton} onPress={handleBiometricLogin}>
+                <MaterialCommunityIcons name="fingerprint" size={24} color="#fff" style={styles.buttonIcon} />
+                    <Text style={styles.buttonText}> Login with Biometrics</Text>
+                </TouchableOpacity>
+
                 <TouchableOpacity onPress={() => navigation.navigate("Signup")}>
                     <Text style={styles.footerText}>
                         Don't have an account? <Text style={styles.createText}>Create</Text>
@@ -124,18 +117,17 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: "#fff",
-        justifyContent: "flex-start",  // Make sure to use flex-start to align content from top
         paddingHorizontal: 20,
     },
     headerContainer: {
         alignItems: "center",
-        marginTop: 50, // Adjusted top margin to ensure logo fits
-        marginBottom: 20, // Adjust the bottom margin for proper spacing
+        marginTop: 50,
+        marginBottom: 20,
     },
     logo: {
-        width: 150,  // Adjust the size of the logo as needed
-        height: 150, // Adjust the size of the logo as needed
-        marginBottom: 30, // Reduced space between logo and text
+        width: 150,
+        height: 150,
+        marginBottom: 30,
     },
     helloText: {
         fontSize: 50,
@@ -173,16 +165,6 @@ const styles = StyleSheet.create({
         color: "#333",
         marginBottom: 20,
     },
-    createText: {
-        fontWeight: "bold",
-        textDecorationLine: "underline",
-        color: "#000",
-    },
-    footerText: {
-        textAlign: "center",
-        fontSize: 16,
-        color: "#000",
-    },
     button: {
         flexDirection: "row",
         backgroundColor: "#000",
@@ -192,6 +174,15 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         marginTop: 20,
     },
+    biometricButton: {
+        flexDirection: "row",
+        backgroundColor: "#007AFF",
+        padding: 15,
+        borderRadius: 10,
+        alignItems: "center",
+        justifyContent: "center",
+        marginTop: 10,
+    },
     buttonIcon: {
         marginRight: 10,
     },
@@ -199,6 +190,17 @@ const styles = StyleSheet.create({
         color: "#fff",
         fontSize: 18,
         fontWeight: "bold",
+    },
+    footerText: {
+        textAlign: "center",
+        fontSize: 16,
+        color: "#000",
+        marginTop: 20,
+    },
+    createText: {
+        fontWeight: "bold",
+        textDecorationLine: "underline",
+        color: "#000",
     },
     errorText: {
         color: "red",
