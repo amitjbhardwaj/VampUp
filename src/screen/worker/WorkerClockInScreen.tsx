@@ -16,7 +16,7 @@ import DateTimePicker from "@react-native-community/datetimepicker";
 import projectsData from "../../assets/projects.json";
 import { RootStackParamList } from "../../RootNavigator";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import TouchID from 'react-native-touch-id'; // Import the TouchID module
+import TouchID from 'react-native-touch-id';
 
 
 interface Project {

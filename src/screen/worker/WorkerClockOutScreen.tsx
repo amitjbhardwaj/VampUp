@@ -16,7 +16,7 @@ import DateTimePicker from "@react-native-community/datetimepicker";
 import projectsData from "../../assets/projects.json";
 import { RootStackParamList } from "../../RootNavigator";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-
+import TouchID from 'react-native-touch-id';
 
 interface Project {
     project_Id: string;
@@ -62,13 +62,38 @@ const WorkerClockOutScreen: React.FC = () => {
         setAttendanceType(type);
         if (type === "Manually") {
             setShowDatePicker(true);
+        } else if (type === "Biometrics") {
+            // Trigger the biometric authentication
+            handleBiometricAuthentication();
         } else {
             setShowDatePicker(false);
             setSelectedDate(null);
-            setFormattedDate("");
+            setFormattedDate(""); // Clear date field
         }
     };
 
+    const handleBiometricAuthentication = () => {
+        // Check if biometric authentication is available
+        TouchID.isSupported()
+            .then(() => {
+                TouchID.authenticate('Authenticate using fingerprint')
+                    .then(() => {
+                        // On successful authentication, set the current date and time
+                        const today = new Date();
+                        setSelectedDate(today);
+                        setFormattedDate(today.toLocaleDateString("en-GB"));
+                        const formattedTime = today.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+                        setCurrentTime(formattedTime);
+                    })
+                    .catch((error: any) => {
+                        console.log("Biometric authentication failed:", error);
+                        ToastAndroid.show("Authentication failed. Try again.", ToastAndroid.SHORT);
+                    });
+            })
+            .catch(() => {
+                ToastAndroid.show("Biometric authentication is not supported on this device.", ToastAndroid.SHORT);
+            });
+    };
 
     const handleDateChange = (event: any, date?: Date) => {
         if (event.type === "set" && date) { // Only proceed if "OK" is clicked
