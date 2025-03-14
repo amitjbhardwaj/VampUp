@@ -15,6 +15,7 @@ import DateTimePicker from "@react-native-community/datetimepicker";
 import projectsData from "../../assets/projects.json";
 import { RootStackParamList } from "../../RootNavigator";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import TouchID from 'react-native-touch-id'; // Import the TouchID module
 
 
 interface Project {
@@ -46,7 +47,6 @@ const WorkerClockInScreen: React.FC = () => {
         const incompleteProjects = projectsData.filter((project) => project.completion_percentage < 100);
         setProjects(incompleteProjects);
     }, []);
-    
 
     const handleProjectChange = (projectId: string | null) => {
         if (!projectId) return;
@@ -65,11 +65,37 @@ const WorkerClockInScreen: React.FC = () => {
         setAttendanceType(type);
         if (type === "Manually") {
             setShowDatePicker(true);
+        } else if (type === "Biometrics") {
+            // Trigger the biometric authentication
+            handleBiometricAuthentication();
         } else {
             setShowDatePicker(false);
             setSelectedDate(null);
             setFormattedDate(""); // Clear date field
         }
+    };
+
+    const handleBiometricAuthentication = () => {
+        // Check if biometric authentication is available
+        TouchID.isSupported()
+            .then(() => {
+                TouchID.authenticate('Authenticate using fingerprint')
+                    .then(() => {
+                        // On successful authentication, set the current date and time
+                        const today = new Date();
+                        setSelectedDate(today);
+                        setFormattedDate(today.toLocaleDateString("en-GB"));
+                        const formattedTime = today.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+                        setCurrentTime(formattedTime);
+                    })
+                    .catch((error : any) => {
+                        console.log("Biometric authentication failed:", error);
+                        ToastAndroid.show("Authentication failed. Try again.", ToastAndroid.SHORT);
+                    });
+            })
+            .catch(() => {
+                ToastAndroid.show("Biometric authentication is not supported on this device.", ToastAndroid.SHORT);
+            });
     };
 
     const handleDateChange = (event: any, date?: Date) => {
@@ -89,22 +115,22 @@ const WorkerClockInScreen: React.FC = () => {
         if (!selectedProject || !projectDetails || !attendanceType || (attendanceType === "Manually" && !selectedDate)) {
             return;
         }
-    
+
         try {
             const storedRecords = await AsyncStorage.getItem("attendanceHistory");
             const attendanceRecords = storedRecords ? JSON.parse(storedRecords) : [];
-    
+
             // Check if attendance already exists for today
             const todayFormatted = new Date().toLocaleDateString("en-GB"); // Format as DD/MM/YYYY
             const existingRecord = attendanceRecords.find(
                 (record: any) => record.project_Id === selectedProject && record.date === todayFormatted
             );
-    
+
             if (existingRecord) {
                 ToastAndroid.show("You have already submitted attendance for this project today.", ToastAndroid.SHORT);
                 return;
             }
-    
+
             // Create new record
             const newRecord = {
                 project_Id: projectDetails.project_Id,
@@ -118,18 +144,19 @@ const WorkerClockInScreen: React.FC = () => {
                 logout_time: "--",
                 attendance_type: attendanceType,
             };
-    
+
             // Append and save
             attendanceRecords.push(newRecord);
             await AsyncStorage.setItem("attendanceHistory", JSON.stringify(attendanceRecords));
-    
+
             // Navigate to Attendance History Screen
             navigation.navigate("WorkerAttendanceHistoryScreen", newRecord);
         } catch (error) {
             console.error("Failed to save attendance record", error);
         }
     };
-    
+
+        
 
     
 
