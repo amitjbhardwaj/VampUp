@@ -3,7 +3,6 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import LoginScreen from "./screen/LoginScreen";
 import SignupScreen from "./screen/SignupScreen";
-import ReportIssueScreen from "./screen/ReportIssueScreen";
 import ForgotPasswordScreen from "./screen/ForgotPasswordScreen";
 import OtpScreen from "./screen/OtpScreen";
 import RegistrationDoneScreen from "./screen/RegistrationDoneScreen";
@@ -77,7 +76,6 @@ const RootNavigator: React.FC = () => {
             <Stack.Navigator screenOptions={{ headerShown: false }}>
                 <Stack.Screen name="LoginScreen" component={LoginScreen} />
                 <Stack.Screen name="Signup" component={SignupScreen} />
-                <Stack.Screen name="ReportIssue" component={ReportIssueScreen} />
                 <Stack.Screen name="ForgotPassword" component={ForgotPasswordScreen} />
                 <Stack.Screen name="Otp" component={OtpScreen} />
                 <Stack.Screen name="RegistrationDone" component={RegistrationDoneScreen} />
