@@ -71,6 +71,8 @@ const WorkerRequestPaymentScreen = () => {
             requestId,
             project_Id: selectedProjectDetails.project_Id,  // Now this will always be a string
             project_description: selectedProjectDetails.project_description,
+            project_start_date: selectedProjectDetails.project_start_date,
+            project_end_date: selectedProjectDetails.project_end_date,
             amount,
             request_date: new Date().toISOString(),
         };
