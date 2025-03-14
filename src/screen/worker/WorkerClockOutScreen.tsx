@@ -136,9 +136,9 @@ const WorkerClockOutScreen: React.FC = () => {
                 <StatusBar backgroundColor="#fff" barStyle="dark-content" />
 
                 <View style={styles.header}>
-                    <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+                    {/* <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
                         <Icon name="arrow-back" size={30} color="#000" />
-                    </TouchableOpacity>
+                    </TouchableOpacity> */}
                     <Text style={styles.headerText}>Clock Out</Text>
                 </View>
 

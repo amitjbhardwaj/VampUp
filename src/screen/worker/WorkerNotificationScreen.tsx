@@ -14,9 +14,6 @@ const WorkerNotificationScreen = () => {
 
                 {/* Full-width Header with Back Button */}
                 <View style={styles.header}>
-                    <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-                        <Icon name="arrow-back" size={30} color="#000" />
-                    </TouchableOpacity>
                     <Text style={styles.headerText}>Notifications</Text>
                 </View>
             </View>
