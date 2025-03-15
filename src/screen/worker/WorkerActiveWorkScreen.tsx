@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   Linking,
   TextInput,
+  Animated,
 } from "react-native";
 import { NavigationProp, useNavigation, useFocusEffect } from "@react-navigation/native";
 import Icon from "react-native-vector-icons/FontAwesome";
@@ -29,9 +30,20 @@ const WorkerActiveWorkScreen = () => {
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const [searchText, setSearchText] = useState<string>("");
   const [projects, setProjects] = useState<Project[]>(projectsData.map(p => ({ ...p, status: "In Progress" })));
+  const [animatedValue] = useState(new Animated.Value(0));
+
+  // Fade-in animation for the screen
+  const fadeIn = () => {
+    Animated.timing(animatedValue, {
+      toValue: 1,
+      duration: 500,
+      useNativeDriver: true,
+    }).start();
+  };
 
   useFocusEffect(
     useCallback(() => {
+      fadeIn();
       const loadProjects = async () => {
         try {
           const storedProjects = await AsyncStorage.getItem("activeProjects");
@@ -73,7 +85,7 @@ const WorkerActiveWorkScreen = () => {
   );
 
   const ProjectCard = ({ project }: { project: Project }) => (
-    <View style={styles.projectCard}>
+    <Animated.View style={[styles.projectCard, { opacity: animatedValue }]}>
       {projectDetails(project).map(({ label, value, icon }) => (
         <View key={label} style={styles.card}>
           <Icon name={icon} size={20} color="#28a745" style={styles.icon} />
@@ -104,7 +116,7 @@ const WorkerActiveWorkScreen = () => {
       >
         <Text style={styles.callButtonText}>Call Contractor</Text>
       </TouchableOpacity>
-    </View>
+    </Animated.View>
   );
 
   return (
@@ -121,6 +133,7 @@ const WorkerActiveWorkScreen = () => {
         keyExtractor={(item) => item.project_Id}
         renderItem={({ item }) => <ProjectCard project={item} />}
         ListEmptyComponent={<Text style={styles.emptyText}>No active projects found.</Text>}
+        ItemSeparatorComponent={() => <View style={styles.separator} />}
       />
       <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
         <Text style={styles.backButtonText}>Go Back</Text>
@@ -142,8 +155,18 @@ const projectDetails = (project: Project) => [
 const styles = StyleSheet.create({
   container: { flex: 1, padding: 20, backgroundColor: "#f9f9f9" },
   title: { fontSize: 22, fontWeight: "bold", textAlign: "center", marginBottom: 20 },
-  searchBar: { height: 40, borderColor: "#ccc", borderWidth: 1, borderRadius: 5, paddingHorizontal: 10, marginBottom: 20 },
+  searchBar: {
+    height: 40,
+    borderColor: "#ccc",
+    borderWidth: 1,
+    borderRadius: 20,
+    paddingHorizontal: 20,
+    marginBottom: 20,
+    backgroundColor: "#fff",
+    fontSize: 16,
+  },
   emptyText: { fontSize: 16, color: "#777", textAlign: "center", marginTop: 20 },
+  separator: { height: 1, backgroundColor: "#ddd", marginVertical: 10 },
   projectCard: { backgroundColor: "#fff", padding: 15, marginBottom: 15, borderRadius: 10, elevation: 5 },
   card: { flexDirection: "row", alignItems: "center", marginBottom: 10 },
   icon: { marginRight: 15 },
