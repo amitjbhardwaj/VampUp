@@ -11,7 +11,6 @@ import PasswordUpdatedScreen from "./screen/PasswordUpdatedScreen";
 import WorkerHomeScreen from "./screen/WorkerHomeScreen";
 import WorkerWorkHistoryScreen from "./screen/worker/WorkerWorkHistoryScreen";
 import WorkerComplaintHistoryScreen from "./screen/worker/WorkerComplaintHistoryScreen";
-import WorkUpdateStatusScreen from "./screen/worker/WorkUpdateStatusScreen";
 import WorkerFullPaymentHistoryScreen from "./screen/worker/WorkerFullPaymentHistoryScreen";
 import Home from "./tabs/Home";
 import WorkerActiveWorkScreen from "./screen/worker/WorkerActiveWorkScreen";
@@ -26,6 +25,7 @@ import WorkerPaymentDetailsScreen from "./screen/worker/WorkerPaymentDetailsScre
 import WorkerAttendanceHistoryScreen from "./screen/worker/WorkerAttendanceHistoryScreen";
 import WorkerClockInScreen from "./screen/worker/WorkerClockInScreen";
 import WorkerClockOutScreen from "./screen/worker/WorkerClockOutScreen";
+import WorkUpdateStatusScreen from "./screen/worker/WorkUpdateStatusScreen";
 
 export type RootStackParamList = {
     LoginScreen: undefined;
@@ -42,7 +42,10 @@ export type RootStackParamList = {
     WorkerFullPaymentHistoryScreen : { project: any };
     WorkerWorkHistoryScreen: undefined;
     Home: { projectIds: string[] };
-    WorkUpdateStatusScreen : { project: any };
+    WorkUpdateStatusScreen: {
+        project: any;
+        onUpdateCompletion: (projectId: string, newCompletion: number) => void;
+      };
     WorkerNotificationScreen : undefined;
     WorkerPersonalDetailsScreen : { userData: Record<string, string> };
     WorkerSecurityAndPrivacyScreen : undefined;

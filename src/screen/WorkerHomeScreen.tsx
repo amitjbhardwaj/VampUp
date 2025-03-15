@@ -27,7 +27,7 @@ const WorkerHomeScreen = () => {
         let iconName = "home-outline"; // Default value
         if (route.name === "My Services") {
           iconName = "briefcase-outline";
-        } else if (route.name === "Help & Contact") {
+        } else if (route.name === "Help") {
           iconName = "call-outline";
         } else if (route.name === "Settings") {
           iconName = "settings-outline";
@@ -62,7 +62,7 @@ const WorkerHomeScreen = () => {
     >
       <Tab.Screen name="Home" component={Home} />
       <Tab.Screen name="My Services" component={Services} />
-      <Tab.Screen name="Help & Contact" component={HelpContact} />
+      <Tab.Screen name="Help" component={HelpContact} />
       <Tab.Screen name="Settings" component={Settings} />
     </Tab.Navigator>
   );
@@ -149,6 +149,7 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(255,255,255,0.8)",
     borderTopWidth: 0,
     elevation: 0,
+    height: 60,
   },
   header: {
     backgroundColor: "rgba(255,255,255,0.8)",

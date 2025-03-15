@@ -4,6 +4,8 @@ import { NavigationProp, useNavigation } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Icon from "react-native-vector-icons/FontAwesome";
 import { RootStackParamList } from "../../RootNavigator"; // Adjust the path as needed
+import { useFocusEffect } from "@react-navigation/native";
+
 
 // Correctly type the navigation prop using RootStackParamList
 type WorkerWorkHistoryScreenNavigationProp = NavigationProp<RootStackParamList, 'WorkerWorkHistoryScreen'>;
@@ -26,6 +28,23 @@ const WorkerWorkHistoryScreen = () => {
 
         loadCompletedProjects();
     }, []);
+
+    useFocusEffect(
+        React.useCallback(() => {
+            const loadCompletedProjects = async () => {
+                try {
+                    const storedProjects = await AsyncStorage.getItem("completedProjects");
+                    if (storedProjects) {
+                        setCompletedProjects(JSON.parse(storedProjects));
+                    }
+                } catch (error) {
+                    console.error("Error loading completed projects", error);
+                }
+            };
+    
+            loadCompletedProjects();
+        }, [])
+    );
 
     const projectDetails = (project: any) => [
         { label: 'Project ID', value: project.project_Id, icon: 'id-badge' },
