@@ -12,6 +12,7 @@ import { NavigationProp, useNavigation, useFocusEffect } from "@react-navigation
 import Icon from "react-native-vector-icons/FontAwesome";
 import { RootStackParamList } from "../../RootNavigator";
 import projectsData from "../../assets/projects.json";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
 interface Project {
@@ -25,31 +26,60 @@ interface Project {
 }
 
 const WorkerActiveWorkScreen = () => {
+
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const [searchText, setSearchText] = useState<string>("");
   const [projects, setProjects] = useState<Project[]>(projectsData);
 
-  // Filter active projects
+  // Filter active projects 
   const activeProjects = projects.filter((project) => project.completion_percentage < 100);
 
-  // Search filter
-  const filteredProjects = activeProjects.filter((project) =>
+  // Filter active projects (no need to filter for completion <100% here, as we already do it in AsyncStorage)
+  const filteredProjects = projects.filter((project) =>
     Object.values(project).some((value) =>
       String(value).toLowerCase().includes(searchText.toLowerCase())
     )
   );
 
-  // Callback to update the completion percentage
-  const handleUpdateCompletion = (projectId: string, newCompletion: number) => {
-    setProjects((prevProjects) =>
-      prevProjects
-        .map((proj) =>
-          proj.project_Id === projectId ? { ...proj, completion_percentage: newCompletion } : proj
-        )
-        .filter((proj) => proj.completion_percentage < 100) // Remove completed projects
-    );
+  // Load projects from AsyncStorage on screen focus
+  useFocusEffect(
+    useCallback(() => {
+      const loadProjects = async () => {
+        try {
+          const storedProjects = await AsyncStorage.getItem("activeProjects");
+          if (storedProjects) {
+            const parsedProjects = JSON.parse(storedProjects);
+            setProjects(parsedProjects.filter((p: Project) => p.completion_percentage < 100)); // Filter out completed
+          }
+        } catch (error) {
+          console.error("Error loading projects", error);
+        }
+      };
+
+      loadProjects();
+    }, [])
+  );
+
+
+  // Callback to update completion and remove completed projects
+  const handleUpdateCompletion = async (projectId: string, newCompletion: number) => {
+    try {
+      let updatedProjects = projects.map((proj) =>
+        proj.project_Id === projectId ? { ...proj, completion_percentage: newCompletion } : proj
+      );
+
+      // Remove completed projects
+      updatedProjects = updatedProjects.filter((proj) => proj.completion_percentage < 100);
+
+      // Save the updated active projects to AsyncStorage
+      await AsyncStorage.setItem("activeProjects", JSON.stringify(updatedProjects));
+
+      // Update state
+      setProjects(updatedProjects);
+    } catch (error) {
+      console.error("Error updating project completion", error);
+    }
   };
-  
 
   const handleCallContractor = useCallback((phoneNumber: string) => {
     if (phoneNumber) {
@@ -61,7 +91,10 @@ const WorkerActiveWorkScreen = () => {
     setSearchText(text);
   }, []);
 
-  const ProjectCard = ({ project }: { project: Project }) => (
+  const ProjectCard = ({ project, onUpdateCompletion }: { 
+    project: Project;
+    onUpdateCompletion: (projectId: string, newCompletion: number) => void;  
+    }) => (
     <View style={styles.projectCard}>
       {projectDetails(project).map(({ label, value, icon }) => (
         <View key={label} style={styles.card}>
@@ -77,7 +110,7 @@ const WorkerActiveWorkScreen = () => {
         onPress={() =>
           navigation.navigate("WorkUpdateStatusScreen", {
             project,
-            onUpdateCompletion: handleUpdateCompletion,
+            onUpdateCompletion,
           })
         }
       >
@@ -99,12 +132,12 @@ const WorkerActiveWorkScreen = () => {
         style={styles.searchBar}
         placeholder="Search Projects..."
         value={searchText}
-        onChangeText={handleSearch}
+        onChangeText={setSearchText}
       />
       <FlatList
         data={filteredProjects}
         keyExtractor={(item) => item.project_Id}
-        renderItem={({ item }) => <ProjectCard project={item} />}
+        renderItem={({ item }) => <ProjectCard project={item} onUpdateCompletion={handleUpdateCompletion} />}
         ListEmptyComponent={<Text style={styles.emptyText}>No active projects found.</Text>}
       />
       <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>

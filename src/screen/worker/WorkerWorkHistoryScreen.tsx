@@ -25,10 +25,10 @@ const WorkerWorkHistoryScreen = () => {
                 console.error("Error loading completed projects", error);
             }
         };
-
+    
         loadCompletedProjects();
     }, []);
-
+    
     useFocusEffect(
         React.useCallback(() => {
             const loadCompletedProjects = async () => {
@@ -45,6 +45,7 @@ const WorkerWorkHistoryScreen = () => {
             loadCompletedProjects();
         }, [])
     );
+    
 
     const projectDetails = (project: any) => [
         { label: 'Project ID', value: project.project_Id, icon: 'id-badge' },
