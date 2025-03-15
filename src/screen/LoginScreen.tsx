@@ -116,40 +116,44 @@ const LoginScreen = () => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: "#fff",
+        backgroundColor: "#F8F9FA",
         paddingHorizontal: 20,
+        justifyContent: "center",
     },
     headerContainer: {
         alignItems: "center",
-        marginTop: 50,
-        marginBottom: 20,
-    },
-    logo: {
-        width: 150,
-        height: 150,
         marginBottom: 30,
     },
+    logo: {
+        width: 140,
+        height: 140,
+        marginBottom: 20,
+    },
     helloText: {
-        fontSize: 50,
+        fontSize: 36,
         fontWeight: "bold",
+        color: "#1D1D1D",
     },
     signInText: {
-        fontSize: 18,
-        color: "#020E02",
+        fontSize: 16,
+        color: "#666",
         marginTop: 5,
     },
     inputContainer: {
         flexDirection: "row",
         alignItems: "center",
-        backgroundColor: "#F0F1F0",
-        borderRadius: 15,
+        backgroundColor: "#fff",
+        borderRadius: 12,
         paddingHorizontal: 15,
-        height: 50,
-        elevation: 5,
+        height: 55,
+        elevation: 3,
         marginBottom: 15,
+        borderColor: "#D1D1D1",
+        borderWidth: 1,
     },
     icon: {
-        marginRight: 10,
+        marginRight: 12,
+        color: "#555",
     },
     input: {
         flex: 1,
@@ -162,29 +166,38 @@ const styles = StyleSheet.create({
     forgotPassword: {
         textAlign: "right",
         fontSize: 14,
-        color: "#333",
+        color: "#007AFF",
         marginBottom: 20,
+        fontWeight: "bold",
     },
     button: {
         flexDirection: "row",
         backgroundColor: "#000",
         padding: 15,
-        borderRadius: 10,
+        borderRadius: 12,
         alignItems: "center",
         justifyContent: "center",
         marginTop: 20,
+        shadowColor: "#000",
+        shadowOpacity: 0.1,
+        shadowRadius: 5,
+        shadowOffset: { width: 0, height: 4 },
     },
     biometricButton: {
         flexDirection: "row",
         backgroundColor: "#007AFF",
         padding: 15,
-        borderRadius: 10,
+        borderRadius: 12,
         alignItems: "center",
         justifyContent: "center",
         marginTop: 10,
+        shadowColor: "#007AFF",
+        shadowOpacity: 0.2,
+        shadowRadius: 5,
+        shadowOffset: { width: 0, height: 4 },
     },
     buttonIcon: {
-        marginRight: 10,
+        marginRight: 12,
     },
     buttonText: {
         color: "#fff",
@@ -194,7 +207,7 @@ const styles = StyleSheet.create({
     footerText: {
         textAlign: "center",
         fontSize: 16,
-        color: "#000",
+        color: "#666",
         marginTop: 20,
     },
     createText: {
@@ -206,8 +219,9 @@ const styles = StyleSheet.create({
         color: "red",
         fontSize: 14,
         marginBottom: 10,
-        marginLeft: 10,
+        textAlign: "center",
     },
 });
+
 
 export default LoginScreen;

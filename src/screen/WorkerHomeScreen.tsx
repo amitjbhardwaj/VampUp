@@ -1,18 +1,10 @@
-import React, { useState } from "react";
 import {
-  View,
   Text,
   StyleSheet,
-  TouchableOpacity,
-  Modal,
-  TextInput,
-  Button,
 } from "react-native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { NavigationContainer, NavigationProp, useNavigation } from "@react-navigation/native";
 import { BlurView } from "@react-native-community/blur";
 import Ionicons from "react-native-vector-icons/Ionicons";
-import { RootStackParamList } from "../RootNavigator";
 import Home from "../tabs/Home";
 import Services from "../tabs/Services";
 import HelpContact from "../tabs/HelpContact";
