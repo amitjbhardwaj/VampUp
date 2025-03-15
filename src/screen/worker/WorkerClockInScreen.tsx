@@ -173,7 +173,7 @@ const WorkerClockInScreen: React.FC = () => {
                     {/* <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
                         <Icon name="arrow-back" size={30} color="#000" />
                     </TouchableOpacity> */}
-                    <Text style={styles.headerText}>My Attendance</Text>
+                    <Text style={styles.headerText}>Clock In</Text>
                 </View>
 
                 <View style={styles.content}>
