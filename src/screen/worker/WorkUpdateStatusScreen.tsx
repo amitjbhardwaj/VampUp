@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { View, Text, StyleSheet, TouchableOpacity, ToastAndroid, Modal, TextInput } from "react-native";
 import { NavigationProp, RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import { RootStackParamList } from "../../RootNavigator";
@@ -10,7 +10,6 @@ type WorkUpdateStatusScreenRouteProp = RouteProp<
     "WorkUpdateStatusScreen"
 >;
 type WorkUpdateStatusScreenNavigationProp = NavigationProp<RootStackParamList, "WorkUpdateStatusScreen">;
-
 
 export interface Project {
     project_Id: string;
@@ -28,83 +27,106 @@ const WorkUpdateStatusScreen = () => {
     const { project, onUpdateCompletion } = route.params;
 
     const [completion, setCompletion] = useState<string>(String(project.completion_percentage));
-    const [status, setStatus] = useState<string>("In-Progress"); // Track project status
-    const [isModalVisible, setIsModalVisible] = useState(false); // Modal visibility state
-    const [reason, setReason] = useState(""); // Reason for holding work
+    const [status, setStatus] = useState<string>("In-Progress");
+    const [isModalVisible, setIsModalVisible] = useState(false);
+    const [reason, setReason] = useState("");
 
-    // Handle Completion percentage change
+    useEffect(() => {
+        // Retrieve saved status from AsyncStorage
+        const fetchStatus = async () => {
+            try {
+                // Get saved status
+                const savedStatus = await AsyncStorage.getItem(`project_status_${project.project_Id}`);
+                if (savedStatus) {
+                    setStatus(savedStatus);
+                }
+            } catch (error) {
+                console.error("Error fetching saved status from AsyncStorage", error);
+            }
+        };
+
+        fetchStatus();
+    }, [project.project_Id]);
+
     const handleCompletionChange = (newCompletion: string) => {
         setCompletion(newCompletion);
-    
         const updatedCompletion = parseInt(newCompletion, 10);
         if (updatedCompletion === 100) {
-            setStatus("Completed"); // Immediately set status to "Completed" if 100% selected
-        } else if (updatedCompletion < 100 && status !== "On-Hold") {
-            setStatus("On-Hold"); // Set status to "On-Hold" if less than 100% and not already On-Hold
+            setStatus("Completed");
         } else if (status !== "On-Hold") {
-            setStatus("In-Progress"); // Set status to "In-Progress" if not on hold
+            setStatus("In-Progress");
         }
     };
-    
 
     const handleUpdate = async () => {
         if (!onUpdateCompletion) {
             console.error("onUpdateCompletion is not provided.");
             return;
         }
-    
+
         const updatedCompletion = parseInt(completion, 10);
         if (isNaN(updatedCompletion) || updatedCompletion < 0 || updatedCompletion > 100) {
             ToastAndroid.show("Please select a valid percentage (0-100)", ToastAndroid.SHORT);
             return;
         }
-    
-        // Set the status to On-Hold if the completion percentage is less than 100
-        if (updatedCompletion < 100 && status !== "On-Hold") {
-            setStatus("On-Hold");
-        }
-    
+
         onUpdateCompletion(project.project_Id, updatedCompletion);
-    
+
         if (updatedCompletion === 100) {
-            const completedProject = { 
-                ...project, 
-                completion_percentage: 100,  
-                status: "Completed" 
+            const completedProject = {
+                ...project,
+                completion_percentage: 100,
+                status: "Completed"
             };
-    
+
             try {
-                // Get stored active projects
                 const storedActiveProjects = await AsyncStorage.getItem("activeProjects");
                 let activeProjects = storedActiveProjects ? JSON.parse(storedActiveProjects) : [];
-    
-                // Remove the completed project from active projects
+
                 activeProjects = activeProjects.filter((p: Project) => p.project_Id !== project.project_Id);
                 await AsyncStorage.setItem("activeProjects", JSON.stringify(activeProjects));
-    
-                // Add to completed projects
+
                 const storedCompletedProjects = await AsyncStorage.getItem("completedProjects");
                 let completedProjects = storedCompletedProjects ? JSON.parse(storedCompletedProjects) : [];
-    
+
                 completedProjects.push(completedProject);
                 await AsyncStorage.setItem("completedProjects", JSON.stringify(completedProjects));
-    
-                // Navigate to WorkerWorkHistoryScreen
+
+                await AsyncStorage.setItem(`project_status_${project.project_Id}`, "Completed");
                 navigation.navigate("WorkerWorkHistoryScreen");
-    
             } catch (error) {
                 console.error("Error updating AsyncStorage", error);
             }
             return;
         }
-    
-        // If completion is not 100, go back
+
+        if (status === "On-Hold") {
+            const updatedProject = {
+                ...project,
+                status: "On-Hold"
+            };
+
+            await onUpdateCompletion(updatedProject.project_Id, 0);
+
+            try {
+                const storedActiveProjects = await AsyncStorage.getItem("activeProjects");
+                let activeProjects = storedActiveProjects ? JSON.parse(storedActiveProjects) : [];
+
+                activeProjects = activeProjects.map((p: Project) =>
+                    p.project_Id === updatedProject.project_Id ? updatedProject : p
+                );
+                await AsyncStorage.setItem("activeProjects", JSON.stringify(activeProjects));
+                await AsyncStorage.setItem(`project_status_${project.project_Id}`, "On-Hold");
+            } catch (error) {
+                console.error("Error updating AsyncStorage", error);
+            }
+        }
+
         navigation.goBack();
     };
-    
 
     const handleHoldWork = () => {
-        setIsModalVisible(true); // Show modal when Hold Work is pressed
+        setIsModalVisible(true);
     };
 
     const handleSubmitReason = () => {
@@ -112,22 +134,23 @@ const WorkUpdateStatusScreen = () => {
             ToastAndroid.show("Please provide a reason", ToastAndroid.SHORT);
             return;
         }
-        // Set project status to "On-Hold"
         setStatus("On-Hold");
-        console.log("Work is on hold. Reason:", reason);
-        setIsModalVisible(false); // Close modal
-        setReason(""); // Reset the reason
+        setIsModalVisible(false);
         ToastAndroid.show("Project marked as On Hold", ToastAndroid.SHORT);
+
+        AsyncStorage.setItem(`project_status_${project.project_Id}`, "On-Hold");
     };
 
     const handleCancel = () => {
-        setIsModalVisible(false); // Close modal without taking action
-        setReason(""); // Reset the reason
+        setIsModalVisible(false);
+        setReason("");
     };
 
-    const handleResumeWork = () => {
-        setStatus("In-Progress"); // Change status to "In-Progress"
+    const handleResumeWork = async () => {
+        setStatus("In-Progress");
         ToastAndroid.show("Project marked as In-Progress", ToastAndroid.SHORT);
+
+        await AsyncStorage.setItem(`project_status_${project.project_Id}`, "In-Progress");
     };
 
     return (
@@ -142,11 +165,7 @@ const WorkUpdateStatusScreen = () => {
             ))}
 
             <Text style={styles.label}>Completion Percentage</Text>
-            <Picker
-                selectedValue={completion}
-                onValueChange={handleCompletionChange} // Use the new handler
-                style={styles.picker}
-            >
+            <Picker selectedValue={completion} onValueChange={handleCompletionChange} style={styles.picker}>
                 {[...Array(101).keys()].map((i) => (
                     <Picker.Item key={i} label={`${i}%`} value={String(i)} />
                 ))}
@@ -170,13 +189,7 @@ const WorkUpdateStatusScreen = () => {
                 <Text style={styles.goBackButtonText}>Go Back</Text>
             </TouchableOpacity>
 
-            {/* Modal for holding work */}
-            <Modal
-                visible={isModalVisible}
-                animationType="slide"
-                transparent={true}
-                onRequestClose={handleCancel}
-            >
+            <Modal visible={isModalVisible} animationType="slide" transparent={true} onRequestClose={handleCancel}>
                 <View style={styles.modalOverlay}>
                     <View style={styles.modalContent}>
                         <Text style={styles.modalTitle}>Project On Hold</Text>
