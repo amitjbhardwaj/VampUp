@@ -43,7 +43,7 @@ const WorkerHomeScreen = () => {
         <Ionicons 
           name={iconName} 
           size={focused ? size + 5 : size} 
-          color={focused ? "#0047AB" : "gray"}  
+          color={focused ? "#000" : "gray"}  
         />
       );
     },
@@ -55,7 +55,7 @@ const WorkerHomeScreen = () => {
       screenOptions={({ route }) => ({
         tabBarIcon: (props) => renderIcon({ route, ...props }),
         tabBarLabel: ({ focused }) => (
-          <Text style={{ color: focused ? "#0047AB" : "gray", fontSize: focused ? 14 : 12 }}>
+          <Text style={{ color: focused ? "#000" : "gray", fontSize: focused ? 14 : 12 }}>
             {route.name}
           </Text>
         ),
