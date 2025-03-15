@@ -1,18 +1,18 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet, FlatList, TouchableOpacity } from "react-native";
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, Animated, Easing } from "react-native";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Icon from "react-native-vector-icons/FontAwesome";
 import { RootStackParamList } from "../../RootNavigator"; // Adjust the path as needed
 import { useFocusEffect } from "@react-navigation/native";
 
-
 // Correctly type the navigation prop using RootStackParamList
 type WorkerWorkHistoryScreenNavigationProp = NavigationProp<RootStackParamList, 'WorkerWorkHistoryScreen'>;
 
 const WorkerWorkHistoryScreen = () => {
-    const navigation = useNavigation<WorkerWorkHistoryScreenNavigationProp>(); // Explicitly set the type here
+    const navigation = useNavigation<WorkerWorkHistoryScreenNavigationProp>();
     const [completedProjects, setCompletedProjects] = useState<any[]>([]);
+    const fadeAnim = useState(new Animated.Value(0))[0]; // Animation for fade-in effect
 
     useEffect(() => {
         const loadCompletedProjects = async () => {
@@ -28,7 +28,7 @@ const WorkerWorkHistoryScreen = () => {
     
         loadCompletedProjects();
     }, []);
-    
+
     useFocusEffect(
         React.useCallback(() => {
             const loadCompletedProjects = async () => {
@@ -45,7 +45,16 @@ const WorkerWorkHistoryScreen = () => {
             loadCompletedProjects();
         }, [])
     );
-    
+
+    // Fade-in effect for the content
+    useEffect(() => {
+        Animated.timing(fadeAnim, {
+            toValue: 1,
+            duration: 500,
+            easing: Easing.ease,
+            useNativeDriver: true,
+        }).start();
+    }, []);
 
     const projectDetails = (project: any) => [
         { label: 'Project ID', value: project.project_Id, icon: 'id-badge' },
@@ -57,7 +66,7 @@ const WorkerWorkHistoryScreen = () => {
     ];
 
     const renderProjectCard = ({ item: project }: { item: any }) => (
-        <View style={styles.projectCard}>
+        <Animated.View style={[styles.projectCard, { opacity: fadeAnim }]}>
             <FlatList
                 data={projectDetails(project)}
                 keyExtractor={(item) => item.label}
@@ -71,7 +80,7 @@ const WorkerWorkHistoryScreen = () => {
                     </View>
                 )}
             />
-        </View>
+        </Animated.View>
     );
 
     return (
@@ -84,9 +93,14 @@ const WorkerWorkHistoryScreen = () => {
                 keyExtractor={(item, index) => item.project_Id || index.toString()}
                 renderItem={renderProjectCard}
                 ListEmptyComponent={<Text style={styles.emptyText}>No completed projects yet.</Text>}
+                contentContainerStyle={styles.listContent}  // Add padding to the list
             />
 
-            <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
+            <TouchableOpacity
+                style={styles.backButton}
+                onPress={() => navigation.goBack()}
+                activeOpacity={0.7}  // Make button feedback smoother
+            >
                 <Text style={styles.backButtonText}>Go Back</Text>
             </TouchableOpacity>
         </View>
@@ -95,19 +109,24 @@ const WorkerWorkHistoryScreen = () => {
 
 const styles = StyleSheet.create({
     container: { flex: 1, padding: 20, backgroundColor: '#f9f9f9' },
-    title: { fontSize: 22, fontWeight: 'bold', textAlign: 'center', marginBottom: 20 },
+    title: { fontSize: 24, fontWeight: 'bold', textAlign: 'center', marginBottom: 20 },
     emptyText: { fontSize: 16, color: "#777", textAlign: "center", marginTop: 20 },
+    listContent: { paddingBottom: 20 },  // Add padding to bottom for smoother scrolling
     projectCard: {
         backgroundColor: "#fff",
         padding: 15,
         marginBottom: 15,
         borderRadius: 10,
         elevation: 5,
+        shadowColor: "#000",  // Subtle shadow effect
+        shadowOpacity: 0.2,   // Softer shadow
+        shadowRadius: 8,     // Increased shadow blur
+        shadowOffset: { width: 0, height: 3 },
     },
     card: { flexDirection: 'row', alignItems: 'center', marginBottom: 10 },
     icon: { marginRight: 15 },
-    label: { fontWeight: 'bold', fontSize: 16 },
-    value: { fontSize: 14, flexWrap: 'wrap', flex: 1 },
+    label: { fontWeight: 'bold', fontSize: 16, color: '#333' },
+    value: { fontSize: 14, color: '#555', flexWrap: 'wrap', flex: 1 },
     paymentButton: {
         backgroundColor: '#007BFF',
         padding: 15,
@@ -121,7 +140,7 @@ const styles = StyleSheet.create({
         fontSize: 16,
     },
     backButton: {
-        backgroundColor: '#000',
+        backgroundColor: '#28a745',
         padding: 13,
         marginTop: 20,
         alignItems: 'center',
