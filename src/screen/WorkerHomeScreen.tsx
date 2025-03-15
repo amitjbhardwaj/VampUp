@@ -1,56 +1,76 @@
+import React, { useCallback } from 'react';
 import {
   Text,
   StyleSheet,
+  Pressable,
 } from "react-native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { BlurView } from "@react-native-community/blur";
 import Ionicons from "react-native-vector-icons/Ionicons";
+import { RouteProp } from '@react-navigation/native';
 import Home from "../tabs/Home";
 import Services from "../tabs/Services";
 import HelpContact from "../tabs/HelpContact";
 import Settings from "../tabs/Settings";
 
-const Tab = createBottomTabNavigator();
+type TabParamList = {
+  Home: undefined;
+  "My Services": undefined;
+  Help: undefined;
+  Settings: undefined;
+};
+
+const Tab = createBottomTabNavigator<TabParamList>();
+
+type TabScreenProps = {
+  route: RouteProp<TabParamList, keyof TabParamList>;
+  focused: boolean;
+  size: number;
+};
 
 const WorkerHomeScreen = () => {
+  const renderIcon = useCallback(
+    ({ route, focused, size }: TabScreenProps) => {
+      let iconName = "home-outline"; 
+      if (route.name === "My Services") {
+        iconName = "briefcase-outline";
+      } else if (route.name === "Help") {
+        iconName = "call-outline";
+      } else if (route.name === "Settings") {
+        iconName = "settings-outline";
+      }
+
+      return (
+        <Ionicons 
+          name={iconName} 
+          size={focused ? size + 5 : size} 
+          color={focused ? "#0047AB" : "gray"}  
+        />
+      );
+    },
+    []
+  );
+
   return (
     <Tab.Navigator
-      screenOptions={({ route, navigation }) => {
-        let iconName = "home-outline"; // Default value
-        if (route.name === "My Services") {
-          iconName = "briefcase-outline";
-        } else if (route.name === "Help") {
-          iconName = "call-outline";
-        } else if (route.name === "Settings") {
-          iconName = "settings-outline";
-        }
-
-        return {
-          tabBarIcon: ({ focused, size }) => (
-            <Ionicons 
-              name={iconName} 
-              size={size} 
-              color={focused ? "black" : "gray"}  // Change color to black when focused, otherwise gray
-            />
-          ),
-          tabBarLabel: ({ focused }) => (
-            <Text style={{ color: focused ? "black" : "gray" }}>
-              {route.name}
-            </Text>
-          ),
-          tabBarBackground: () => (
-            <BlurView
-              style={styles.blurView}
-              blurType="light"
-              blurAmount={10}
-            />
-          ),
-          tabBarShowLabel: true,
-          tabBarStyle: styles.tabBar,
-          headerStyle: styles.header,
-          headerTitleAlign: "center",
-        };
-      }}
+      screenOptions={({ route }) => ({
+        tabBarIcon: (props) => renderIcon({ route, ...props }),
+        tabBarLabel: ({ focused }) => (
+          <Text style={{ color: focused ? "#0047AB" : "gray", fontSize: focused ? 14 : 12 }}>
+            {route.name}
+          </Text>
+        ),
+        tabBarShowLabel: true,
+        tabBarStyle: styles.tabBar,
+        headerStyle: styles.header,
+        headerTitleAlign: "center",
+        animationEnabled: false, // Disable tab switching animation
+        lazy: true, // Enable lazy loading of screens
+        tabBarButton: (props) => (
+          <Pressable {...props} android_ripple={{ color: "transparent" }}>
+            {props.children}
+          </Pressable>
+        ),
+      })}
     >
       <Tab.Screen name="Home" component={Home} />
       <Tab.Screen name="My Services" component={Services} />
@@ -60,94 +80,20 @@ const WorkerHomeScreen = () => {
   );
 };
 
-
-
 const styles = StyleSheet.create({
-  screen: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  iconContainer: {
-    alignItems: "center",
-    marginBottom: 20,
-  },
-  iconRow: {
-    flexDirection: "row",
-    justifyContent: "space-around",
-    width: "100%",
-    marginBottom: 20,
-  },
-  iconItem: {
-    alignItems: "center",
-    width: "45%",
-  },
-  floatingButton: {
-    position: "absolute",
-    bottom: 80,
-    right: 20,
-    backgroundColor: "#000",
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-    justifyContent: "center",
-    alignItems: "center",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 4,
-    elevation: 5,
-  },
-  modalContainer: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "rgba(0,0,0,0.5)",
-  },
-  modalContent: {
-    backgroundColor: "white",
-    padding: 20,
-    borderRadius: 10,
-    width: "80%",
-  },
-  modalHeader: {
-    fontSize: 18,
-    fontWeight: "bold",
-    marginBottom: 10,
-    textAlign: "center",
-  },
-  input: {
-    borderWidth: 1,
-    borderColor: "gray",
-    padding: 10,
-    marginBottom: 10,
-    borderRadius: 5,
-  },
-  textArea: {
-    borderWidth: 1,
-    borderColor: "gray",
-    padding: 10,
-    height: 100,
-    borderRadius: 5,
-    textAlignVertical: "top",
-    marginBottom: 10,
-  },
-  buttonContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-  },
   tabBar: {
     position: "absolute",
-    backgroundColor: "rgba(255,255,255,0.8)",
+    backgroundColor: "rgba(255,255,255,0.9)",  // Simpler background without blur
+    borderRadius: 20,
+    marginHorizontal: 10,
+    bottom: 10,
+    paddingBottom: 8,
     borderTopWidth: 0,
-    elevation: 0,
-    height: 60,
+    elevation: 5,
+    height: 65,
   },
   header: {
     backgroundColor: "rgba(255,255,255,0.8)",
-  },
-  blurView: {
-    ...StyleSheet.absoluteFillObject,
   },
 });
 
