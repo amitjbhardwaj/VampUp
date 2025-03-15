@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, StyleSheet, TouchableOpacity, ToastAndroid, Modal, TextInput } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, ToastAndroid, Modal, TextInput, ScrollView, ScrollViewBase } from "react-native";
 import { NavigationProp, RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import { RootStackParamList } from "../../RootNavigator";
 import { Picker } from '@react-native-picker/picker';
@@ -35,7 +35,6 @@ const WorkUpdateStatusScreen = () => {
         // Retrieve saved status from AsyncStorage
         const fetchStatus = async () => {
             try {
-                // Get saved status
                 const savedStatus = await AsyncStorage.getItem(`project_status_${project.project_Id}`);
                 if (savedStatus) {
                     setStatus(savedStatus);
@@ -154,76 +153,80 @@ const WorkUpdateStatusScreen = () => {
     };
 
     return (
-        <View style={styles.container}>
-            <Text style={styles.title}>Update Project Status</Text>
+        <ScrollView>
+            <View style={styles.container}>
+                <Text style={styles.title}>Update Project Status</Text>
 
-            {projectDetails(project, status).map(({ label, value }) => (
-                <View key={label} style={styles.card}>
-                    <Text style={styles.label}>{label}</Text>
-                    <Text style={styles.value}>{value}</Text>
-                </View>
-            ))}
+                <ScrollView>
+                    {projectDetails(project, status).map(({ label, value }) => (
+                        <View key={label} style={styles.card}>
+                            <Text style={styles.label}>{label}</Text>
+                            <Text style={styles.value}>{value}</Text>
+                        </View>
+                    ))}
 
-            <Text style={styles.label}>Completion Percentage</Text>
-            <Picker selectedValue={completion} onValueChange={handleCompletionChange} style={styles.picker}>
-                {[...Array(101).keys()].map((i) => (
-                    <Picker.Item key={i} label={`${i}%`} value={String(i)} />
-                ))}
-            </Picker>
-
-            <TouchableOpacity style={styles.updateButton} onPress={handleUpdate}>
-                <Text style={styles.updateButtonText}>Update</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity style={styles.onHoldButton} onPress={handleHoldWork}>
-                <Text style={styles.onHoldButtonText}>Hold Work</Text>
-            </TouchableOpacity>
-
-            {status === "On-Hold" && (
-                <TouchableOpacity style={styles.resumeButton} onPress={handleResumeWork}>
-                    <Text style={styles.resumeButtonText}>Resume Work</Text>
-                </TouchableOpacity>
-            )}
-
-            <TouchableOpacity style={styles.goBackButton} onPress={() => navigation.goBack()}>
-                <Text style={styles.goBackButtonText}>Go Back</Text>
-            </TouchableOpacity>
-
-            <Modal visible={isModalVisible} animationType="slide" transparent={true} onRequestClose={handleCancel}>
-                <View style={styles.modalOverlay}>
-                    <View style={styles.modalContent}>
-                        <Text style={styles.modalTitle}>Project On Hold</Text>
-
-                        {projectDetails(project, status).map(({ label, value }) => (
-                            <View key={label} style={styles.card}>
-                                <Text style={styles.label}>{label}</Text>
-                                <Text style={styles.value}>{value}</Text>
-                            </View>
+                    <Text style={styles.label}>Completion Percentage</Text>
+                    <Picker selectedValue={completion} onValueChange={handleCompletionChange} style={styles.picker}>
+                        {[...Array(101).keys()].map((i) => (
+                            <Picker.Item key={i} label={`${i}%`} value={String(i)} />
                         ))}
+                    </Picker>
 
-                        <Text style={styles.label}>Reason for Hold</Text>
-                        <TextInput
-                            style={styles.reasonInput}
-                            value={reason}
-                            onChangeText={setReason}
-                            placeholder="Enter reason"
-                            multiline
-                            numberOfLines={4}
-                        />
+                    <TouchableOpacity style={styles.updateButton} onPress={handleUpdate}>
+                        <Text style={styles.updateButtonText}>Update</Text>
+                    </TouchableOpacity>
 
-                        <View style={styles.modalButtons}>
-                            <TouchableOpacity style={styles.submitButton} onPress={handleSubmitReason}>
-                                <Text style={styles.submitButtonText}>Submit</Text>
-                            </TouchableOpacity>
+                    <TouchableOpacity style={styles.onHoldButton} onPress={handleHoldWork}>
+                        <Text style={styles.onHoldButtonText}>Hold Work</Text>
+                    </TouchableOpacity>
 
-                            <TouchableOpacity style={styles.cancelButton} onPress={handleCancel}>
-                                <Text style={styles.cancelButtonText}>Cancel</Text>
-                            </TouchableOpacity>
+                    {status === "On-Hold" && (
+                        <TouchableOpacity style={styles.resumeButton} onPress={handleResumeWork}>
+                            <Text style={styles.resumeButtonText}>Resume Work</Text>
+                        </TouchableOpacity>
+                    )}
+
+                    <TouchableOpacity style={styles.goBackButton} onPress={() => navigation.goBack()}>
+                        <Text style={styles.goBackButtonText}>Go Back</Text>
+                    </TouchableOpacity>
+                </ScrollView>
+
+                <Modal visible={isModalVisible} animationType="fade" transparent={true} onRequestClose={handleCancel}>
+                    <View style={styles.modalOverlay}>
+                        <View style={styles.modalContent}>
+                            <Text style={styles.modalTitle}>Project On Hold</Text>
+
+                            {projectDetails(project, status).map(({ label, value }) => (
+                                <View key={label} style={styles.card}>
+                                    <Text style={styles.label}>{label}</Text>
+                                    <Text style={styles.value}>{value}</Text>
+                                </View>
+                            ))}
+
+                            <Text style={styles.label}>Reason for Hold</Text>
+                            <TextInput
+                                style={styles.reasonInput}
+                                value={reason}
+                                onChangeText={setReason}
+                                placeholder="Enter reason"
+                                multiline
+                                numberOfLines={4}
+                            />
+
+                            <View style={styles.modalButtons}>
+                                <TouchableOpacity style={styles.submitButton} onPress={handleSubmitReason}>
+                                    <Text style={styles.submitButtonText}>Submit</Text>
+                                </TouchableOpacity>
+
+                                <TouchableOpacity style={styles.cancelButton} onPress={handleCancel}>
+                                    <Text style={styles.cancelButtonText}>Cancel</Text>
+                                </TouchableOpacity>
+                            </View>
                         </View>
                     </View>
-                </View>
-            </Modal>
-        </View>
+                </Modal>
+            </View>
+        </ScrollView>
     );
 };
 
@@ -242,19 +245,19 @@ const projectDetails = (project: Project, status: string) => {
 };
 
 const styles = StyleSheet.create({
-    container: { flex: 1, padding: 20, backgroundColor: "#f9f9f9" },
-    title: { fontSize: 22, fontWeight: "bold", textAlign: "center", marginBottom: 20 },
-    card: { backgroundColor: "#fff", padding: 10, marginBottom: 10, borderRadius: 8 },
-    label: { fontWeight: "bold", fontSize: 16 },
-    value: { fontSize: 14, color: "#333" },
-    picker: { height: 50, width: "100%", borderColor: "#ccc", borderWidth: 1, marginBottom: 20, borderRadius: 5 },
-    updateButton: { backgroundColor: "#007BFF", padding: 10, alignItems: "center", borderRadius: 10, marginBottom: 10 },
+    container: { flex: 1, padding: 20, backgroundColor: "#f5f5f5" },
+    title: { fontSize: 24, fontWeight: "bold", textAlign: "center", marginBottom: 20, color: "#333" },
+    card: { backgroundColor: "#fff", padding: 15, marginBottom: 15, borderRadius: 10, elevation: 5 },
+    label: { fontWeight: "bold", fontSize: 16, color: "#333" },
+    value: { fontSize: 14, color: "#555" },
+    picker: { height: 50, width: "100%", borderColor: "#ddd", borderWidth: 1, borderRadius: 8, marginBottom: 20 },
+    updateButton: { backgroundColor: "#007BFF", padding: 15, borderRadius: 10, marginBottom: 10, alignItems: "center" },
     updateButtonText: { color: "#fff", fontWeight: "bold", fontSize: 16 },
-    onHoldButton: { backgroundColor: "#FF8C00", padding: 10, alignItems: "center", borderRadius: 10, marginBottom: 10 },
+    onHoldButton: { backgroundColor: "#FF8C00", padding: 15, borderRadius: 10, marginBottom: 10, alignItems: "center" },
     onHoldButtonText: { color: "#fff", fontWeight: "bold", fontSize: 16 },
-    resumeButton: { backgroundColor: "#28A745", padding: 10, alignItems: "center", borderRadius: 10, marginBottom: 10 },
+    resumeButton: { backgroundColor: "#28A745", padding: 15, borderRadius: 10, marginBottom: 10, alignItems: "center" },
     resumeButtonText: { color: "#fff", fontWeight: "bold", fontSize: 16 },
-    goBackButton: { backgroundColor: "#D3D3D3", padding: 10, alignItems: "center", borderRadius: 10 },
+    goBackButton: { backgroundColor: "#D3D3D3", padding: 15, borderRadius: 10, alignItems: "center" },
     goBackButtonText: { color: "#000", fontWeight: "bold", fontSize: 16 },
 
     // Modal styles
@@ -266,51 +269,38 @@ const styles = StyleSheet.create({
     },
     modalContent: {
         backgroundColor: "#fff",
-        padding: 20,
-        borderRadius: 10,
+        padding: 25,
+        borderRadius: 15,
         width: "80%",
+        elevation: 10
     },
-    modalTitle: {
-        fontSize: 18,
-        fontWeight: "bold",
-        marginBottom: 10,
-        textAlign: "center"
-    },
+    modalTitle: { fontSize: 18, fontWeight: "bold", textAlign: "center", marginBottom: 20 },
     reasonInput: {
         borderWidth: 1,
-        borderColor: "#ccc",
+        borderColor: "#ddd",
         padding: 10,
+        borderRadius: 8,
         marginBottom: 20,
-        borderRadius: 5,
         height: 100,
-        textAlignVertical: "top",
+        textAlignVertical: "top"
     },
-    modalButtons: {
-        flexDirection: "row",
-        justifyContent: "space-between"
-    },
+    modalButtons: { flexDirection: "row", justifyContent: "space-between" },
     submitButton: {
         backgroundColor: "#007BFF",
-        padding: 10,
-        borderRadius: 5,
-        width: "45%",
+        padding: 15,
+        borderRadius: 8,
+        width: "48%",
         alignItems: "center"
     },
-    submitButtonText: {
-        color: "#fff",
-        fontWeight: "bold"
-    },
+    submitButtonText: { color: "#fff", fontWeight: "bold" },
     cancelButton: {
         backgroundColor: "#D3D3D3",
-        padding: 10,
-        borderRadius: 5,
-        width: "45%",
+        padding: 15,
+        borderRadius: 8,
+        width: "48%",
         alignItems: "center"
     },
-    cancelButtonText: {
-        color: "#000",
-        fontWeight: "bold"
-    },
+    cancelButtonText: { color: "#000", fontWeight: "bold" }
 });
 
 export default WorkUpdateStatusScreen;
