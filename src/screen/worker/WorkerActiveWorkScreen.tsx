@@ -14,7 +14,6 @@ import { RootStackParamList } from "../../RootNavigator";
 import projectsData from "../../assets/projects.json";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-
 interface Project {
   project_Id: string;
   project_description: string;
@@ -23,78 +22,57 @@ interface Project {
   project_end_date: string;
   contractor_phone: string;
   completion_percentage: number;
+  status: string;
 }
 
 const WorkerActiveWorkScreen = () => {
-
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const [searchText, setSearchText] = useState<string>("");
-  const [projects, setProjects] = useState<Project[]>(projectsData);
+  const [projects, setProjects] = useState<Project[]>(projectsData.map(p => ({ ...p, status: "In Progress" })));
 
-  // Filter active projects 
-  const activeProjects = projects.filter((project) => project.completion_percentage < 100);
-
-  // Filter active projects (no need to filter for completion <100% here, as we already do it in AsyncStorage)
-  const filteredProjects = projects.filter((project) =>
-    Object.values(project).some((value) =>
-      String(value).toLowerCase().includes(searchText.toLowerCase())
-    )
-  );
-
-  // Load projects from AsyncStorage on screen focus
   useFocusEffect(
     useCallback(() => {
       const loadProjects = async () => {
         try {
           const storedProjects = await AsyncStorage.getItem("activeProjects");
           if (storedProjects) {
-            const parsedProjects = JSON.parse(storedProjects);
-            setProjects(parsedProjects.filter((p: Project) => p.completion_percentage < 100)); // Filter out completed
+            const parsedProjects = JSON.parse(storedProjects).map((p: Project) => ({
+              ...p,
+              status: p.status || "In Progress",
+            }));
+            setProjects(parsedProjects.filter((p: Project) => p.completion_percentage < 100));
           }
         } catch (error) {
           console.error("Error loading projects", error);
         }
       };
-
       loadProjects();
     }, [])
   );
 
-
-  // Callback to update completion and remove completed projects
   const handleUpdateCompletion = async (projectId: string, newCompletion: number) => {
     try {
       let updatedProjects = projects.map((proj) =>
-        proj.project_Id === projectId ? { ...proj, completion_percentage: newCompletion } : proj
+        proj.project_Id === projectId
+          ? { ...proj, completion_percentage: newCompletion, status: newCompletion === 100 ? "Completed" : "In Progress" }
+          : proj
       );
 
-      // Remove completed projects
       updatedProjects = updatedProjects.filter((proj) => proj.completion_percentage < 100);
-
-      // Save the updated active projects to AsyncStorage
       await AsyncStorage.setItem("activeProjects", JSON.stringify(updatedProjects));
-
-      // Update state
       setProjects(updatedProjects);
     } catch (error) {
       console.error("Error updating project completion", error);
     }
   };
 
-  const handleCallContractor = useCallback((phoneNumber: string) => {
-    if (phoneNumber) {
-      Linking.openURL(`tel:${phoneNumber}`);
-    }
-  }, []);
+  const filteredProjects = projects.filter((project) =>
+    Object.values(project).some((value) =>
+      String(value).toLowerCase().includes(searchText.toLowerCase())
+    )
+  );
 
-  const handleSearch = useCallback((text: string) => {
-    setSearchText(text);
-  }, []);
-
-  const ProjectCard = ({ project, onUpdateCompletion }: { 
-    project: Project;
-    onUpdateCompletion: (projectId: string, newCompletion: number) => void;  
-    }) => (
+  const ProjectCard = ({ project }: { project: Project }) => (
     <View style={styles.projectCard}>
       {projectDetails(project).map(({ label, value, icon }) => (
         <View key={label} style={styles.card}>
@@ -105,12 +83,16 @@ const WorkerActiveWorkScreen = () => {
           </View>
         </View>
       ))}
+      <View style={styles.statusContainer}>
+        <Text style={styles.statusLabel}>Status:</Text>
+        <Text style={styles.statusValue}>{project.status}</Text>
+      </View>
       <TouchableOpacity
         style={styles.updateButton}
         onPress={() =>
           navigation.navigate("WorkUpdateStatusScreen", {
             project,
-            onUpdateCompletion,
+            onUpdateCompletion: handleUpdateCompletion,
           })
         }
       >
@@ -118,7 +100,7 @@ const WorkerActiveWorkScreen = () => {
       </TouchableOpacity>
       <TouchableOpacity
         style={styles.callButton}
-        onPress={() => handleCallContractor(project.contractor_phone)}
+        onPress={() => Linking.openURL(`tel:${project.contractor_phone}`)}
       >
         <Text style={styles.callButtonText}>Call Contractor</Text>
       </TouchableOpacity>
@@ -137,7 +119,7 @@ const WorkerActiveWorkScreen = () => {
       <FlatList
         data={filteredProjects}
         keyExtractor={(item) => item.project_Id}
-        renderItem={({ item }) => <ProjectCard project={item} onUpdateCompletion={handleUpdateCompletion} />}
+        renderItem={({ item }) => <ProjectCard project={item} />}
         ListEmptyComponent={<Text style={styles.emptyText}>No active projects found.</Text>}
       />
       <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
@@ -160,50 +142,22 @@ const projectDetails = (project: Project) => [
 const styles = StyleSheet.create({
   container: { flex: 1, padding: 20, backgroundColor: "#f9f9f9" },
   title: { fontSize: 22, fontWeight: "bold", textAlign: "center", marginBottom: 20 },
-  searchBar: {
-    height: 40,
-    borderColor: "#ccc",
-    borderWidth: 1,
-    borderRadius: 5,
-    paddingHorizontal: 10,
-    marginBottom: 20,
-  },
+  searchBar: { height: 40, borderColor: "#ccc", borderWidth: 1, borderRadius: 5, paddingHorizontal: 10, marginBottom: 20 },
   emptyText: { fontSize: 16, color: "#777", textAlign: "center", marginTop: 20 },
-  projectCard: {
-    backgroundColor: "#fff",
-    padding: 15,
-    marginBottom: 15,
-    borderRadius: 10,
-    elevation: 5,
-  },
+  projectCard: { backgroundColor: "#fff", padding: 15, marginBottom: 15, borderRadius: 10, elevation: 5 },
   card: { flexDirection: "row", alignItems: "center", marginBottom: 10 },
   icon: { marginRight: 15 },
   label: { fontWeight: "bold", fontSize: 16 },
   value: { fontSize: 14, flexWrap: "wrap", flex: 1 },
-  backButton: {
-    backgroundColor: "#000",
-    padding: 13,
-    marginTop: 20,
-    alignItems: "center",
-    borderRadius: 10,
-  },
+  statusContainer: { flexDirection: "row", alignItems: "center", marginTop: 10 },
+  statusLabel: { fontWeight: "bold", fontSize: 16, marginRight: 5 },
+  statusValue: { fontSize: 16, color: "#007BFF" },
+  backButton: { backgroundColor: "#000", padding: 13, marginTop: 20, alignItems: "center", borderRadius: 10 },
   backButtonText: { color: "#fff", fontWeight: "bold", fontSize: 16 },
-  updateButton: {
-    backgroundColor: "#007BFF",
-    padding: 10,
-    marginTop: 15,
-    alignItems: "center",
-    borderRadius: 10,
-  },
+  updateButton: { backgroundColor: "#007BFF", padding: 10, marginTop: 15, alignItems: "center", borderRadius: 10 },
   updateButtonText: { color: "#fff", fontWeight: "bold", fontSize: 16 },
-  callButton: {
-    backgroundColor: "#28a745",
-    padding: 10,
-    marginTop: 10,
-    alignItems: "center",
-    borderRadius: 10,
-  },
-  callButtonText: { color: "#fff", fontWeight: "bold", fontSize: 16 },
+  callButton: { backgroundColor: "#28a745", padding: 10, marginTop: 10, alignItems: "center", borderRadius: 10 },
+  callButtonText: { color: "#fff", fontWeight: "bold", fontSize: 16 }
 });
 
 export default WorkerActiveWorkScreen;

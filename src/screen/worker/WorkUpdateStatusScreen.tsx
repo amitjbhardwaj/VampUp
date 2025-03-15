@@ -35,14 +35,17 @@ const WorkUpdateStatusScreen = () => {
     // Handle Completion percentage change
     const handleCompletionChange = (newCompletion: string) => {
         setCompletion(newCompletion);
-
+    
         const updatedCompletion = parseInt(newCompletion, 10);
         if (updatedCompletion === 100) {
             setStatus("Completed"); // Immediately set status to "Completed" if 100% selected
+        } else if (updatedCompletion < 100 && status !== "On-Hold") {
+            setStatus("On-Hold"); // Set status to "On-Hold" if less than 100% and not already On-Hold
         } else if (status !== "On-Hold") {
             setStatus("In-Progress"); // Set status to "In-Progress" if not on hold
         }
     };
+    
 
     const handleUpdate = async () => {
         if (!onUpdateCompletion) {
@@ -54,6 +57,11 @@ const WorkUpdateStatusScreen = () => {
         if (isNaN(updatedCompletion) || updatedCompletion < 0 || updatedCompletion > 100) {
             ToastAndroid.show("Please select a valid percentage (0-100)", ToastAndroid.SHORT);
             return;
+        }
+    
+        // Set the status to On-Hold if the completion percentage is less than 100
+        if (updatedCompletion < 100 && status !== "On-Hold") {
+            setStatus("On-Hold");
         }
     
         onUpdateCompletion(project.project_Id, updatedCompletion);
@@ -90,8 +98,10 @@ const WorkUpdateStatusScreen = () => {
             return;
         }
     
+        // If completion is not 100, go back
         navigation.goBack();
     };
+    
 
     const handleHoldWork = () => {
         setIsModalVisible(true); // Show modal when Hold Work is pressed
