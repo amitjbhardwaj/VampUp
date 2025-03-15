@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, StyleSheet, TouchableOpacity, ToastAndroid, Modal, TextInput, ScrollView, ScrollViewBase } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, ToastAndroid, Modal, TextInput, ScrollView } from "react-native";
 import { NavigationProp, RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import { RootStackParamList } from "../../RootNavigator";
 import { Picker } from '@react-native-picker/picker';
@@ -153,7 +153,7 @@ const WorkUpdateStatusScreen = () => {
     };
 
     return (
-        <ScrollView>
+        <ScrollView contentContainerStyle={styles.scrollContainer}>
             <View style={styles.container}>
                 <Text style={styles.title}>Update Project Status</Text>
 
@@ -166,7 +166,12 @@ const WorkUpdateStatusScreen = () => {
                     ))}
 
                     <Text style={styles.label}>Completion Percentage</Text>
-                    <Picker selectedValue={completion} onValueChange={handleCompletionChange} style={styles.picker}>
+                    <Picker
+                        selectedValue={completion}
+                        onValueChange={handleCompletionChange}
+                        style={styles.picker}
+                        enabled={status !== "On-Hold"}  // Disable Picker when status is "On-Hold"
+                    >
                         {[...Array(101).keys()].map((i) => (
                             <Picker.Item key={i} label={`${i}%`} value={String(i)} />
                         ))}
@@ -176,7 +181,11 @@ const WorkUpdateStatusScreen = () => {
                         <Text style={styles.updateButtonText}>Update</Text>
                     </TouchableOpacity>
 
-                    <TouchableOpacity style={styles.onHoldButton} onPress={handleHoldWork}>
+                    <TouchableOpacity
+                        style={[styles.onHoldButton, status === "On-Hold" && styles.disabledButton]}
+                        onPress={handleHoldWork}
+                        disabled={status === "On-Hold"} // Disable if the status is "On-Hold"
+                    >
                         <Text style={styles.onHoldButtonText}>Hold Work</Text>
                     </TouchableOpacity>
 
@@ -191,7 +200,7 @@ const WorkUpdateStatusScreen = () => {
                     </TouchableOpacity>
                 </ScrollView>
 
-
+                {/* Modal */}
                 <Modal visible={isModalVisible} animationType="fade" transparent={true} onRequestClose={handleCancel}>
                     <ScrollView>
                         <View style={styles.modalOverlay}>
@@ -248,62 +257,88 @@ const projectDetails = (project: Project, status: string) => {
 };
 
 const styles = StyleSheet.create({
-    container: { flex: 1, padding: 20, backgroundColor: "#f5f5f5" },
-    title: { fontSize: 24, fontWeight: "bold", textAlign: "center", marginBottom: 20, color: "#333" },
-    card: { backgroundColor: "#fff", padding: 15, marginBottom: 15, borderRadius: 10, elevation: 5 },
-    label: { fontWeight: "bold", fontSize: 16, color: "#333" },
-    value: { fontSize: 14, color: "#555" },
-    picker: { height: 50, width: "100%", borderColor: "#ddd", borderWidth: 1, borderRadius: 8, marginBottom: 20 },
-    updateButton: { backgroundColor: "#007BFF", padding: 15, borderRadius: 10, marginBottom: 10, alignItems: "center" },
-    updateButtonText: { color: "#fff", fontWeight: "bold", fontSize: 16 },
-    onHoldButton: { backgroundColor: "#FF8C00", padding: 15, borderRadius: 10, marginBottom: 10, alignItems: "center" },
-    onHoldButtonText: { color: "#fff", fontWeight: "bold", fontSize: 16 },
-    resumeButton: { backgroundColor: "#28A745", padding: 15, borderRadius: 10, marginBottom: 10, alignItems: "center" },
-    resumeButtonText: { color: "#fff", fontWeight: "bold", fontSize: 16 },
-    goBackButton: { backgroundColor: "#D3D3D3", padding: 15, borderRadius: 10, alignItems: "center" },
-    goBackButtonText: { color: "#000", fontWeight: "bold", fontSize: 16 },
-
-    // Modal styles
-    modalOverlay: {
-        flex: 1,
-        justifyContent: "center",
+    scrollContainer: { flexGrow: 1 },
+    container: { flex: 1, padding: 16, backgroundColor: "#f8f8f8" },
+    title: { fontSize: 24, fontWeight: "bold", marginBottom: 16 },
+    label: { fontSize: 16, fontWeight: "600" },
+    value: { fontSize: 16, color: "#555", marginBottom: 8 },
+    picker: { height: 50, marginVertical: 16 },
+    updateButton: {
+        backgroundColor: "#4CAF50",
+        paddingVertical: 12,
+        borderRadius: 5,
         alignItems: "center",
-        backgroundColor: "rgba(0, 0, 0, 0.5)"
     },
-    modalContent: {
-        backgroundColor: "#fff",
-        padding: 25,
-        borderRadius: 15,
-        width: "80%",
-        elevation: 10
+    updateButtonText: { color: "#fff", fontWeight: "600", fontSize: 16 },
+    onHoldButton: {
+        backgroundColor: "#FF9800",
+        paddingVertical: 12,
+        borderRadius: 5,
+        alignItems: "center",
+        marginTop: 10,
     },
-    modalTitle: { fontSize: 18, fontWeight: "bold", textAlign: "center", marginBottom: 20 },
+    onHoldButtonText: { color: "#fff", fontWeight: "600", fontSize: 16 },
+    resumeButton: {
+        backgroundColor: "#2196F3",
+        paddingVertical: 12,
+        borderRadius: 5,
+        alignItems: "center",
+        marginTop: 10,
+    },
+    resumeButtonText: { color: "#fff", fontWeight: "600", fontSize: 16 },
+    goBackButton: {
+        backgroundColor: "#BDBDBD",
+        paddingVertical: 12,
+        borderRadius: 5,
+        alignItems: "center",
+        marginTop: 10,
+    },
+    goBackButtonText: { color: "#fff", fontWeight: "600", fontSize: 16 },
+    modalOverlay: { flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: "rgba(0, 0, 0, 0.5)" },
+    modalContent: { backgroundColor: "white", padding: 16, borderRadius: 10, width: "80%" },
+    modalTitle: { fontSize: 20, fontWeight: "bold", marginBottom: 16 },
     reasonInput: {
-        borderWidth: 1,
-        borderColor: "#ddd",
-        padding: 10,
+        borderColor: "#ccc",
+        borderWidth: 2,
+        padding: 8,
         borderRadius: 8,
-        marginBottom: 20,
-        height: 100,
-        textAlignVertical: "top"
+        marginVertical: 8,
     },
     modalButtons: { flexDirection: "row", justifyContent: "space-between" },
     submitButton: {
-        backgroundColor: "#007BFF",
-        padding: 15,
-        borderRadius: 8,
+        backgroundColor: "#4CAF50",
+        paddingVertical: 12,
+        borderRadius: 5,
         width: "48%",
-        alignItems: "center"
+        alignItems: "center",
     },
-    submitButtonText: { color: "#fff", fontWeight: "bold" },
+    submitButtonText: { color: "#fff", fontWeight: "600", fontSize: 16 },
     cancelButton: {
-        backgroundColor: "#D3D3D3",
-        padding: 15,
-        borderRadius: 8,
+        backgroundColor: "#FF5722",
+        paddingVertical: 12,
+        borderRadius: 5,
         width: "48%",
-        alignItems: "center"
+        alignItems: "center",
     },
-    cancelButtonText: { color: "#000", fontWeight: "bold" }
+    cancelButtonText: { color: "#fff", fontWeight: "600", fontSize: 16 },
+
+    // Added styles for the card component
+    card: {
+        backgroundColor: "#fff",
+        padding: 3,
+        marginVertical: 8,
+        borderRadius: 8,
+        shadowColor: "#000",
+        shadowOpacity: 0.1,
+        shadowRadius: 8,
+        shadowOffset: { width: 0, height: 2 },
+        elevation: 3,
+    },
+    disabledButton: {
+        backgroundColor: "#BDBDBD", // Gray out the button when it's disabled
+        opacity: 0.6, // Add opacity for disabled effect
+    },
+
 });
 
 export default WorkUpdateStatusScreen;
