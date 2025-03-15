@@ -38,7 +38,7 @@ const WorkerPersonalDetailsScreen = ({ route }: { route: WorkerPersonalDetailsRo
     if (loading) {
         return (
             <View style={styles.loadingContainer}>
-                <ActivityIndicator size="large" color="#6200EE" />
+                <ActivityIndicator size="large" color="#000" />
             </View>
         );
     }
@@ -70,36 +70,36 @@ const WorkerPersonalDetailsScreen = ({ route }: { route: WorkerPersonalDetailsRo
                         <Card.Title
                             title={`Welcome, ${userData.firstName} ${userData.lastName}!`}
                             titleStyle={styles.title}
-                            left={(props) => <Icon {...props} name="person" size={40} color="#6200EE" />}
+                            left={(props) => <Icon {...props} name="person" size={40} color="#000" />}
                         />
                         <Divider style={styles.divider} />
 
                         {/* Personal Details Section */}
                         <View style={styles.infoContainer}>
                             <View style={styles.infoRow}>
-                                <Icon name="work" size={20} color="#6200EE" />
+                                <Icon name="work" size={20} color="#000" />
                                 <Text style={styles.infoText}>Role: {userData.role}</Text>
                                 <TouchableOpacity onPress={() => { /* Handle Edit for Role */ }}>
-                                    <Icon name="edit" size={20} color="#6200EE" style={styles.editIcon} />
+                                    <Icon name="edit" size={20} color="#000" style={styles.editIcon} />
                                 </TouchableOpacity>
                             </View>
                             <View style={styles.infoRow}>
-                                <Icon name="person" size={20} color="#6200EE" />
+                                <Icon name="person" size={20} color="#000" />
                                 <Text style={styles.infoText}>First name: {userData.firstName} </Text>
                             </View>
 
                             <View style={styles.infoRow}>
-                                <Icon name="person" size={20} color="#6200EE" />
+                                <Icon name="person" size={20} color="#000" />
                                 <Text style={styles.infoText}>Last name: {userData.lastName}</Text>
                             </View>
 
                             <View style={styles.infoRow}>
-                                <Icon name="email" size={20} color="#6200EE" />
+                                <Icon name="email" size={20} color="#000" />
                                 <Text style={styles.infoText}>Email: {userData.email}</Text>
                             </View>
 
                             <View style={styles.infoRow}>
-                                <Icon name="badge" size={20} color="#6200EE" />
+                                <Icon name="badge" size={20} color="#000" />
                                 <Text style={styles.infoText}>Aadhar: {userData.aadhar}</Text>
                             </View>
                         </View>
@@ -109,25 +109,25 @@ const WorkerPersonalDetailsScreen = ({ route }: { route: WorkerPersonalDetailsRo
                         {/* Bank Details Section */}
                         <View style={styles.infoContainer}>
                             <View style={styles.infoRow}>
-                                <Icon name="account-balance" size={20} color="#6200EE" />
+                                <Icon name="account-balance" size={20} color="#000" />
                                 <Text style={styles.infoText}>Account Holder: {userData.accountHolder} </Text>
                                 <TouchableOpacity onPress={() => { /* Handle Edit for Account Holder */ }}>
-                                    <Icon name="edit" size={20} color="#6200EE" style={styles.editIcon} />
+                                    <Icon name="edit" size={20} color="#000" style={styles.editIcon} />
                                 </TouchableOpacity>
                             </View>
 
                             <View style={styles.infoRow}>
-                                <Icon name="credit-card" size={20} color="#6200EE" />
+                                <Icon name="credit-card" size={20} color="#000" />
                                 <Text style={styles.infoText}>Account No: {userData.accountNumber}</Text>
                             </View>
 
                             <View style={styles.infoRow}>
-                                <Icon name="vpn-key" size={20} color="#6200EE" />
+                                <Icon name="vpn-key" size={20} color="#000" />
                                 <Text style={styles.infoText}>IFSC: {userData.ifsc}</Text>
                             </View>
 
                             <View style={styles.infoRow}>
-                                <Icon name="location-city" size={20} color="#6200EE" />
+                                <Icon name="location-city" size={20} color="#000" />
                                 <Text style={styles.infoText}>Branch: {userData.branch}</Text>
                             </View>
                         </View>
@@ -137,10 +137,10 @@ const WorkerPersonalDetailsScreen = ({ route }: { route: WorkerPersonalDetailsRo
                         {/* Mobile Number Section */}
                         <View style={styles.infoContainer}>
                             <View style={styles.infoRow}>
-                                <Icon name="phone" size={20} color="#6200EE" />
+                                <Icon name="phone" size={20} color="#000" />
                                 <Text style={styles.infoText}>Mobile: {userData.mobile}</Text>
                                 <TouchableOpacity onPress={() => { /* Handle Edit for Mobile */ }}>
-                                    <Icon name="edit" size={20} color="#6200EE" style={styles.editIcon} />
+                                    <Icon name="edit" size={20} color="#000" style={styles.editIcon} />
                                 </TouchableOpacity>
                             </View>
                         </View>

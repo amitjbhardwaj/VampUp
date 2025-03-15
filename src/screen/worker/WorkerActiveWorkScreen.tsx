@@ -88,7 +88,7 @@ const WorkerActiveWorkScreen = () => {
     <Animated.View style={[styles.projectCard, { opacity: animatedValue }]}>
       {projectDetails(project).map(({ label, value, icon }) => (
         <View key={label} style={styles.card}>
-          <Icon name={icon} size={20} color="#28a745" style={styles.icon} />
+          <Icon name={icon} size={20} color="#000" style={styles.icon} />
           <View style={{ flex: 1 }}>
             <Text style={styles.label}>{label}</Text>
             <Text style={styles.value}>{value}</Text>
@@ -177,9 +177,9 @@ const styles = StyleSheet.create({
   statusValue: { fontSize: 16, color: "#007BFF" },
   backButton: { backgroundColor: "#000", padding: 13, marginTop: 20, alignItems: "center", borderRadius: 10 },
   backButtonText: { color: "#fff", fontWeight: "bold", fontSize: 16 },
-  updateButton: { backgroundColor: "#007BFF", padding: 10, marginTop: 15, alignItems: "center", borderRadius: 10 },
+  updateButton: { backgroundColor: "#000", padding: 10, marginTop: 15, alignItems: "center", borderRadius: 10 },
   updateButtonText: { color: "#fff", fontWeight: "bold", fontSize: 16 },
-  callButton: { backgroundColor: "#28a745", padding: 10, marginTop: 10, alignItems: "center", borderRadius: 10 },
+  callButton: { backgroundColor: "#000", padding: 10, marginTop: 10, alignItems: "center", borderRadius: 10 },
   callButtonText: { color: "#fff", fontWeight: "bold", fontSize: 16 }
 });
 

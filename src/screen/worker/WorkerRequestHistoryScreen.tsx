@@ -71,13 +71,13 @@ const WorkerRequestHistoryScreen = () => {
 
     const renderItem = ({ item }: { item: PaymentRequest }) => (
         <View style={styles.item}>
-            <View style={styles.row}><Icon name="id-badge" size={20} color="#28a745" style={styles.icon} /><Text style={styles.itemText}>Request ID: {item.requestId}</Text></View>
-            <View style={styles.row}><Icon name="tags" size={20} color="#28a745" style={styles.icon} /><Text style={styles.itemText}>Project Id: {item.project_Id}</Text></View>
-            <View style={styles.row}><Icon name="info-circle" size={20} color="#28a745" style={styles.icon} /><Text style={styles.itemText}>Project Description: {item.project_description}</Text></View>
-            <View style={styles.row}><Icon name="calendar" size={20} color="#28a745" style={styles.icon} /><Text style={styles.itemText}>Start Date: {item.project_start_date}</Text></View>
-            <View style={styles.row}><Icon name="calendar" size={20} color="#28a745" style={styles.icon} /><Text style={styles.itemText}>End Date: {item.project_end_date}</Text></View>
-            <View style={styles.row}><Icon name="money" size={20} color="#28a745" style={styles.icon} /><Text style={styles.itemText}>Amount: ₹{item.amount}</Text></View>
-            <View style={styles.row}><Icon name="calendar-check-o" size={20} color="#28a745" style={styles.icon} /><Text style={styles.itemText}>Date: {new Date(item.request_date).toLocaleDateString()}</Text></View>
+            <View style={styles.row}><Icon name="id-badge" size={20} color="#000" style={styles.icon} /><Text style={styles.itemText}>Request ID: {item.requestId}</Text></View>
+            <View style={styles.row}><Icon name="tags" size={20} color="#000" style={styles.icon} /><Text style={styles.itemText}>Project Id: {item.project_Id}</Text></View>
+            <View style={styles.row}><Icon name="info-circle" size={20} color="#000" style={styles.icon} /><Text style={styles.itemText}>Project Description: {item.project_description}</Text></View>
+            <View style={styles.row}><Icon name="calendar" size={20} color="#000" style={styles.icon} /><Text style={styles.itemText}>Start Date: {item.project_start_date}</Text></View>
+            <View style={styles.row}><Icon name="calendar" size={20} color="#000" style={styles.icon} /><Text style={styles.itemText}>End Date: {item.project_end_date}</Text></View>
+            <View style={styles.row}><Icon name="money" size={20} color="#000" style={styles.icon} /><Text style={styles.itemText}>Amount: ₹{item.amount}</Text></View>
+            <View style={styles.row}><Icon name="calendar-check-o" size={20} color="#000" style={styles.icon} /><Text style={styles.itemText}>Date: {new Date(item.request_date).toLocaleDateString()}</Text></View>
             
             <View style={styles.buttonRow}>
                 <TouchableOpacity style={styles.editButton} onPress={() => { setSelectedRequest(item); setNewAmount(item.amount); setModalVisible(true); }}>
@@ -147,7 +147,7 @@ const styles = StyleSheet.create({
 
     // Buttons for Edit and Delete
     buttonRow: { flexDirection: "row", justifyContent: "space-between", marginTop: 10 },
-    editButton: { backgroundColor: "#007bff", padding: 10, borderRadius: 5, flex: 1, marginRight: 5 },
+    editButton: { backgroundColor: "#000", padding: 10, borderRadius: 5, flex: 1, marginRight: 5 },
     deleteButton: { backgroundColor: "#dc3545", padding: 10, borderRadius: 5, flex: 1 },
     buttonText: { color: "#fff", textAlign: "center", fontWeight: "bold" },
 

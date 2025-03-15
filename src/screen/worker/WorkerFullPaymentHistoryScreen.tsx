@@ -43,7 +43,7 @@ const WorkerFullPaymentHistoryScreen = () => {
                 keyExtractor={(item) => item.label}
                 renderItem={({ item }) => (
                     <View style={styles.card}>
-                        <Icon name={item.icon} size={20} color="#28a745" style={styles.icon} />
+                        <Icon name={item.icon} size={20} color="#000" style={styles.icon} />
                         <View style={{ flex: 1 }}>
                             <Text style={styles.label}>{item.label}</Text>
                             <Text style={styles.value}>{item.value}</Text>
@@ -95,7 +95,7 @@ const styles = StyleSheet.create({
     label: { fontWeight: 'bold', fontSize: 16 },
     value: { fontSize: 14, flexWrap: 'wrap', flex: 1 },
     paymentButton: {
-        backgroundColor: '#007BFF',
+        backgroundColor: '#000',
         padding: 15,
         marginTop: 20,
         alignItems: 'center',

@@ -109,31 +109,31 @@ const WorkerComplaintHistoryScreen = () => {
     const renderItem = ({ item }: { item: Complaint }) => (
         <View style={styles.item}>
             <View style={styles.row}>
-                <Icon name="id-badge" size={20} color="#28a745" style={styles.icon} />
+                <Icon name="id-badge" size={20} color="#000" style={styles.icon} />
                 <Text style={styles.itemText}>Complaint ID: {item.complaintId}</Text>
             </View>
             <View style={styles.row}>
-                <Icon name="tags" size={20} color="#28a745" style={styles.icon} />
+                <Icon name="tags" size={20} color="#000" style={styles.icon} />
                 <Text style={styles.itemText}>Project ID: {item.projectId}</Text>
             </View>
             <View style={styles.row}>
-                <Icon name="info-circle" size={20} color="#28a745" style={styles.icon} />
+                <Icon name="info-circle" size={20} color="#000" style={styles.icon} />
                 <Text style={styles.itemText}>Project Description: {item.projectDescription}</Text>
             </View>
             <View style={styles.row}>
-                <Icon name="info-circle" size={20} color="#28a745" style={styles.icon} />
+                <Icon name="info-circle" size={20} color="#000" style={styles.icon} />
                 <Text style={styles.itemText}>Project Long Description: {item.longProjectDescription}</Text>
             </View>
             <View style={styles.row}>
-                <Icon name="calendar" size={20} color="#28a745" style={styles.icon} />
+                <Icon name="calendar" size={20} color="#000" style={styles.icon} />
                 <Text style={styles.itemText}>Start Date: {item.projectStartDate}</Text>
             </View>
             <View style={styles.row}>
-                <Icon name="edit" size={20} color="#28a745" style={styles.icon} />
+                <Icon name="edit" size={20} color="#000" style={styles.icon} />
                 <Text style={styles.itemText}>Complaint Subject: {item.subject}</Text>
             </View>
             <View style={styles.row}>
-                <Icon name="pencil" size={20} color="#28a745" style={styles.icon} />
+                <Icon name="pencil" size={20} color="#000" style={styles.icon} />
                 <Text style={styles.itemText}>Complaint: {item.complaintDescription}</Text>
             </View>
 
@@ -262,7 +262,7 @@ const styles = StyleSheet.create({
     button: {
         flexDirection: "row",
         alignItems: "center",
-        backgroundColor: "#28a745",
+        backgroundColor: "#000",
         paddingVertical: 10,
         paddingHorizontal: 10,
         borderRadius: 10,

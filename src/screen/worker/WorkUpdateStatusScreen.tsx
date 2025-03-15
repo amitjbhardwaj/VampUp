@@ -264,14 +264,14 @@ const styles = StyleSheet.create({
     value: { fontSize: 16, color: "#555", marginBottom: 8 },
     picker: { height: 50, marginVertical: 16 },
     updateButton: {
-        backgroundColor: "#4CAF50",
+        backgroundColor: "#000",
         paddingVertical: 12,
         borderRadius: 5,
         alignItems: "center",
     },
     updateButtonText: { color: "#fff", fontWeight: "600", fontSize: 16 },
     onHoldButton: {
-        backgroundColor: "#FF9800",
+        backgroundColor: "#000",
         paddingVertical: 12,
         borderRadius: 5,
         alignItems: "center",
@@ -279,7 +279,7 @@ const styles = StyleSheet.create({
     },
     onHoldButtonText: { color: "#fff", fontWeight: "600", fontSize: 16 },
     resumeButton: {
-        backgroundColor: "#2196F3",
+        backgroundColor: "#000",
         paddingVertical: 12,
         borderRadius: 5,
         alignItems: "center",
@@ -287,7 +287,7 @@ const styles = StyleSheet.create({
     },
     resumeButtonText: { color: "#fff", fontWeight: "600", fontSize: 16 },
     goBackButton: {
-        backgroundColor: "#BDBDBD",
+        backgroundColor: "#000",
         paddingVertical: 12,
         borderRadius: 5,
         alignItems: "center",
@@ -314,7 +314,7 @@ const styles = StyleSheet.create({
     },
     submitButtonText: { color: "#fff", fontWeight: "600", fontSize: 16 },
     cancelButton: {
-        backgroundColor: "#FF5722",
+        backgroundColor: "#000",
         paddingVertical: 12,
         borderRadius: 5,
         width: "48%",
