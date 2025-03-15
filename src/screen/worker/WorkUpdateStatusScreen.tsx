@@ -156,8 +156,6 @@ const WorkUpdateStatusScreen = () => {
         <ScrollView contentContainerStyle={styles.scrollContainer}>
             <View style={styles.container}>
                 <Text style={styles.title}>Update Project Status</Text>
-
-                <ScrollView>
                     {projectDetails(project, status).map(({ label, value }) => (
                         <View key={label} style={styles.card}>
                             <Text style={styles.label}>{label}</Text>
@@ -198,7 +196,6 @@ const WorkUpdateStatusScreen = () => {
                     <TouchableOpacity style={styles.goBackButton} onPress={() => navigation.goBack()}>
                         <Text style={styles.goBackButtonText}>Go Back</Text>
                     </TouchableOpacity>
-                </ScrollView>
 
                 {/* Modal */}
                 <Modal visible={isModalVisible} animationType="fade" transparent={true} onRequestClose={handleCancel}>
