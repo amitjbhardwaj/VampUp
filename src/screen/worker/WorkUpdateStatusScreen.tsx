@@ -191,39 +191,42 @@ const WorkUpdateStatusScreen = () => {
                     </TouchableOpacity>
                 </ScrollView>
 
+
                 <Modal visible={isModalVisible} animationType="fade" transparent={true} onRequestClose={handleCancel}>
-                    <View style={styles.modalOverlay}>
-                        <View style={styles.modalContent}>
-                            <Text style={styles.modalTitle}>Project On Hold</Text>
+                    <ScrollView>
+                        <View style={styles.modalOverlay}>
+                            <View style={styles.modalContent}>
+                                <Text style={styles.modalTitle}>Project On Hold</Text>
 
-                            {projectDetails(project, status).map(({ label, value }) => (
-                                <View key={label} style={styles.card}>
-                                    <Text style={styles.label}>{label}</Text>
-                                    <Text style={styles.value}>{value}</Text>
+                                {projectDetails(project, status).map(({ label, value }) => (
+                                    <View key={label} style={styles.card}>
+                                        <Text style={styles.label}>{label}</Text>
+                                        <Text style={styles.value}>{value}</Text>
+                                    </View>
+                                ))}
+
+                                <Text style={styles.label}>Reason for Hold</Text>
+                                <TextInput
+                                    style={styles.reasonInput}
+                                    value={reason}
+                                    onChangeText={setReason}
+                                    placeholder="Enter reason"
+                                    multiline
+                                    numberOfLines={4}
+                                />
+
+                                <View style={styles.modalButtons}>
+                                    <TouchableOpacity style={styles.submitButton} onPress={handleSubmitReason}>
+                                        <Text style={styles.submitButtonText}>Submit</Text>
+                                    </TouchableOpacity>
+
+                                    <TouchableOpacity style={styles.cancelButton} onPress={handleCancel}>
+                                        <Text style={styles.cancelButtonText}>Cancel</Text>
+                                    </TouchableOpacity>
                                 </View>
-                            ))}
-
-                            <Text style={styles.label}>Reason for Hold</Text>
-                            <TextInput
-                                style={styles.reasonInput}
-                                value={reason}
-                                onChangeText={setReason}
-                                placeholder="Enter reason"
-                                multiline
-                                numberOfLines={4}
-                            />
-
-                            <View style={styles.modalButtons}>
-                                <TouchableOpacity style={styles.submitButton} onPress={handleSubmitReason}>
-                                    <Text style={styles.submitButtonText}>Submit</Text>
-                                </TouchableOpacity>
-
-                                <TouchableOpacity style={styles.cancelButton} onPress={handleCancel}>
-                                    <Text style={styles.cancelButtonText}>Cancel</Text>
-                                </TouchableOpacity>
                             </View>
                         </View>
-                    </View>
+                    </ScrollView>
                 </Modal>
             </View>
         </ScrollView>
