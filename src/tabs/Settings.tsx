@@ -2,7 +2,8 @@ import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import React from "react";
 import Icon from "react-native-vector-icons/MaterialIcons";
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, Switch } from "react-native";
+import { useTheme } from "../context/ThemeContext";
 
 type SettingsStackParamList = {
   WorkerPersonalDetailsScreen: undefined;
@@ -13,28 +14,49 @@ type SettingsStackParamList = {
   LoginScreen: undefined;
 };
 
-const settingsOptions = [
-  { name: "Personal details", icon: "person", screen: "WorkerPersonalDetailsScreen" },
-  { name: "Payments", icon: "sync-alt", screen: "WorkerPaymentScreen" },
-  { name: "Security & Privacy", icon: "shield", screen: "WorkerSecurityAndPrivacyScreen" },
-  { name: "Notifications", icon: "notifications", screen: "WorkerNotificationScreen" },
-  { name: "About app", icon: "info", screen: "AboutAppScreen" },
-];
-
 const Settings = () => {
   const navigation = useNavigation<StackNavigationProp<SettingsStackParamList>>();
+  const { theme, toggleTheme } = useTheme();
+
+  const settingsOptions = [
+    { name: "Personal details", icon: "person", screen: "WorkerPersonalDetailsScreen" },
+    { name: "Payments", icon: "sync-alt", screen: "WorkerPaymentScreen" },
+    { name: "Security & Privacy", icon: "shield", screen: "WorkerSecurityAndPrivacyScreen" },
+    { name: "Notifications", icon: "notifications", screen: "WorkerNotificationScreen" },
+    { name: "About app", icon: "info", screen: "AboutAppScreen" },
+    { name: "Dark Mode", icon: "brightness-6", isThemeToggle: true }, // New theme option!
+  ];
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: theme.background }]}>
       {settingsOptions.map((option, index) => (
-        <TouchableOpacity
-          key={index}
-          style={styles.option}
-          onPress={() => navigation.navigate(option.screen as keyof SettingsStackParamList)}
-        >
-          <Icon name={option.icon} size={24} color="#000" />
-          <Text style={styles.optionText}>{option.name}</Text>
-        </TouchableOpacity>
+        <View key={index}>
+          {option.isThemeToggle ? (
+            <View style={[styles.option, { backgroundColor: theme.background }]}>
+              <Icon name={option.icon} size={24} color={theme.text} />
+              <Text style={[styles.optionText, { color: theme.text }]}>
+                {option.name}
+              </Text>
+              <Switch
+                value={theme.mode === "dark"}
+                onValueChange={toggleTheme}
+                thumbColor={theme.primary}
+              />
+            </View>
+          ) : (
+            <TouchableOpacity
+              style={[styles.option, { backgroundColor: theme.mode === "dark" ? "#444" : "#fff" }]}
+              onPress={() =>
+                navigation.navigate(option.screen as keyof SettingsStackParamList)
+              }
+            >
+              <Icon name={option.icon} size={24} color={theme.mode === "dark" ? "#fff" : "#000"} />
+              <Text style={[styles.optionText, { color: theme.mode === "dark" ? "#fff" : "#000" }]}>
+                {option.name}
+              </Text>
+            </TouchableOpacity>
+          )}
+        </View>
       ))}
 
       {/* Logout Option */}
@@ -50,7 +72,6 @@ const Settings = () => {
         <Icon name="logout" size={24} color="#d32f2f" />
         <Text style={[styles.optionText, styles.logoutText]}>Logout</Text>
       </TouchableOpacity>
-
     </View>
   );
 };
@@ -58,28 +79,28 @@ const Settings = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f8f8f8",
-    padding: 20,
+    padding: 10,
   },
   option: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#fff",
     padding: 15,
     marginVertical: 5,
     borderRadius: 8,
     elevation: 2,
+    justifyContent: "space-between",
   },
   optionText: {
     fontSize: 16,
     marginLeft: 10,
+    flex: 1,
   },
   logoutOption: {
-    marginTop: 20, // Push logout button down
-    backgroundColor: "#ffe5e5", // Light red background
+    marginTop: 20,
+    backgroundColor: "#ffe5e5",
   },
   logoutText: {
-    color: "#d32f2f", // Red color for logout text
+    color: "#d32f2f",
     fontWeight: "bold",
   },
 });

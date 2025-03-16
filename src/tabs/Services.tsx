@@ -3,6 +3,7 @@ import { StackNavigationProp } from "@react-navigation/stack";
 import React from "react";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import { useTheme } from "../context/ThemeContext";
 
 type SettingsStackParamList = {
   WorkerWorkHistoryScreen: undefined;
@@ -21,18 +22,19 @@ const settingsOptions = [
 ];
 
 const Services = () => {
+  const { theme } = useTheme();
   const navigation = useNavigation<StackNavigationProp<SettingsStackParamList>>();
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: theme.background }]}>
       {settingsOptions.map((option, index) => (
         <TouchableOpacity
           key={index}
-          style={styles.option}
+          style={[styles.option, { backgroundColor: theme.mode === 'dark' ? "#333" : "#fff" }]}
           onPress={() => navigation.navigate(option.screen as keyof SettingsStackParamList)}
         >
-          <Icon name={option.icon} size={24} color="#000" />
-          <Text style={styles.optionText}>{option.name}</Text>
+          <Icon name={option.icon} size={24} color={theme.text} />
+          <Text style={[styles.optionText, { color: theme.text }]}>{option.name}</Text>
         </TouchableOpacity>
       ))}
     </View>
@@ -42,13 +44,11 @@ const Services = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f8f8f8",
     padding: 20,
   },
   option: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#fff",
     padding: 15,
     marginVertical: 5,
     borderRadius: 8,

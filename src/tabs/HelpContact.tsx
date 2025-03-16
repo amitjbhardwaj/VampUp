@@ -1,21 +1,28 @@
-import { useNavigation } from "@react-navigation/native";
-import React, { useEffect } from "react";
-import Icon from "react-native-vector-icons/MaterialIcons";
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
+import React from "react";
+import { View, Text, StyleSheet } from "react-native";
+import { useTheme } from "../context/ThemeContext";
 
 const HelpContact = () => {
+  const { theme } = useTheme();
 
-    return (
-        <View style={styles.screen}><Text>Help & Contact</Text></View>
-    );
-};
-
-const styles = StyleSheet.create({
+  // Define styles based on the current theme
+  const dynamicStyles = StyleSheet.create({
     screen: {
-        flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
+      flex: 1,
+      justifyContent: "center",
+      alignItems: "center",
+      backgroundColor: theme.mode === "dark" ? "#333" : "#fff", // Dark mode: dark background, Light mode: white background
     },
-});
+    text: {
+      color: theme.mode === "dark" ? "#fff" : "#000", // Dark mode: white text, Light mode: black text
+    },
+  });
+
+  return (
+    <View style={dynamicStyles.screen}>
+      <Text style={dynamicStyles.text}>Help & Contact</Text>
+    </View>
+  );
+};
 
 export default HelpContact;

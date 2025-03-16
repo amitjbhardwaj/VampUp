@@ -11,6 +11,7 @@ import Home from "../tabs/Home";
 import Services from "../tabs/Services";
 import HelpContact from "../tabs/HelpContact";
 import Settings from "../tabs/Settings";
+import { useTheme } from '../context/ThemeContext';
 
 type TabParamList = {
   Home: undefined;
@@ -28,6 +29,8 @@ type TabScreenProps = {
 };
 
 const WorkerHomeScreen = () => {
+  const { theme } = useTheme();
+
   const renderIcon = useCallback(
     ({ route, focused, size }: TabScreenProps) => {
       let iconName = "home-outline"; 
@@ -43,11 +46,11 @@ const WorkerHomeScreen = () => {
         <Ionicons 
           name={iconName} 
           size={focused ? size + 5 : size} 
-          color={focused ? "#000" : "gray"}  
+          color={focused ? theme.primary : "gray"}  
         />
       );
     },
-    []
+    [theme]
   );
 
   return (
@@ -55,16 +58,25 @@ const WorkerHomeScreen = () => {
       screenOptions={({ route }) => ({
         tabBarIcon: (props) => renderIcon({ route, ...props }),
         tabBarLabel: ({ focused }) => (
-          <Text style={{ color: focused ? "#000" : "gray", fontSize: focused ? 14 : 12 }}>
+          <Text style={{ color: focused ? theme.primary : "gray", fontSize: focused ? 14 : 12 }}>
             {route.name}
           </Text>
         ),
         tabBarShowLabel: true,
-        tabBarStyle: styles.tabBar,
-        headerStyle: styles.header,
+        tabBarStyle: {
+          ...styles.tabBar,
+          backgroundColor: theme.background,
+        },
+        headerStyle: {
+          backgroundColor: theme.background,
+          shadowColor: 'transparent',
+        },
+        headerTitleStyle: {
+          color: theme.text,
+        },
         headerTitleAlign: "center",
-        animationEnabled: false, // Disable tab switching animation
-        lazy: true, // Enable lazy loading of screens
+        animationEnabled: false, 
+        lazy: true,
         tabBarButton: (props) => (
           <Pressable {...props} android_ripple={{ color: "transparent" }}>
             {props.children}
@@ -83,7 +95,6 @@ const WorkerHomeScreen = () => {
 const styles = StyleSheet.create({
   tabBar: {
     position: "absolute",
-    backgroundColor: "rgba(255,255,255,0.9)",  // Simpler background without blur
     borderRadius: 20,
     marginHorizontal: 10,
     bottom: 10,
@@ -91,9 +102,6 @@ const styles = StyleSheet.create({
     borderTopWidth: 0,
     elevation: 5,
     height: 65,
-  },
-  header: {
-    backgroundColor: "rgba(255,255,255,0.8)",
   },
 });
 

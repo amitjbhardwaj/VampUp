@@ -7,10 +7,12 @@ import Ionicons from "react-native-vector-icons/Ionicons";
 import { RootStackParamList } from "../RootNavigator";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Picker } from "@react-native-picker/picker";
+import { useTheme } from "../context/ThemeContext";
 
 type HomeNavigationProp = NavigationProp<RootStackParamList>;
 
 const Home = () => {
+    const { theme } = useTheme();
     const navigation = useNavigation<HomeNavigationProp>();
     const [modalVisible, setModalVisible] = useState(false);
     const [projectId, setProjectId] = useState("");
@@ -30,7 +32,6 @@ const Home = () => {
     const loadProjects = () => {
         try {
             const data = require('../assets/projects.json');
-            console.log("Projects loaded:", data);
             if (Array.isArray(data)) {
                 const filteredProjects = data.filter(project => project.completion_percentage !== 100);
                 setProjects(filteredProjects);
@@ -55,7 +56,6 @@ const Home = () => {
     };
 
     const handleSubmit = async () => {
-
         if (!subject.trim()) {
             Alert.alert("Validation Error", "Complaint Subject is required.");
             return;
@@ -66,11 +66,10 @@ const Home = () => {
             return;
         }
 
-        // Generate a unique Complaint ID (you can improve this as per your need)
         const complaintId = `CMP-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
 
         const newRequest = {
-            complaintId,  // Add the unique Complaint ID here
+            complaintId,
             projectId,
             subject,
             complaintDescription,
@@ -95,48 +94,45 @@ const Home = () => {
             return;
         }
 
-        const updatedRequests = [...parsedRequests, newRequest];  // Here you define updatedRequests
+        const updatedRequests = [...parsedRequests, newRequest];
         await AsyncStorage.setItem("submittedRequests", JSON.stringify(updatedRequests));
 
         setModalVisible(false);
-
-        // Pass the updatedRequests to WorkerComplaintHistoryScreen
-        navigation.navigate("WorkerComplaintHistoryScreen", { updatedRequests });  // Now, updatedRequests exists
+        navigation.navigate("WorkerComplaintHistoryScreen", { updatedRequests });
     };
 
-
     return (
-        <View style={styles.screen}>
+        <View style={[styles.screen, { backgroundColor: theme.background }]}>
             <View style={styles.iconContainer}>
                 <View style={styles.iconRow}>
                     <View style={styles.iconItem}>
                         <TouchableOpacity onPress={() => navigation.navigate('WorkerActiveWorkScreen')}>
-                            <Ionicons name="briefcase" size={50} color="#000" />
+                            <Ionicons name="briefcase" size={50} color={theme.text} />
                         </TouchableOpacity>
-                        <Text>Active Work</Text>
+                        <Text style={{ color: theme.text }}>Active Work</Text>
                     </View>
                     <View style={styles.iconItem}>
                         <TouchableOpacity onPress={() => navigation.navigate('WorkerClockInScreen')}>
-                            <Ionicons name="log-in" size={50} color="#000" />
+                            <Ionicons name="log-in" size={50} color={theme.text} />
                         </TouchableOpacity>
-                        <Text>Clock-in</Text>
+                        <Text style={{ color: theme.text }}>Clock-in</Text>
                     </View>
                 </View>
                 <View style={styles.iconRow}>
                     <View style={[styles.iconItem, styles.lastRowIcon]}>
                         <TouchableOpacity onPress={() => navigation.navigate('WorkerClockOutScreen')}>
-                            <Ionicons name="log-out" size={50} color="#000" />
+                            <Ionicons name="log-out" size={50} color={theme.text} />
                         </TouchableOpacity>
-                        <Text>Clock-out</Text>
+                        <Text style={{ color: theme.text }}>Clock-out</Text>
                     </View>
                 </View>
             </View>
 
             <TouchableOpacity
-                style={styles.floatingButton}
+                style={[styles.floatingButton, { backgroundColor: theme.mode === 'dark' ? "#fff" : "#000" }]}
                 onPress={() => setModalVisible(true)}
             >
-                <Ionicons name="add" size={40} color="white" />
+                <Ionicons name="add" size={40} color={theme.mode === 'dark' ? "#000" : "#fff"} />
             </TouchableOpacity>
 
             {/* Modal */}
@@ -147,13 +143,14 @@ const Home = () => {
                 onRequestClose={() => setModalVisible(false)}
             >
                 <View style={styles.modalContainer}>
-                    <View style={styles.modalContent}>
-                        <Text style={styles.modalHeader}>Complaints</Text>
+                    <View style={[styles.modalContent, { backgroundColor: theme.background }]}>
+                        <Text style={[styles.modalHeader, { color: theme.text }]}>Complaints</Text>
 
                         <Picker
                             selectedValue={projectDescription}
                             onValueChange={handleProjectChange}
-                            style={styles.input}
+                            style={[styles.input, { color: theme.text }]}
+                            dropdownIconColor={theme.text}
                         >
                             <Picker.Item label="Select Project Description" value="" />
                             {projects.map((project: any) => (
@@ -168,28 +165,32 @@ const Home = () => {
                         {selectedProject && (
                             <>
                                 <TextInput
-                                    style={styles.input}
+                                    style={[styles.input, { color: theme.text, borderColor: theme.text }]}
                                     placeholder="Project ID"
+                                    placeholderTextColor={theme.text}
                                     value={projectId}
                                     editable={false}
                                 />
                                 <TextInput
-                                    style={styles.textArea}
+                                    style={[styles.textArea, { color: theme.text, borderColor: theme.text }]}
                                     placeholder="Long Project Description"
+                                    placeholderTextColor={theme.text}
                                     value={longProjectDescription}
                                     editable={false}
                                     multiline
                                 />
                                 <TextInput
-                                    style={styles.input}
+                                    style={[styles.input, { color: theme.text, borderColor: theme.text }]}
                                     placeholder="Phone"
+                                    placeholderTextColor={theme.text}
                                     value={phone}
                                     editable={false}
                                     multiline
                                 />
                                 <TextInput
-                                    style={styles.input}
+                                    style={[styles.input, { color: theme.text, borderColor: theme.text }]}
                                     placeholder="Start Date"
+                                    placeholderTextColor={theme.text}
                                     value={projectStartDate}
                                     editable={false}
                                 />
@@ -197,14 +198,16 @@ const Home = () => {
                         )}
 
                         <TextInput
-                            style={styles.input}
+                            style={[styles.input, { color: theme.text, borderColor: theme.text }]}
                             placeholder="Complaint Subject"
+                            placeholderTextColor={theme.text}
                             value={subject}
                             onChangeText={setSubject}
                         />
                         <TextInput
-                            style={styles.textArea}
+                            style={[styles.textArea, { color: theme.text, borderColor: theme.text }]}
                             placeholder="Complaint Description"
+                            placeholderTextColor={theme.text}
                             value={complaintDescription}
                             onChangeText={setComplaintDescription}
                             multiline
@@ -212,7 +215,7 @@ const Home = () => {
 
                         <View style={styles.buttonContainer}>
                             <Button title="Submit" onPress={handleSubmit} />
-                            <Button title="Back" onPress={() => setModalVisible(false)} color="black" />
+                            <Button title="Back" onPress={() => setModalVisible(false)} color={theme.text} />
                         </View>
                     </View>
                 </View>
@@ -245,7 +248,6 @@ const styles = StyleSheet.create({
         position: "absolute",
         bottom: 80,
         right: 20,
-        backgroundColor: "#000",
         width: 60,
         height: 60,
         borderRadius: 30,
@@ -264,7 +266,6 @@ const styles = StyleSheet.create({
         backgroundColor: "rgba(0,0,0,0.5)",
     },
     modalContent: {
-        backgroundColor: "white",
         padding: 20,
         borderRadius: 10,
         width: "80%",
@@ -277,14 +278,12 @@ const styles = StyleSheet.create({
     },
     input: {
         borderWidth: 1,
-        borderColor: "gray",
         padding: 10,
         marginBottom: 10,
         borderRadius: 5,
     },
     textArea: {
         borderWidth: 1,
-        borderColor: "gray",
         padding: 10,
         marginBottom: 10,
         borderRadius: 5,
@@ -297,7 +296,7 @@ const styles = StyleSheet.create({
         marginTop: 10,
     },
     lastRowIcon: {
-        marginLeft: "-145%",  // Adjust the margin to position it correctly under the first icon
+        marginLeft: "-145%",
     },
 });
 
