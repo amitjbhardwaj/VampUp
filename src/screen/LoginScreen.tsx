@@ -15,10 +15,12 @@ import TouchID from "react-native-touch-id";
 import { useNavigation } from "@react-navigation/native";
 import { NavigationProp } from "@react-navigation/native";
 import { RootStackParamList } from "../../App";
+import { useTheme } from "../context/ThemeContext";
 
 type LoginScreenNavigationProp = NavigationProp<RootStackParamList>;
 
 const LoginScreen = () => {
+    const { theme } = useTheme();
     const navigation = useNavigation<LoginScreenNavigationProp>();
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
@@ -30,7 +32,7 @@ const LoginScreen = () => {
             setErrorMessage("Username and password are required");
             return;
         }
-        
+
         if (username === "worker" && password === "worker") {
             navigation.navigate({ name: "WorkerHomeScreen" } as never);
         } else {
@@ -53,60 +55,58 @@ const LoginScreen = () => {
 
     return (
         <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
-
-            <View style={[styles.container, { flex: 1 }]}>
-
+            <View style={[styles.container, { backgroundColor: theme.background, flex: 1 }]}>
                 <View style={styles.headerContainer}>
                     <Image source={require("../assets/logo.png")} style={styles.logo} resizeMode="contain" />
-                    <Text style={styles.helloText}>Welcome</Text>
-                    <Text style={styles.signInText}>Sign in to your account</Text>
+                    <Text style={[styles.helloText, { color: theme.text }]}>Welcome</Text>
+                    <Text style={[styles.signInText, { color: theme.text }]}>Sign in to your account</Text>
                 </View>
 
                 <View style={styles.inputContainer}>
-                    <Icon name="user" size={20} color="#9A9A9A" style={styles.icon} />
+                    <Icon name="user" size={20} color={theme.icon} style={styles.icon} />
                     <TextInput
                         placeholder="Username"
-                        style={styles.input}
+                        style={[styles.input, { color: theme.text, backgroundColor: theme.inputBackground }]}
                         autoCapitalize="none"
                         value={username}
                         onChangeText={setUsername}
-                        placeholderTextColor="#9A9A9A"
+                        placeholderTextColor={theme.icon}
                     />
                 </View>
 
                 <View style={styles.inputContainer}>
-                    <Icon name="lock" size={20} color="#9A9A9A" style={styles.icon} />
+                    <Icon name="lock" size={20} color={theme.icon} style={styles.icon} />
                     <TextInput
                         placeholder="Password"
-                        style={styles.input}
+                        style={[styles.input, { color: theme.text, backgroundColor: theme.inputBackground }]}
                         secureTextEntry={secureText}
                         autoCapitalize="none"
                         value={password}
                         onChangeText={setPassword}
-                        placeholderTextColor="#9A9A9A"
+                        placeholderTextColor={theme.icon}
                     />
                     <TouchableOpacity onPress={() => setSecureText(!secureText)} style={styles.eyeIcon}>
-                        <Icon name={secureText ? "eye-slash" : "eye"} size={20} color="#9A9A9A" />
+                        <Icon name={secureText ? "eye-slash" : "eye"} size={20} color={theme.icon} />
                     </TouchableOpacity>
                 </View>
-                {errorMessage ? <Text style={styles.errorText}>{errorMessage}</Text> : null}
+                {errorMessage ? <Text style={[styles.errorText, { color: theme.errorColor }]}>{errorMessage}</Text> : null}
 
                 <TouchableOpacity onPress={() => navigation.navigate({ name: "ForgotPassword" } as never)}>
-                    <Text style={styles.forgotPassword}>Forgot your password?</Text>
+                    <Text style={[styles.forgotPassword, { color: theme.primary }]}>Forgot your password?</Text>
                 </TouchableOpacity>
 
-                <TouchableOpacity style={styles.button} onPress={handleLogin}>
+                <TouchableOpacity style={[styles.button, { backgroundColor: theme.primary }]} onPress={handleLogin}>
                     <Icon name="sign-in" size={20} color="#fff" style={styles.buttonIcon} />
                     <Text style={styles.buttonText}> Login</Text>
                 </TouchableOpacity>
 
-                <TouchableOpacity style={styles.biometricButton} onPress={handleBiometricLogin}>
-                <MaterialCommunityIcons name="fingerprint" size={24} color="#fff" style={styles.buttonIcon} />
+                <TouchableOpacity style={[styles.biometricButton, { backgroundColor: theme.primary }]} onPress={handleBiometricLogin}>
+                    <MaterialCommunityIcons name="fingerprint" size={24} color="#fff" style={styles.buttonIcon} />
                     <Text style={styles.buttonText}> Login with Biometrics</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity onPress={() => navigation.navigate("Signup")}>
-                    <Text style={styles.footerText}>
+                    <Text style={[styles.footerText, { color: theme.text }]}>
                         Don't have an account? <Text style={styles.createText}>Create</Text>
                     </Text>
                 </TouchableOpacity>
@@ -118,7 +118,6 @@ const LoginScreen = () => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: "#F8F9FA",
         paddingHorizontal: 20,
         justifyContent: "center",
     },
@@ -130,37 +129,33 @@ const styles = StyleSheet.create({
         width: 140,
         height: 140,
         marginBottom: 20,
+        marginLeft: 50,
     },
     helloText: {
         fontSize: 36,
         fontWeight: "bold",
-        color: "#1D1D1D",
     },
     signInText: {
         fontSize: 16,
-        color: "#666",
         marginTop: 5,
     },
     inputContainer: {
         flexDirection: "row",
         alignItems: "center",
-        backgroundColor: "#fff",
         borderRadius: 12,
         paddingHorizontal: 15,
         height: 55,
         elevation: 3,
         marginBottom: 15,
-        borderColor: "#D1D1D1",
         borderWidth: 1,
+        borderColor: "#D1D1D1",
     },
     icon: {
         marginRight: 12,
-        color: "#555",
     },
     input: {
         flex: 1,
         fontSize: 16,
-        color: "#333",
     },
     eyeIcon: {
         padding: 10,
@@ -168,13 +163,11 @@ const styles = StyleSheet.create({
     forgotPassword: {
         textAlign: "right",
         fontSize: 14,
-        color: "#007AFF",
         marginBottom: 20,
         fontWeight: "bold",
     },
     button: {
         flexDirection: "row",
-        backgroundColor: "#000",
         padding: 15,
         borderRadius: 12,
         alignItems: "center",
@@ -187,7 +180,6 @@ const styles = StyleSheet.create({
     },
     biometricButton: {
         flexDirection: "row",
-        backgroundColor: "#007AFF",
         padding: 15,
         borderRadius: 12,
         alignItems: "center",
@@ -209,21 +201,17 @@ const styles = StyleSheet.create({
     footerText: {
         textAlign: "center",
         fontSize: 16,
-        color: "#666",
         marginTop: 20,
     },
     createText: {
         fontWeight: "bold",
         textDecorationLine: "underline",
-        color: "#000",
     },
     errorText: {
-        color: "red",
         fontSize: 14,
         marginBottom: 10,
         textAlign: "center",
     },
 });
-
 
 export default LoginScreen;

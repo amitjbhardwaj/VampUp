@@ -3,11 +3,12 @@ import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Modal 
 import Icon from "react-native-vector-icons/Ionicons";
 import { NavigationProp, useNavigation } from '@react-navigation/native';
 import { RootStackParamList } from "../RootNavigator";
-import { Picker } from '@react-native-picker/picker';
+import { useTheme } from "../context/ThemeContext";
 
 type SignupScreenNavigationProp = NavigationProp<RootStackParamList>;
 
 const SignupScreen = () => {
+  const { theme } = useTheme();
   const [form, setForm] = useState({
     role: "",
     mobile: "",
@@ -61,20 +62,19 @@ const SignupScreen = () => {
   };
 
   return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.title}>Create Account</Text>
+    <ScrollView contentContainerStyle={[styles.container, { backgroundColor: theme.background }]}>
+      <Text style={[styles.title, { color: theme.text }]}>Create Account</Text>
 
       {/* Role Dropdown */}
       <View style={styles.fieldWrapper}>
-        <View style={[styles.inputContainer, errors.role && styles.inputError]}>
-          <Icon name="person-outline" size={20} style={styles.icon} />
+        <View style={[styles.inputContainer, errors.role && styles.inputError, { backgroundColor: theme.inputBackground }]}>
+          <Icon name="person-outline" size={20} style={[styles.icon, { color: theme.icon }]} />
           <TouchableOpacity onPress={() => setShowRolePicker(true)} style={styles.roleDropdown}>
             <Text style={[styles.input, { color: form.role ? "#333" : "#999" }]}>{form.role || "Select Role *"}</Text>
           </TouchableOpacity>
         </View>
-        {errors.role && <Text style={styles.errorText}>{errors.role}</Text>}
+        {errors.role && <Text style={[styles.errorText, { color: theme.errorColor }]}>{errors.role}</Text>}
       </View>
-
 
       {/* Role Picker Modal */}
       <Modal
@@ -84,8 +84,8 @@ const SignupScreen = () => {
         onRequestClose={() => setShowRolePicker(false)}
       >
         <View style={styles.modalOverlay}>
-          <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Select Role</Text>
+          <View style={[styles.modalContent, { backgroundColor: theme.background }]}>
+            <Text style={[styles.modalTitle, { color: theme.text }]}>Select Role</Text>
             {["Worker", "Contractor", "Admin"].map((role) => (
               <TouchableOpacity
                 key={role}
@@ -95,11 +95,11 @@ const SignupScreen = () => {
                   setShowRolePicker(false);
                 }}
               >
-                <Text style={styles.modalOptionText}>{role.charAt(0).toUpperCase() + role.slice(1)}</Text>
+                <Text style={[styles.modalOptionText, { color: theme.text }]}>{role.charAt(0).toUpperCase() + role.slice(1)}</Text>
               </TouchableOpacity>
             ))}
             <TouchableOpacity onPress={() => setShowRolePicker(false)} style={styles.modalCloseButton}>
-              <Text style={styles.modalCloseText}>Cancel</Text>
+              <Text style={[styles.modalCloseText, { color: theme.primary }]}>Cancel</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -118,48 +118,48 @@ const SignupScreen = () => {
         { key: "branch", icon: "business-outline", placeholder: "Branch name *" },
       ].map(({ key, icon, placeholder, secureTextEntry }, index) => (
         <View key={index} style={styles.fieldWrapper}>
-          <View style={[styles.inputContainer, errors[key] && styles.inputError]}>
-            <Icon name={icon} size={20} style={styles.icon} />
+          <View style={[styles.inputContainer, errors[key] && styles.inputError, { backgroundColor: theme.inputBackground }]}>
+            <Icon name={icon} size={20} style={[styles.icon, { color: theme.icon }]} />
             <TextInput
               placeholder={placeholder}
               secureTextEntry={secureTextEntry}
-              style={styles.input}
+              style={[styles.input, { color: theme.text }]}
               onChangeText={(value) => handleChange(key, value)}
               value={form[key as keyof typeof form]}
             />
           </View>
-          {errors[key] && <Text style={styles.errorText}>{errors[key]}</Text>}
+          {errors[key] && <Text style={[styles.errorText, { color: theme.errorColor }]}>{errors[key]}</Text>}
         </View>
       ))}
 
       {/* Mobile Number Field */}
       <View style={styles.fieldWrapper}>
-        <View style={[styles.inputContainer, styles.row, errors.mobile && styles.inputError]}>
+        <View style={[styles.inputContainer, styles.row, errors.mobile && styles.inputError, { backgroundColor: theme.inputBackground }]}>
           <TouchableOpacity style={styles.countryCode}>
-            <Text style={styles.countryCodeText}>+91 ▼</Text>
+            <Text style={[styles.countryCodeText, { color: theme.text }]}>+91 ▼</Text>
           </TouchableOpacity>
           <TextInput
             placeholder="Mobile number *"
             keyboardType="phone-pad"
-            style={[styles.input, { flex: 1 }]}
+            style={[styles.input, { flex: 1, color: theme.text }]}
             onChangeText={(value) => handleChange("mobile", value)}
             value={form.mobile}
           />
         </View>
-        {errors.mobile && <Text style={styles.errorText}>{errors.mobile}</Text>}
+        {errors.mobile && <Text style={[styles.errorText, { color: theme.errorColor }]}>{errors.mobile}</Text>}
       </View>
 
       {/* Signup Button */}
-      <TouchableOpacity style={styles.button} onPress={handleSubmit}>
+      <TouchableOpacity style={[styles.button, { backgroundColor: theme.primary }]} onPress={handleSubmit}>
         <View style={styles.buttonContent}>
-          <Text style={styles.buttonText}>Sign up</Text>
-          <Icon name="arrow-forward-outline" size={20} color="#fff" />
+          <Text style={[styles.buttonText, { color: theme.buttonText }]}>Sign up</Text>
+          <Icon name="arrow-forward-outline" size={20} color={theme.buttonText} />
         </View>
       </TouchableOpacity>
 
       {/* Back Button */}
       <TouchableOpacity style={styles.backButton} onPress={handleBackPress}>
-        <Text style={styles.backButtonText}>Back to Login</Text>
+        <Text style={[styles.backButtonText, { color: theme.text }]}>Back to Login</Text>
       </TouchableOpacity>
     </ScrollView>
   );
@@ -169,13 +169,11 @@ const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
     padding: 20,
-    backgroundColor: "#fff",
   },
   title: {
     fontSize: 28,
     fontWeight: "bold",
     marginBottom: 30,
-    color: "#1A1A1A",
     textAlign: "center",
   },
   fieldWrapper: {
@@ -184,34 +182,29 @@ const styles = StyleSheet.create({
   inputContainer: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#f7f7f7",
     borderRadius: 12,
     paddingHorizontal: 20,
     height: 55,
     borderWidth: 1,
-    borderColor: "#E0E0E0",
     shadowOpacity: 0.1,
     shadowOffset: { width: 0, height: 3 },
     elevation: 3,
   },
   icon: {
     marginRight: 10,
-    color: "#888",
   },
   input: {
     flex: 1,
     fontSize: 16,
-    color: "#333",
     paddingVertical: 0,
   },
   roleDropdown: {
     flex: 1,
-    justifyContent: "center",  // Center the text vertically
-    alignItems: "flex-start",  // Align the text to the left
+    justifyContent: "center",
+    alignItems: "flex-start",
     paddingVertical: 15,
   },
   errorText: {
-    color: "#e74c3c",
     fontSize: 12,
     marginTop: 5,
     marginLeft: 15,
@@ -220,7 +213,6 @@ const styles = StyleSheet.create({
     borderColor: "#e74c3c",
   },
   button: {
-    backgroundColor: "#2ecc71",
     padding: 15,
     borderRadius: 12,
     alignItems: "center",
@@ -228,14 +220,13 @@ const styles = StyleSheet.create({
     marginTop: 20,
   },
   buttonContent: {
-    flexDirection: "row",  
+    flexDirection: "row",
     alignItems: "center",
   },
   buttonText: {
-    color: "#fff",
     fontSize: 18,
     fontWeight: "bold",
-    marginRight: 10,  
+    marginRight: 10,
   },
   backButton: {
     marginTop: 20,
@@ -243,11 +234,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   backButtonText: {
-    color: "#333",
     fontSize: 16,
     fontWeight: "bold",
   },
-  // Modal Styles
   modalOverlay: {
     flex: 1,
     justifyContent: "center",
@@ -255,7 +244,6 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(0, 0, 0, 0.6)",
   },
   modalContent: {
-    backgroundColor: "#fff",
     borderRadius: 15,
     padding: 25,
     width: "85%",
@@ -264,7 +252,6 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: "bold",
     marginBottom: 20,
-    color: "#333",
   },
   modalOption: {
     paddingVertical: 12,
@@ -273,7 +260,6 @@ const styles = StyleSheet.create({
   },
   modalOptionText: {
     fontSize: 16,
-    color: "#333",
   },
   modalCloseButton: {
     marginTop: 15,
@@ -281,7 +267,6 @@ const styles = StyleSheet.create({
   },
   modalCloseText: {
     fontSize: 16,
-    color: "#3498db",
     textAlign: "center",
   },
   row: {
@@ -300,9 +285,7 @@ const styles = StyleSheet.create({
   countryCodeText: {
     fontSize: 16,
     fontWeight: "bold",
-    color: "#333",
   },
 });
-
 
 export default SignupScreen;

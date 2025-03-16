@@ -3,6 +3,7 @@ import { StackNavigationProp } from "@react-navigation/stack";
 import React from "react";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import { View, Text, StyleSheet, TouchableOpacity, StatusBar, ScrollView } from "react-native";
+import { useTheme } from "../../context/ThemeContext";
 
 type WorkerPaymentStackParamList = {
   WorkerRequestPaymentScreen: undefined;
@@ -15,20 +16,21 @@ const paymentOptions = [
 ];
 
 const WorkerPaymentScreen = () => {
+  const { theme } = useTheme(); 
   const navigation = useNavigation<StackNavigationProp<any>>();
 
   return (
-    <ScrollView>
-      <View style={styles.container}>
+    <ScrollView style={{ backgroundColor: theme.mode === 'dark' ? '#333' : '#f8f8f8' }}>
+      <View style={[styles.container, { backgroundColor: theme.mode === 'dark' ? '#333' : '#f8f8f8' }]}>
         {/* Status bar for proper spacing */}
-        <StatusBar backgroundColor="#fff" barStyle="dark-content" />
+        <StatusBar backgroundColor={theme.mode === 'dark' ? '#333' : '#fff'} barStyle={theme.mode === 'dark' ? 'light-content' : 'dark-content'} />
 
         {/* Full-width Header with Back Button */}
-        <View style={styles.header}>
+        <View style={[styles.header, { backgroundColor: theme.mode === 'dark' ? '#444' : '#fff' }]}>
           {/* <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
             <Icon name="arrow-back" size={30} color="#000" />
           </TouchableOpacity> */}
-          <Text style={styles.headerText}>Payments</Text>
+          <Text style={[styles.headerText, { color: theme.mode === 'dark' ? '#fff' : '#000' }]}>Payments</Text>
         </View>
 
         {/* Payment Options */}
@@ -36,11 +38,11 @@ const WorkerPaymentScreen = () => {
           {paymentOptions.map((option, index) => (
             <TouchableOpacity
               key={index}
-              style={styles.option}
+              style={[styles.option, { backgroundColor: theme.mode === 'dark' ? '#555' : '#fff' }]}
               onPress={() => navigation.navigate(option.screen as keyof WorkerPaymentStackParamList)}
             >
-              <Icon name={option.icon} size={24} color="#000" />
-              <Text style={styles.optionText}>{option.name}</Text>
+              <Icon name={option.icon} size={24} color={theme.mode === 'dark' ? '#fff' : '#000'} />
+              <Text style={[styles.optionText, { color: theme.mode === 'dark' ? '#fff' : '#000' }]}>{option.name}</Text>
             </TouchableOpacity>
           ))}
         </View>
@@ -52,7 +54,6 @@ const WorkerPaymentScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f8f8f8",
   },
   header: {
     position: "absolute",
@@ -60,7 +61,6 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     height: 90,
-    backgroundColor: "#fff",
     justifyContent: "center",
     alignItems: "center",
     flexDirection: "row",
@@ -75,7 +75,6 @@ const styles = StyleSheet.create({
   headerText: {
     fontSize: 20,
     fontWeight: "bold",
-    color: "#000",
   },
   content: {
     marginTop: 110, // Push options further down
@@ -84,7 +83,6 @@ const styles = StyleSheet.create({
   option: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#fff",
     padding: 15,
     marginVertical: 5,
     borderRadius: 8,

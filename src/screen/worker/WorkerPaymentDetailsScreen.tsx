@@ -4,11 +4,13 @@ import React from "react";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import { View, Text, StyleSheet, TouchableOpacity, StatusBar, ToastAndroid, Linking, Animated, FlatList, Easing } from "react-native";
 import { RootStackParamList } from "../../RootNavigator";
+import { useTheme } from "../../context/ThemeContext";
 
 
 type WorkerPaymentDetailsScreenRouteProp = RouteProp<RootStackParamList, 'WorkerPaymentDetailsScreen'>;
 
 const WorkerPaymentDetailsScreen = () => {
+  const { theme } = useTheme(); 
   const route = useRoute<WorkerPaymentDetailsScreenRouteProp>();
   const navigation = useNavigation();
 
@@ -65,17 +67,18 @@ const WorkerPaymentDetailsScreen = () => {
     Linking.openURL('tel:+1234567890');
   };
   const shouldShowCallContractor = ['P0016', 'P0015', 'P0014', 'P0013', 'P0012'].includes(project.project_Id);
+  
   return (
-    <Animated.View style={[styles.container, { opacity: fadeAnim }]}>
+    <Animated.View style={[styles.container, { opacity: fadeAnim, backgroundColor: theme.mode === 'dark' ? '#333' : '#f9f9f9' }]}>
       <FlatList
         data={projectDetails}
         keyExtractor={(item) => item.label}
         renderItem={({ item }) => (
-          <View style={styles.card}>
-            <Icon name={item.icon} size={25} color="#28a745" style={styles.icon} />
+          <View style={[styles.card, { backgroundColor: theme.mode === 'dark' ? '#444' : '#fff' }]}>
+            <Icon name={item.icon} size={25} color={theme.mode === 'dark' ? '#fff' : '#28a745'} style={styles.icon} />
             <View style={{ flex: 1 }}>
-              <Text style={styles.label}>{item.label}</Text>
-              <Text style={[styles.value, item.label === 'Payment Status' && styles.boldText]}>
+              <Text style={[styles.label, { color: theme.mode === 'dark' ? '#fff' : '#000' }]}>{item.label}</Text>
+              <Text style={[styles.value, item.label === 'Payment Status' && styles.boldText, { color: theme.mode === 'dark' ? '#fff' : '#000' }]}>
                 {item.label === 'Payment Status' ? <Text style={styles.boldText}>{item.value}</Text> : item.value}
               </Text>
             </View>
@@ -84,32 +87,31 @@ const WorkerPaymentDetailsScreen = () => {
       />
 
       {shouldShowCallContractor ? (
-        <TouchableOpacity style={styles.downloadButton} onPress={callContractor}>
+        <TouchableOpacity style={[styles.downloadButton, { backgroundColor: theme.mode === 'dark' ? '#555' : '#28a745' }]} onPress={callContractor}>
           <Icon name="phone" size={20} color="#fff" />
           <Text style={styles.downloadButtonText}>Call Contractor</Text>
         </TouchableOpacity>
       ) : (
-        <TouchableOpacity style={styles.downloadButton} onPress={downloadReceipt}>
+        <TouchableOpacity style={[styles.downloadButton, { backgroundColor: theme.mode === 'dark' ? '#555' : '#28a745' }]} onPress={downloadReceipt}>
           <Icon name="download" size={20} color="#fff" />
           <Text style={styles.downloadButtonText}>Download Receipt</Text>
         </TouchableOpacity>
       )}
-      <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
-        <Text style={styles.backButtonText}>Go Back</Text>
+      <TouchableOpacity style={[styles.backButton, { backgroundColor: theme.mode === 'dark' ? '#444' : '#000' }]} onPress={() => navigation.goBack()}>
+        <Text style={[styles.backButtonText, { color: theme.mode === 'dark' ? '#fff' : '#fff' }]}>Go Back</Text>
       </TouchableOpacity>
     </Animated.View>
   );
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 20, backgroundColor: '#f9f9f9' },
-  card: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#fff', padding: 15, marginBottom: 15, borderRadius: 10, elevation: 5 },
+  container: { flex: 1, padding: 20 },
+  card: { flexDirection: 'row', alignItems: 'center', padding: 15, marginBottom: 15, borderRadius: 10, elevation: 5 },
   icon: { marginRight: 15 },
   label: { fontWeight: 'bold', fontSize: 16, marginBottom: 5 },
   value: { fontSize: 14, flexWrap: 'wrap', flex: 1 },
   boldText: { fontWeight: 'bold' },
   downloadButton: {
-    backgroundColor: '#28a745',
     padding: 15,
     marginTop: 20,
     alignItems: 'center',
@@ -125,15 +127,14 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   backButton: {
-    backgroundColor: '#000',
     padding: 13,
     marginTop: 20,
     alignItems: 'center',
     borderRadius: 10,
   },
   backButtonText: {
-    color: '#fff',
     fontWeight: 'bold',
   },
 });
+
 export default WorkerPaymentDetailsScreen;

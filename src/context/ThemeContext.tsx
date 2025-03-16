@@ -1,20 +1,30 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { Appearance } from 'react-native';
 
+// Define Light and Dark theme structures
 const LightTheme = {
   mode: 'light',
   background: '#FFFFFF',
   text: '#000000',
-  primary: '#1E90FF',
+  inputBackground: '#f0f0f0', // Light mode input field background
+  primary: '#1E90FF', // Primary button color
+  buttonText: '#FFFFFF', // Button text color
+  icon: '#7f8c8d', // Icon color
+  errorColor: '#e74c3c', // Error text color
 };
 
 const DarkTheme = {
   mode: 'dark',
   background: '#000000',
   text: '#FFFFFF',
-  primary: '#1E90FF',
+  inputBackground: '#34495e', // Dark mode input field background
+  primary: '#1E90FF', // Primary button color
+  buttonText: '#FFFFFF', // Button text color
+  icon: '#bdc3c7', // Icon color
+  errorColor: '#c0392b', // Dark mode error color
 };
 
+// Type for theme structure
 type ThemeType = typeof LightTheme;
 
 type ThemeContextType = {
@@ -32,14 +42,16 @@ type ThemeProviderProps = {
 };
 
 export const ThemeProvider = ({ children }: ThemeProviderProps) => {
+  // Get system color scheme (light or dark)
   const colorScheme = Appearance.getColorScheme();
   const [theme, setTheme] = useState(colorScheme === 'dark' ? DarkTheme : LightTheme);
 
+  // Toggle between light and dark theme
   const toggleTheme = () => {
     setTheme((prev) => (prev.mode === 'light' ? DarkTheme : LightTheme));
   };
 
-  // Optional: Listen to system theme change
+  // Optional: Listen to system theme changes
   useEffect(() => {
     const listener = Appearance.addChangeListener(({ colorScheme }) => {
       setTheme(colorScheme === 'dark' ? DarkTheme : LightTheme);

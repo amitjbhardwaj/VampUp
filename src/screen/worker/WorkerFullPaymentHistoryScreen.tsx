@@ -4,11 +4,13 @@ import { NavigationProp, useNavigation } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Icon from "react-native-vector-icons/FontAwesome";
 import { RootStackParamList } from "../../RootNavigator"; // Adjust the path as needed
+import { useTheme } from "../../context/ThemeContext"; // Assuming you have this context for theme management
 
 // Correctly type the navigation prop using RootStackParamList
 type WorkerFullPaymentHistoryScreenNavigationProp = NavigationProp<RootStackParamList, 'WorkerFullPaymentHistoryScreen'>;
 
 const WorkerFullPaymentHistoryScreen = () => {
+    const { theme } = useTheme(); // Get the current theme (light or dark)
     const navigation = useNavigation<WorkerFullPaymentHistoryScreenNavigationProp>(); // Explicitly set the type here
     const [completedProjects, setCompletedProjects] = useState<any[]>([]);
 
@@ -37,22 +39,22 @@ const WorkerFullPaymentHistoryScreen = () => {
     ];
 
     const renderProjectCard = ({ item: project }: { item: any }) => (
-        <View style={styles.projectCard}>
+        <View style={[styles.projectCard, { backgroundColor: theme.mode === 'dark' ? '#333' : '#fff' }]}>
             <FlatList
                 data={projectDetails(project)}
                 keyExtractor={(item) => item.label}
                 renderItem={({ item }) => (
                     <View style={styles.card}>
-                        <Icon name={item.icon} size={20} color="#000" style={styles.icon} />
+                        <Icon name={item.icon} size={20} color={theme.mode === 'dark' ? '#fff' : '#000'} style={styles.icon} />
                         <View style={{ flex: 1 }}>
-                            <Text style={styles.label}>{item.label}</Text>
-                            <Text style={styles.value}>{item.value}</Text>
+                            <Text style={[styles.label, { color: theme.mode === 'dark' ? '#fff' : '#000' }]}>{item.label}</Text>
+                            <Text style={[styles.value, { color: theme.mode === 'dark' ? '#fff' : '#000' }]}>{item.value}</Text>
                         </View>
                     </View>
                 )}
             />
             <TouchableOpacity
-                style={styles.paymentButton}
+                style={[styles.paymentButton, { backgroundColor: theme.mode === 'dark' ? '#555' : '#000' }]}
                 onPress={() => navigation.navigate("WorkerPaymentDetailsScreen", { project })}
             >
                 <Text style={styles.paymentButtonText}>View Payment</Text>
@@ -61,30 +63,29 @@ const WorkerFullPaymentHistoryScreen = () => {
     );
 
     return (
-        <View style={styles.container}>
-            <Text style={styles.title}>Payment History</Text>
+        <View style={[styles.container, { backgroundColor: theme.mode === 'dark' ? '#121212' : '#f9f9f9' }]}>
+            <Text style={[styles.title, { color: theme.mode === 'dark' ? '#fff' : '#000' }]}>Payment History</Text>
 
             {/* FlatList handles the scrolling of the project list */}
             <FlatList
                 data={completedProjects}
                 keyExtractor={(item, index) => item.project_Id || index.toString()}
                 renderItem={renderProjectCard}
-                ListEmptyComponent={<Text style={styles.emptyText}>No completed projects yet.</Text>}
+                ListEmptyComponent={<Text style={[styles.emptyText, { color: theme.mode === 'dark' ? '#fff' : '#777' }]}>No completed projects yet.</Text>}
             />
 
-            <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
-                <Text style={styles.backButtonText}>Go Back</Text>
+            <TouchableOpacity style={[styles.backButton, { backgroundColor: theme.mode === 'dark' ? '#444' : '#000' }]} onPress={() => navigation.goBack()}>
+                <Text style={[styles.backButtonText, { color: theme.mode === 'dark' ? '#fff' : '#fff' }]}>Go Back</Text>
             </TouchableOpacity>
         </View>
     );
 };
 
 const styles = StyleSheet.create({
-    container: { flex: 1, padding: 20, backgroundColor: '#f9f9f9' },
+    container: { flex: 1, padding: 20 },
     title: { fontSize: 22, fontWeight: 'bold', textAlign: 'center', marginBottom: 20 },
-    emptyText: { fontSize: 16, color: "#777", textAlign: "center", marginTop: 20 },
+    emptyText: { fontSize: 16, textAlign: "center", marginTop: 20 },
     projectCard: {
-        backgroundColor: "#fff",
         padding: 15,
         marginBottom: 15,
         borderRadius: 10,
@@ -95,7 +96,6 @@ const styles = StyleSheet.create({
     label: { fontWeight: 'bold', fontSize: 16 },
     value: { fontSize: 14, flexWrap: 'wrap', flex: 1 },
     paymentButton: {
-        backgroundColor: '#000',
         padding: 15,
         marginTop: 20,
         alignItems: 'center',
@@ -107,14 +107,12 @@ const styles = StyleSheet.create({
         fontSize: 16,
     },
     backButton: {
-        backgroundColor: '#000',
         padding: 13,
         marginTop: 20,
         alignItems: 'center',
         borderRadius: 10,
     },
     backButtonText: {
-        color: '#fff',
         fontWeight: 'bold',
         fontSize: 16,
     },
