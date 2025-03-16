@@ -11,6 +11,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import { NavigationProp, useNavigation, useFocusEffect } from "@react-navigation/native";
 import { RootStackParamList } from "../../RootNavigator";
+import { useTheme } from "../../context/ThemeContext";
 
 interface AttendanceRecord {
     project_Id: string;
@@ -30,6 +31,7 @@ type WorkerAttendanceHistoryScreenNavigationProp = NavigationProp<
 >;
 
 const WorkerAttendanceHistoryScreen = () => {
+    const { theme } = useTheme(); // Get current theme
     const [attendanceRecords, setAttendanceRecords] = useState<AttendanceRecord[]>([]);
     const [searchQuery, setSearchQuery] = useState("");
     const [filteredRecords, setFilteredRecords] = useState<AttendanceRecord[]>([]);
@@ -71,43 +73,44 @@ const WorkerAttendanceHistoryScreen = () => {
     };
 
     const renderItem = ({ item }: { item: AttendanceRecord }) => (
-        <View style={styles.card}>
-            <Text style={styles.projectTitle}>{item.project_description}</Text>
-            <Text style={styles.itemText}>Project ID: <Text style={styles.boldText}>{item.project_Id}</Text></Text>
-            <Text style={styles.itemText}>Assigned To: <Text style={styles.boldText}>{item.assigned_to}</Text></Text>
-            <Text style={styles.itemText}>Start Date: <Text style={styles.boldText}>{item.project_start_date}</Text></Text>
-            <Text style={styles.itemText}>Completion: 
+        <View style={[styles.card, { backgroundColor: theme.mode === 'dark' ? '#333' : '#fff' }]}>
+            <Text style={[styles.projectTitle, { color: theme.mode === 'dark' ? '#fff' : '#2a2a2a' }]}>{item.project_description}</Text>
+            <Text style={[styles.itemText, { color: theme.mode === 'dark' ? '#bbb' : '#555' }]}>Project ID: <Text style={styles.boldText}>{item.project_Id}</Text></Text>
+            <Text style={[styles.itemText, { color: theme.mode === 'dark' ? '#bbb' : '#555' }]}>Assigned To: <Text style={styles.boldText}>{item.assigned_to}</Text></Text>
+            <Text style={[styles.itemText, { color: theme.mode === 'dark' ? '#bbb' : '#555' }]}>Start Date: <Text style={styles.boldText}>{item.project_start_date}</Text></Text>
+            <Text style={[styles.itemText, { color: theme.mode === 'dark' ? '#bbb' : '#555' }]}>Completion: 
                 <Text style={[styles.completion, item.completion_percentage === 100 ? styles.complete : styles.inProgress]}>
                     {` ${item.completion_percentage}%`}
                 </Text>
             </Text>
-            <Text style={styles.itemText}>Date: <Text style={styles.boldText}>{item.date}</Text></Text>
-            <Text style={styles.itemText}>Login Time: <Text style={styles.loginTime}>{item.login_time}</Text></Text>
-            <Text style={styles.itemText}>Logout Time: 
+            <Text style={[styles.itemText, { color: theme.mode === 'dark' ? '#bbb' : '#555' }]}>Date: <Text style={styles.boldText}>{item.date}</Text></Text>
+            <Text style={[styles.itemText, { color: theme.mode === 'dark' ? '#bbb' : '#555' }]}>Login Time: <Text style={styles.loginTime}>{item.login_time}</Text></Text>
+            <Text style={[styles.itemText, { color: theme.mode === 'dark' ? '#bbb' : '#555' }]}>Logout Time: 
                 <Text style={[styles.logoutTime, item.logout_time ? styles.loggedOut : styles.pending]}>
                     {item.logout_time || "Pending"}
                 </Text>
             </Text>
-            <Text style={styles.itemText}>Attendance Type: <Text style={styles.boldText}>{item.attendance_type}</Text></Text>
+            <Text style={[styles.itemText, { color: theme.mode === 'dark' ? '#bbb' : '#555' }]}>Attendance Type: <Text style={styles.boldText}>{item.attendance_type}</Text></Text>
         </View>
     );
 
     return (
-        <View style={styles.container}>
-            <Text style={styles.header}>Attendance History</Text>
+        <View style={[styles.container, { backgroundColor: theme.mode === 'dark' ? '#222' : '#f4f4f4' }]}>
+            <Text style={[styles.header, { color: theme.mode === 'dark' ? '#fff' : '#333' }]}>Attendance History</Text>
 
             {/* Search Bar */}
-            <View style={styles.searchContainer}>
-                <Icon name="search" size={20} color="#888" style={styles.searchIcon} />
+            <View style={[styles.searchContainer, { backgroundColor: theme.mode === 'dark' ? '#333' : '#fff' }]}>
+                <Icon name="search" size={20} color={theme.mode === 'dark' ? '#bbb' : '#888'} style={styles.searchIcon} />
                 <TextInput
-                    style={styles.searchInput}
+                    style={[styles.searchInput, { color: theme.mode === 'dark' ? '#fff' : '#333' }]}
                     placeholder="Search by project, name, or date..."
+                    placeholderTextColor={theme.mode === 'dark' ? '#bbb' : '#888'}
                     value={searchQuery}
                     onChangeText={handleSearch}
                 />
                 {searchQuery.length > 0 && (
                     <TouchableOpacity onPress={() => handleSearch("")}>
-                        <Icon name="close" size={20} color="#888" style={styles.clearIcon} />
+                        <Icon name="close" size={20} color={theme.mode === 'dark' ? '#bbb' : '#888'} style={styles.clearIcon} />
                     </TouchableOpacity>
                 )}
             </View>
@@ -121,8 +124,8 @@ const WorkerAttendanceHistoryScreen = () => {
                 />
             ) : (
                 <View style={styles.emptyContainer}>
-                    <Icon name="history" size={60} color="#bbb" />
-                    <Text style={styles.emptyText}>No matching records found.</Text>
+                    <Icon name="history" size={60} color={theme.mode === 'dark' ? '#777' : '#bbb'} />
+                    <Text style={[styles.emptyText, { color: theme.mode === 'dark' ? '#bbb' : '#777' }]}>No matching records found.</Text>
                 </View>
             )}
 
@@ -139,19 +142,16 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         padding: 20,
-        backgroundColor: "#f4f4f4",
     },
     header: {
         fontSize: 24,
         fontWeight: "bold",
         textAlign: "center",
         marginBottom: 15,
-        color: "#333",
     },
     searchContainer: {
         flexDirection: "row",
         alignItems: "center",
-        backgroundColor: "#fff",
         paddingHorizontal: 10,
         paddingVertical: 8,
         borderRadius: 8,
@@ -164,13 +164,11 @@ const styles = StyleSheet.create({
     searchInput: {
         flex: 1,
         fontSize: 16,
-        color: "#333",
     },
     clearIcon: {
         marginLeft: 8,
     },
     card: {
-        backgroundColor: "#fff",
         padding: 15,
         borderRadius: 10,
         marginBottom: 12,
@@ -183,17 +181,14 @@ const styles = StyleSheet.create({
     projectTitle: {
         fontSize: 18,
         fontWeight: "bold",
-        color: "#2a2a2a",
         marginBottom: 8,
     },
     itemText: {
         fontSize: 14,
-        color: "#555",
         marginBottom: 3,
     },
     boldText: {
         fontWeight: "bold",
-        color: "#000",
     },
     completion: {
         fontWeight: "bold",
@@ -225,7 +220,6 @@ const styles = StyleSheet.create({
     },
     emptyText: {
         fontSize: 16,
-        color: "#777",
         marginTop: 10,
     },
     backButton: {

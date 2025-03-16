@@ -11,6 +11,10 @@ const LightTheme = {
   buttonText: '#FFFFFF', // Button text color
   icon: '#7f8c8d', // Icon color
   errorColor: '#e74c3c', // Error text color
+  textColor: '#000000',
+  buttonBackgroundColor: '#FFFFFF',
+  buttonTextColor: '#000000',
+  backgroundColor: '#FFFFFF',
 };
 
 const DarkTheme = {
@@ -22,6 +26,10 @@ const DarkTheme = {
   buttonText: '#FFFFFF', // Button text color
   icon: '#bdc3c7', // Icon color
   errorColor: '#c0392b', // Dark mode error color
+  textColor: '#FFFFFF',
+  buttonBackgroundColor: '#FFFFFF',
+  buttonTextColor: '#FFFFFF',
+  backgroundColor: '#FFFFFF',
 };
 
 // Type for theme structure

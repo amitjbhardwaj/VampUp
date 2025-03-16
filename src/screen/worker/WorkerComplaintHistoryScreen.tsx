@@ -10,6 +10,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import Icon from "react-native-vector-icons/FontAwesome";
 import { NavigationProp, RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import { RootStackParamList } from "../../RootNavigator";
+import { useTheme } from "../../context/ThemeContext";
 
 interface Complaint {
     complaintId: string;
@@ -26,6 +27,7 @@ type WorkerComplaintHistoryScreenNavigationProp = NavigationProp<RootStackParamL
 type WorkerComplaintHistoryScreenRouteProp = RouteProp<RootStackParamList, "WorkerComplaintHistoryScreen">;
 
 const WorkerComplaintHistoryScreen = () => {
+    const { theme } = useTheme(); // Get current theme
     const [complaints, setComplaints] = useState<Complaint[]>([]);
     const navigation = useNavigation<WorkerComplaintHistoryScreenNavigationProp>();
     const route = useRoute<WorkerComplaintHistoryScreenRouteProp>();
@@ -107,110 +109,113 @@ const WorkerComplaintHistoryScreen = () => {
     };
 
     const renderItem = ({ item }: { item: Complaint }) => (
-        <View style={styles.item}>
+        <View style={[styles.item, { backgroundColor: theme.background }]}>
             <View style={styles.row}>
-                <Icon name="id-badge" size={20} color="#000" style={styles.icon} />
-                <Text style={styles.itemText}>Complaint ID: {item.complaintId}</Text>
+                <Icon name="id-badge" size={20} color={theme.text} style={styles.icon} />
+                <Text style={[styles.itemText, { color: theme.text }]}>{`Complaint ID: ${item.complaintId}`}</Text>
             </View>
             <View style={styles.row}>
-                <Icon name="tags" size={20} color="#000" style={styles.icon} />
-                <Text style={styles.itemText}>Project ID: {item.projectId}</Text>
+                <Icon name="tags" size={20} color={theme.text} style={styles.icon} />
+                <Text style={[styles.itemText, { color: theme.text }]}>{`Project ID: ${item.projectId}`}</Text>
             </View>
             <View style={styles.row}>
-                <Icon name="info-circle" size={20} color="#000" style={styles.icon} />
-                <Text style={styles.itemText}>Project Description: {item.projectDescription}</Text>
+                <Icon name="info-circle" size={20} color={theme.text} style={styles.icon} />
+                <Text style={[styles.itemText, { color: theme.text }]}>{`Project Description: ${item.projectDescription}`}</Text>
             </View>
             <View style={styles.row}>
-                <Icon name="info-circle" size={20} color="#000" style={styles.icon} />
-                <Text style={styles.itemText}>Project Long Description: {item.longProjectDescription}</Text>
+                <Icon name="info-circle" size={20} color={theme.text} style={styles.icon} />
+                <Text style={[styles.itemText, { color: theme.text }]}>{`Project Long Description: ${item.longProjectDescription}`}</Text>
             </View>
             <View style={styles.row}>
-                <Icon name="calendar" size={20} color="#000" style={styles.icon} />
-                <Text style={styles.itemText}>Start Date: {item.projectStartDate}</Text>
+                <Icon name="calendar" size={20} color={theme.text} style={styles.icon} />
+                <Text style={[styles.itemText, { color: theme.text }]}>{`Start Date: ${item.projectStartDate}`}</Text>
             </View>
             <View style={styles.row}>
-                <Icon name="edit" size={20} color="#000" style={styles.icon} />
-                <Text style={styles.itemText}>Complaint Subject: {item.subject}</Text>
+                <Icon name="edit" size={20} color={theme.text} style={styles.icon} />
+                <Text style={[styles.itemText, { color: theme.text }]}>{`Complaint Subject: ${item.subject}`}</Text>
             </View>
             <View style={styles.row}>
-                <Icon name="pencil" size={20} color="#000" style={styles.icon} />
-                <Text style={styles.itemText}>Complaint: {item.complaintDescription}</Text>
+                <Icon name="pencil" size={20} color={theme.text} style={styles.icon} />
+                <Text style={[styles.itemText, { color: theme.text }]}>{`Complaint: ${item.complaintDescription}`}</Text>
             </View>
 
             {/* Buttons */}
+            {/* Buttons */}
             <View style={styles.buttonContainer}>
-                {/* First row: Call, Message, Share */}
+                {/* First Row: Edit, Delete */}
                 <View style={styles.buttonRow}>
-                    <TouchableOpacity style={styles.button} onPress={() => handleCall(item.phone)}>
-                        <Icon name="phone" size={15} color="white" />
-                        <Text style={styles.buttonText}>Call</Text>
+                    <TouchableOpacity style={[styles.button, { backgroundColor: theme.primary }]} onPress={() => handleEdit(item)}>
+                        <Icon name="edit" size={18} color={theme.buttonText} />
+                        <Text style={[styles.buttonText, { color: theme.buttonText }]}>Edit</Text>
                     </TouchableOpacity>
 
-                    <TouchableOpacity style={styles.button} onPress={() => handleMessage(item.phone)}>
-                        <Icon name="comment" size={15} color="white" />
-                        <Text style={styles.buttonText}>Message</Text>
-                    </TouchableOpacity>
-
-                    <TouchableOpacity style={styles.button} onPress={() => handleShare(item)}>
-                        <Icon name="share" size={15} color="white" />
-                        <Text style={styles.buttonText}>Share</Text>
+                    <TouchableOpacity style={[styles.buttonDelete]} onPress={() => handleDelete(item.complaintId)}>
+                        <Icon name="trash" size={18} color={theme.buttonText} />
+                        <Text style={[styles.buttonText, { color: theme.buttonText }]}>Delete</Text>
                     </TouchableOpacity>
                 </View>
 
-                {/* Second row: Edit, Delete */}
+                {/* Second Row: Call, Message, Share */}
                 <View style={styles.buttonRow}>
-                    <TouchableOpacity style={styles.button} onPress={() => handleEdit(item)}>
-                        <Icon name="edit" size={15} color="white" />
-                        <Text style={styles.buttonText}>Edit</Text>
+                    <TouchableOpacity style={[styles.button, { backgroundColor: theme.primary }]} onPress={() => handleCall(item.phone)}>
+                        <Icon name="phone" size={18} color={theme.buttonText} />
+                        <Text style={[styles.buttonText, { color: theme.buttonText }]}>Call</Text>
                     </TouchableOpacity>
 
-                    <TouchableOpacity style={styles.buttonDelete} onPress={() => handleDelete(item.complaintId)}>
-                        <Icon name="trash" size={15} color="white" />
-                        <Text style={styles.buttonText}>Delete</Text>
+                    <TouchableOpacity style={[styles.button, { backgroundColor: theme.primary }]} onPress={() => handleMessage(item.phone)}>
+                        <Icon name="comment" size={18} color={theme.buttonText} />
+                        <Text style={[styles.buttonText, { color: theme.buttonText }]}>Message</Text>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity style={[styles.button, { backgroundColor: theme.primary }]} onPress={() => handleShare(item)}>
+                        <Icon name="share" size={18} color={theme.buttonText} />
+                        <Text style={[styles.buttonText, { color: theme.buttonText }]}>Share</Text>
                     </TouchableOpacity>
                 </View>
             </View>
+
+
 
         </View>
     );
 
     return (
-        <View style={styles.container}>
-            <Text style={styles.header}>Complaint History</Text>
+        <View style={[styles.container, { backgroundColor: theme.background }]}>
+            <Text style={[styles.header, { color: theme.text }]}>Complaint History</Text>
             <FlatList
                 data={complaints}
                 keyExtractor={(item) => item.complaintId}
                 renderItem={renderItem}
-                ListEmptyComponent={<Text style={styles.emptyText}>No complaints found.</Text>}
+                ListEmptyComponent={<Text style={[styles.emptyText, { color: theme.text }]}>No complaints found.</Text>}
             />
 
-            <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
-                <Text style={styles.backButtonText}>Go Back</Text>
+            <TouchableOpacity style={[styles.backButton, { backgroundColor: theme.mode === 'dark' ? '#444' : '#000' }]} onPress={() => navigation.goBack()}>
+                <Text style={[styles.backButtonText, { color: theme.mode === 'dark' ? '#fff' : '#fff' }]}>Go Back</Text>
             </TouchableOpacity>
 
             <Modal visible={modalVisible} transparent>
                 <View style={styles.modalContainer}>
                     <View style={styles.modalContent}>
-                        <Text style={styles.modalHeader}>Edit Complaint</Text>
+                        <Text style={[styles.modalHeader, { color: theme.text }]}>Edit Complaint</Text>
                         <TextInput
-                            style={styles.input}
+                            style={[styles.input, { backgroundColor: theme.inputBackground, color: theme.text }]}
                             value={updatedSubject}
                             onChangeText={setUpdatedSubject}
                             placeholder="Update Subject"
                         />
                         <TextInput
-                            style={[styles.input, styles.textArea]}
+                            style={[styles.input, styles.textArea, { backgroundColor: theme.inputBackground, color: theme.text }]}
                             value={updatedComplaint}
                             onChangeText={setUpdatedComplaint}
                             placeholder="Update Complaint Description"
                             multiline
                         />
                         <View style={styles.modalButtonRow}>
-                            <TouchableOpacity style={styles.button} onPress={handleSaveEdit}>
-                                <Text style={styles.buttonText}>Save</Text>
+                            <TouchableOpacity style={[styles.button, { backgroundColor: theme.primary }]} onPress={handleSaveEdit}>
+                                <Text style={[styles.buttonText, { color: theme.buttonText }]}>Save</Text>
                             </TouchableOpacity>
-                            <TouchableOpacity style={styles.buttonDelete} onPress={() => setModalVisible(false)}>
-                                <Text style={styles.buttonText}>Cancel</Text>
+                            <TouchableOpacity style={[styles.buttonDelete, { backgroundColor: theme.primary }]} onPress={() => setModalVisible(false)}>
+                                <Text style={[styles.buttonText, { color: theme.buttonText }]}>Cancel</Text>
                             </TouchableOpacity>
                         </View>
                     </View>
@@ -220,98 +225,121 @@ const WorkerComplaintHistoryScreen = () => {
     );
 };
 
+
 const styles = StyleSheet.create({
-    container: { flex: 1, padding: 20, backgroundColor: "#f9f9f9" },
-    header: { fontSize: 22, fontWeight: "bold", marginBottom: 20, textAlign: "center" },
+    container: {
+        flex: 1,
+        padding: 16,
+    },
+    header: {
+        fontSize: 24,
+        fontWeight: "bold",
+        marginBottom: 16,
+        textAlign: 'center',
+    },
     item: {
-        padding: 15,
-        backgroundColor: "#fff",
-        borderRadius: 10,
-        marginBottom: 10,
-        elevation: 5, // Shadow effect
+        padding: 16,
+        borderRadius: 8,
+        marginBottom: 16, // Increased spacing between cards
+        borderWidth: 1, // Adds a border
+        borderColor: "#ddd", // Light grey border for separation
+        shadowColor: "#000", // Shadow for depth
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.2,
+        shadowRadius: 4,
+        elevation: 3, // Elevation for Android shadow
+        backgroundColor: "#fff", // Ensures visibility
     },
     row: {
         flexDirection: "row",
-        alignItems: "flex-start",  // Ensures proper text alignment
-        marginBottom: 5
-    },
-    icon: { marginRight: 10, marginTop: 2 }, // Adjusted for alignment
-    itemText: {
-        fontSize: 14,
-        color: "#333",
-        flexShrink: 1, // Prevents text from overflowing
-    },
-    emptyText: {
-        fontSize: 16,
-        color: "#777",
-        textAlign: "center",
-        marginTop: 20,
-    },
-    backButton: {
-        backgroundColor: "#000",
-        padding: 13,
-        marginTop: 20,
         alignItems: "center",
-        borderRadius: 10,
+        marginBottom: 8,
     },
-    backButtonText: {
-        color: "#fff",
-        fontWeight: "bold",
+    icon: {
+        marginRight: 8,
+    },
+    itemText: {
         fontSize: 16,
+    },
+    buttonContainer: {
+        marginTop: 16,
+        alignItems: "center",
+    },
+    buttonRow: {
+        flexDirection: "row",
+        flexWrap: "wrap", // Allows buttons to wrap to a new row
+        justifyContent: "center", // Centers the buttons
+        alignItems: "center",
+        gap: 10, // Adds spacing between buttons
+        width: "100%", 
+        paddingHorizontal: 10, // Ensures buttons don’t touch the screen edges
     },
     button: {
         flexDirection: "row",
         alignItems: "center",
-        backgroundColor: "#000",
-        paddingVertical: 10,
-        paddingHorizontal: 10,
-        borderRadius: 10,
+        paddingVertical: 12,
+        paddingHorizontal: 18,
+        borderRadius: 8,
         justifyContent: "center",
-        flex: 1,
-        marginHorizontal: 1,
+        width: "45%", // Ensures two buttons fit per row
+        minWidth: 120, // Avoids buttons shrinking too much
+        marginBottom: 10, // Adds space between button rows
     },
-    buttonText: {
-        color: "#fff",
-        fontSize: 14,
-        marginLeft: 5,
-    },
+    
     buttonDelete: {
-        backgroundColor: "#dc3545",
-        paddingVertical: 10,
-        paddingHorizontal: 15,
-        borderRadius: 10,
         flexDirection: "row",
         alignItems: "center",
+        paddingVertical: 12,
+        paddingHorizontal: 18,
+        borderRadius: 8,
+        backgroundColor: "#dc3545",
         justifyContent: "center",
-        flex: 1,
-        marginHorizontal: 5,
+        minWidth: 120,
+        width: "45%",
+    },
+    buttonText: {
+        marginLeft: 8,
+        fontSize: 18, // Increased font size for better readability
+        fontWeight: "bold", // Bold text for emphasis
+    },
+    emptyText: {
+        textAlign: "center",
+        fontSize: 18,
+        color: "gray",
+    },
+    backButton: {
+        padding: 13,
+        marginTop: 20,
+        alignItems: 'center',
+        borderRadius: 10,
+    },
+    backButtonText: {
+        fontWeight: 'bold',
+        fontSize: 16,
     },
     modalContainer: {
         flex: 1,
         justifyContent: "center",
         alignItems: "center",
-        backgroundColor: "rgba(0,0,0,0.5)"
+        backgroundColor: "rgba(0, 0, 0, 0.5)",
     },
     modalContent: {
-        backgroundColor: "white",
-        padding: 20,
-        borderRadius: 10,
+        backgroundColor: "#fff",
+        padding: 24,
+        borderRadius: 8,
         width: "80%",
-        alignSelf: "center" // Ensures modal is centered properly
     },
     modalHeader: {
         fontSize: 18,
         fontWeight: "bold",
-        marginBottom: 15,
-        textAlign: "center",
+        marginBottom: 12,
     },
     input: {
+        height: 40,
         borderWidth: 1,
-        borderColor: "#ccc",
-        padding: 10,
-        marginTop: 10,
-        borderRadius: 5,
-        width: "100%",
+        paddingLeft: 8,
+        borderRadius: 8,
+        marginBottom: 16,
     },
     textArea: {
         height: 100,
@@ -319,16 +347,8 @@ const styles = StyleSheet.create({
     modalButtonRow: {
         flexDirection: "row",
         justifyContent: "space-between",
-        marginTop: 15,
     },
-    buttonContainer: {
-        marginTop: 10,
-    },
-    buttonRow: {
-        flexDirection: "row",
-        justifyContent: "space-between",
-        marginBottom: 5, // Adds spacing between button rows
-    },
+
 });
 
 export default WorkerComplaintHistoryScreen;
