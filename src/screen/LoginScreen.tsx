@@ -52,8 +52,10 @@ const LoginScreen = () => {
     };
 
     return (
-        <ScrollView>
-            <View style={styles.container}>
+        <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+
+            <View style={[styles.container, { flex: 1 }]}>
+
                 <View style={styles.headerContainer}>
                     <Image source={require("../assets/logo.png")} style={styles.logo} resizeMode="contain" />
                     <Text style={styles.helloText}>Welcome</Text>
