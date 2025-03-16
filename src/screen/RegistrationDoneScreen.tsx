@@ -3,10 +3,12 @@ import { View, StyleSheet } from "react-native";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 import LottieView from "lottie-react-native";
 import { RootStackParamList } from "../RootNavigator";
+import { useTheme } from "../context/ThemeContext";
 
 type RegistrationDoneScreenNavigationProp = NavigationProp<RootStackParamList>;
 
 const RegistrationDoneScreen = () => {
+    const { theme } = useTheme();  // Access the theme from context
     const navigation = useNavigation<RegistrationDoneScreenNavigationProp>();
 
     useEffect(() => {
@@ -18,8 +20,10 @@ const RegistrationDoneScreen = () => {
         return () => clearTimeout(timeout); // Cleanup timeout on unmount
     }, []);
 
+    const isDarkMode = theme.mode === "dark";  // Check if the theme is dark
+
     return (
-        <View style={styles.container}>
+        <View style={[styles.container, { backgroundColor: isDarkMode ? theme.background : "#fff" }]}>
             {/* Lottie animation for successful registration */}
             <LottieView
                 source={require("../assets/registration_successfully.json")}
@@ -36,7 +40,6 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: "center",
         alignItems: "center",
-        backgroundColor: "#fff", // Ensure background color matches app theme
     },
     animation: {
         width: 300,  // Adjust size to fit the screen properly

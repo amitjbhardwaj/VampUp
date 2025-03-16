@@ -3,10 +3,12 @@ import { View, Text, StyleSheet } from "react-native";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 import LottieView from "lottie-react-native";
 import { RootStackParamList } from "../RootNavigator";
+import { useTheme } from "../context/ThemeContext";
 
 type RegistrationFailedScreenNavigationProp = NavigationProp<RootStackParamList>;
 
 const RegistrationFailedScreen = () => {
+    const { theme } = useTheme(); 
     const navigation = useNavigation<RegistrationFailedScreenNavigationProp>();
 
     useEffect(() => {
@@ -18,15 +20,19 @@ const RegistrationFailedScreen = () => {
         return () => clearTimeout(timeout);
     }, []);
 
+    const isDarkMode = theme.mode === "dark";  // Check if the theme is dark
+
     return (
-        <View style={styles.container}>
+        <View style={[styles.container, { backgroundColor: isDarkMode ? theme.background : "#FFF" }]}>
             <LottieView
                 source={require("../assets/registration_failed.json")} // Use an appropriate failure animation
                 autoPlay
                 loop={true}
                 style={styles.animation}
             />
-            <Text style={styles.errorMessage}>OTP Verification Failed!</Text>
+            <Text style={[styles.errorMessage, { color: isDarkMode ? "#FF6347" : "#D8000C" }]}>
+                OTP Verification Failed!
+            </Text>
         </View>
     );
 };
@@ -36,7 +42,6 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: "center",
         alignItems: "center",
-        backgroundColor: "#FFF",
     },
     animation: {
         width: 250,
@@ -45,7 +50,6 @@ const styles = StyleSheet.create({
     errorMessage: {
         fontSize: 20,
         fontWeight: "bold",
-        color: "#D8000C",
         marginTop: 20,
     },
 });

@@ -5,11 +5,13 @@ import { RootStackParamList } from "../RootNavigator";
 import LottieView from "lottie-react-native";
 import Icon from "react-native-vector-icons/FontAwesome";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useTheme } from "../context/ThemeContext";
 
 type OtpScreenNavigationProp = NavigationProp<RootStackParamList>;
 type OtpScreenRouteProp = RouteProp<RootStackParamList, "Otp">;
 
 const OtpScreen = ({ route }: { route: OtpScreenRouteProp }) => {
+  const { theme } = useTheme(); 
   const { userData } = route.params; // Get user data from params
   const [otp, setOtp] = useState<string>("");
   const [error, setError] = useState<string>("");
@@ -51,7 +53,7 @@ const OtpScreen = ({ route }: { route: OtpScreenRouteProp }) => {
   };
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { backgroundColor: theme.background }]}>
       <LottieView
         source={require("../assets/phone-animation.json")}
         autoPlay
@@ -60,18 +62,18 @@ const OtpScreen = ({ route }: { route: OtpScreenRouteProp }) => {
         style={styles.animation}
       />
 
-      <Text style={styles.title}>Enter OTP</Text>
+      <Text style={[styles.title, { color: theme.text }]}>Enter OTP</Text>
 
-      <View style={styles.inputContainer}>
-        <Icon name="key" size={20} color="#9A9A9A" style={styles.icon} />
+      <View style={[styles.inputContainer, { backgroundColor: theme.inputBackground }]}>
+        <Icon name="key" size={20} color={theme.iconColor} style={styles.icon} />
         <TextInput
           placeholder="Enter OTP"
-          style={[styles.input, inputFocused && styles.inputFocused]}  // Highlight on focus
+          style={[styles.input, inputFocused && styles.inputFocused, { color: theme.text }]}
           keyboardType="numeric"
           maxLength={6}
           onChangeText={handleOtpChange}
           value={otp}
-          placeholderTextColor="#9A9A9A"
+          placeholderTextColor={theme.placeholderTextColor}
           onFocus={() => setInputFocused(true)}
           onBlur={() => setInputFocused(false)}
         />
@@ -79,11 +81,11 @@ const OtpScreen = ({ route }: { route: OtpScreenRouteProp }) => {
 
       {error ? (
         <Animated.View style={[styles.errorContainer, { opacity: inputFocused ? 0 : 1 }]}>
-          <Text style={styles.errorText}>{error}</Text>
+          <Text style={[styles.errorText, { color: theme.errorText }]}>{error}</Text>
         </Animated.View>
       ) : null}
 
-      <TouchableOpacity style={styles.button} onPress={handleOtpVerify}>
+      <TouchableOpacity style={[styles.button, { backgroundColor: theme.buttonBackground }]} onPress={handleOtpVerify}>
         <Icon name="lock" size={20} color="#fff" style={styles.buttonIcon} />
         <Text style={styles.buttonText}> Verify OTP</Text>
       </TouchableOpacity>
@@ -94,7 +96,6 @@ const OtpScreen = ({ route }: { route: OtpScreenRouteProp }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#F3F4F6", // Lighter background
     justifyContent: "center",
     alignItems: "center",
     paddingHorizontal: 20,
@@ -104,13 +105,11 @@ const styles = StyleSheet.create({
     fontSize: 28,
     fontWeight: "700",
     marginBottom: 20,
-    color: "#1E1E1E",
     textAlign: "center",
   },
   inputContainer: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "#EDEDED", // Soft background for input
     borderRadius: 25,
     paddingHorizontal: 15,
     height: 50,
@@ -128,7 +127,6 @@ const styles = StyleSheet.create({
   input: {
     flex: 1,
     fontSize: 18,
-    color: "#333",
     textAlign: "center",
   },
   inputFocused: {
@@ -137,7 +135,6 @@ const styles = StyleSheet.create({
   },
   button: {
     flexDirection: "row",
-    backgroundColor: "#4C9F70", // Button background color
     padding: 15,
     borderRadius: 25,
     width: "85%",
@@ -159,7 +156,6 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   errorText: {
-    color: "#D8000C",
     fontSize: 14,
     textAlign: "center",
     fontWeight: "500",

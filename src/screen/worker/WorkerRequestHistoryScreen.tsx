@@ -4,6 +4,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import Icon from "react-native-vector-icons/FontAwesome";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 import { RootStackParamList } from "../../RootNavigator";
+import { useTheme } from "../../context/ThemeContext";
 
 interface PaymentRequest {
     requestId: string;
@@ -19,6 +20,7 @@ interface PaymentRequest {
 type WorkerRequestHistoryScreenNavigationProp = NavigationProp<RootStackParamList, 'WorkerRequestHistoryScreen'>;
 
 const WorkerRequestHistoryScreen = () => {
+    const { theme } = useTheme(); 
     const [requests, setRequests] = useState<PaymentRequest[]>([]);
     const [modalVisible, setModalVisible] = useState(false);
     const [selectedRequest, setSelectedRequest] = useState<PaymentRequest | null>(null);
@@ -70,17 +72,17 @@ const WorkerRequestHistoryScreen = () => {
     };
 
     const renderItem = ({ item }: { item: PaymentRequest }) => (
-        <View style={styles.item}>
-            <View style={styles.row}><Icon name="id-badge" size={20} color="#000" style={styles.icon} /><Text style={styles.itemText}>Request ID: {item.requestId}</Text></View>
-            <View style={styles.row}><Icon name="tags" size={20} color="#000" style={styles.icon} /><Text style={styles.itemText}>Project Id: {item.project_Id}</Text></View>
-            <View style={styles.row}><Icon name="info-circle" size={20} color="#000" style={styles.icon} /><Text style={styles.itemText}>Project Description: {item.project_description}</Text></View>
-            <View style={styles.row}><Icon name="calendar" size={20} color="#000" style={styles.icon} /><Text style={styles.itemText}>Start Date: {item.project_start_date}</Text></View>
-            <View style={styles.row}><Icon name="calendar" size={20} color="#000" style={styles.icon} /><Text style={styles.itemText}>End Date: {item.project_end_date}</Text></View>
-            <View style={styles.row}><Icon name="money" size={20} color="#000" style={styles.icon} /><Text style={styles.itemText}>Amount: ₹{item.amount}</Text></View>
-            <View style={styles.row}><Icon name="calendar-check-o" size={20} color="#000" style={styles.icon} /><Text style={styles.itemText}>Date: {new Date(item.request_date).toLocaleDateString()}</Text></View>
+        <View style={[styles.item, { backgroundColor: theme.cardBackground }]}>
+            <View style={styles.row}><Icon name="id-badge" size={20} color={theme.text} style={styles.icon} /><Text style={[styles.itemText, { color: theme.text }]}>Request ID: {item.requestId}</Text></View>
+            <View style={styles.row}><Icon name="tags" size={20} color={theme.text} style={styles.icon} /><Text style={[styles.itemText, { color: theme.text }]}>Project Id: {item.project_Id}</Text></View>
+            <View style={styles.row}><Icon name="info-circle" size={20} color={theme.text} style={styles.icon} /><Text style={[styles.itemText, { color: theme.text }]}>Project Description: {item.project_description}</Text></View>
+            <View style={styles.row}><Icon name="calendar" size={20} color={theme.text} style={styles.icon} /><Text style={[styles.itemText, { color: theme.text }]}>Start Date: {item.project_start_date}</Text></View>
+            <View style={styles.row}><Icon name="calendar" size={20} color={theme.text} style={styles.icon} /><Text style={[styles.itemText, { color: theme.text }]}>End Date: {item.project_end_date}</Text></View>
+            <View style={styles.row}><Icon name="money" size={20} color={theme.text} style={styles.icon} /><Text style={[styles.itemText, { color: theme.text }]}>Amount: ₹{item.amount}</Text></View>
+            <View style={styles.row}><Icon name="calendar-check-o" size={20} color={theme.text} style={styles.icon} /><Text style={[styles.itemText, { color: theme.text }]}>Date: {new Date(item.request_date).toLocaleDateString()}</Text></View>
             
             <View style={styles.buttonRow}>
-                <TouchableOpacity style={styles.editButton} onPress={() => { setSelectedRequest(item); setNewAmount(item.amount); setModalVisible(true); }}>
+                <TouchableOpacity style={[styles.editButton, { backgroundColor: theme.primary }]} onPress={() => { setSelectedRequest(item); setNewAmount(item.amount); setModalVisible(true); }}>
                     <Text style={styles.buttonText}>Edit</Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.deleteButton} onPress={() => confirmDeleteRequest(item.requestId)}>
@@ -91,33 +93,33 @@ const WorkerRequestHistoryScreen = () => {
     );
 
     return (
-        <View style={styles.container}>
-            <Text style={styles.header}>Requests History</Text>
+        <View style={[styles.container, { backgroundColor: theme.background }]}>
+            <Text style={[styles.header, { color: theme.text }]}>Requests History</Text>
             <FlatList
                 data={requests}
                 keyExtractor={(item) => item.requestId}
                 renderItem={renderItem}
-                ListEmptyComponent={<Text style={styles.emptyText}>No requests found.</Text>}
+                ListEmptyComponent={<Text style={[styles.emptyText, { color: theme.text }]}>No requests found.</Text>}
             />
-            <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
+            <TouchableOpacity style={[styles.backButton, { backgroundColor: theme.primary }]} onPress={() => navigation.goBack()}>
                 <Text style={styles.backButtonText}>Go Back</Text>
             </TouchableOpacity>
 
             <Modal visible={modalVisible} animationType="slide" transparent>
                 <View style={styles.modalContainer}>
-                    <View style={styles.modalContent}>
-                        <Text style={styles.modalTitle}>Edit Amount</Text>
+                    <View style={[styles.modalContent, { backgroundColor: theme.cardBackground }]}>
+                        <Text style={[styles.modalTitle, { color: theme.text }]}>Edit Amount</Text>
                         <TextInput
-                            style={styles.input}
+                            style={[styles.input, { color: theme.text, borderColor: theme.border }]}
                             keyboardType="numeric"
                             value={newAmount}
                             onChangeText={setNewAmount}
                         />
                         <View style={styles.modalButtonRow}>
-                            <TouchableOpacity style={styles.saveButton} onPress={editRequest}>
+                            <TouchableOpacity style={[styles.saveButton, { backgroundColor: theme.success }]} onPress={editRequest}>
                                 <Text style={styles.buttonText}>Save</Text>
                             </TouchableOpacity>
-                            <TouchableOpacity style={styles.cancelButton} onPress={() => setModalVisible(false)}>
+                            <TouchableOpacity style={[styles.cancelButton, { backgroundColor: theme.secondary }]} onPress={() => setModalVisible(false)}>
                                 <Text style={styles.buttonText}>Cancel</Text>
                             </TouchableOpacity>
                         </View>
@@ -127,6 +129,7 @@ const WorkerRequestHistoryScreen = () => {
         </View>
     );
 };
+
 
 const styles = StyleSheet.create({
     container: { flex: 1, padding: 20, backgroundColor: "#f9f9f9" },

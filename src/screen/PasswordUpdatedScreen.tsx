@@ -3,10 +3,12 @@ import { View, StyleSheet, Text, TouchableOpacity, Animated } from "react-native
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 import LottieView from "lottie-react-native";
 import { RootStackParamList } from "../RootNavigator";
+import { useTheme } from "../context/ThemeContext";
 
 type PasswordUpdatedScreenNavigationProp = NavigationProp<RootStackParamList>;
 
 const PasswordUpdatedScreen = () => {
+    const { theme } = useTheme(); // Assuming theme is an object with properties like mode, background, etc.
     const navigation = useNavigation<PasswordUpdatedScreenNavigationProp>();
     const fadeAnim = useRef(new Animated.Value(0)).current; // For fade-in effect
 
@@ -19,8 +21,11 @@ const PasswordUpdatedScreen = () => {
         }).start();
     }, []);
 
+    // Ensure theme.mode is checked for dark mode
+    const isDarkMode = theme.mode === "dark";  // Check if the theme mode is dark
+
     return (
-        <View style={styles.container}>
+        <View style={[styles.container, { backgroundColor: isDarkMode ? theme.background : "#F4F8FB" }]}>
             <Animated.View style={[styles.animationContainer, { opacity: fadeAnim }]}>
                 <LottieView
                     source={require("../assets/registration_successfully.json")}
@@ -28,12 +33,16 @@ const PasswordUpdatedScreen = () => {
                     loop={false}
                     style={styles.animation}
                 />
-                <Text style={styles.successText}>Password Updated Successfully!</Text>
-                <Text style={styles.subText}>You can now log in with your new password.</Text>
+                <Text style={[styles.successText, { color: isDarkMode ? theme.text : "#2C786C" }]}>
+                    Password Updated Successfully!
+                </Text>
+                <Text style={[styles.subText, { color: isDarkMode ? theme.textColor : "#555" }]}>
+                    You can now log in with your new password.
+                </Text>
 
                 {/* Manual navigation button */}
                 <TouchableOpacity
-                    style={styles.button}
+                    style={[styles.button, { backgroundColor: isDarkMode ? theme.buttonBackgroundColor : "#2C786C" }]}
                     onPress={() => navigation.navigate("LoginScreen")}
                 >
                     <Text style={styles.buttonText}>Go to Login</Text>
@@ -48,7 +57,6 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: "center",
         alignItems: "center",
-        backgroundColor: "#F4F8FB",
     },
     animationContainer: {
         alignItems: "center",
@@ -61,19 +69,16 @@ const styles = StyleSheet.create({
     successText: {
         fontSize: 22,
         fontWeight: "bold",
-        color: "#2C786C",
         marginTop: 20,
         textAlign: "center",
     },
     subText: {
         fontSize: 16,
-        color: "#555",
         marginTop: 5,
         textAlign: "center",
     },
     button: {
         marginTop: 20,
-        backgroundColor: "#2C786C",
         paddingVertical: 12,
         paddingHorizontal: 30,
         borderRadius: 8,
