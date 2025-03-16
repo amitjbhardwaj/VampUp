@@ -68,11 +68,25 @@ const ForgotPasswordScreen = () => {
         }
     };
 
+    // Determine which Lottie file to show
+    const getLottieSource = () => {
+        switch (step) {
+            case "aadhaar":
+                return require("../assets/aadhar_latest.json");
+            case "otp":
+                return require("../assets/phone-animation.json"); // Replace with your OTP animation
+            case "password":
+                return require("../assets/password.json"); // Replace with your Password animation
+            default:
+                return require("../assets/aadhar_latest.json");
+        }
+    };
+
     return (
         <View style={styles.container}>
             <Animated.View style={{ opacity: fadeAnim }}>
                 <LottieView
-                    source={require("../assets/phone-animation.json")}
+                    source={getLottieSource()}
                     style={styles.lottie}
                     autoPlay
                     loop={false}
@@ -83,6 +97,7 @@ const ForgotPasswordScreen = () => {
                     <Text style={[styles.step, step === "password" && styles.activeStep]}>3</Text>
                 </View>
 
+                {/* Aadhaar Step */}
                 {step === "aadhaar" && (
                     <View>
                         <Text style={styles.title}>Enter Aadhaar Number</Text>
@@ -104,6 +119,7 @@ const ForgotPasswordScreen = () => {
                     </View>
                 )}
 
+                {/* OTP Step */}
                 {step === "otp" && (
                     <View>
                         <Text style={styles.title}>Enter OTP</Text>
@@ -125,6 +141,7 @@ const ForgotPasswordScreen = () => {
                     </View>
                 )}
 
+                {/* Password Step */}
                 {step === "password" && (
                     <View>
                         <Text style={styles.title}>Reset Password</Text>
@@ -162,6 +179,7 @@ const ForgotPasswordScreen = () => {
         </View>
     );
 };
+
 
 const styles = StyleSheet.create({
     container: {
