@@ -152,7 +152,7 @@ const WorkUpdateStatusScreen = () => {
 
         await AsyncStorage.setItem(`project_status_${project.project_Id}`, "In-Progress");
     };
-
+    const isDarkMode = theme.mode === "dark";
     return (
         <ScrollView contentContainerStyle={[styles.scrollContainer, { backgroundColor: theme.mode === 'dark' ? '#121212' : '#f8f8f8' }]}>
             <View style={[styles.container, { backgroundColor: theme.mode === 'dark' ? '#1c1c1c' : '#fff' }]}>
@@ -165,11 +165,11 @@ const WorkUpdateStatusScreen = () => {
                     </View>
                 ))}
 
-                <Text style={[styles.label, { color: theme.mode === 'dark' ? '#fff' : '#000' }]}>Completion Percentage</Text>
+                <Text style={[styles.label, { color: isDarkMode ? "#fff" : "#000" }]}>Completion Percentage</Text>
                     <Picker
                         selectedValue={completion}
                         onValueChange={handleCompletionChange}
-                        style={[styles.picker, { backgroundColor: theme.mode === 'dark' ? '#333' : '#fff' }]}
+                        style={{ color: isDarkMode ? "#fff" : "#000" }} // <-- Set text color
                         enabled={status !== "On-Hold"}  // Disable Picker when status is "On-Hold"
                     >
                         {[...Array(101).keys()].map((i) => (
