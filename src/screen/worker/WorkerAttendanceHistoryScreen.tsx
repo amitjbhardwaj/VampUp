@@ -78,14 +78,14 @@ const WorkerAttendanceHistoryScreen = () => {
             <Text style={[styles.itemText, { color: theme.mode === 'dark' ? '#bbb' : '#555' }]}>Project ID: <Text style={styles.boldText}>{item.project_Id}</Text></Text>
             <Text style={[styles.itemText, { color: theme.mode === 'dark' ? '#bbb' : '#555' }]}>Assigned To: <Text style={styles.boldText}>{item.assigned_to}</Text></Text>
             <Text style={[styles.itemText, { color: theme.mode === 'dark' ? '#bbb' : '#555' }]}>Start Date: <Text style={styles.boldText}>{item.project_start_date}</Text></Text>
-            <Text style={[styles.itemText, { color: theme.mode === 'dark' ? '#bbb' : '#555' }]}>Completion: 
+            <Text style={[styles.itemText, { color: theme.mode === 'dark' ? '#bbb' : '#555' }]}>Completion:
                 <Text style={[styles.completion, item.completion_percentage === 100 ? styles.complete : styles.inProgress]}>
                     {` ${item.completion_percentage}%`}
                 </Text>
             </Text>
             <Text style={[styles.itemText, { color: theme.mode === 'dark' ? '#bbb' : '#555' }]}>Date: <Text style={styles.boldText}>{item.date}</Text></Text>
             <Text style={[styles.itemText, { color: theme.mode === 'dark' ? '#bbb' : '#555' }]}>Login Time: <Text style={styles.loginTime}>{item.login_time}</Text></Text>
-            <Text style={[styles.itemText, { color: theme.mode === 'dark' ? '#bbb' : '#555' }]}>Logout Time: 
+            <Text style={[styles.itemText, { color: theme.mode === 'dark' ? '#bbb' : '#555' }]}>Logout Time:
                 <Text style={[styles.logoutTime, item.logout_time ? styles.loggedOut : styles.pending]}>
                     {item.logout_time || "Pending"}
                 </Text>
@@ -130,9 +130,10 @@ const WorkerAttendanceHistoryScreen = () => {
             )}
 
             {/* Back Button */}
-            <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
-                <Icon name="arrow-back" size={22} color="#fff" style={styles.backIcon} />
-                <Text style={styles.backButtonText}>Go Back</Text>
+
+            <TouchableOpacity style={[styles.backButton, { backgroundColor: theme.mode === 'dark' ? '#444' : '#000' }]} onPress={() => navigation.goBack()}>
+                {/* <Icon name="arrow-back" size={18} color="#fff" style={styles.backIcon} /> */}
+                <Text style={[styles.backButtonText, { color: theme.mode === 'dark' ? '#fff' : '#fff' }]}>Go Back</Text>
             </TouchableOpacity>
         </View>
     );

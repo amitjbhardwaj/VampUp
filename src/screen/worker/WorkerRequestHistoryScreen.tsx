@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { View, Text, FlatList, StyleSheet, TouchableOpacity, Modal, TextInput, Alert } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Icon from "react-native-vector-icons/FontAwesome";
+import Back from "react-native-vector-icons/MaterialIcons";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 import { RootStackParamList } from "../../RootNavigator";
 import { useTheme } from "../../context/ThemeContext";
@@ -20,7 +21,7 @@ interface PaymentRequest {
 type WorkerRequestHistoryScreenNavigationProp = NavigationProp<RootStackParamList, 'WorkerRequestHistoryScreen'>;
 
 const WorkerRequestHistoryScreen = () => {
-    const { theme } = useTheme(); 
+    const { theme } = useTheme();
     const [requests, setRequests] = useState<PaymentRequest[]>([]);
     const [modalVisible, setModalVisible] = useState(false);
     const [selectedRequest, setSelectedRequest] = useState<PaymentRequest | null>(null);
@@ -60,9 +61,9 @@ const WorkerRequestHistoryScreen = () => {
 
     const editRequest = async () => {
         if (selectedRequest) {
-            const updatedRequests = requests.map(request => 
-                request.requestId === selectedRequest.requestId 
-                    ? { ...request, amount: newAmount } 
+            const updatedRequests = requests.map(request =>
+                request.requestId === selectedRequest.requestId
+                    ? { ...request, amount: newAmount }
                     : request
             );
             setRequests(updatedRequests);
@@ -80,10 +81,10 @@ const WorkerRequestHistoryScreen = () => {
             <View style={styles.row}><Icon name="calendar" size={20} color={theme.text} style={styles.icon} /><Text style={[styles.itemText, { color: theme.text }]}>End Date: {item.project_end_date}</Text></View>
             <View style={styles.row}><Icon name="money" size={20} color={theme.text} style={styles.icon} /><Text style={[styles.itemText, { color: theme.text }]}>Amount: ₹{item.amount}</Text></View>
             <View style={styles.row}><Icon name="calendar-check-o" size={20} color={theme.text} style={styles.icon} /><Text style={[styles.itemText, { color: theme.text }]}>Date: {new Date(item.request_date).toLocaleDateString()}</Text></View>
-            
+
             <View style={styles.buttonRow}>
-                <TouchableOpacity style={[styles.editButton, { backgroundColor: theme.primary }]} onPress={() => { setSelectedRequest(item); setNewAmount(item.amount); setModalVisible(true); }}>
-                    <Text style={styles.buttonText}>Edit</Text>
+                <TouchableOpacity style={[styles.editButton, { backgroundColor: theme.mode === 'dark' ? '#444' : '#000' }]} onPress={() => { setSelectedRequest(item); setNewAmount(item.amount); setModalVisible(true); }}>
+                    <Text style={[styles.buttonText, { color: theme.mode === 'dark' ? '#fff' : '#fff' }]}>Edit</Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.deleteButton} onPress={() => confirmDeleteRequest(item.requestId)}>
                     <Text style={styles.buttonText}>Delete</Text>
@@ -101,8 +102,9 @@ const WorkerRequestHistoryScreen = () => {
                 renderItem={renderItem}
                 ListEmptyComponent={<Text style={[styles.emptyText, { color: theme.text }]}>No requests found.</Text>}
             />
-            <TouchableOpacity style={[styles.backButton, { backgroundColor: theme.primary }]} onPress={() => navigation.goBack()}>
-                <Text style={styles.backButtonText}>Go Back</Text>
+
+            <TouchableOpacity style={[styles.backButton, { backgroundColor: theme.mode === 'dark' ? '#444' : '#000' }]} onPress={() => navigation.goBack()}>
+                <Text style={[styles.backButtonText, { color: theme.mode === 'dark' ? '#fff' : '#fff' }]}>Go Back</Text>
             </TouchableOpacity>
 
             <Modal visible={modalVisible} animationType="slide" transparent>
@@ -162,6 +164,9 @@ const styles = StyleSheet.create({
     cancelButton: { backgroundColor: "#6c757d", padding: 10, borderRadius: 5, flex: 1 },
     modalTitle: { fontSize: 18, fontWeight: "bold", marginBottom: 10 },
     modalButtonRow: { flexDirection: "row", justifyContent: "space-between", marginTop: 10 },
+    backIcon: {
+        marginRight: 8,
+    },
 });
 
 export default WorkerRequestHistoryScreen;

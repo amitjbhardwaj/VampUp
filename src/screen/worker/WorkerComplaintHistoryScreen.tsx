@@ -144,9 +144,10 @@ const WorkerComplaintHistoryScreen = () => {
             <View style={styles.buttonContainer}>
                 {/* First Row: Edit, Delete */}
                 <View style={styles.buttonRow}>
-                    <TouchableOpacity style={[styles.button, { backgroundColor: theme.primary }]} onPress={() => handleEdit(item)}>
-                        <Icon name="edit" size={18} color={theme.buttonText} />
-                        <Text style={[styles.buttonText, { color: theme.buttonText }]}>Edit</Text>
+                 
+                    <TouchableOpacity style={[styles.button, { backgroundColor: theme.mode === 'dark' ? '#444' : '#000' }]} onPress={() => handleEdit(item)}>
+                        <Icon name="phone" size={18} color={theme.buttonText} />
+                        <Text style={[styles.buttonText, { color: theme.mode === 'dark' ? '#fff' : '#fff' }]}>Edit</Text>
                     </TouchableOpacity>
 
                     <TouchableOpacity style={[styles.buttonDelete]} onPress={() => handleDelete(item.complaintId)}>
@@ -157,19 +158,21 @@ const WorkerComplaintHistoryScreen = () => {
 
                 {/* Second Row: Call, Message, Share */}
                 <View style={styles.buttonRow}>
-                    <TouchableOpacity style={[styles.button, { backgroundColor: theme.primary }]} onPress={() => handleCall(item.phone)}>
+                    <TouchableOpacity style={[styles.button, { backgroundColor: theme.mode === 'dark' ? '#444' : '#000' }]} onPress={() => handleCall(item.phone)}>
                         <Icon name="phone" size={18} color={theme.buttonText} />
-                        <Text style={[styles.buttonText, { color: theme.buttonText }]}>Call</Text>
+                        <Text style={[styles.buttonText, { color: theme.mode === 'dark' ? '#fff' : '#fff' }]}>Call</Text>
                     </TouchableOpacity>
 
-                    <TouchableOpacity style={[styles.button, { backgroundColor: theme.primary }]} onPress={() => handleMessage(item.phone)}>
+
+                    <TouchableOpacity style={[styles.button, { backgroundColor: theme.mode === 'dark' ? '#444' : '#000' }]} onPress={() => handleMessage(item.phone)}>
                         <Icon name="comment" size={18} color={theme.buttonText} />
-                        <Text style={[styles.buttonText, { color: theme.buttonText }]}>Message</Text>
+                        <Text style={[styles.buttonText, { color: theme.mode === 'dark' ? '#fff' : '#fff' }]}>Message</Text>
                     </TouchableOpacity>
 
-                    <TouchableOpacity style={[styles.button, { backgroundColor: theme.primary }]} onPress={() => handleShare(item)}>
+
+                    <TouchableOpacity style={[styles.button, { backgroundColor: theme.mode === 'dark' ? '#444' : '#000' }]} onPress={() => handleShare(item)}>
                         <Icon name="share" size={18} color={theme.buttonText} />
-                        <Text style={[styles.buttonText, { color: theme.buttonText }]}>Share</Text>
+                        <Text style={[styles.buttonText, { color: theme.mode === 'dark' ? '#fff' : '#fff' }]}>Share</Text>
                     </TouchableOpacity>
                 </View>
             </View>
@@ -271,7 +274,7 @@ const styles = StyleSheet.create({
         justifyContent: "center", // Centers the buttons
         alignItems: "center",
         gap: 10, // Adds spacing between buttons
-        width: "100%", 
+        width: "100%",
         paddingHorizontal: 10, // Ensures buttons don’t touch the screen edges
     },
     button: {
@@ -285,7 +288,7 @@ const styles = StyleSheet.create({
         minWidth: 120, // Avoids buttons shrinking too much
         marginBottom: 10, // Adds space between button rows
     },
-    
+
     buttonDelete: {
         flexDirection: "row",
         alignItems: "center",
