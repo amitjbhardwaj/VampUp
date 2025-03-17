@@ -38,13 +38,13 @@ const Home = () => {
             <View style={styles.iconContainer}>
                 <View style={styles.iconRow}>
                     <View style={styles.iconItem}>
-                        <TouchableOpacity onPress={() => navigation.navigate('WorkerActiveWorkScreen')}>
+                        <TouchableOpacity onPress={() => navigation.navigate('ContractorActiveWorkScreen')}>
                             <Ionicons name="briefcase" size={50} color={theme.text} />
                         </TouchableOpacity>
                         <Text style={{ color: theme.text }}>Active Work</Text>
                     </View>
                     <View style={styles.iconItem}>
-                        <TouchableOpacity onPress={() => navigation.navigate('WorkerActiveWorkScreen')}>
+                        <TouchableOpacity onPress={() => navigation.navigate('ContractorUpcomingProjectsScreen')}>
                             <Ionicons name="calendar" size={50} color={theme.text} />
                         </TouchableOpacity>
                         <Text style={{ color: theme.text }}>Upcoming Projects</Text>
@@ -52,13 +52,13 @@ const Home = () => {
                 </View>
                 <View style={styles.iconRow}>
                     <View style={styles.iconItem}>
-                        <TouchableOpacity onPress={() => navigation.navigate('WorkerActiveWorkScreen')}>
+                        <TouchableOpacity onPress={() => navigation.navigate('ContractorInitiatePaymentScreen')}>
                             <Ionicons name="card" size={50} color={theme.text} />
                         </TouchableOpacity>
                         <Text style={{ color: theme.text }}>Initiate Payment</Text>
                     </View>
                     <View style={styles.iconItem}>
-                        <TouchableOpacity onPress={() => navigation.navigate('WorkerActiveWorkScreen')}>
+                        <TouchableOpacity onPress={() => navigation.navigate('ContractorOnHoldProjectsScreen')}>
                             <Ionicons name="pause-circle" size={50} color={theme.text} />
                         </TouchableOpacity>
                         <Text style={{ color: theme.text }}>On-Hold Projects</Text>

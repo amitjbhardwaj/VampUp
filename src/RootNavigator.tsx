@@ -29,6 +29,10 @@ import WorkUpdateStatusScreen from "./screen/worker/WorkUpdateStatusScreen";
 import { ThemeProvider } from "./context/ThemeContext";
 import ContractorHomeScreen from "./screen/ContractorHomeScreen";
 import AdminHomeScreen from "./screen/AdminHomeScreen";
+import ContractorActiveWorkScreen from "./screen/contractor/ContractorActiveWorkScreen";
+import ContractorInitiatePaymentScreen from "./screen/contractor/ContractorInitiatePaymentScreen";
+import ContractorOnHoldProjectsScreen from "./screen/contractor/ContractorOnHoldProjectsScreen";
+import ContractorUpcomingProjectsScreen from "./screen/contractor/ContractorUpcomingProjectsScreen";
 
 export type RootStackParamList = {
     LoginScreen: undefined;
@@ -74,6 +78,10 @@ export type RootStackParamList = {
     };
 
     ContractorHomeScreen: undefined;
+    ContractorActiveWorkScreen: undefined;
+    ContractorInitiatePaymentScreen: undefined;
+    ContractorOnHoldProjectsScreen: undefined;
+    ContractorUpcomingProjectsScreen: undefined;
 
 
     AdminHomeScreen: undefined;
@@ -116,6 +124,11 @@ const RootNavigator: React.FC = () => {
 
 
                     <Stack.Screen name="ContractorHomeScreen" component={ContractorHomeScreen} />
+                    <Stack.Screen name="ContractorActiveWorkScreen" component={ContractorActiveWorkScreen} />
+                    <Stack.Screen name="ContractorInitiatePaymentScreen" component={ContractorInitiatePaymentScreen} />
+                    <Stack.Screen name="ContractorOnHoldProjectsScreen" component={ContractorOnHoldProjectsScreen} />
+                    <Stack.Screen name="ContractorUpcomingProjectsScreen" component={ContractorUpcomingProjectsScreen} />
+                    
 
 
                     <Stack.Screen name="AdminHomeScreen" component={AdminHomeScreen} />
