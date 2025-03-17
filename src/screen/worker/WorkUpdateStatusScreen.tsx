@@ -32,6 +32,7 @@ const WorkUpdateStatusScreen = () => {
     const [status, setStatus] = useState<string>("In-Progress");
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [reason, setReason] = useState("");
+    const [editableEndDate, setEditableEndDate] = useState(project.project_end_date);
 
     useEffect(() => {
         const fetchStatus = async () => {
@@ -53,6 +54,7 @@ const WorkUpdateStatusScreen = () => {
         const updatedCompletion = parseInt(newCompletion, 10);
         if (updatedCompletion === 100) {
             setStatus("Completed");
+            setEditableEndDate(new Date().toISOString().split('T')[0]); // Update end date to current date
         } else if (status !== "On-Hold") {
             setStatus("In-Progress");
         }
@@ -76,7 +78,8 @@ const WorkUpdateStatusScreen = () => {
             const completedProject = {
                 ...project,
                 completion_percentage: 100,
-                status: "Completed"
+                status: "Completed",
+                project_end_date: editableEndDate, // Use the editable end date
             };
 
             try {
@@ -100,30 +103,9 @@ const WorkUpdateStatusScreen = () => {
             return;
         }
 
-        if (status === "On-Hold") {
-            const updatedProject = {
-                ...project,
-                status: "On-Hold"
-            };
-
-            await onUpdateCompletion(updatedProject.project_Id, 0);
-
-            try {
-                const storedActiveProjects = await AsyncStorage.getItem("activeProjects");
-                let activeProjects = storedActiveProjects ? JSON.parse(storedActiveProjects) : [];
-
-                activeProjects = activeProjects.map((p: Project) =>
-                    p.project_Id === updatedProject.project_Id ? updatedProject : p
-                );
-                await AsyncStorage.setItem("activeProjects", JSON.stringify(activeProjects));
-                await AsyncStorage.setItem(`project_status_${project.project_Id}`, "On-Hold");
-            } catch (error) {
-                console.error("Error updating AsyncStorage", error);
-            }
-        }
-
         navigation.goBack();
     };
+
 
     const handleHoldWork = () => {
         setIsModalVisible(true);
@@ -157,30 +139,41 @@ const WorkUpdateStatusScreen = () => {
         <ScrollView contentContainerStyle={[styles.scrollContainer, { backgroundColor: theme.mode === 'dark' ? '#121212' : '#f8f8f8' }]}>
             <View style={[styles.container, { backgroundColor: theme.mode === 'dark' ? '#1c1c1c' : '#fff' }]}>
                 <Text style={[styles.title, { color: theme.mode === 'dark' ? '#fff' : '#000' }]}>Update Project Status</Text>
-                
+
                 {projectDetails(project, status).map(({ label, value }) => (
                     <View key={label} style={[styles.card, { backgroundColor: theme.mode === 'dark' ? '#333' : '#fff' }]}>
                         <Text style={[styles.label, { color: theme.mode === 'dark' ? '#fff' : '#000' }]}>{label}</Text>
                         <Text style={[styles.value, { color: theme.mode === 'dark' ? '#ccc' : '#555' }]}>{value}</Text>
                     </View>
                 ))}
+                <View>
+                <Text style={[styles.label, { color: theme.mode === 'dark' ? '#fff' : '#000' }]}>End Date</Text>
+                <TextInput
+                    style={[styles.input, { color: theme.mode === 'dark' ? '#fff' : '#000' }]}
+                    value={editableEndDate}
+                    onChangeText={setEditableEndDate}
+                    placeholder="Enter End Date"
+                    placeholderTextColor={theme.mode === 'dark' ? '#bbb' : '#888'}
+                />
+                </View>
+                
 
                 <Text style={[styles.label, { color: isDarkMode ? "#fff" : "#000" }]}>Completion Percentage</Text>
-                    <Picker
-                        selectedValue={completion}
-                        onValueChange={handleCompletionChange}
-                        style={{ color: isDarkMode ? "#fff" : "#000" }} // <-- Set text color
-                        enabled={status !== "On-Hold"}  // Disable Picker when status is "On-Hold"
-                    >
-                        {[...Array(101).keys()].map((i) => (
-                            <Picker.Item 
-                                key={i} 
-                                label={`${i}%`} 
-                                value={String(i)} 
-                                style={{ color: theme.mode === 'dark' ? '#333' : '#000' }}  // Set text color based on theme
-                            />
-                        ))}
-                    </Picker>
+                <Picker
+                    selectedValue={completion}
+                    onValueChange={handleCompletionChange}
+                    style={{ color: isDarkMode ? "#fff" : "#000" }} // <-- Set text color
+                    enabled={status !== "On-Hold"}  // Disable Picker when status is "On-Hold"
+                >
+                    {[...Array(101).keys()].map((i) => (
+                        <Picker.Item
+                            key={i}
+                            label={`${i}%`}
+                            value={String(i)}
+                            style={{ color: theme.mode === 'dark' ? '#333' : '#000' }}  // Set text color based on theme
+                        />
+                    ))}
+                </Picker>
 
                 <TouchableOpacity style={[styles.updateButton, { backgroundColor: theme.mode === 'dark' ? '#444' : '#000' }]} onPress={handleUpdate}>
                     <Text style={styles.updateButtonText}>Update</Text>
@@ -253,7 +246,6 @@ const projectDetails = (project: Project, status: string) => {
         { label: "Description", value: project.project_description },
         { label: "Assigned To", value: project.assigned_to },
         { label: "Start Date", value: project.project_start_date },
-        { label: "End Date", value: project.project_end_date },
     ];
 
     details.push({ label: "Status", value: status });
@@ -334,6 +326,14 @@ const styles = StyleSheet.create({
     disabledButton: {
         backgroundColor: "#BDBDBD", // Gray out the button when it's disabled
         opacity: 0.6, // Add opacity for disabled effect
+    },
+    input: {
+        borderColor: "#ccc",
+        borderWidth: 1,
+        padding: 8,
+        borderRadius: 5,
+        marginVertical: 10,
+        color: "#000",
     },
 });
 

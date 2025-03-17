@@ -15,7 +15,7 @@ const Home = () => {
     const [projects, setProjects] = useState<any[]>([]);
 
     return (
-        <View style={[styles.screen, { backgroundColor: theme.background }]}> 
+        <View style={[styles.screen, { backgroundColor: theme.background }]}>
             <View style={styles.iconContainer}>
                 <View style={styles.iconRow}>
                     <View style={styles.iconItem}>
@@ -40,9 +40,9 @@ const Home = () => {
                     </View>
                     <View style={styles.iconItem}>
                         <TouchableOpacity onPress={() => navigation.navigate('WorkerActiveWorkScreen')}>
-                            <Ionicons name="cash" size={50} color={theme.text} />
+                            <Ionicons name="card" size={50} color={theme.text} />
                         </TouchableOpacity>
-                        <Text style={{ color: theme.text }}>Payment</Text>
+                        <Text style={{ color: theme.text }}>Initiate Payment</Text>
                     </View>
                 </View>
                 <View style={styles.iconRow}>

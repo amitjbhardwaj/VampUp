@@ -4,7 +4,6 @@ import {
     View, Text, StyleSheet, StatusBar, TouchableOpacity, TextInput, ToastAndroid,
     ScrollView
 } from "react-native";
-import Icon from "react-native-vector-icons/MaterialIcons";
 import { Picker } from "@react-native-picker/picker";
 import projectsData from "../../assets/projects.json";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -31,11 +30,20 @@ const WorkerRequestPaymentScreen = () => {
     const [selectedProjectDetails, setSelectedProjectDetails] = useState<Project | null>(null);
 
     useEffect(() => {
-        const completedProjects: Project[] = projectsData.filter(
-            (project) => project.completion_percentage === 100
-        );
-        setProjects(completedProjects);
+        const fetchCompletedProjects = async () => {
+            try {
+                const storedCompletedProjects = await AsyncStorage.getItem("completedProjects");
+                if (storedCompletedProjects) {
+                    setProjects(JSON.parse(storedCompletedProjects));
+                }
+            } catch (error) {
+                console.error("Error fetching completed projects", error);
+            }
+        };
+    
+        fetchCompletedProjects();
     }, []);
+    
 
     const handleProjectSelection = (projectId: string) => {
         if (!projectId) return;

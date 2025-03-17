@@ -5,7 +5,7 @@
     "long_project_description": "Description of Project A",
     "assigned_to": "Worker 1",
     "project_start_date": "2025-01-01",
-    "project_end_date": "2025-12-31",
+    "project_end_date": "--",
     "contractor_phone": "1234567890",
     "completion_percentage": 30
   },
@@ -15,7 +15,7 @@
     "long_project_description": "Description of Project B",
     "assigned_to": "Worker 2",
     "project_start_date": "2025-02-01",
-    "project_end_date": "2025-10-31",
+    "project_end_date": "--",
     "contractor_phone": "0987654321",
     "completion_percentage": 100
   },
@@ -25,7 +25,7 @@
     "long_project_description": "Description of Project C",
     "assigned_to": "Worker 2",
     "project_start_date": "2025-02-01",
-    "project_end_date": "2025-10-31",
+    "project_end_date": "--",
     "contractor_phone": "0987654321",
     "completion_percentage": 70
   },
@@ -35,7 +35,7 @@
     "long_project_description": "Description of Project D",
     "assigned_to": "Worker 2",
     "project_start_date": "2025-02-01",
-    "project_end_date": "2025-10-31",
+    "project_end_date": "--",
     "contractor_phone": "0987654321",
     "completion_percentage": 100
   },
@@ -45,7 +45,7 @@
     "long_project_description": "Description of Project E",
     "assigned_to": "Worker 2",
     "project_start_date": "2025-02-01",
-    "project_end_date": "2025-10-31",
+    "project_end_date": "--",
     "contractor_phone": "0987654321",
     "completion_percentage": 90
   },
@@ -55,7 +55,7 @@
     "long_project_description": "Description of Project F",
     "assigned_to": "Worker 2",
     "project_start_date": "2025-02-01",
-    "project_end_date": "2025-10-31",
+    "project_end_date": "--",
     "contractor_phone": "0987654321",
     "completion_percentage": 60
   },
@@ -65,7 +65,7 @@
     "long_project_description": "Description of Project G",
     "assigned_to": "Worker 2",
     "project_start_date": "2025-02-01",
-    "project_end_date": "2025-10-31",
+    "project_end_date": "--",
     "contractor_phone": "0987654321",
     "completion_percentage": 100
   },
@@ -75,7 +75,7 @@
     "long_project_description": "Description of Project H",
     "assigned_to": "Worker 2",
     "project_start_date": "2025-02-01",
-    "project_end_date": "2025-10-31",
+    "project_end_date": "--",
     "contractor_phone": "0987654321",
     "completion_percentage": 100
   },
@@ -85,7 +85,7 @@
     "long_project_description": "Description of Project I",
     "assigned_to": "Worker 2",
     "project_start_date": "2025-02-01",
-    "project_end_date": "2025-10-31",
+    "project_end_date": "--",
     "contractor_phone": "0987654321",
     "completion_percentage": 40
   },
@@ -95,7 +95,7 @@
     "long_project_description": "Description of Project J",
     "assigned_to": "Worker 2",
     "project_start_date": "2025-02-01",
-    "project_end_date": "2025-10-31",
+    "project_end_date": "--",
     "contractor_phone": "0987654321",
     "completion_percentage": 10
   }
