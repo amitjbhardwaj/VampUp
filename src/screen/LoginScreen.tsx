@@ -33,8 +33,13 @@ const LoginScreen = () => {
             return;
         }
 
+        // Simulated authentication - Replace with actual API call
         if (username === "worker" && password === "worker") {
-            navigation.navigate({ name: "WorkerHomeScreen" } as never);
+            navigation.navigate("WorkerHomeScreen" as never);
+        } else if (username === "contractor" && password === "contractor") {
+            navigation.navigate("ContractorHomeScreen" as never);
+        } else if (username === "admin" && password === "admin") {
+            navigation.navigate("AdminHomeScreen" as never);
         } else {
             setErrorMessage("Invalid username or password");
         }
@@ -46,12 +51,22 @@ const LoginScreen = () => {
             sensorErrorDescription: "Biometric authentication failed",
         })
             .then(() => {
-                navigation.navigate({ name: "WorkerHomeScreen" } as never);
+                // Assume we retrieve the role from storage or backend
+                const userRole = "worker"; // Change dynamically based on real authentication
+    
+                if (userRole === "worker") {
+                    navigation.navigate("WorkerHomeScreen" as never);
+                } else if (userRole === "contractor") {
+                    navigation.navigate("ContractorHomeScreen" as never);
+                } else if (userRole === "admin") {
+                    navigation.navigate("AdminHomeScreen" as never);
+                }
             })
             .catch(() => {
                 Alert.alert("Authentication Failed", "Unable to authenticate using biometrics.");
             });
     };
+    
 
     return (
         <ScrollView contentContainerStyle={{ flexGrow: 1 }}>

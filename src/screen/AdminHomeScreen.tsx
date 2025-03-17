@@ -1,30 +1,108 @@
-import React from "react";
+import React, { useCallback } from 'react';
+import {
+  Text,
+  StyleSheet,
+  Pressable,
+} from "react-native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { View, Text, StyleSheet } from "react-native";
+import Ionicons from "react-native-vector-icons/Ionicons";
+import { RouteProp } from '@react-navigation/native';
+import { useTheme } from '../context/ThemeContext';
+import Home from '../tabs_admin/Home';
+import Services from '../tabs_admin/Services';
+import HelpContact from '../tabs_admin/HelpContact';
+import Settings from '../tabs_admin/Settings';
 
-import Icon from "react-native-vector-icons/FontAwesome";
-import Home from "../tabs_worker/Home";
-import HelpContact from "../tabs_worker/HelpContact";
-import Settings from "../tabs_worker/Settings";
+type TabParamList = {
+  Home: undefined;
+  "My Services": undefined;
+  Help: undefined;
+  Settings: undefined;
+};
 
-const Tab = createBottomTabNavigator();
+const Tab = createBottomTabNavigator<TabParamList>();
 
-const AdminHomeScreen = ({ route }: any) => {
-    return (
-        <View style={styles.header}>
-            <Text style={styles.headerText}>Welcome Worker {route.params.username}</Text>
-            <Tab.Navigator>
-                <Tab.Screen name="Home" component={Home} options={{ tabBarIcon: ({ color, size }) => <Icon name="home" color={color} size={size} /> }} />
-                <Tab.Screen name="Help & Contact" component={HelpContact} options={{ tabBarIcon: ({ color, size }) => <Icon name="info-circle" color={color} size={size} /> }} />
-                <Tab.Screen name="Settings" component={Settings} options={{ tabBarIcon: ({ color, size }) => <Icon name="cog" color={color} size={size} /> }} />
-            </Tab.Navigator>
-        </View>
-    );
+type TabScreenProps = {
+  route: RouteProp<TabParamList, keyof TabParamList>;
+  focused: boolean;
+  size: number;
+};
+
+const AdminHomeScreen = () => {
+  const { theme } = useTheme();
+
+  const renderIcon = useCallback(
+    ({ route, focused, size }: TabScreenProps) => {
+      let iconName = "home-outline"; 
+      if (route.name === "My Services") {
+        iconName = "briefcase-outline";
+      } else if (route.name === "Help") {
+        iconName = "call-outline";
+      } else if (route.name === "Settings") {
+        iconName = "settings-outline";
+      }
+
+      return (
+        <Ionicons 
+          name={iconName} 
+          size={focused ? size + 5 : size} 
+          color={focused ? theme.primary : "gray"}  
+        />
+      );
+    },
+    [theme]
+  );
+
+  return (
+    <Tab.Navigator
+      screenOptions={({ route }) => ({
+        tabBarIcon: (props) => renderIcon({ route, ...props }),
+        tabBarLabel: ({ focused }) => (
+          <Text style={{ color: focused ? theme.primary : "gray", fontSize: focused ? 14 : 12 }}>
+            {route.name}
+          </Text>
+        ),
+        tabBarShowLabel: true,
+        tabBarStyle: {
+          ...styles.tabBar,
+          backgroundColor: theme.background,
+        },
+        headerStyle: {
+          backgroundColor: theme.background,
+          shadowColor: 'transparent',
+        },
+        headerTitleStyle: {
+          color: theme.text,
+        },
+        headerTitleAlign: "center",
+        animationEnabled: false, 
+        lazy: true,
+        tabBarButton: (props) => (
+          <Pressable {...props} android_ripple={{ color: "transparent" }}>
+            {props.children}
+          </Pressable>
+        ),
+      })}
+    >
+      <Tab.Screen name="Home" component={Home} />
+      <Tab.Screen name="My Services" component={Services} />
+      <Tab.Screen name="Help" component={HelpContact} />
+      <Tab.Screen name="Settings" component={Settings} />
+    </Tab.Navigator>
+  );
 };
 
 const styles = StyleSheet.create({
-    header: { flex: 1 },
-    headerText: { textAlign: "center", fontSize: 20, padding: 10, backgroundColor: "#eee" },
+  tabBar: {
+    position: "absolute",
+    borderRadius: 20,
+    marginHorizontal: 10,
+    bottom: 10,
+    paddingBottom: 8,
+    borderTopWidth: 0,
+    elevation: 5,
+    height: 65,
+  },
 });
 
 export default AdminHomeScreen;

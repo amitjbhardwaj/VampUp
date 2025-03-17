@@ -27,6 +27,8 @@ import WorkerClockInScreen from "./screen/worker/WorkerClockInScreen";
 import WorkerClockOutScreen from "./screen/worker/WorkerClockOutScreen";
 import WorkUpdateStatusScreen from "./screen/worker/WorkUpdateStatusScreen";
 import { ThemeProvider } from "./context/ThemeContext";
+import ContractorHomeScreen from "./screen/ContractorHomeScreen";
+import AdminHomeScreen from "./screen/AdminHomeScreen";
 
 export type RootStackParamList = {
     LoginScreen: undefined;
@@ -70,15 +72,21 @@ export type RootStackParamList = {
         logout_time: string;
         attendance_type: string;
     };
+
+    ContractorHomeScreen: undefined;
+
+
+    AdminHomeScreen: undefined;
 };
 
 const Stack = createStackNavigator<RootStackParamList>();
+
 
 const RootNavigator: React.FC = () => {
     return (
         <ThemeProvider>
             <NavigationContainer>
-                <Stack.Navigator screenOptions={{ headerShown: false }}>
+                <Stack.Navigator initialRouteName="LoginScreen" screenOptions={{ headerShown: false }}>
                     <Stack.Screen name="LoginScreen" component={LoginScreen} />
                     <Stack.Screen name="Signup" component={SignupScreen} />
                     <Stack.Screen name="ForgotPassword" component={ForgotPasswordScreen} />
@@ -86,6 +94,7 @@ const RootNavigator: React.FC = () => {
                     <Stack.Screen name="RegistrationDone" component={RegistrationDoneScreen} />
                     <Stack.Screen name="RegistrationFailed" component={RegistrationFailedScreen} />
                     <Stack.Screen name="PasswordUpdatedScreen" component={PasswordUpdatedScreen} />
+                    
                     <Stack.Screen name="WorkerHomeScreen" component={WorkerHomeScreen} />
                     <Stack.Screen name="WorkerWorkHistoryScreen" component={WorkerWorkHistoryScreen} />
                     <Stack.Screen name="WorkerComplaintHistoryScreen" component={WorkerComplaintHistoryScreen} />
@@ -93,7 +102,6 @@ const RootNavigator: React.FC = () => {
                     <Stack.Screen name="WorkerFullPaymentHistoryScreen" component={WorkerFullPaymentHistoryScreen} />
                     <Stack.Screen name="Home" component={Home} />
                     <Stack.Screen name="WorkerActiveWorkScreen" component={WorkerActiveWorkScreen} />
-
                     <Stack.Screen name="WorkerNotificationScreen" component={WorkerNotificationScreen} />
                     <Stack.Screen name="WorkerPersonalDetailsScreen" component={WorkerPersonalDetailsScreen} />
                     <Stack.Screen name="WorkerSecurityAndPrivacyScreen" component={WorkerSecurityAndPrivacyScreen} />
@@ -105,6 +113,13 @@ const RootNavigator: React.FC = () => {
                     <Stack.Screen name="WorkerClockInScreen" component={WorkerClockInScreen} />
                     <Stack.Screen name="WorkerClockOutScreen" component={WorkerClockOutScreen} />
                     <Stack.Screen name="WorkerAttendanceHistoryScreen" component={WorkerAttendanceHistoryScreen} />
+
+
+                    <Stack.Screen name="ContractorHomeScreen" component={ContractorHomeScreen} />
+
+
+                    <Stack.Screen name="AdminHomeScreen" component={AdminHomeScreen} />
+
 
                 </Stack.Navigator>
             </NavigationContainer>
