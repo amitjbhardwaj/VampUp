@@ -12,7 +12,7 @@ import WorkerHomeScreen from "./screen/WorkerHomeScreen";
 import WorkerWorkHistoryScreen from "./screen/worker/WorkerWorkHistoryScreen";
 import WorkerComplaintHistoryScreen from "./screen/worker/WorkerComplaintHistoryScreen";
 import WorkerFullPaymentHistoryScreen from "./screen/worker/WorkerFullPaymentHistoryScreen";
-import Home from "./tabs/Home";
+import Home from "./tabs_worker/Home";
 import WorkerActiveWorkScreen from "./screen/worker/WorkerActiveWorkScreen";
 import WorkerNotificationScreen from "./screen/worker/WorkerNotificationScreen";
 import WorkerPersonalDetailsScreen from "./screen/worker/WorkerPersonalDetailsScreen";

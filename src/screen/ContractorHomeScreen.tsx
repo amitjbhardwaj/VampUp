@@ -3,9 +3,9 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { View, Text, StyleSheet } from "react-native";
 
 import Icon from "react-native-vector-icons/FontAwesome";
-import Home from "../tabs/Home";
-import HelpContact from "../tabs/HelpContact";
-import Settings from "../tabs/Settings";
+import Home from "../tabs_worker/Home";
+import HelpContact from "../tabs_worker/HelpContact";
+import Settings from "../tabs_worker/Settings";
 
 const Tab = createBottomTabNavigator();
 

@@ -7,10 +7,10 @@ import {
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import { RouteProp } from '@react-navigation/native';
-import Home from "../tabs/Home";
-import Services from "../tabs/Services";
-import HelpContact from "../tabs/HelpContact";
-import Settings from "../tabs/Settings";
+import Home from "../tabs_worker/Home";
+import Services from "../tabs_worker/Services";
+import HelpContact from "../tabs_worker/HelpContact";
+import Settings from "../tabs_worker/Settings";
 import { useTheme } from '../context/ThemeContext';
 
 type TabParamList = {
