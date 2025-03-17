@@ -143,7 +143,11 @@ const Home = () => {
                 onRequestClose={() => setModalVisible(false)}
             >
                 <View style={styles.modalContainer}>
-                    <View style={[styles.modalContent, { backgroundColor: theme.background }]}>
+                    <View style={[styles.modalContent, {
+                        backgroundColor: theme.background,
+                        borderColor: theme.mode === "dark" ? "#fff" : "#000", // Apply border dynamically
+                        borderWidth: 2
+                    }]}>
                         <Text style={[styles.modalHeader, { color: theme.text }]}>Complaints</Text>
 
                         <Picker
@@ -215,7 +219,23 @@ const Home = () => {
 
                         <View style={styles.buttonContainer}>
                             <Button title="Submit" onPress={handleSubmit} />
-                            <Button title="Back" onPress={() => setModalVisible(false)} color={theme.text} />
+                            <TouchableOpacity
+                                style={[
+                                    styles.backButton,
+                                    { backgroundColor: theme.mode === "dark" ? "#444" : "#fff" } // Dynamic background
+                                ]}
+                                onPress={() => setModalVisible(false)}
+                            >
+                                <Text
+                                    style={[
+                                        styles.backButtonText,
+                                        { color: theme.mode === "dark" ? "#fff" : "#000" } // Dynamic text color
+                                    ]}
+                                >
+                                    Back
+                                </Text>
+                            </TouchableOpacity>
+
                         </View>
                     </View>
                 </View>
@@ -297,6 +317,13 @@ const styles = StyleSheet.create({
     },
     lastRowIcon: {
         marginLeft: "-145%",
+    },
+    backButton: {
+        padding: 10,
+        borderRadius: 5,
+    },
+    backButtonText: {
+        textAlign: "center",
     },
 });
 
