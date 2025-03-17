@@ -41,12 +41,18 @@ const SignupScreen = () => {
 
   const validateForm = () => {
     let newErrors: Record<string, string> = {};
+  
     Object.keys(form).forEach((key) => {
       if (!form[key as keyof typeof form]) {
         newErrors[key] = `${key.replace(/([A-Z])/g, " $1")} is required`;
       }
     });
-
+  
+    // Aadhar validation: Must be exactly 12 digits
+    if (form.aadhar && !/^\d{12}$/.test(form.aadhar)) {
+      newErrors.aadhar = "Aadhar number must be exactly 12 digits";
+    }
+  
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -61,6 +67,9 @@ const SignupScreen = () => {
     navigation.goBack();
   };
 
+  
+  
+
   return (
     <ScrollView contentContainerStyle={[styles.container, { backgroundColor: theme.background }]}>
       <Text style={[styles.title, { color: theme.text }]}>Create Account</Text>
@@ -70,7 +79,10 @@ const SignupScreen = () => {
         <View style={[styles.inputContainer, errors.role && styles.inputError, { backgroundColor: theme.inputBackground }]}>
           <Icon name="person-outline" size={20} style={[styles.icon, { color: theme.icon }]} />
           <TouchableOpacity onPress={() => setShowRolePicker(true)} style={styles.roleDropdown}>
-            <Text style={[styles.input, { color: form.role ? "#333" : "#999" }]}>{form.role || "Select Role *"}</Text>
+            <Text style={[styles.input, { color: form.role ? theme.text : (theme.mode === "dark" ? "#fff" : "#999") }]}>
+              {form.role || "Select Role *"}
+            </Text>
+
           </TouchableOpacity>
         </View>
         {errors.role && <Text style={[styles.errorText, { color: theme.errorColor }]}>{errors.role}</Text>}
@@ -122,11 +134,13 @@ const SignupScreen = () => {
             <Icon name={icon} size={20} style={[styles.icon, { color: theme.icon }]} />
             <TextInput
               placeholder={placeholder}
+              placeholderTextColor={theme.mode === "dark" ? "#fff" : "#999"} // Set placeholder color based on theme
               secureTextEntry={secureTextEntry}
               style={[styles.input, { color: theme.text }]}
               onChangeText={(value) => handleChange(key, value)}
               value={form[key as keyof typeof form]}
             />
+
           </View>
           {errors[key] && <Text style={[styles.errorText, { color: theme.errorColor }]}>{errors[key]}</Text>}
         </View>
@@ -140,6 +154,7 @@ const SignupScreen = () => {
           </TouchableOpacity>
           <TextInput
             placeholder="Mobile number *"
+            placeholderTextColor={theme.mode === "dark" ? "#fff" : "#999"}
             keyboardType="phone-pad"
             style={[styles.input, { flex: 1, color: theme.text }]}
             onChangeText={(value) => handleChange("mobile", value)}
@@ -177,7 +192,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   fieldWrapper: {
-    marginBottom: 12,  
+    marginBottom: 12,
   },
   inputContainer: {
     flexDirection: "row",
