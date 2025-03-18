@@ -103,6 +103,30 @@ const WorkUpdateStatusScreen = () => {
             return;
         }
 
+
+        if (status === "On-Hold") {
+            const updatedProject = {
+                ...project,
+                status: "On-Hold"
+            };
+
+            await onUpdateCompletion(updatedProject.project_Id, 0);
+
+            try {
+                const storedActiveProjects = await AsyncStorage.getItem("activeProjects");
+                let activeProjects = storedActiveProjects ? JSON.parse(storedActiveProjects) : [];
+
+                activeProjects = activeProjects.map((p: Project) =>
+                    p.project_Id === updatedProject.project_Id ? updatedProject : p
+                );
+                await AsyncStorage.setItem("activeProjects", JSON.stringify(activeProjects));
+                await AsyncStorage.setItem(`project_status_${project.project_Id}`, "On-Hold");
+            } catch (error) {
+                console.error("Error updating AsyncStorage", error);
+            }
+        }
+
+
         navigation.goBack();
     };
 
@@ -111,17 +135,46 @@ const WorkUpdateStatusScreen = () => {
         setIsModalVisible(true);
     };
 
-    const handleSubmitReason = () => {
+    const handleSubmitReason = async () => {
         if (reason.trim() === "") {
             ToastAndroid.show("Please provide a reason", ToastAndroid.SHORT);
             return;
         }
+    
         setStatus("On-Hold");
         setIsModalVisible(false);
         ToastAndroid.show("Project marked as On Hold", ToastAndroid.SHORT);
-
-        AsyncStorage.setItem(`project_status_${project.project_Id}`, "On-Hold");
+    
+        const updatedProject = {
+            ...project,
+            status: "On-Hold",
+        };
+    
+        try {
+            // Save status in AsyncStorage
+            await AsyncStorage.setItem(`project_status_${project.project_Id}`, "On-Hold");
+    
+            // Retrieve current on-hold projects
+            const storedOnHoldProjects = await AsyncStorage.getItem("onHoldProjects");
+            let onHoldProjects = storedOnHoldProjects ? JSON.parse(storedOnHoldProjects) : [];
+    
+            // Check if the project already exists in storage
+            const existingIndex = onHoldProjects.findIndex((p: Project) => p.project_Id === updatedProject.project_Id);
+            if (existingIndex === -1) {
+                onHoldProjects.push(updatedProject);
+                await AsyncStorage.setItem("onHoldProjects", JSON.stringify(onHoldProjects));
+            }
+    
+            // ✅ Debugging log
+            const savedProjects = await AsyncStorage.getItem("onHoldProjects");
+            console.log("Updated On-Hold Projects:", JSON.parse(savedProjects || "[]"));
+    
+        } catch (error) {
+            console.error("Error updating on-hold projects:", error);
+        }
     };
+    
+    
 
     const handleCancel = () => {
         setIsModalVisible(false);
@@ -147,16 +200,16 @@ const WorkUpdateStatusScreen = () => {
                     </View>
                 ))}
                 <View>
-                <Text style={[styles.label, { color: theme.mode === 'dark' ? '#fff' : '#000' }]}>End Date</Text>
-                <TextInput
-                    style={[styles.input, { color: theme.mode === 'dark' ? '#fff' : '#000' }]}
-                    value={editableEndDate}
-                    onChangeText={setEditableEndDate}
-                    placeholder="Enter End Date"
-                    placeholderTextColor={theme.mode === 'dark' ? '#bbb' : '#888'}
-                />
+                    <Text style={[styles.label, { color: theme.mode === 'dark' ? '#fff' : '#000' }]}>End Date</Text>
+                    <TextInput
+                        style={[styles.input, { color: theme.mode === 'dark' ? '#fff' : '#000' }]}
+                        value={editableEndDate}
+                        onChangeText={setEditableEndDate}
+                        placeholder="Enter End Date"
+                        placeholderTextColor={theme.mode === 'dark' ? '#bbb' : '#888'}
+                    />
                 </View>
-                
+
 
                 <Text style={[styles.label, { color: isDarkMode ? "#fff" : "#000" }]}>Completion Percentage</Text>
                 <Picker

@@ -109,7 +109,7 @@ const Home = () => {
                         <TouchableOpacity onPress={() => navigation.navigate('WorkerActiveWorkScreen')}>
                             <Ionicons name="briefcase" size={50} color={theme.text} />
                         </TouchableOpacity>
-                        <Text style={{ color: theme.text }}>Active Work</Text>
+                        <Text style={{ color: theme.text }}>On-going Projects</Text>
                     </View>
                     <View style={styles.iconItem}>
                         <TouchableOpacity onPress={() => navigation.navigate('WorkerClockInScreen')}>

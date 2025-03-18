@@ -34,11 +34,11 @@ const LoginScreen = () => {
         }
 
         // Simulated authentication - Replace with actual API call
-        if (username === "worker" && password === "worker") {
+        if (username === "1111" && password === "1111") {
             navigation.navigate("WorkerHomeScreen" as never);
-        } else if (username === "contractor" && password === "contractor") {
+        } else if (username === "2222" && password === "2222") {
             navigation.navigate("ContractorHomeScreen" as never);
-        } else if (username === "admin" && password === "admin") {
+        } else if (username === "3333" && password === "3333") {
             navigation.navigate("AdminHomeScreen" as never);
         } else {
             setErrorMessage("Invalid username or password");

@@ -31,7 +31,7 @@ const WorkerActiveWorkScreen = () => {
   const { theme } = useTheme(); // theme is likely an object
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const [searchText, setSearchText] = useState<string>("");
-  const [projects, setProjects] = useState<Project[]>(projectsData.map(p => ({ ...p, status: "In Progress" })));
+  const [projects, setProjects] = useState<Project[]>(projectsData.map(p => ({ ...p, status: "In-Progress" })));
   const [animatedValue] = useState(new Animated.Value(0));
 
   // Fade-in animation for the screen
@@ -52,7 +52,7 @@ const WorkerActiveWorkScreen = () => {
           if (storedProjects) {
             const parsedProjects = JSON.parse(storedProjects).map((p: Project) => ({
               ...p,
-              status: p.status || "In Progress",
+              status: p.status || "In-Progress",
             }));
             setProjects(parsedProjects.filter((p: Project) => p.completion_percentage < 100));
           }
@@ -64,21 +64,38 @@ const WorkerActiveWorkScreen = () => {
     }, [])
   );
 
-  const handleUpdateCompletion = async (projectId: string, newCompletion: number) => {
+  const handleUpdateCompletion = async (projectId: string, newCompletion: number, newStatus?: string) => {
     try {
       let updatedProjects = projects.map((proj) =>
         proj.project_Id === projectId
-          ? { ...proj, completion_percentage: newCompletion, status: newCompletion === 100 ? "Completed" : "In Progress" }
+          ? {
+              ...proj,
+              completion_percentage: newCompletion,
+              status: newStatus || (newCompletion === 100 ? "Completed" : "In-Progress"),
+            }
           : proj
       );
-
-      updatedProjects = updatedProjects.filter((proj) => proj.completion_percentage < 100);
-      await AsyncStorage.setItem("activeProjects", JSON.stringify(updatedProjects));
-      setProjects(updatedProjects);
+  
+      // Separate projects into correct categories
+      const onHoldProjects = updatedProjects.filter((proj) => proj.status === "On-Hold");
+      const activeProjects = updatedProjects.filter((proj) => proj.status === "In-Progress" && proj.completion_percentage < 100);
+  
+      // Save to AsyncStorage
+      await AsyncStorage.setItem("activeProjects", JSON.stringify(activeProjects));
+      await AsyncStorage.setItem("onHoldProjects", JSON.stringify(onHoldProjects));
+  
+      console.log("Active Projects Saved:", activeProjects);
+      console.log("On-Hold Projects Saved:", onHoldProjects);
+  
+      // Update state with only active projects
+      setProjects(activeProjects);
     } catch (error) {
       console.error("Error updating project completion", error);
     }
   };
+  
+  
+  
 
   const filteredProjects = projects.filter((project) =>
     Object.values(project).some((value) =>
