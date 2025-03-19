@@ -59,6 +59,8 @@ const SignupScreen = () => {
   };
 
   const handleSubmit = () => {
+    if (!validateForm()) return; // Run validation, stop if there are errors
+  
     const userData = {
       role: form.role,
       firstName: form.firstName,
@@ -79,15 +81,14 @@ const SignupScreen = () => {
         if (res.data.status === "OK") {
           navigation.navigate("Otp", { userData: form }); // Navigate on success
         } else {
-           ToastAndroid.show("Registration failed: " + res.data.data, ToastAndroid.SHORT);
+          ToastAndroid.show("Registration failed: " + res.data.data, ToastAndroid.SHORT);
         }
       })
       .catch(e => {
-        ToastAndroid.show("An error occurred while registering.", ToastAndroid.SHORT);
+        ToastAndroid.show(e, ToastAndroid.SHORT);
       });
   };
   
-
   const handleBackPress = () => {
     navigation.goBack();
   };

@@ -15,7 +15,6 @@ import WorkerFullPaymentHistoryScreen from "./screen/worker/WorkerFullPaymentHis
 import Home from "./tabs_worker/Home";
 import WorkerActiveWorkScreen from "./screen/worker/WorkerActiveWorkScreen";
 import WorkerNotificationScreen from "./screen/worker/WorkerNotificationScreen";
-import WorkerPersonalDetailsScreen from "./screen/worker/WorkerPersonalDetailsScreen";
 import WorkerSecurityAndPrivacyScreen from "./screen/worker/WorkerSecurityAndPrivacyScreen";
 import AboutAppScreen from "./screen/AboutAppScreen";
 import WorkerRequestPaymentScreen from "./screen/worker/WorkerRequestPaymentScreen";
@@ -33,6 +32,7 @@ import ContractorActiveWorkScreen from "./screen/contractor/ContractorActiveWork
 import ContractorInitiatePaymentScreen from "./screen/contractor/ContractorInitiatePaymentScreen";
 import ContractorOnHoldProjectsScreen from "./screen/contractor/ContractorOnHoldProjectsScreen";
 import ContractorUpcomingProjectsScreen from "./screen/contractor/ContractorUpcomingProjectsScreen";
+import PersonalDetailsScreen from "./screen/PersonalDetailsScreen";
 
 export type RootStackParamList = {
     LoginScreen: undefined;
@@ -54,7 +54,7 @@ export type RootStackParamList = {
         onUpdateCompletion: (projectId: string, newCompletion: number) => void;
     };
     WorkerNotificationScreen: undefined;
-    WorkerPersonalDetailsScreen: { userData: Record<string, string> };
+    PersonalDetailsScreen: { userData: Record<string, string> };
     WorkerSecurityAndPrivacyScreen: undefined;
     AboutAppScreen: undefined;
     WorkerRequestPaymentScreen: undefined;
@@ -102,6 +102,7 @@ const RootNavigator: React.FC = () => {
                     <Stack.Screen name="RegistrationDone" component={RegistrationDoneScreen} />
                     <Stack.Screen name="RegistrationFailed" component={RegistrationFailedScreen} />
                     <Stack.Screen name="PasswordUpdatedScreen" component={PasswordUpdatedScreen} />
+                    <Stack.Screen name="PersonalDetailsScreen" component={PersonalDetailsScreen} />
                     
                     <Stack.Screen name="WorkerHomeScreen" component={WorkerHomeScreen} />
                     <Stack.Screen name="WorkerWorkHistoryScreen" component={WorkerWorkHistoryScreen} />
@@ -111,7 +112,6 @@ const RootNavigator: React.FC = () => {
                     <Stack.Screen name="Home" component={Home} />
                     <Stack.Screen name="WorkerActiveWorkScreen" component={WorkerActiveWorkScreen} />
                     <Stack.Screen name="WorkerNotificationScreen" component={WorkerNotificationScreen} />
-                    <Stack.Screen name="WorkerPersonalDetailsScreen" component={WorkerPersonalDetailsScreen} />
                     <Stack.Screen name="WorkerSecurityAndPrivacyScreen" component={WorkerSecurityAndPrivacyScreen} />
                     <Stack.Screen name="AboutAppScreen" component={AboutAppScreen} />
                     <Stack.Screen name="WorkerRequestPaymentScreen" component={WorkerRequestPaymentScreen} />

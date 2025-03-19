@@ -1,15 +1,16 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { RouteProp, useNavigation } from "@react-navigation/native";
 import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet, StatusBar, TouchableOpacity, ActivityIndicator, ScrollView } from "react-native";
+import { View, Text, StyleSheet, StatusBar, TouchableOpacity, ActivityIndicator, ScrollView, ToastAndroid } from "react-native";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import { Card, Divider } from "react-native-paper";
-import { RootStackParamList } from "../../RootNavigator";
-import { useTheme } from "../../context/ThemeContext";
+import { RootStackParamList } from "../RootNavigator";
+import { useTheme } from "../context/ThemeContext";
+import axios from 'axios'
 
-type WorkerPersonalDetailsRouteProp = RouteProp<RootStackParamList, "WorkerPersonalDetailsScreen">;
+type WorkerPersonalDetailsRouteProp = RouteProp<RootStackParamList, "PersonalDetailsScreen">;
 
-const WorkerPersonalDetailsScreen = ({ route }: { route: WorkerPersonalDetailsRouteProp }) => {
+const PersonalDetailsScreen = ({ route }: { route: WorkerPersonalDetailsRouteProp }) => {
     const { theme } = useTheme(); // Get the current theme (light or dark)
     const navigation = useNavigation();
     const [userData, setUserData] = useState<Record<string, string> | null>(null);
@@ -20,14 +21,24 @@ const WorkerPersonalDetailsScreen = ({ route }: { route: WorkerPersonalDetailsRo
     useEffect(() => {
         const fetchUserData = async () => {
             try {
-                if (route.params?.userData) {
-                    setUserData(route.params.userData);
-                    await AsyncStorage.setItem("userData", JSON.stringify(route.params.userData));
+                setLoading(true);
+    
+                // Get token from AsyncStorage
+                const token = await AsyncStorage.getItem("authToken");
+                if (!token) {
+                    console.log("No token found, user needs to log in.");
+                    setLoading(false);
+                    return;
+                }
+    
+                // Send request to backend to get user data
+                const response = await axios.post("http://192.168.129.119:5001/userdata", { token });
+    
+                if (response.data.status === "OK") {
+                    setUserData(response.data.data);
+                    await AsyncStorage.setItem("userData", JSON.stringify(response.data.data));
                 } else {
-                    const storedUserData = await AsyncStorage.getItem("userData");
-                    if (storedUserData) {
-                        setUserData(JSON.parse(storedUserData));
-                    }
+                    console.error("Error fetching user data:", response.data.data);
                 }
             } catch (error) {
                 console.error("Error retrieving user data:", error);
@@ -35,9 +46,11 @@ const WorkerPersonalDetailsScreen = ({ route }: { route: WorkerPersonalDetailsRo
                 setLoading(false);
             }
         };
-
+    
         fetchUserData();
-    }, [route.params]);
+    }, []);
+
+
 
     if (loading) {
         return (
@@ -236,4 +249,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default WorkerPersonalDetailsScreen;
+export default PersonalDetailsScreen;

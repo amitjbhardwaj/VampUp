@@ -6,7 +6,7 @@ import { View, Text, StyleSheet, TouchableOpacity, Switch } from "react-native";
 import { useTheme } from "../context/ThemeContext";
 
 type SettingsStackParamList = {
-  WorkerPersonalDetailsScreen: undefined;
+  PersonalDetailsScreen: undefined;
   WorkerPaymentScreen: undefined;
   WorkerSecurityAndPrivacyScreen: undefined;
   WorkerNotificationScreen: undefined;
@@ -19,7 +19,7 @@ const Settings = () => {
   const { theme, toggleTheme } = useTheme();
 
   const settingsOptions = [
-    { name: "Personal details", icon: "person", screen: "WorkerPersonalDetailsScreen" },
+    { name: "Personal details", icon: "person", screen: "PersonalDetailsScreen" },
     { name: "Payments", icon: "sync-alt", screen: "WorkerPaymentScreen" },
     { name: "Security & Privacy", icon: "shield", screen: "WorkerSecurityAndPrivacyScreen" },
     { name: "Notifications", icon: "notifications", screen: "WorkerNotificationScreen" },

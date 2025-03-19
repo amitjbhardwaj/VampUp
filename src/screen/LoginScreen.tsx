@@ -7,7 +7,8 @@ import {
     View,
     Image,
     ScrollView,
-    Alert
+    Alert,
+    ToastAndroid
 } from "react-native";
 import Icon from "react-native-vector-icons/FontAwesome";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
@@ -16,6 +17,8 @@ import { useNavigation } from "@react-navigation/native";
 import { NavigationProp } from "@react-navigation/native";
 import { RootStackParamList } from "../../App";
 import { useTheme } from "../context/ThemeContext";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import axios from 'axios'
 
 type LoginScreenNavigationProp = NavigationProp<RootStackParamList>;
 
@@ -27,23 +30,61 @@ const LoginScreen = () => {
     const [secureText, setSecureText] = useState(true);
     const [errorMessage, setErrorMessage] = useState("");
 
-    const handleLogin = () => {
-        if (!username || !password) {
-            setErrorMessage("Username and password are required");
-            return;
-        }
+    const handleLogin1 = () => {
+        const userData = {
+            email: username,
+            password: password,
+        };
 
-        // Simulated authentication - Replace with actual API call
-        if (username === "1111" && password === "1111") {
-            navigation.navigate("WorkerHomeScreen" as never);
-        } else if (username === "2222" && password === "2222") {
-            navigation.navigate("ContractorHomeScreen" as never);
-        } else if (username === "3333" && password === "3333") {
-            navigation.navigate("AdminHomeScreen" as never);
-        } else {
-            setErrorMessage("Invalid username or password");
-        }
+        axios
+            .post("http://192.168.129.119:5001/login-user", userData)
+            .then(res => {
+                if (res.data.status === "OK") {
+                    navigation.navigate("WorkerHomeScreen" as never);
+                } else {
+                    ToastAndroid.show("Registration failed: " + res.data.data, ToastAndroid.SHORT);
+                }
+            })
+            .catch(e => {
+                ToastAndroid.show("An error occurred while registering.", ToastAndroid.SHORT);
+            });
     };
+
+    const handleLogin = () => {
+        const userData = {
+            email: username,
+            password: password,
+        };
+
+        axios
+            .post("http://192.168.129.119:5001/login-user", userData)
+            .then(res => {
+                if (res.data.status === "OK") {
+                    const { token, role } = res.data;
+
+                    // Store token and role in AsyncStorage
+                    AsyncStorage.setItem("authToken", token);
+                    //AsyncStorage.setItem("userRole", role);
+
+                    // Navigate based on role
+                    if (role === "Worker") {
+                        navigation.navigate("WorkerHomeScreen" as never);
+                    } else if (role === "Contractor") {
+                        navigation.navigate("ContractorHomeScreen" as never);
+                    } else if (role === "Admin") {
+                        navigation.navigate("AdminHomeScreen" as never);
+                    } else {
+                        ToastAndroid.show("Unknown role detected", ToastAndroid.SHORT);
+                    }
+                } else {
+                    ToastAndroid.show("Login failed: " + res.data.error, ToastAndroid.SHORT);
+                }
+            })
+            .catch(() => {
+                ToastAndroid.show("An error occurred while logging in.", ToastAndroid.SHORT);
+            });
+    };
+
 
     const handleBiometricLogin = () => {
         TouchID.authenticate("Login with Biometrics", {
@@ -53,7 +94,7 @@ const LoginScreen = () => {
             .then(() => {
                 // Assume we retrieve the role from storage or backend
                 const userRole = "worker"; // Change dynamically based on real authentication
-    
+
                 if (userRole === "worker") {
                     navigation.navigate("WorkerHomeScreen" as never);
                 } else if (userRole === "contractor") {
@@ -66,10 +107,10 @@ const LoginScreen = () => {
                 Alert.alert("Authentication Failed", "Unable to authenticate using biometrics.");
             });
     };
-    
+
 
     return (
-        <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+        <ScrollView contentContainerStyle={{ flexGrow: 1 }} keyboardShouldPersistTaps={"always"}>
             <View style={[styles.container, { backgroundColor: theme.background, flex: 1 }]}>
                 <View style={styles.headerContainer}>
                     <Image source={require("../assets/logo.png")} style={styles.logo} resizeMode="contain" />
