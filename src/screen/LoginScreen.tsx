@@ -30,25 +30,6 @@ const LoginScreen = () => {
     const [secureText, setSecureText] = useState(true);
     const [errorMessage, setErrorMessage] = useState("");
 
-    const handleLogin1 = () => {
-        const userData = {
-            email: username,
-            password: password,
-        };
-
-        axios
-            .post("http://192.168.129.119:5001/login-user", userData)
-            .then(res => {
-                if (res.data.status === "OK") {
-                    navigation.navigate("WorkerHomeScreen" as never);
-                } else {
-                    ToastAndroid.show("Registration failed: " + res.data.data, ToastAndroid.SHORT);
-                }
-            })
-            .catch(e => {
-                ToastAndroid.show("An error occurred while registering.", ToastAndroid.SHORT);
-            });
-    };
 
     const handleLogin = () => {
         const userData = {
