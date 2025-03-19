@@ -1,9 +1,10 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Modal } from "react-native";
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Modal, ToastAndroid } from "react-native";
 import Icon from "react-native-vector-icons/Ionicons";
 import { NavigationProp, useNavigation } from '@react-navigation/native';
 import { RootStackParamList } from "../RootNavigator";
 import { useTheme } from "../context/ThemeContext";
+import axios from 'axios'
 
 type SignupScreenNavigationProp = NavigationProp<RootStackParamList>;
 
@@ -41,34 +42,58 @@ const SignupScreen = () => {
 
   const validateForm = () => {
     let newErrors: Record<string, string> = {};
-  
+
     Object.keys(form).forEach((key) => {
       if (!form[key as keyof typeof form]) {
         newErrors[key] = `${key.replace(/([A-Z])/g, " $1")} is required`;
       }
     });
-  
+
     // Aadhar validation: Must be exactly 12 digits
     if (form.aadhar && !/^\d{12}$/.test(form.aadhar)) {
       newErrors.aadhar = "Aadhar number must be exactly 12 digits";
     }
-  
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = () => {
-    if (validateForm()) {
-      navigation.navigate("Otp", { userData: form });
-    }
+    const userData = {
+      role: form.role,
+      firstName: form.firstName,
+      lastName: form.lastName,
+      email: form.email,
+      password: form.password,
+      aadhar: form.aadhar,
+      accountHolder: form.accountHolder,
+      accountNumber: form.accountNumber,
+      ifsc: form.ifsc,
+      branch: form.branch,
+      mobile: form.mobile,
+    };
+  
+    axios
+      .post("http://192.168.129.119:5001/register", userData)
+      .then(res => {
+        if (res.data.status === "OK") {
+          navigation.navigate("Otp", { userData: form }); // Navigate on success
+        } else {
+           ToastAndroid.show("Registration failed: " + res.data.data, ToastAndroid.SHORT);
+        }
+      })
+      .catch(e => {
+        ToastAndroid.show("An error occurred while registering.", ToastAndroid.SHORT);
+      });
   };
+  
 
   const handleBackPress = () => {
     navigation.goBack();
   };
 
-  
-  
+
+
 
   return (
     <ScrollView contentContainerStyle={[styles.container, { backgroundColor: theme.background }]}>
