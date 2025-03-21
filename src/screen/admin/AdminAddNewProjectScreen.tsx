@@ -1,10 +1,11 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, Button, StyleSheet, ScrollView, TouchableOpacity } from "react-native";
+import { View, Text, TextInput, Button, StyleSheet, ScrollView, TouchableOpacity, ToastAndroid } from "react-native";
 import { useTheme } from "../../context/ThemeContext";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 import DatePicker from "react-native-date-picker";
 import { RootStackParamList } from "../../RootNavigator";
 import { Picker } from "@react-native-picker/picker";
+import axios from 'axios'
 
 // Define the type for the project state
 type Project = {
@@ -51,7 +52,30 @@ const AdminAddNewProjectScreen = () => {
     };
 
     const handleSubmit = () => {
-        console.log("Project Submitted:", project);
+        const projectData = {
+            project_Id: project.project_Id,
+            project_description: project.project_description,
+            long_project_description: project.long_project_description,
+            assigned_to: project.assigned_to,
+            project_start_date: project.project_start_date,
+            project_end_date: project.project_end_date,
+            contractor_phone: project.contractor_phone,
+            completion_percentage: project.completion_percentage, 
+            status: project.status,
+        };
+
+        axios
+            .post("http://192.168.129.119:5001/create-project", projectData)
+            .then(res => {
+                if (res.data.status === "OK") {
+                    navigation.navigate("AdminHomeScreen"); // Navigate on success
+                } else {
+                    ToastAndroid.show("Registration failed: " + res.data.data, ToastAndroid.SHORT);
+                }
+            })
+            .catch(e => {
+                ToastAndroid.show(e, ToastAndroid.SHORT);
+            });
     };
 
     const handleBack = () => {
@@ -104,6 +128,8 @@ const AdminAddNewProjectScreen = () => {
                     );
                 }
 
+                const percentageOptions = Array.from({ length: 101 }, (_, i) => i); // 0 to 100
+
                 // For completion_percentage dropdown
                 if (key === "completion_percentage") {
                     return (
@@ -127,17 +153,13 @@ const AdminAddNewProjectScreen = () => {
                                     dropdownIconColor={theme.mode === 'dark' ? '#fff' : '#000'}
                                 >
 
-                                    <Picker.Item label="0%" value="0" />
-                                    <Picker.Item label="10%" value="10" />
-                                    <Picker.Item label="20%" value="20" />
-                                    <Picker.Item label="30%" value="30" />
-                                    <Picker.Item label="40%" value="40" />
-                                    <Picker.Item label="50%" value="50" />
-                                    <Picker.Item label="60%" value="60" />
-                                    <Picker.Item label="70%" value="70" />
-                                    <Picker.Item label="80%" value="80" />
-                                    <Picker.Item label="90%" value="90" />
-                                    <Picker.Item label="100%" value="100" />
+                                    {percentageOptions.map((percentage) => (
+                                        <Picker.Item
+                                            key={percentage}
+                                            label={`${percentage}%`}
+                                            value={percentage.toString()}
+                                        />
+                                    ))}
                                 </Picker>
                             </View>
                         </View>
