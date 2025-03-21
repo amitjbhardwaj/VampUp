@@ -70,7 +70,7 @@ const AdminAddNewProjectScreen = () => {
                 if (res.data.status === "OK") {
                     navigation.navigate("AdminHomeScreen"); // Navigate on success
                 } else {
-                    ToastAndroid.show("Registration failed: " + res.data.data, ToastAndroid.SHORT);
+                    ToastAndroid.show("Project creation failed: " + res.data.data, ToastAndroid.SHORT);
                 }
             })
             .catch(e => {
