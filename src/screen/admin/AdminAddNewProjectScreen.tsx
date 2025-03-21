@@ -1,18 +1,20 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { View, Text, TextInput, Button, StyleSheet, ScrollView, TouchableOpacity, ToastAndroid } from "react-native";
 import { useTheme } from "../../context/ThemeContext";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 import DatePicker from "react-native-date-picker";
 import { RootStackParamList } from "../../RootNavigator";
 import { Picker } from "@react-native-picker/picker";
-import axios from 'axios'
+import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import Icon from 'react-native-vector-icons/FontAwesome';
 
 // Define the type for the project state
 type Project = {
     project_Id: string;
     project_description: string;
     long_project_description: string;
-    assigned_to: string;
+    created_by: string;
     project_start_date: Date;
     project_end_date: Date;
     contractor_phone: string;
@@ -30,45 +32,30 @@ const AdminAddNewProjectScreen = () => {
         project_Id: "",
         project_description: "",
         long_project_description: "",
-        assigned_to: "",
+        created_by: "",
         project_start_date: new Date(),
         project_end_date: new Date(),
         contractor_phone: "",
-        completion_percentage: "0", // Default value to make sure it's not empty
-        status: "Yet to start", // Default value to ensure it shows a selection
+        completion_percentage: "0",
+        status: "Yet to start",
     });
 
     const [openStartDate, setOpenStartDate] = useState(false);
     const [openEndDate, setOpenEndDate] = useState(false);
 
-    // Format date to 'yyyy-mm-dd'
-    const formatDate = (date: Date): string => {
-        return date.toISOString().split('T')[0]; // Extract the 'yyyy-mm-dd' part from the ISO string
-    };
+    const formatDate = (date: Date): string => date.toISOString().split('T')[0];
 
-    // Update the handleChange function to properly type the key and value
     const handleChange = (key: keyof Project, value: string | Date) => {
         setProject({ ...project, [key]: value });
     };
 
     const handleSubmit = () => {
-        const projectData = {
-            project_Id: project.project_Id,
-            project_description: project.project_description,
-            long_project_description: project.long_project_description,
-            assigned_to: project.assigned_to,
-            project_start_date: project.project_start_date,
-            project_end_date: project.project_end_date,
-            contractor_phone: project.contractor_phone,
-            completion_percentage: project.completion_percentage, 
-            status: project.status,
-        };
+        const projectData = { ...project };
 
-        axios
-            .post("http://192.168.129.119:5001/create-project", projectData)
+        axios.post("http://192.168.129.119:5001/create-project", projectData)
             .then(res => {
                 if (res.data.status === "OK") {
-                    navigation.navigate("AdminHomeScreen"); // Navigate on success
+                    navigation.navigate("AdminHomeScreen");
                 } else {
                     ToastAndroid.show("Project creation failed: " + res.data.data, ToastAndroid.SHORT);
                 }
@@ -86,13 +73,34 @@ const AdminAddNewProjectScreen = () => {
         project_Id: "Project ID",
         project_description: "Project Description",
         long_project_description: "Project Long Description",
-        assigned_to: "Assign To",
+        created_by: "Created By",
         project_start_date: "Project Start Date",
         project_end_date: "Project End Date",
         contractor_phone: "Contractor Phone No.",
         completion_percentage: "Completion Percentage",
         status: "Status"
     };
+
+    useEffect(() => {
+        const fetchUserData = async () => {
+            const token = await AsyncStorage.getItem('authToken');
+            if (token) {
+                try {
+                    const response = await axios.post('http://192.168.129.119:5001/userdata', { token });
+                    if (response.data.status === "OK") {
+                        const user = response.data.data;
+                        const fullName = `${user.firstName} ${user.lastName}`;
+                        setProject(prev => ({ ...prev, created_by: fullName }));
+                    } else {
+                        ToastAndroid.show('Failed to fetch user data', ToastAndroid.SHORT);
+                    }
+                } catch (error) {
+                    ToastAndroid.show('Error fetching user data', ToastAndroid.SHORT);
+                }
+            }
+        };
+        fetchUserData();
+    }, []);
 
     return (
         <ScrollView style={[styles.container, { backgroundColor: theme.mode === 'dark' ? '#121212' : '#f8f8f8' }]}>
@@ -101,7 +109,6 @@ const AdminAddNewProjectScreen = () => {
             {Object.keys(project).map((key) => {
                 const currentValue = project[key as keyof Project];
 
-                // For start and end date fields, show DatePicker
                 if (key === "project_start_date" || key === "project_end_date") {
                     return (
                         <View key={key} style={styles.inputContainer}>
@@ -128,37 +135,21 @@ const AdminAddNewProjectScreen = () => {
                     );
                 }
 
-                const percentageOptions = Array.from({ length: 101 }, (_, i) => i); // 0 to 100
+                const percentageOptions = Array.from({ length: 101 }, (_, i) => i);
 
-                // For completion_percentage dropdown
                 if (key === "completion_percentage") {
                     return (
                         <View key={key} style={styles.inputContainer}>
                             <Text style={[styles.label, { color: theme.mode === 'dark' ? '#fff' : '#000' }]}>{labels[key as keyof Project]}</Text>
-                            <View
-                                style={[
-                                    styles.pickerWrapper,
-                                    {
-                                        backgroundColor: theme.mode === 'dark' ? '#333' : '#fff',
-                                        borderColor: theme.mode === 'dark' ? '#555' : '#ccc',
-                                    },
-                                ]}
-                            >
+                            <View style={[styles.pickerWrapper, { backgroundColor: theme.mode === 'dark' ? '#333' : '#fff' }]}>
                                 <Picker
                                     selectedValue={currentValue}
                                     onValueChange={(value) => handleChange(key as keyof Project, value)}
-                                    style={{
-                                        color: theme.mode === 'dark' ? '#fff' : '#000',
-                                    }}
+                                    style={{ color: theme.mode === 'dark' ? '#fff' : '#000' }}
                                     dropdownIconColor={theme.mode === 'dark' ? '#fff' : '#000'}
                                 >
-
                                     {percentageOptions.map((percentage) => (
-                                        <Picker.Item
-                                            key={percentage}
-                                            label={`${percentage}%`}
-                                            value={percentage.toString()}
-                                        />
+                                        <Picker.Item key={percentage} label={`${percentage}%`} value={percentage.toString()} />
                                     ))}
                                 </Picker>
                             </View>
@@ -166,26 +157,15 @@ const AdminAddNewProjectScreen = () => {
                     );
                 }
 
-                // For status dropdown
                 if (key === "status") {
                     return (
                         <View key={key} style={styles.inputContainer}>
                             <Text style={[styles.label, { color: theme.mode === 'dark' ? '#fff' : '#000' }]}>{labels[key as keyof Project]}</Text>
-                            <View
-                                style={[
-                                    styles.pickerWrapper,
-                                    {
-                                        backgroundColor: theme.mode === 'dark' ? '#333' : '#fff',
-                                        borderColor: theme.mode === 'dark' ? '#555' : '#ccc',
-                                    },
-                                ]}
-                            >
+                            <View style={[styles.pickerWrapper, { backgroundColor: theme.mode === 'dark' ? '#333' : '#fff' }]}>
                                 <Picker
                                     selectedValue={currentValue}
                                     onValueChange={(value) => handleChange(key as keyof Project, value)}
-                                    style={{
-                                        color: theme.mode === 'dark' ? '#fff' : '#000',
-                                    }}
+                                    style={{ color: theme.mode === 'dark' ? '#fff' : '#000' }}
                                     dropdownIconColor={theme.mode === 'dark' ? '#fff' : '#000'}
                                 >
                                     <Picker.Item label="Yet to start" value="Yet to start" />
@@ -198,24 +178,25 @@ const AdminAddNewProjectScreen = () => {
                     );
                 }
 
-                // For all other fields, just show a TextInput
                 return (
                     <View key={key} style={styles.inputContainer}>
                         <Text style={[styles.label, { color: theme.mode === 'dark' ? '#fff' : '#000' }]}>{labels[key as keyof Project]}</Text>
                         <TextInput
                             style={[styles.input, { backgroundColor: theme.mode === 'dark' ? '#333' : '#fff', color: theme.mode === 'dark' ? '#fff' : '#000', borderColor: theme.mode === 'dark' ? '#555' : '#ccc' }]}
-                            value={typeof currentValue === "string" ? currentValue : ""}
-                            onChangeText={(value) => handleChange(key as keyof Project, value)}
-                            placeholder={`Enter ${labels[key as keyof Project]}`}
-                            placeholderTextColor={theme.mode === 'dark' ? '#bbb' : '#888'}
+                            value={currentValue.toString()}
+                            onChangeText={(text) => handleChange(key as keyof Project, text)}
                         />
                     </View>
                 );
             })}
 
-            <Button title="Submit" onPress={handleSubmit} color={theme.mode === 'dark' ? '#4CAF50' : '#000'} />
-            <View style={styles.backButtonContainer}>
-                <Button title="Back" onPress={handleBack} color={theme.mode === 'dark' ? '#FF5733' : '#555'} />
+            <View style={styles.buttonContainer}>
+                <TouchableOpacity style={[styles.button, { backgroundColor: theme.primary }]} onPress={handleSubmit}>
+                    <Text style={styles.buttonText}>Add Project</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={[styles.button, { backgroundColor: theme.primary }]} onPress={handleBack}>
+                    <Text style={styles.buttonText}>Back</Text>
+                </TouchableOpacity>
             </View>
         </ScrollView>
     );
@@ -224,47 +205,46 @@ const AdminAddNewProjectScreen = () => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        padding: 20,
+        padding: 16,
     },
     title: {
-        fontSize: 22,
+        fontSize: 24,
         fontWeight: "bold",
-        marginBottom: 20,
-        textAlign: 'center',
+        marginBottom: 16,
     },
     inputContainer: {
-        marginBottom: 15,
+        marginBottom: 16,
     },
     label: {
         fontSize: 16,
         fontWeight: "600",
-        marginBottom: 5,
     },
     input: {
-        height: 40,
+        padding: 12,
+        fontSize: 16,
         borderWidth: 1,
-        borderRadius: 5,
-        paddingHorizontal: 10,
-        justifyContent: "center"
-    },
-    picker: {
-        height: 40,  // Ensure Picker has enough height
-        borderWidth: 1,
-        borderRadius: 5,
-        paddingHorizontal: 10,
-        justifyContent: "center",
-        color: '#000'  // Explicitly set text color for Picker
-    },
-    backButtonContainer: {
-        marginTop: 10,
+        borderRadius: 8,
     },
     pickerWrapper: {
         borderWidth: 1,
-        borderRadius: 5,
-        height: 40,
-        justifyContent: 'center',
+        borderRadius: 8,
     },
-
+    buttonContainer: {
+        flexDirection: "row",
+        justifyContent: "space-between",
+        marginTop: 24,
+    },
+    button: {
+        paddingVertical: 12,
+        paddingHorizontal: 20,
+        borderRadius: 8,
+        alignItems: "center",
+    },
+    buttonText: {
+        color: "#fff",
+        fontSize: 16,
+        fontWeight: "600",
+    },
 });
 
 export default AdminAddNewProjectScreen;

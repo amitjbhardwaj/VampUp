@@ -24,6 +24,9 @@ const LightTheme = {
   buttonBackground: "#4C9F70",  // Green button background
   placeholderTextColor: "#B0B0B0",  // Light gray for placeholder text
   iconColor: "#707070",  // Medium gray for icons
+  card: '#f8f9fa',
+  okButton: "#4CAF50",        // green color for OK
+  cancelButton: "#F44336",    // red color for Cancel
 };
 
 const DarkTheme = {
@@ -48,6 +51,9 @@ const DarkTheme = {
   buttonBackground: "#3A8E4A",  // Dark green button background
   placeholderTextColor: "#B0B0B0",  // Light gray for placeholder text
   iconColor: "#A0A0A0",  // Lighter gray for icons
+  card: '#1c1c1e',
+  okButton: "#4CAF50",
+  cancelButton: "#F44336",
 };
 
 // Type for theme structure
