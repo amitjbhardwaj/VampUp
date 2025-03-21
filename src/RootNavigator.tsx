@@ -33,6 +33,7 @@ import ContractorInitiatePaymentScreen from "./screen/contractor/ContractorIniti
 import ContractorOnHoldProjectsScreen from "./screen/contractor/ContractorOnHoldProjectsScreen";
 import ContractorUpcomingProjectsScreen from "./screen/contractor/ContractorUpcomingProjectsScreen";
 import PersonalDetailsScreen from "./screen/PersonalDetailsScreen";
+import AdminAddNewProjectScreen from "./screen/admin/AdminAddNewProjectScreen";
 
 export type RootStackParamList = {
     LoginScreen: undefined;
@@ -85,6 +86,7 @@ export type RootStackParamList = {
 
 
     AdminHomeScreen: undefined;
+    AdminAddNewProjectScreen: undefined;
 };
 
 const Stack = createStackNavigator<RootStackParamList>();
@@ -132,7 +134,7 @@ const RootNavigator: React.FC = () => {
 
 
                     <Stack.Screen name="AdminHomeScreen" component={AdminHomeScreen} />
-
+                    <Stack.Screen name="AdminAddNewProjectScreen" component={AdminAddNewProjectScreen} />
 
                 </Stack.Navigator>
             </NavigationContainer>

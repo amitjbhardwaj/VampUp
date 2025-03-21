@@ -19,7 +19,7 @@ const Home = () => {
             <View style={styles.iconContainer}>
                 <View style={styles.iconRow}>
                     <View style={styles.iconItem}>
-                        <TouchableOpacity onPress={() => navigation.navigate('WorkerActiveWorkScreen')}>
+                        <TouchableOpacity onPress={() => navigation.navigate('AdminAddNewProjectScreen')}>
                             <Ionicons name="add-circle" size={50} color={theme.text} />
                         </TouchableOpacity>
                         <Text style={{ color: theme.text }}>New Project</Text>
