@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import {
     View, Text, StyleSheet, TouchableOpacity
 } from "react-native";
@@ -12,11 +12,12 @@ type HomeNavigationProp = NavigationProp<RootStackParamList>;
 const Home = () => {
     const { theme } = useTheme();
     const navigation = useNavigation<HomeNavigationProp>();
-    const [projects, setProjects] = useState<any[]>([]);
 
     return (
         <View style={[styles.screen, { backgroundColor: theme.background }]}>
             <View style={styles.iconContainer}>
+
+                {/* First Row */}
                 <View style={styles.iconRow}>
                     <View style={styles.iconItem}>
                         <TouchableOpacity onPress={() => navigation.navigate('AdminAddNewProjectScreen')}>
@@ -31,6 +32,8 @@ const Home = () => {
                         <Text style={{ color: theme.text }}>Ongoing Projects</Text>
                     </View>
                 </View>
+
+                {/* Second Row */}
                 <View style={styles.iconRow}>
                     <View style={styles.iconItem}>
                         <TouchableOpacity onPress={() => navigation.navigate('WorkerActiveWorkScreen')}>
@@ -45,6 +48,8 @@ const Home = () => {
                         <Text style={{ color: theme.text }}>Initiate Payment</Text>
                     </View>
                 </View>
+
+                {/* Third Row */}
                 <View style={styles.iconRow}>
                     <View style={styles.iconItem}>
                         <TouchableOpacity onPress={() => navigation.navigate('WorkerActiveWorkScreen')}>
@@ -56,9 +61,26 @@ const Home = () => {
                         <TouchableOpacity onPress={() => navigation.navigate('WorkerActiveWorkScreen')}>
                             <Ionicons name="document-text" size={50} color={theme.text} />
                         </TouchableOpacity>
-                        <Text style={{ color: theme.text }}>Review Requests</Text>
+                        <Text style={{ color: theme.text }}>Documents</Text>
                     </View>
                 </View>
+
+                {/* Fourth Row - Allocate Project & On-Hold Projects */}
+                <View style={styles.iconRow}>
+                    <View style={styles.iconItem}>
+                        <TouchableOpacity onPress={() => navigation.navigate('AdminAllocateProjectScreen')}>
+                            <Ionicons name="people-circle" size={50} color={theme.text} />
+                        </TouchableOpacity>
+                        <Text style={{ color: theme.text }}>Allocate Project</Text>
+                    </View>
+                    <View style={styles.iconItem}>
+                        <TouchableOpacity onPress={() => navigation.navigate('WorkerActiveWorkScreen')}>
+                            <Ionicons name="pause-circle" size={50} color={theme.text} />
+                        </TouchableOpacity>
+                        <Text style={{ color: theme.text }}>On-Hold Projects</Text>
+                    </View>
+                </View>
+
             </View>
         </View>
     );
