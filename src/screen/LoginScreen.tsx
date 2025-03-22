@@ -40,17 +40,24 @@ const LoginScreen = () => {
         axios
             .post("http://192.168.129.119:5001/login-user", userData)
             .then(res => {
+                console.log("Full API Response:", res.data); // Debugging Step
+
                 if (res.data.status === "OK") {
-                    const { token, role } = res.data;
+                    const { token, role, firstName, lastName } = res.data;
+
+                    console.log("Extracted Data:", { token, role, firstName, lastName }); // Debugging Step
 
                     // Store token and role in AsyncStorage
                     AsyncStorage.setItem("authToken", token);
-                    //AsyncStorage.setItem("userRole", role);
 
                     // Navigate based on role
                     if (role === "Worker") {
                         navigation.navigate("WorkerHomeScreen" as never);
                     } else if (role === "Contractor") {
+                        const contractorName = `${firstName ?? ""} ${lastName ?? ""}`.trim();
+                        console.log("Contractor name:", contractorName); // Debugging Step
+
+                        AsyncStorage.setItem("contractorName", contractorName);
                         navigation.navigate("ContractorHomeScreen" as never);
                     } else if (role === "Admin") {
                         navigation.navigate("AdminHomeScreen" as never);
@@ -61,9 +68,11 @@ const LoginScreen = () => {
                     ToastAndroid.show("Login failed: " + res.data.error, ToastAndroid.SHORT);
                 }
             })
-            .catch(() => {
+            .catch(error => {
+                console.error("Login Error:", error); // Debugging Step
                 ToastAndroid.show("An error occurred while logging in.", ToastAndroid.SHORT);
             });
+
     };
 
 

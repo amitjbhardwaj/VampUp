@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import {
-    View, Text, StyleSheet, TouchableOpacity, Modal, TextInput, Button, Alert
+    View, Text, StyleSheet, TouchableOpacity
 } from "react-native";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 import Ionicons from "react-native-vector-icons/Ionicons";
@@ -12,7 +12,6 @@ type HomeNavigationProp = NavigationProp<RootStackParamList>;
 const Home = () => {
     const { theme } = useTheme();
     const navigation = useNavigation<HomeNavigationProp>();
-    const [modalVisible, setModalVisible] = useState(false);
     const [projects, setProjects] = useState<any[]>([]);
 
     useEffect(() => {
@@ -36,32 +35,46 @@ const Home = () => {
     return (
         <View style={[styles.screen, { backgroundColor: theme.background }]}> 
             <View style={styles.iconContainer}>
+                
+                {/* First Row: "All Projects" and "Active Projects" */}
                 <View style={styles.iconRow}>
+                    <View style={styles.iconItem}>
+                        <TouchableOpacity onPress={() => navigation.navigate('ContractorAllWorkScreen')}>
+                            <Ionicons name="list-circle" size={50} color={theme.text} />
+                        </TouchableOpacity>
+                        <Text style={{ color: theme.text }}>All Projects</Text>
+                    </View>
                     <View style={styles.iconItem}>
                         <TouchableOpacity onPress={() => navigation.navigate('ContractorActiveWorkScreen')}>
                             <Ionicons name="briefcase" size={50} color={theme.text} />
                         </TouchableOpacity>
                         <Text style={{ color: theme.text }}>Active Projects</Text>
                     </View>
+                </View>
+
+                {/* Second Row: "Upcoming Projects" and "On Hold Projects" */}
+                <View style={styles.iconRow}>
                     <View style={styles.iconItem}>
                         <TouchableOpacity onPress={() => navigation.navigate('ContractorUpcomingProjectsScreen')}>
                             <Ionicons name="calendar" size={50} color={theme.text} />
                         </TouchableOpacity>
                         <Text style={{ color: theme.text }}>Upcoming Projects</Text>
                     </View>
-                </View>
-                <View style={styles.iconRow}>
-                    <View style={styles.iconItem}>
-                        <TouchableOpacity onPress={() => navigation.navigate('ContractorInitiatePaymentScreen')}>
-                            <Ionicons name="card" size={50} color={theme.text} />
-                        </TouchableOpacity>
-                        <Text style={{ color: theme.text }}>Initiate Payment</Text>
-                    </View>
                     <View style={styles.iconItem}>
                         <TouchableOpacity onPress={() => navigation.navigate('ContractorOnHoldProjectsScreen')}>
                             <Ionicons name="pause-circle" size={50} color={theme.text} />
                         </TouchableOpacity>
                         <Text style={{ color: theme.text }}>On Hold Projects</Text>
+                    </View>
+                </View>
+
+                {/* Last Row: "Initiate Payment" */}
+                <View style={styles.iconRow}>
+                    <View style={[styles.iconItem, styles.lastRowIcon]}>
+                        <TouchableOpacity onPress={() => navigation.navigate('ContractorInitiatePaymentScreen')}>
+                            <Ionicons name="card" size={50} color={theme.text} />
+                        </TouchableOpacity>
+                        <Text style={{ color: theme.text }}>Initiate Payment</Text>
                     </View>
                 </View>
             </View>
@@ -88,6 +101,9 @@ const styles = StyleSheet.create({
     iconItem: {
         alignItems: "center",
         width: "45%",
+    },
+    lastRowIcon: {
+        marginLeft: "-145%",
     },
 });
 

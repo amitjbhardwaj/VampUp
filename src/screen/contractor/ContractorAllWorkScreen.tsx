@@ -19,7 +19,7 @@ type Project = {
     assign_to?: string;
 };
 
-const ContractorOnHoldProjectsScreen = () => {
+const ContractorAllWorkScreen = () => {
     const { theme } = useTheme();
     const navigation = useNavigation();
     const [projects, setProjects] = useState<Project[]>([]);
@@ -53,12 +53,9 @@ const ContractorOnHoldProjectsScreen = () => {
             if (response.data.status === "OK") {
                 const allProjects = response.data.data;
 
-                // Filter only On-Hold projects assigned to the contractor
-                const onHoldProjects = allProjects.filter((project: Project) => 
-                    (project.assign_to === contractorName && 
-                    project.status === "On-Hold")
-                );
-                setProjects(onHoldProjects);
+                // Filter projects assigned to the contractor
+                const assignedProjects = allProjects.filter((project: Project) => project.assign_to === contractorName);
+                setProjects(assignedProjects);
             } else {
                 console.log("Error fetching projects", response.data);
             }
@@ -69,6 +66,58 @@ const ContractorOnHoldProjectsScreen = () => {
         }
     };
 
+    const handleActivate = async (projectId: string) => {
+        // Get current date in yyyy-mm-dd format
+        const currentDate = new Date().toISOString().split('T')[0]; // "yyyy-mm-dd" format
+    
+        try {
+            // Send API request to update the status and end date
+            const response = await axios.put(
+                `http://192.168.129.119:5001/update-project-status-enddate/${projectId}`,
+                {
+                    project_end_date: currentDate,
+                    status: "In-Progress",
+                }
+            );
+    
+            if (response.data.status === "OK") {
+                console.log(`Project ${projectId} activated!`);
+                // Optionally, fetch the projects again or update the local state
+                fetchProjects(); // Re-fetch to reflect updated project info
+            } else {
+                console.log("Error updating project:", response.data);
+            }
+        } catch (error) {
+            console.error("Error activating project:", error);
+        }
+    };
+    
+    const handleOnHold = async (projectId: string) => {
+        // Get current date in yyyy-mm-dd format
+        const currentDate = new Date().toISOString().split('T')[0]; // "yyyy-mm-dd" format
+    
+        try {
+            // Send API request to update the status and end date
+            const response = await axios.put(
+                `http://192.168.129.119:5001/update-project-status-enddate/${projectId}`,
+                {
+                    project_end_date: currentDate,
+                    status: "On-Hold",
+                }
+            );
+    
+            if (response.data.status === "OK") {
+                console.log(`Project ${projectId} activated!`);
+                // Optionally, fetch the projects again or update the local state
+                fetchProjects(); // Re-fetch to reflect updated project info
+            } else {
+                console.log("Error updating project:", response.data);
+            }
+        } catch (error) {
+            console.error("Error activating project:", error);
+        }
+    };
+
     const handleBack = () => {
         navigation.goBack();
     };
@@ -76,43 +125,40 @@ const ContractorOnHoldProjectsScreen = () => {
     return (
         <View style={[styles.container, { backgroundColor: theme.background }]}>
             <View style={[styles.header, { backgroundColor: theme.background }]}>
-                <Text style={[styles.title, { color: theme.text }]}>On-Hold Projects</Text>
+                <Text style={[styles.title, { color: theme.text }]}>My Projects</Text>
             </View>
 
             <ScrollView contentContainerStyle={styles.scrollContainer}>
                 {loading ? (
-                    <View style={styles.loadingContainer}>
-                        <ActivityIndicator size="large" color={theme.primary} />
-                    </View>
+                    <ActivityIndicator size="large" color={theme.primary} />
                 ) : projects.length === 0 ? (
-                    <Text style={[styles.noProjectsText, { color: theme.text }]}>No on-hold projects assigned to you.</Text>
+                    <Text style={[styles.noProjectsText, { color: theme.text }]}>No projects assigned to you.</Text>
                 ) : (
                     projects.map((project) => (
                         <View key={project._id} style={[styles.projectCard, { backgroundColor: theme.card, shadowColor: theme.text }]}>
-                            <View style={styles.statusContainer}>
-                                <Text style={[styles.statusText, { color: 'orange' }]}>On-Hold</Text>
-                            </View>
                             <Text style={[styles.projectTitle, { color: theme.text }]}>{project.project_description}</Text>
                             <Text style={[styles.projectDetail, { color: theme.text }]}>ID: {project.project_Id}</Text>
                             <Text style={[styles.projectDetail, { color: theme.text }]}>Start Date: {project.project_start_date}</Text>
                             <Text style={[styles.projectDetail, { color: theme.text }]}>End Date: {project.project_end_date}</Text>
+                            <Text style={[styles.projectDetail, { color: theme.text }]}>Status: {project.status}</Text>
                             <Text style={[styles.projectDetail, { color: theme.text }]}>Completion: {project.completion_percentage}%</Text>
-
-                            {/* Action Buttons */}
+                            <Text style={[styles.projectDetail, { color: theme.text }]}>Assigned To: {project.assign_to}</Text>
+                            
                             <View style={styles.buttonRow}>
                                 <TouchableOpacity
-                                    style={[styles.resumeButton, { backgroundColor: theme.primary }]}
+                                    style={[styles.actionButton, { backgroundColor: theme.primary }]}
+                                    onPress={() => handleActivate(project._id)}
                                     activeOpacity={0.8}
                                 >
-                                    <Text style={styles.buttonText}>View Details</Text>
+                                    <Text style={styles.buttonText}>Activate Project</Text>
                                 </TouchableOpacity>
 
                                 <TouchableOpacity
-                                    style={[styles.resumeButton, { backgroundColor: theme.secondary }]}
-                                    onPress={() => console.log("Resume project clicked")}
+                                    style={[styles.actionButton, { backgroundColor: theme.secondary }]}
+                                    onPress={() => handleOnHold(project._id)}
                                     activeOpacity={0.8}
                                 >
-                                    <Text style={styles.buttonText}>Resume Project</Text>
+                                    <Text style={styles.buttonText}>On-Hold</Text>
                                 </TouchableOpacity>
                             </View>
                         </View>
@@ -142,56 +188,44 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         borderBottomWidth: 1,
         borderBottomColor: '#ccc',
-        marginBottom: 20,
     },
     scrollContainer: {
         padding: 20,
         paddingBottom: 100,
     },
     title: {
-        fontSize: 28,
+        fontSize: 24,
         fontWeight: "bold",
-        textAlign: 'center',
     },
     projectCard: {
-        padding: 20,
-        borderRadius: 15,
+        padding: 18,
+        borderRadius: 12,
         marginBottom: 20,
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.3,
-        shadowRadius: 6,
-        elevation: 5,
-        backgroundColor: "#fff",
-        borderWidth: 1,
-        borderColor: '#ccc',
-    },
-    statusContainer: {
-        alignItems: 'flex-start',
-        marginBottom: 10,
-    },
-    statusText: {
-        fontSize: 16,
-        fontWeight: 'bold',
-        paddingVertical: 5,
-        paddingHorizontal: 10,
-        backgroundColor: 'rgba(255, 165, 0, 0.2)', // Orange background for on-hold status
-        borderRadius: 5,
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.2,
+        shadowRadius: 4,
+        elevation: 3,
     },
     projectTitle: {
-        fontSize: 22,
+        fontSize: 20,
         fontWeight: "bold",
-        marginBottom: 12,
+        marginBottom: 10,
     },
     projectDetail: {
+        fontSize: 14,
+        marginBottom: 4,
+    },
+    noProjectsText: {
         fontSize: 16,
-        marginBottom: 6,
+        textAlign: "center",
+        marginTop: 20,
     },
     buttonRow: {
         flexDirection: 'row',
-        justifyContent: 'space-between',
+        justifyContent: 'space-between', // Ensures buttons are spaced evenly
         marginTop: 15,
     },
-    resumeButton: {
+    actionButton: {
         paddingVertical: 12,
         paddingHorizontal: 20,
         borderRadius: 8,
@@ -203,19 +237,7 @@ const styles = StyleSheet.create({
     buttonText: {
         color: '#fff',
         fontWeight: 'bold',
-        fontSize: 16,
-    },
-    noProjectsText: {
-        fontSize: 18,
-        textAlign: "center",
-        marginTop: 20,
-        color: '#888',
-    },
-    loadingContainer: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        height: 300,
+        fontSize: 14,
     },
     backButton: {
         position: 'absolute',
@@ -231,4 +253,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default ContractorOnHoldProjectsScreen;
+export default ContractorAllWorkScreen;
