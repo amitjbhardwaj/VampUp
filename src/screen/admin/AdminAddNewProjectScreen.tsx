@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, TextInput, Button, StyleSheet, ScrollView, TouchableOpacity, ToastAndroid } from "react-native";
+import { View, Text, TextInput, StyleSheet, ScrollView, TouchableOpacity, ToastAndroid } from "react-native";
 import { useTheme } from "../../context/ThemeContext";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 import DatePicker from "react-native-date-picker";
@@ -7,7 +7,6 @@ import { RootStackParamList } from "../../RootNavigator";
 import { Picker } from "@react-native-picker/picker";
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import Icon from 'react-native-vector-icons/FontAwesome';
 
 // Define the type for the project state
 type Project = {
@@ -16,7 +15,7 @@ type Project = {
     long_project_description: string;
     created_by: string;
     project_start_date: Date;
-    project_end_date: Date;
+    project_end_date: string | Date; // Allow string ("--") or Date
     contractor_phone: string;
     completion_percentage: string;
     status: string;
@@ -34,7 +33,7 @@ const AdminAddNewProjectScreen = () => {
         long_project_description: "",
         created_by: "",
         project_start_date: new Date(),
-        project_end_date: new Date(),
+        project_end_date: "--", // Default "--"
         contractor_phone: "",
         completion_percentage: "0",
         status: "Yet to start",
@@ -52,6 +51,13 @@ const AdminAddNewProjectScreen = () => {
     const handleSubmit = () => {
         const projectData = { ...project };
 
+        // Format dates before sending
+        projectData.project_start_date = project.project_start_date;
+        projectData.project_end_date =
+            project.project_end_date instanceof Date
+                ? formatDate(project.project_end_date)
+                : "--";
+
         axios.post("http://192.168.129.119:5001/create-project", projectData)
             .then(res => {
                 if (res.data.status === "OK") {
@@ -61,7 +67,7 @@ const AdminAddNewProjectScreen = () => {
                 }
             })
             .catch(e => {
-                ToastAndroid.show(e, ToastAndroid.SHORT);
+                ToastAndroid.show("Error: " + e.message, ToastAndroid.SHORT);
             });
     };
 
@@ -117,36 +123,35 @@ const AdminAddNewProjectScreen = () => {
                             <Text style={[styles.label, { color: theme.mode === 'dark' ? '#fff' : '#000' }]}>{labels[key as keyof Project]}</Text>
                             <TextInput
                                 style={[styles.input, { backgroundColor: theme.mode === 'dark' ? '#333' : '#fff', color: theme.mode === 'dark' ? '#fff' : '#000', borderColor: theme.mode === 'dark' ? '#555' : '#ccc' }]}
-                                value={currentValue instanceof Date ? formatDate(currentValue) : currentValue}
-                                editable={false} // Make the field read-only
+                                value={currentValue?.toString()}
+                                editable={false}
                             />
                         </View>
                     );
                 }
 
                 if (key === "project_start_date" || key === "project_end_date") {
+                    const isStart = key === "project_start_date";
                     return (
                         <View key={key} style={styles.inputContainer}>
                             <Text style={[styles.label, { color: theme.mode === 'dark' ? '#fff' : '#000' }]}>{labels[key as keyof Project]}</Text>
-                            <TouchableOpacity onPress={() => key === "project_start_date" ? setOpenStartDate(true) : setOpenEndDate(true)}>
+                            <TouchableOpacity onPress={() => isStart ? setOpenStartDate(true) : setOpenEndDate(true)}>
                                 <TextInput
                                     style={[styles.input, { backgroundColor: theme.mode === 'dark' ? '#333' : '#fff', color: theme.mode === 'dark' ? '#fff' : '#000', borderColor: theme.mode === 'dark' ? '#555' : '#ccc' }]}
-                                    value={currentValue instanceof Date ? formatDate(currentValue) : ""}
+                                    value={currentValue instanceof Date ? formatDate(currentValue) : (currentValue === "--" ? "--" : "")}
                                     editable={false}
                                 />
-
                             </TouchableOpacity>
                             <DatePicker
                                 modal
-                                open={key === "project_start_date" ? openStartDate : openEndDate}
+                                open={isStart ? openStartDate : openEndDate}
                                 date={currentValue instanceof Date ? currentValue : new Date()}
                                 mode="date"
-
                                 onConfirm={(date) => {
                                     handleChange(key as keyof Project, date);
-                                    key === "project_start_date" ? setOpenStartDate(false) : setOpenEndDate(false);
+                                    isStart ? setOpenStartDate(false) : setOpenEndDate(false);
                                 }}
-                                onCancel={() => key === "project_start_date" ? setOpenStartDate(false) : setOpenEndDate(false)}
+                                onCancel={() => isStart ? setOpenStartDate(false) : setOpenEndDate(false)}
                             />
                         </View>
                     );
@@ -200,7 +205,7 @@ const AdminAddNewProjectScreen = () => {
                         <Text style={[styles.label, { color: theme.mode === 'dark' ? '#fff' : '#000' }]}>{labels[key as keyof Project]}</Text>
                         <TextInput
                             style={[styles.input, { backgroundColor: theme.mode === 'dark' ? '#333' : '#fff', color: theme.mode === 'dark' ? '#fff' : '#000', borderColor: theme.mode === 'dark' ? '#555' : '#ccc' }]}
-                            value={currentValue.toString()}
+                            value={currentValue?.toString()}
                             onChangeText={(text) => handleChange(key as keyof Project, text)}
                         />
                     </View>

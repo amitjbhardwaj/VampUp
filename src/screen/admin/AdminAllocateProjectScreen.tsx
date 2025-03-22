@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet, ScrollView, ActivityIndicator, TouchableOpacity } from "react-native";
+import { View, Text, StyleSheet, ScrollView, ActivityIndicator, TouchableOpacity, Alert } from "react-native";
 import { useTheme } from "../../context/ThemeContext";
 import { NavigationProp, useNavigation, useRoute } from "@react-navigation/native";
 import { RootStackParamList } from "../../RootNavigator";
@@ -59,6 +59,34 @@ const AdminAllocateProjectScreen = () => {
         navigation.goBack();
     };
 
+    const handleDeleteProject = async (projectId: string) => {
+        Alert.alert(
+            "Delete Project",
+            "Are you sure you want to delete this project?",
+            [
+                { text: "Cancel", style: "cancel" },
+                {
+                    text: "Delete", style: "destructive", onPress: async () => {
+                        try {
+                            const response = await axios.delete(`http://192.168.129.119:5001/delete-project/${projectId}`);
+                            if (response.data.status === "OK") {
+                                // Remove deleted project from state
+                                setProjects(prevProjects => prevProjects.filter(p => p._id !== projectId));
+                                console.log(`Project ${projectId} deleted successfully`);
+                            } else {
+                                console.log("Error deleting project", response.data);
+                            }
+                        } catch (error) {
+                            console.log("Error deleting project:", error);
+                        }
+                    }
+                },
+            ]
+        );
+
+    };
+
+
     return (
         <View style={[styles.container, { backgroundColor: theme.background }]}>
             {/* Fixed Header */}
@@ -95,6 +123,14 @@ const AdminAllocateProjectScreen = () => {
                                     activeOpacity={0.8}
                                 >
                                     <Text style={styles.buttonText}>Allocate</Text>
+                                </TouchableOpacity>
+
+                                <TouchableOpacity
+                                    style={[styles.actionButton, { backgroundColor: "#e74c3c" }]} // Red color for delete
+                                    onPress={() => handleDeleteProject(project._id)}
+                                    activeOpacity={0.8}
+                                >
+                                    <Text style={styles.buttonText}>Delete</Text>
                                 </TouchableOpacity>
                             </View>
                         </View>
@@ -157,7 +193,7 @@ const styles = StyleSheet.create({
         marginTop: 15,
     },
     actionButton: {
-        flex: 0.48,
+        flex: 0.32, // Adjusted to fit 3 buttons
         paddingVertical: 12,
         borderRadius: 8,
         alignItems: 'center',
