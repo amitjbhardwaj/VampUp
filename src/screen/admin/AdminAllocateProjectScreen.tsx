@@ -18,6 +18,7 @@ type Project = {
     contractor_phone: string;
     completion_percentage: number;
     status: string;
+    assign_to?: string;
 };
 
 const AdminAllocateProjectScreen = () => {
@@ -49,11 +50,6 @@ const AdminAllocateProjectScreen = () => {
 
     const handleFindContractor = (projectId: string) => {
         navigation.navigate("AdminFindContractorScreen", { projectId });
-    };
-    
-
-    const handleAllocate = (projectId: string) => {
-        console.log(`Allocate pressed for project ${projectId}`);
     };
 
     const handleBack = () => {
@@ -109,22 +105,19 @@ const AdminAllocateProjectScreen = () => {
                             <Text style={[styles.projectDetail, { color: theme.text }]}>End Date: {project.project_end_date}</Text>
                             <Text style={[styles.projectDetail, { color: theme.text }]}>Status: {project.status}</Text>
                             <Text style={[styles.projectDetail, { color: theme.text }]}>Completion: {project.completion_percentage}%</Text>
-
+                            {/* Displaying "Assign To" field */}
+                            {project.assign_to && (
+                                <Text style={[styles.projectDetail, { color: theme.text }]}>Assigned To: {project.assign_to}</Text>
+                            )}
                             <View style={styles.buttonRow}>
                                 <TouchableOpacity
                                     style={[styles.actionButton, { backgroundColor: theme.mode === 'dark' ? "#333" : "#000" }]}
                                     onPress={() => handleFindContractor(project._id)}
                                     activeOpacity={0.8}
                                 >
-                                    <Text style={styles.buttonText}>Find Contractor</Text>
+                                    <Text style={styles.buttonText}>Allocate Project</Text>
                                 </TouchableOpacity>
-                                <TouchableOpacity
-                                    style={[styles.actionButton, { backgroundColor: theme.success || '#4CAF50' }]}
-                                    onPress={() => handleAllocate(project._id)}
-                                    activeOpacity={0.8}
-                                >
-                                    <Text style={styles.buttonText}>Allocate</Text>
-                                </TouchableOpacity>
+                                
 
                                 <TouchableOpacity
                                     style={[styles.actionButton, { backgroundColor: "#e74c3c" }]} // Red color for delete
@@ -190,15 +183,16 @@ const styles = StyleSheet.create({
     },
     buttonRow: {
         flexDirection: 'row',
-        justifyContent: 'space-between',
+        justifyContent: 'space-between', // Ensures buttons are spaced evenly
         marginTop: 15,
     },
     actionButton: {
-        flex: 0.32, // Adjusted to fit 3 buttons
+        flex: 0.45, // Adjusted for better button width balance
         paddingVertical: 12,
         borderRadius: 8,
         alignItems: 'center',
         elevation: 2,
+        marginHorizontal: 5, // Add some space between the buttons
     },
     buttonText: {
         color: '#fff',
@@ -213,5 +207,6 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
 });
+
 
 export default AdminAllocateProjectScreen;

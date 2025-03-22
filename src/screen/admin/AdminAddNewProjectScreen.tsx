@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, TextInput, StyleSheet, ScrollView, TouchableOpacity, ToastAndroid } from "react-native";
+import { View, Text, TextInput, StyleSheet, ScrollView, TouchableOpacity, ToastAndroid, Alert } from "react-native";
 import { useTheme } from "../../context/ThemeContext";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 import DatePicker from "react-native-date-picker";
@@ -61,9 +61,10 @@ const AdminAddNewProjectScreen = () => {
         axios.post("http://192.168.129.119:5001/create-project", projectData)
             .then(res => {
                 if (res.data.status === "OK") {
+                    Alert.alert("Success", "Project creation successfully");
                     navigation.navigate("AdminHomeScreen");
                 } else {
-                    ToastAndroid.show("Project creation failed: " + res.data.data, ToastAndroid.SHORT);
+                    Alert.alert("Project creation failed");
                 }
             })
             .catch(e => {
