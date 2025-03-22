@@ -1,16 +1,22 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet, ActivityIndicator, TouchableOpacity } from "react-native";
+import { View, Text, StyleSheet, ActivityIndicator, TouchableOpacity, Alert } from "react-native";
 import { useTheme } from "../../context/ThemeContext";
-import { NavigationProp, useNavigation } from "@react-navigation/native";
+import { NavigationProp, RouteProp, useNavigation } from "@react-navigation/native";
 import { RootStackParamList } from "../../RootNavigator";
 import axios from 'axios';
 import { Picker } from '@react-native-picker/picker';
+import { useRoute } from "@react-navigation/native";
 
 type AdminFindContractorScreenNavigationProp = NavigationProp<RootStackParamList, "AdminFindContractorScreen">;
+type AdminFindContractorScreenRouteProp = RouteProp<RootStackParamList, "AdminFindContractorScreen">;
+
 
 const AdminFindContractorScreen = () => {
     const { theme } = useTheme();
     const navigation = useNavigation<AdminFindContractorScreenNavigationProp>();
+    const route = useRoute<AdminFindContractorScreenRouteProp>();
+
+    const { projectId } = route.params;
 
     const [contractors, setContractors] = useState<any[]>([]);
     const [loading, setLoading] = useState<boolean>(false);
@@ -35,9 +41,36 @@ const AdminFindContractorScreen = () => {
         fetchContractors();
     }, []);
 
-    const handleOkay = () => {
-        navigation.navigate("AdminAllocateProjectScreen");
+    const handleOkay = async () => {
+        if (!projectId) {
+            Alert.alert("Error", "Project ID is missing.");
+            return;
+        }
+    
+        const selectedContractorDetails = contractors.find(c => c._id === selectedContractor);
+        if (!selectedContractorDetails) {
+            Alert.alert("Error", "Please select a contractor.");
+            return;
+        }
+    
+        try {
+            const response = await axios.put(`http://192.168.129.119:5001/update-project/${projectId}`, {
+                assign_to: `${selectedContractorDetails.firstName} ${selectedContractorDetails.lastName}`.trim(),
+            });
+    
+            if (response.data.status === "OK") {
+                Alert.alert("Success", "Project assigned successfully");
+                navigation.navigate("AdminAllocateProjectScreen");
+            } else {
+                console.log("Error updating project:", response.data);
+            }
+        } catch (error) {
+            console.error("Error updating project:", error);
+        }
     };
+    
+    
+
 
     const handleCancel = () => {
         setSelectedContractor("");
@@ -45,7 +78,7 @@ const AdminFindContractorScreen = () => {
     };
 
     return (
-        <View style={[styles.container, { backgroundColor: theme.background }]}>        
+        <View style={[styles.container, { backgroundColor: theme.background }]}>
             <Text style={[styles.title, { color: theme.text }]}>Select Contractor</Text>
 
             {loading ? (

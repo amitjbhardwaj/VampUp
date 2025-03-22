@@ -90,7 +90,7 @@ export type RootStackParamList = {
     AdminHomeScreen: undefined;
     AdminAddNewProjectScreen: undefined;
     AdminAllocateProjectScreen: undefined;
-    AdminFindContractorScreen: undefined;
+    AdminFindContractorScreen: { projectId: string };
 };
 
 const Stack = createStackNavigator<RootStackParamList>();

@@ -47,9 +47,10 @@ const AdminAllocateProjectScreen = () => {
         }
     };
 
-    const handleFindContractor = () => {
-        navigation.navigate("AdminFindContractorScreen");
+    const handleFindContractor = (projectId: string) => {
+        navigation.navigate("AdminFindContractorScreen", { projectId });
     };
+    
 
     const handleAllocate = (projectId: string) => {
         console.log(`Allocate pressed for project ${projectId}`);
@@ -112,7 +113,7 @@ const AdminAllocateProjectScreen = () => {
                             <View style={styles.buttonRow}>
                                 <TouchableOpacity
                                     style={[styles.actionButton, { backgroundColor: theme.mode === 'dark' ? "#333" : "#000" }]}
-                                    onPress={handleFindContractor}
+                                    onPress={() => handleFindContractor(project._id)}
                                     activeOpacity={0.8}
                                 >
                                     <Text style={styles.buttonText}>Find Contractor</Text>
