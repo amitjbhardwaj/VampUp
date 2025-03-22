@@ -104,10 +104,25 @@ const AdminAddNewProjectScreen = () => {
 
     return (
         <ScrollView style={[styles.container, { backgroundColor: theme.mode === 'dark' ? '#121212' : '#f8f8f8' }]}>
-            <Text style={[styles.title, { color: theme.mode === 'dark' ? '#fff' : '#000' }]}>Add New Project</Text>
+            <Text style={[styles.title, { color: theme.mode === 'dark' ? '#fff' : '#000', textAlign: 'center' }]}>
+                Add New Project
+            </Text>
 
             {Object.keys(project).map((key) => {
                 const currentValue = project[key as keyof Project];
+
+                if (key === "created_by") {
+                    return (
+                        <View key={key} style={styles.inputContainer}>
+                            <Text style={[styles.label, { color: theme.mode === 'dark' ? '#fff' : '#000' }]}>{labels[key as keyof Project]}</Text>
+                            <TextInput
+                                style={[styles.input, { backgroundColor: theme.mode === 'dark' ? '#333' : '#fff', color: theme.mode === 'dark' ? '#fff' : '#000', borderColor: theme.mode === 'dark' ? '#555' : '#ccc' }]}
+                                value={currentValue instanceof Date ? formatDate(currentValue) : currentValue}
+                                editable={false} // Make the field read-only
+                            />
+                        </View>
+                    );
+                }
 
                 if (key === "project_start_date" || key === "project_end_date") {
                     return (
@@ -119,12 +134,14 @@ const AdminAddNewProjectScreen = () => {
                                     value={currentValue instanceof Date ? formatDate(currentValue) : ""}
                                     editable={false}
                                 />
+
                             </TouchableOpacity>
                             <DatePicker
                                 modal
                                 open={key === "project_start_date" ? openStartDate : openEndDate}
                                 date={currentValue instanceof Date ? currentValue : new Date()}
                                 mode="date"
+
                                 onConfirm={(date) => {
                                     handleChange(key as keyof Project, date);
                                     key === "project_start_date" ? setOpenStartDate(false) : setOpenEndDate(false);
@@ -191,13 +208,20 @@ const AdminAddNewProjectScreen = () => {
             })}
 
             <View style={styles.buttonContainer}>
-                <TouchableOpacity style={[styles.button, { backgroundColor: theme.primary }]} onPress={handleSubmit}>
+                <TouchableOpacity
+                    style={[styles.button, { backgroundColor: theme.mode === 'dark' ? "#333" : "#000", width: "48%" }]}
+                    onPress={handleSubmit}
+                >
                     <Text style={styles.buttonText}>Add Project</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={[styles.button, { backgroundColor: theme.primary }]} onPress={handleBack}>
+                <TouchableOpacity
+                    style={[styles.button, { backgroundColor: theme.cancelButton, width: "48%" }]}
+                    onPress={handleBack}
+                >
                     <Text style={styles.buttonText}>Back</Text>
                 </TouchableOpacity>
             </View>
+
         </ScrollView>
     );
 };

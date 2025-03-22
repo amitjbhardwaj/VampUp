@@ -73,7 +73,7 @@ const AdminAllocateProjectScreen = () => {
                 ) : (
                     projects.map((project) => (
                         <View key={project._id} style={[styles.projectCard, { backgroundColor: theme.card, shadowColor: theme.text }]}>
-                            <Text style={[styles.projectTitle, { color: theme.primary }]}>{project.project_description}</Text>
+                            <Text style={[styles.projectTitle, { color: theme.text }]}>{project.project_description}</Text>
                             <Text style={[styles.projectDetail, { color: theme.text }]}>ID: {project.project_Id}</Text>
                             <Text style={[styles.projectDetail, { color: theme.text }]}>Created By: {project.created_by || "Unassigned"}</Text>
                             <Text style={[styles.projectDetail, { color: theme.text }]}>Start Date: {project.project_start_date}</Text>
@@ -83,7 +83,7 @@ const AdminAllocateProjectScreen = () => {
 
                             <View style={styles.buttonRow}>
                                 <TouchableOpacity
-                                    style={[styles.actionButton, { backgroundColor: theme.primary }]}
+                                    style={[styles.actionButton, { backgroundColor: theme.mode === 'dark' ? "#333" : "#000" }]}
                                     onPress={handleFindContractor}
                                     activeOpacity={0.8}
                                 >
@@ -104,7 +104,7 @@ const AdminAllocateProjectScreen = () => {
 
             {/* Back Button */}
             <TouchableOpacity
-                style={[styles.backButton, { backgroundColor: theme.primary }]}
+                style={[styles.backButton, { backgroundColor: theme.mode === 'dark' ? "#333" : "#000" }]}
                 onPress={handleBack}
                 activeOpacity={0.8}
             >
