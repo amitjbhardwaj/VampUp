@@ -37,8 +37,6 @@ import AdminAddNewProjectScreen from "./screen/admin/AdminAddNewProjectScreen";
 import AdminAllocateProjectScreen from "./screen/admin/AdminAllocateProjectScreen";
 import AdminFindContractorScreen from "./screen/admin/AdminFindContractorScreen";
 import ContractorAllWorkScreen from "./screen/contractor/ContractorAllWorkScreen";
-import ActivateProjactScreen from "./screen/contractor/ActivateProjactScreen";
-import OnHoldProjectScreen from "./screen/contractor/OnHoldProjectScreen";
 
 export type RootStackParamList = {
     LoginScreen: undefined;
@@ -89,8 +87,7 @@ export type RootStackParamList = {
     ContractorOnHoldProjectsScreen: undefined;
     ContractorUpcomingProjectsScreen: undefined;
     ContractorAllWorkScreen: undefined;
-    ActivateProjactScreen: undefined;
-    OnHoldProjectScreen: undefined;
+
 
     AdminHomeScreen: undefined;
     AdminAddNewProjectScreen: undefined;
@@ -140,8 +137,6 @@ const RootNavigator: React.FC = () => {
                     <Stack.Screen name="ContractorOnHoldProjectsScreen" component={ContractorOnHoldProjectsScreen} />
                     <Stack.Screen name="ContractorUpcomingProjectsScreen" component={ContractorUpcomingProjectsScreen} />
                     <Stack.Screen name="ContractorAllWorkScreen" component={ContractorAllWorkScreen} />
-                    <Stack.Screen name="ActivateProjactScreen" component={ActivateProjactScreen} />
-                    <Stack.Screen name="OnHoldProjectScreen" component={OnHoldProjectScreen} />
                     
 
 
