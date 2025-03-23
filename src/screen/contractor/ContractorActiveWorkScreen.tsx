@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet, ScrollView, ActivityIndicator, TouchableOpacity } from "react-native";
+import { View, Text, StyleSheet, ScrollView, ActivityIndicator, TouchableOpacity, TextInput, Modal, Alert } from "react-native";
 import { useTheme } from "../../context/ThemeContext";
 import axios from 'axios';
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -25,6 +25,10 @@ const ContractorActiveWorkScreen = () => {
     const [projects, setProjects] = useState<Project[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [contractorName, setContractorName] = useState<string | null>(null);
+    const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
+    const [onHoldModalVisible, setOnHoldModalVisible] = useState<boolean>(false);
+    const [reason, setReason] = useState<string>("");
+
 
     useEffect(() => {
         getContractorInfo();
@@ -47,6 +51,44 @@ const ContractorActiveWorkScreen = () => {
         }
     };
 
+    const openOnHoldModal = (projectId: string) => {
+        setSelectedProjectId(projectId);
+        setOnHoldModalVisible(true);
+    };
+
+    const handleConfirmOnHold = async () => {
+        if (!selectedProjectId || !reason) {
+            Alert.alert("Please enter a valid reason.");
+            return;
+        }
+
+        // Get current date in yyyy-mm-dd format
+        const currentDate = new Date().toISOString().split('T')[0]; // "yyyy-mm-dd"
+
+        try {
+            const response = await axios.put(
+                `http://192.168.129.119:5001/update-project-on-hold/${selectedProjectId}`,
+                {
+                    project_end_date: currentDate,
+                    status: "On-Hold",
+                    reason_on_hold: reason,
+                }
+            );
+
+            if (response.data.status === "OK") {
+                console.log(`Project ${selectedProjectId} put On-Hold!`);
+                fetchProjects(); // Re-fetch to reflect updated project info
+            } else {
+                console.log("Error : couldn't put project On-Hold:", response.data);
+            }
+        } catch (error) {
+            console.error("Error putting project On-Hold:", error);
+        } finally {
+            setOnHoldModalVisible(false);
+        }
+    };
+
+
     const fetchProjects = async () => {
         try {
             const response = await axios.get('http://192.168.129.119:5001/get-all-projects');
@@ -54,8 +96,8 @@ const ContractorActiveWorkScreen = () => {
                 const allProjects = response.data.data;
 
                 // Filter only active or in-progress projects assigned to the contractor
-                const activeProjects = allProjects.filter((project: Project) => 
-                    (project.assign_to === contractorName && 
+                const activeProjects = allProjects.filter((project: Project) =>
+                (project.assign_to === contractorName &&
                     (project.status === "In-Progress" || project.status === "Active"))
                 );
                 setProjects(activeProjects);
@@ -118,7 +160,7 @@ const ContractorActiveWorkScreen = () => {
                                 <TouchableOpacity
                                     style={[styles.onHoldButton, { backgroundColor: theme.secondary }]}
                                     activeOpacity={0.8}
-                                    onPress={() => handleOnHold(project._id)}
+                                    onPress={() => openOnHoldModal(project._id)}
                                 >
                                     <Text style={styles.buttonText}>On-Hold</Text>
                                 </TouchableOpacity>
@@ -127,6 +169,35 @@ const ContractorActiveWorkScreen = () => {
                     ))
                 )}
             </ScrollView>
+
+            {/* On Hold Modal */}
+            <Modal
+                animationType="slide"
+                transparent={true}
+                visible={onHoldModalVisible}
+                onRequestClose={() => setOnHoldModalVisible(false)}
+            >
+                <View style={styles.modalContainer}>
+                    <View style={[styles.modalView, { backgroundColor: theme.card }]}>
+                        <Text style={[styles.modalTitle, { color: theme.text }]}>Reason To On-Hold</Text>
+                        <TextInput
+                            style={[styles.input, { color: theme.text, borderColor: theme.primary }]}
+                            placeholder="Enter reason"
+                            placeholderTextColor={theme.text}
+                            value={reason}
+                            onChangeText={setReason}
+                        />
+                        <View style={styles.buttonRow}>
+                            <TouchableOpacity style={[styles.modalButton, { backgroundColor: theme.primary }]} onPress={handleConfirmOnHold}>
+                                <Text style={styles.buttonText}>OK</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity style={[styles.modalButton, { backgroundColor: theme.secondary }]} onPress={() => setOnHoldModalVisible(false)}>
+                                <Text style={styles.buttonText}>Cancel</Text>
+                            </TouchableOpacity>
+                        </View>
+                    </View>
+                </View>
+            </Modal>
 
             {/* Back Button */}
             <TouchableOpacity
@@ -244,6 +315,18 @@ const styles = StyleSheet.create({
         paddingHorizontal: 10,
         backgroundColor: 'rgba(27, 234, 78, 0.2)',
         borderRadius: 5,
+    },
+    modalContainer: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(0,0,0,0.5)' },
+    modalView: { padding: 20, borderRadius: 10, width: '80%', alignItems: 'center' },
+    modalTitle: { fontSize: 18, fontWeight: 'bold', marginBottom: 10 },
+    input: { width: '100%', padding: 10, borderWidth: 1, borderRadius: 5, marginBottom: 10, textAlign: 'center' },
+    modalButton: { flex: 1, padding: 12, borderRadius: 5, marginHorizontal: 5, alignItems: 'center' },
+    dateText: {
+        fontSize: 16,
+        fontWeight: 'bold',
+        color: '#000',
+        textAlign: 'center',
+        marginVertical: 10,
     },
 });
 

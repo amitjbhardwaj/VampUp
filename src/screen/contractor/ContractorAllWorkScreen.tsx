@@ -27,12 +27,10 @@ const ContractorAllWorkScreen = () => {
     const [loading, setLoading] = useState<boolean>(true);
     const [contractorName, setContractorName] = useState<string | null>(null);
 
-    const [modalVisible, setModalVisible] = useState<boolean>(false);
     const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
     const [reason, setReason] = useState<string>("");
     const [activateModalVisible, setActivateModalVisible] = useState<boolean>(false);
     const [onHoldModalVisible, setOnHoldModalVisible] = useState<boolean>(false);
-    const [openStartDate, setOpenStartDate] = useState(false);
     const [openEndDate, setOpenEndDate] = useState(false);
     const [endDate, setEndDate] = useState<Date>(new Date()); // Store as Date object
 
@@ -77,7 +75,7 @@ const ContractorAllWorkScreen = () => {
     const openActivateModal = (projectId: string) => {
         setSelectedProjectId(projectId);
         setActivateModalVisible(true);
-        setOpenEndDate(true); // Show DatePicker modal when Activate is pressed
+        setOpenEndDate(true);
     };
 
     const openOnHoldModal = (projectId: string) => {

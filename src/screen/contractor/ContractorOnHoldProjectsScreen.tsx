@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet, ScrollView, ActivityIndicator, TouchableOpacity } from "react-native";
+import { View, Text, StyleSheet, ScrollView, ActivityIndicator, TouchableOpacity, Modal, Alert } from "react-native";
 import { useTheme } from "../../context/ThemeContext";
 import axios from 'axios';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation } from "@react-navigation/native";
+import DatePicker from "react-native-date-picker";
 
 type Project = {
     _id: string;
@@ -25,6 +26,11 @@ const ContractorOnHoldProjectsScreen = () => {
     const [projects, setProjects] = useState<Project[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [contractorName, setContractorName] = useState<string | null>(null);
+    const [activateModalVisible, setActivateModalVisible] = useState<boolean>(false);
+    const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
+    const [openEndDate, setOpenEndDate] = useState(false);
+    const [endDate, setEndDate] = useState<Date>(new Date()); // Store as Date object
+
 
     useEffect(() => {
         getContractorInfo();
@@ -47,6 +53,45 @@ const ContractorOnHoldProjectsScreen = () => {
         }
     };
 
+    const openActivateModal = (projectId: string) => {
+        setSelectedProjectId(projectId);
+        setActivateModalVisible(true);
+        setOpenEndDate(true);
+    };
+
+
+    const handleConfirmActivate = async () => {
+        if (!selectedProjectId || !endDate) {
+            Alert.alert("Please enter a valid end date.");
+            return;
+        }
+
+        // Format the date to yyyy-mm-dd format
+        const formattedEndDate = endDate.toISOString().split('T')[0]; // "yyyy-mm-dd"
+
+        try {
+            const response = await axios.put(
+                `http://192.168.129.119:5001/update-project-active/${selectedProjectId}`,
+                {
+                    project_end_date: formattedEndDate,
+                    status: "In-Progress",
+                    reason_on_hold: "N/A",
+                }
+            );
+
+            if (response.data.status === "OK") {
+                console.log(`Project ${selectedProjectId} activated!`);
+                fetchProjects();
+            } else {
+                console.log("Error updating project:", response.data);
+            }
+        } catch (error) {
+            console.error("Error activating project:", error);
+        } finally {
+            setActivateModalVisible(false);
+        }
+    };
+
     const fetchProjects = async () => {
         try {
             const response = await axios.get('http://192.168.129.119:5001/get-all-projects');
@@ -54,8 +99,8 @@ const ContractorOnHoldProjectsScreen = () => {
                 const allProjects = response.data.data;
 
                 // Filter only On-Hold projects assigned to the contractor
-                const onHoldProjects = allProjects.filter((project: Project) => 
-                    (project.assign_to === contractorName && 
+                const onHoldProjects = allProjects.filter((project: Project) =>
+                (project.assign_to === contractorName &&
                     project.status === "On-Hold")
                 );
                 setProjects(onHoldProjects);
@@ -109,7 +154,7 @@ const ContractorOnHoldProjectsScreen = () => {
 
                                 <TouchableOpacity
                                     style={[styles.resumeButton, { backgroundColor: theme.secondary }]}
-                                    onPress={() => console.log("Resume project clicked")}
+                                    onPress={() => openActivateModal(project._id)}
                                     activeOpacity={0.8}
                                 >
                                     <Text style={styles.buttonText}>Resume Project</Text>
@@ -119,6 +164,42 @@ const ContractorOnHoldProjectsScreen = () => {
                     ))
                 )}
             </ScrollView>
+
+            {/* Modal */}
+            <Modal
+                animationType="slide"
+                transparent={true}
+                visible={activateModalVisible}
+                onRequestClose={() => setActivateModalVisible(false)}
+            >
+                {/* Show DatePicker when openEndDate is true */}
+                <DatePicker
+                    modal
+                    open={openEndDate}
+                    date={endDate}
+                    mode="date"
+                    onConfirm={(date) => {
+                        setEndDate(date);
+                        setOpenEndDate(false); // Close the DatePicker when a date is selected
+                    }}
+                    onCancel={() => setOpenEndDate(false)} // Close DatePicker if canceled
+                />
+                <View style={styles.modalContainer}>
+                    <View style={[styles.modalView, { backgroundColor: theme.card }]}>
+                        <Text style={[styles.modalTitle, { color: theme.text }]}>Confirm Activation</Text>
+                        {/* Display End Date in yyyy-mm-dd format */}
+                        <Text style={styles.dateText}>End Date: {endDate.toISOString().split('T')[0]}</Text>
+                        <View style={styles.buttonRow}>
+                            <TouchableOpacity style={[styles.modalButton, { backgroundColor: theme.primary }]} onPress={handleConfirmActivate}>
+                                <Text style={styles.buttonText}>Confirm</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity style={[styles.modalButton, { backgroundColor: theme.secondary }]} onPress={() => setActivateModalVisible(false)}>
+                                <Text style={styles.buttonText}>Cancel</Text>
+                            </TouchableOpacity>
+                        </View>
+                    </View>
+                </View>
+            </Modal>
 
             {/* Back Button */}
             <TouchableOpacity
@@ -228,6 +309,18 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         width: '95%', // Stretch button across the entire width
+    },
+    modalContainer: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(0,0,0,0.5)' },
+    modalView: { padding: 20, borderRadius: 10, width: '80%', alignItems: 'center' },
+    modalTitle: { fontSize: 18, fontWeight: 'bold', marginBottom: 10 },
+    input: { width: '100%', padding: 10, borderWidth: 1, borderRadius: 5, marginBottom: 10, textAlign: 'center' },
+    modalButton: { flex: 1, padding: 12, borderRadius: 5, marginHorizontal: 5, alignItems: 'center' },
+    dateText: {
+        fontSize: 16,
+        fontWeight: 'bold',
+        color: '#000',
+        textAlign: 'center',
+        marginVertical: 10,
     },
 });
 
