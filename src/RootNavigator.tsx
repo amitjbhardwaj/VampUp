@@ -31,12 +31,12 @@ import AdminHomeScreen from "./screen/AdminHomeScreen";
 import ContractorActiveWorkScreen from "./screen/contractor/ContractorActiveWorkScreen";
 import ContractorInitiatePaymentScreen from "./screen/contractor/ContractorInitiatePaymentScreen";
 import ContractorOnHoldProjectsScreen from "./screen/contractor/ContractorOnHoldProjectsScreen";
-import ContractorUpcomingProjectsScreen from "./screen/contractor/ContractorUpcomingProjectsScreen";
 import PersonalDetailsScreen from "./screen/PersonalDetailsScreen";
 import AdminAddNewProjectScreen from "./screen/admin/AdminAddNewProjectScreen";
 import AdminAllocateProjectScreen from "./screen/admin/AdminAllocateProjectScreen";
 import AdminFindContractorScreen from "./screen/admin/AdminFindContractorScreen";
 import ContractorAllWorkScreen from "./screen/contractor/ContractorAllWorkScreen";
+import ContractorOnBoardWorkersScreen from "./screen/contractor/ContractorOnBoardWorkersScreen";
 
 export type RootStackParamList = {
     LoginScreen: undefined;
@@ -85,7 +85,7 @@ export type RootStackParamList = {
     ContractorActiveWorkScreen: undefined;
     ContractorInitiatePaymentScreen: undefined;
     ContractorOnHoldProjectsScreen: undefined;
-    ContractorUpcomingProjectsScreen: undefined;
+    ContractorOnBoardWorkersScreen: undefined;
     ContractorAllWorkScreen: undefined;
 
 
@@ -135,7 +135,7 @@ const RootNavigator: React.FC = () => {
                     <Stack.Screen name="ContractorActiveWorkScreen" component={ContractorActiveWorkScreen} />
                     <Stack.Screen name="ContractorInitiatePaymentScreen" component={ContractorInitiatePaymentScreen} />
                     <Stack.Screen name="ContractorOnHoldProjectsScreen" component={ContractorOnHoldProjectsScreen} />
-                    <Stack.Screen name="ContractorUpcomingProjectsScreen" component={ContractorUpcomingProjectsScreen} />
+                    <Stack.Screen name="ContractorOnBoardWorkersScreen" component={ContractorOnBoardWorkersScreen} />
                     <Stack.Screen name="ContractorAllWorkScreen" component={ContractorAllWorkScreen} />
                     
 

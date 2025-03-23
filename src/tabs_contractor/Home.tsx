@@ -54,11 +54,11 @@ const Home = () => {
 
                 {/* Second Row: "Upcoming Projects" and "On Hold Projects" */}
                 <View style={styles.iconRow}>
-                    <View style={styles.iconItem}>
-                        <TouchableOpacity onPress={() => navigation.navigate('ContractorUpcomingProjectsScreen')}>
-                            <Ionicons name="calendar" size={50} color={theme.text} />
+                <View style={styles.iconItem}>
+                        <TouchableOpacity onPress={() => navigation.navigate('ContractorOnBoardWorkersScreen')}>
+                            <Ionicons name="people" size={50} color={theme.text} />
                         </TouchableOpacity>
-                        <Text style={{ color: theme.text }}>Upcoming Projects</Text>
+                        <Text style={{ color: theme.text }}>On-board Workers</Text>
                     </View>
                     <View style={styles.iconItem}>
                         <TouchableOpacity onPress={() => navigation.navigate('ContractorOnHoldProjectsScreen')}>

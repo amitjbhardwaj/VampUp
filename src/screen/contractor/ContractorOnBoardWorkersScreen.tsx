@@ -1,6 +1,6 @@
 import { StyleSheet } from "react-native";
 
-const ContractorUpcomingProjectsScreen = () => {
+const ContractorOnBoardWorkersScreen = () => {
 
     return ('');
 };
@@ -9,4 +9,4 @@ const styles = StyleSheet.create({
     
 });
 
-export default ContractorUpcomingProjectsScreen;
+export default ContractorOnBoardWorkersScreen;
