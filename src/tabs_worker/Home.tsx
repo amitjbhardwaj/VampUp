@@ -240,6 +240,7 @@ const Home = () => {
                     </View>
                 </View>
             </Modal>
+
         </View>
     );
 };

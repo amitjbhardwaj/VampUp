@@ -12,26 +12,7 @@ type HomeNavigationProp = NavigationProp<RootStackParamList>;
 const Home = () => {
     const { theme } = useTheme();
     const navigation = useNavigation<HomeNavigationProp>();
-    const [projects, setProjects] = useState<any[]>([]);
-
-    useEffect(() => {
-        loadProjects();
-    }, []);
-
-    const loadProjects = () => {
-        try {
-            const data = require('../assets/projects.json');
-            if (Array.isArray(data)) {
-                const filteredProjects = data.filter(project => project.completion_percentage !== 100);
-                setProjects(filteredProjects);
-            } else {
-                console.error("Projects data is not an array");
-            }
-        } catch (error) {
-            console.error("Error loading project:", error);
-        }
-    };
-
+    
     return (
         <View style={[styles.screen, { backgroundColor: theme.background }]}> 
             <View style={styles.iconContainer}>
