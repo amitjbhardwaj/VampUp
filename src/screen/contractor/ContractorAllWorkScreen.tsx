@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet, ScrollView, ActivityIndicator, TouchableOpacity } from "react-native";
+import { View, Text, StyleSheet, ScrollView, ActivityIndicator, TouchableOpacity, Modal, TextInput, Alert } from "react-native";
 import { useTheme } from "../../context/ThemeContext";
 import axios from 'axios';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation } from "@react-navigation/native";
+import DatePicker from "react-native-date-picker";
 
 type Project = {
     _id: string;
@@ -25,6 +26,15 @@ const ContractorAllWorkScreen = () => {
     const [projects, setProjects] = useState<Project[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [contractorName, setContractorName] = useState<string | null>(null);
+
+    const [modalVisible, setModalVisible] = useState<boolean>(false);
+    const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
+    const [reason, setReason] = useState<string>("");
+    const [activateModalVisible, setActivateModalVisible] = useState<boolean>(false);
+    const [onHoldModalVisible, setOnHoldModalVisible] = useState<boolean>(false);
+    const [openStartDate, setOpenStartDate] = useState(false);
+    const [openEndDate, setOpenEndDate] = useState(false);
+    const [endDate, setEndDate] = useState<Date>(new Date()); // Store as Date object
 
     useEffect(() => {
         getContractorInfo();
@@ -52,8 +62,6 @@ const ContractorAllWorkScreen = () => {
             const response = await axios.get('http://192.168.129.119:5001/get-all-projects');
             if (response.data.status === "OK") {
                 const allProjects = response.data.data;
-
-                // Filter projects assigned to the contractor
                 const assignedProjects = allProjects.filter((project: Project) => project.assign_to === contractorName);
                 setProjects(assignedProjects);
             } else {
@@ -66,55 +74,78 @@ const ContractorAllWorkScreen = () => {
         }
     };
 
-    const handleActivate = async (projectId: string) => {
-        // Get current date in yyyy-mm-dd format
-        const currentDate = new Date().toISOString().split('T')[0]; // "yyyy-mm-dd" format
-    
+    const openActivateModal = (projectId: string) => {
+        setSelectedProjectId(projectId);
+        setActivateModalVisible(true);
+        setOpenEndDate(true); // Show DatePicker modal when Activate is pressed
+    };
+
+    const openOnHoldModal = (projectId: string) => {
+        setSelectedProjectId(projectId);
+        setOnHoldModalVisible(true);
+    };
+
+    const handleConfirmActivate = async () => {
+        if (!selectedProjectId || !endDate) {
+            Alert.alert("Please enter a valid end date.");
+            return;
+        }
+
+        // Format the date to yyyy-mm-dd format
+        const formattedEndDate = endDate.toISOString().split('T')[0]; // "yyyy-mm-dd"
+
         try {
-            // Send API request to update the status and end date
             const response = await axios.put(
-                `http://192.168.129.119:5001/update-project-status-enddate/${projectId}`,
+                `http://192.168.129.119:5001/update-project-active/${selectedProjectId}`,
                 {
-                    project_end_date: currentDate,
+                    project_end_date: formattedEndDate,
                     status: "In-Progress",
+                    reason_on_hold: "N/A",
                 }
             );
-    
+
             if (response.data.status === "OK") {
-                console.log(`Project ${projectId} activated!`);
-                // Optionally, fetch the projects again or update the local state
-                fetchProjects(); // Re-fetch to reflect updated project info
+                console.log(`Project ${selectedProjectId} activated!`);
+                fetchProjects();
             } else {
                 console.log("Error updating project:", response.data);
             }
         } catch (error) {
             console.error("Error activating project:", error);
+        } finally {
+            setActivateModalVisible(false);
         }
     };
-    
-    const handleOnHold = async (projectId: string) => {
+
+    const handleConfirmOnHold = async () => {
+        if (!selectedProjectId || !reason) {
+            Alert.alert("Please enter a valid reason.");
+            return;
+        }
+
         // Get current date in yyyy-mm-dd format
-        const currentDate = new Date().toISOString().split('T')[0]; // "yyyy-mm-dd" format
-    
+        const currentDate = new Date().toISOString().split('T')[0]; // "yyyy-mm-dd"
+
         try {
-            // Send API request to update the status and end date
             const response = await axios.put(
-                `http://192.168.129.119:5001/update-project-status-enddate/${projectId}`,
+                `http://192.168.129.119:5001/update-project-on-hold/${selectedProjectId}`,
                 {
                     project_end_date: currentDate,
                     status: "On-Hold",
+                    reason_on_hold: reason,
                 }
             );
-    
+
             if (response.data.status === "OK") {
-                console.log(`Project ${projectId} activated!`);
-                // Optionally, fetch the projects again or update the local state
+                console.log(`Project ${selectedProjectId} put On-Hold!`);
                 fetchProjects(); // Re-fetch to reflect updated project info
             } else {
-                console.log("Error updating project:", response.data);
+                console.log("Error : couldn't put project On-Hold:", response.data);
             }
         } catch (error) {
-            console.error("Error activating project:", error);
+            console.error("Error putting project On-Hold:", error);
+        } finally {
+            setOnHoldModalVisible(false);
         }
     };
 
@@ -143,19 +174,25 @@ const ContractorAllWorkScreen = () => {
                             <Text style={[styles.projectDetail, { color: theme.text }]}>Status: {project.status}</Text>
                             <Text style={[styles.projectDetail, { color: theme.text }]}>Completion: {project.completion_percentage}%</Text>
                             <Text style={[styles.projectDetail, { color: theme.text }]}>Assigned To: {project.assign_to}</Text>
-                            
+
                             <View style={styles.buttonRow}>
                                 <TouchableOpacity
-                                    style={[styles.actionButton, { backgroundColor: theme.primary }]}
-                                    onPress={() => handleActivate(project._id)}
+                                    style={[
+                                        styles.actionButton,
+                                        {
+                                            backgroundColor: project.status === "In-Progress" ? "gray" : theme.primary
+                                        }
+                                    ]}
+                                    onPress={() => openActivateModal(project._id)}
                                     activeOpacity={0.8}
+                                    disabled={project.status === "In-Progress"} // Disable if project is In-Progress
                                 >
                                     <Text style={styles.buttonText}>Activate Project</Text>
                                 </TouchableOpacity>
 
                                 <TouchableOpacity
                                     style={[styles.actionButton, { backgroundColor: theme.secondary }]}
-                                    onPress={() => handleOnHold(project._id)}
+                                    onPress={() => openOnHoldModal(project._id)}
                                     activeOpacity={0.8}
                                 >
                                     <Text style={styles.buttonText}>On-Hold</Text>
@@ -165,6 +202,71 @@ const ContractorAllWorkScreen = () => {
                     ))
                 )}
             </ScrollView>
+
+            {/* Modal */}
+            <Modal
+                animationType="slide"
+                transparent={true}
+                visible={activateModalVisible}
+                onRequestClose={() => setActivateModalVisible(false)}
+            >
+                {/* Show DatePicker when openEndDate is true */}
+                <DatePicker
+                    modal
+                    open={openEndDate}
+                    date={endDate}
+                    mode="date"
+                    onConfirm={(date) => {
+                        setEndDate(date);
+                        setOpenEndDate(false); // Close the DatePicker when a date is selected
+                    }}
+                    onCancel={() => setOpenEndDate(false)} // Close DatePicker if canceled
+                />
+                <View style={styles.modalContainer}>
+                    <View style={[styles.modalView, { backgroundColor: theme.card }]}>
+                        <Text style={[styles.modalTitle, { color: theme.text }]}>Confirm Activation</Text>
+                        {/* Display End Date in yyyy-mm-dd format */}
+                        <Text style={styles.dateText}>End Date: {endDate.toISOString().split('T')[0]}</Text>
+                        <View style={styles.buttonRow}>
+                            <TouchableOpacity style={[styles.modalButton, { backgroundColor: theme.primary }]} onPress={handleConfirmActivate}>
+                                <Text style={styles.buttonText}>Confirm</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity style={[styles.modalButton, { backgroundColor: theme.secondary }]} onPress={() => setActivateModalVisible(false)}>
+                                <Text style={styles.buttonText}>Cancel</Text>
+                            </TouchableOpacity>
+                        </View>
+                    </View>
+                </View>
+            </Modal>
+
+            {/* On Hold Modal */}
+            <Modal
+                animationType="slide"
+                transparent={true}
+                visible={onHoldModalVisible}
+                onRequestClose={() => setOnHoldModalVisible(false)}
+            >
+                <View style={styles.modalContainer}>
+                    <View style={[styles.modalView, { backgroundColor: theme.card }]}>
+                        <Text style={[styles.modalTitle, { color: theme.text }]}>Reason To On-Hold</Text>
+                        <TextInput
+                            style={[styles.input, { color: theme.text, borderColor: theme.primary }]}
+                            placeholder="Enter reason"
+                            placeholderTextColor={theme.text}
+                            value={reason}
+                            onChangeText={setReason}
+                        />
+                        <View style={styles.buttonRow}>
+                            <TouchableOpacity style={[styles.modalButton, { backgroundColor: theme.primary }]} onPress={handleConfirmOnHold}>
+                                <Text style={styles.buttonText}>OK</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity style={[styles.modalButton, { backgroundColor: theme.secondary }]} onPress={() => setOnHoldModalVisible(false)}>
+                                <Text style={styles.buttonText}>Cancel</Text>
+                            </TouchableOpacity>
+                        </View>
+                    </View>
+                </View>
+            </Modal>
 
             {/* Back Button */}
             <TouchableOpacity
@@ -177,6 +279,7 @@ const ContractorAllWorkScreen = () => {
         </View>
     );
 };
+
 
 const styles = StyleSheet.create({
     container: {
@@ -251,6 +354,19 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         width: '95%', // Stretch button across the entire width
     },
+    modalContainer: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(0,0,0,0.5)' },
+    modalView: { padding: 20, borderRadius: 10, width: '80%', alignItems: 'center' },
+    modalTitle: { fontSize: 18, fontWeight: 'bold', marginBottom: 10 },
+    input: { width: '100%', padding: 10, borderWidth: 1, borderRadius: 5, marginBottom: 10, textAlign: 'center' },
+    modalButton: { flex: 1, padding: 12, borderRadius: 5, marginHorizontal: 5, alignItems: 'center' },
+    dateText: {
+        fontSize: 16,
+        fontWeight: 'bold',
+        color: '#000',
+        textAlign: 'center',
+        marginVertical: 10,
+    },
+
 });
 
 export default ContractorAllWorkScreen;
