@@ -40,11 +40,13 @@ const LoginScreen = () => {
                     AsyncStorage.setItem("authToken", token);
 
                     if (role === "Worker") {
+                        AsyncStorage.setItem("workerName", `${firstName ?? ""} ${lastName ?? ""}`.trim());
                         navigation.navigate("WorkerHomeScreen" as never);
                     } else if (role === "Contractor") {
                         AsyncStorage.setItem("contractorName", `${firstName ?? ""} ${lastName ?? ""}`.trim());
                         navigation.navigate("ContractorHomeScreen" as never);
                     } else if (role === "Admin") {
+                        AsyncStorage.setItem("adminName", `${firstName ?? ""} ${lastName ?? ""}`.trim());
                         navigation.navigate("AdminHomeScreen" as never);
                     } else {
                         ToastAndroid.show("Unknown role detected", ToastAndroid.SHORT);
