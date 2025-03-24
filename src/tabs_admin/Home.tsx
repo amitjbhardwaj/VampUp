@@ -1,11 +1,14 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
-    View, Text, StyleSheet, TouchableOpacity
+    View, Text, StyleSheet, TouchableOpacity,
+    ScrollView,
+    RefreshControl
 } from "react-native";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import { RootStackParamList } from "../RootNavigator";
 import { useTheme } from "../context/ThemeContext";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 type HomeNavigationProp = NavigationProp<RootStackParamList>;
 
@@ -13,8 +16,69 @@ const Home = () => {
     const { theme } = useTheme();
     const navigation = useNavigation<HomeNavigationProp>();
 
+    const [activeProjectsCount, setActiveProjectsCount] = useState<number | null>(null);
+    const [onHoldProjectsCount, setOnHoldProjectsCount] = useState<number | null>(null);
+    const [adminName, setAdminName] = useState<string | null>(null);
+    const [isRefreshing, setIsRefreshing] = useState(false); // State for pull-to-refresh
+
+    // Fetch contractor name and project counts based on "assign_to"
+    const fetchAdminNameAndProjectCounts = async () => {
+        try {
+            // Get contractor name from AsyncStorage
+            const storedName = await AsyncStorage.getItem("adminName");
+
+            if (storedName) {
+                setAdminName(storedName); // Store the contractor name
+
+                // Fetch Active Projects count
+                const activeProjectsResponse = await fetch(`http://192.168.129.119:5001/get-projects-by-admin?created_by=${storedName}&status=In-Progress`);
+                const activeProjectsData = await activeProjectsResponse.json();
+                if (activeProjectsData.status === 'OK') {
+                    setActiveProjectsCount(activeProjectsData.data.length);
+                } else {
+                    setActiveProjectsCount(0);
+                }
+
+                // Fetch On Hold Projects count
+                const onHoldProjectsResponse = await fetch(`http://192.168.129.119:5001/get-projects-by-admin?created_by=${storedName}&status=On-Hold`);
+                const onHoldProjectsData = await onHoldProjectsResponse.json();
+                if (onHoldProjectsData.status === 'OK') {
+                    setOnHoldProjectsCount(onHoldProjectsData.data.length);
+                } else {
+                    setOnHoldProjectsCount(0);
+                }
+
+            } else {
+                setActiveProjectsCount(0);
+                setOnHoldProjectsCount(0);
+            }
+        } catch (error) {
+            console.error("Error fetching contractor name or project counts:", error);
+            setActiveProjectsCount(0);
+            setOnHoldProjectsCount(0);
+        }
+    };
+
+    // Fetch project counts and contractor name on mount
+    useEffect(() => {
+        fetchAdminNameAndProjectCounts();
+    }, []); // Empty dependency array ensures this runs only when the component mounts
+
+    // Function to handle pull-to-refresh
+    const onRefresh = async () => {
+        setIsRefreshing(true);
+        await fetchAdminNameAndProjectCounts();
+        setIsRefreshing(false);
+    };
+
+
     return (
-        <View style={[styles.screen, { backgroundColor: theme.background }]}>
+        <ScrollView
+            contentContainerStyle={[styles.screen, { backgroundColor: theme.background }]}
+            refreshControl={
+                <RefreshControl refreshing={isRefreshing} onRefresh={onRefresh} />
+            }
+        >
             <View style={styles.iconContainer}>
 
                 {/* First Row */}
@@ -28,6 +92,11 @@ const Home = () => {
                     <View style={styles.iconItem}>
                         <TouchableOpacity onPress={() => navigation.navigate('WorkerActiveWorkScreen')}>
                             <Ionicons name="construct" size={50} color={theme.text} />
+                            {activeProjectsCount !== null && activeProjectsCount > 0 && (
+                                <View style={styles.notificationBadge}>
+                                    <Text style={styles.notificationText}>{activeProjectsCount}</Text>
+                                </View>
+                            )}
                         </TouchableOpacity>
                         <Text style={{ color: theme.text }}>Ongoing Projects</Text>
                     </View>
@@ -76,13 +145,18 @@ const Home = () => {
                     <View style={styles.iconItem}>
                         <TouchableOpacity onPress={() => navigation.navigate('WorkerActiveWorkScreen')}>
                             <Ionicons name="pause-circle" size={50} color={theme.text} />
+                            {onHoldProjectsCount !== null && onHoldProjectsCount > 0 && (
+                                <View style={styles.notificationBadge}>
+                                    <Text style={styles.notificationText}>{onHoldProjectsCount}</Text>
+                                </View>
+                            )}
                         </TouchableOpacity>
                         <Text style={{ color: theme.text }}>On-Hold Projects</Text>
                     </View>
                 </View>
 
             </View>
-        </View>
+        </ScrollView>
     );
 };
 
@@ -105,6 +179,22 @@ const styles = StyleSheet.create({
     iconItem: {
         alignItems: "center",
         width: "45%",
+    },
+    notificationBadge: {
+        position: "absolute",
+        top: -5,
+        right: -5,
+        backgroundColor: "red",
+        borderRadius: 10,
+        width: 20,
+        height: 20,
+        justifyContent: "center",
+        alignItems: "center",
+    },
+    notificationText: {
+        color: "white",
+        fontSize: 12,
+        fontWeight: "bold",
     },
 });
 
