@@ -203,7 +203,7 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         alignItems: "center",
         justifyContent: "center",
-        width: "80%",
+        width: "100%",
         marginTop: 10,
     },
     buttonIcon: {
