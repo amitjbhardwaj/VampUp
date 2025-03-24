@@ -18,7 +18,7 @@ import { NavigationProp } from "@react-navigation/native";
 import { RootStackParamList } from "../../App";
 import { useTheme } from "../context/ThemeContext";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import axios from 'axios'
+import axios from 'axios';
 
 type LoginScreenNavigationProp = NavigationProp<RootStackParamList>;
 
@@ -30,34 +30,19 @@ const LoginScreen = () => {
     const [secureText, setSecureText] = useState(true);
     const [errorMessage, setErrorMessage] = useState("");
 
-
     const handleLogin = () => {
-        const userData = {
-            email: username,
-            password: password,
-        };
+        const userData = { email: username, password };
 
-        axios
-            .post("http://192.168.129.119:5001/login-user", userData)
+        axios.post("http://192.168.129.119:5001/login-user", userData)
             .then(res => {
-                console.log("Full API Response:", res.data); // Debugging Step
-
                 if (res.data.status === "OK") {
                     const { token, role, firstName, lastName } = res.data;
-
-                    console.log("Extracted Data:", { token, role, firstName, lastName }); // Debugging Step
-
-                    // Store token and role in AsyncStorage
                     AsyncStorage.setItem("authToken", token);
 
-                    // Navigate based on role
                     if (role === "Worker") {
                         navigation.navigate("WorkerHomeScreen" as never);
                     } else if (role === "Contractor") {
-                        const contractorName = `${firstName ?? ""} ${lastName ?? ""}`.trim();
-                        console.log("Contractor name:", contractorName); // Debugging Step
-
-                        AsyncStorage.setItem("contractorName", contractorName);
+                        AsyncStorage.setItem("contractorName", `${firstName ?? ""} ${lastName ?? ""}`.trim());
                         navigation.navigate("ContractorHomeScreen" as never);
                     } else if (role === "Admin") {
                         navigation.navigate("AdminHomeScreen" as never);
@@ -68,13 +53,8 @@ const LoginScreen = () => {
                     ToastAndroid.show("Login failed: " + res.data.error, ToastAndroid.SHORT);
                 }
             })
-            .catch(error => {
-                console.error("Login Error:", error); // Debugging Step
-                ToastAndroid.show("An error occurred while logging in.", ToastAndroid.SHORT);
-            });
-
+            .catch(() => ToastAndroid.show("An error occurred while logging in.", ToastAndroid.SHORT));
     };
-
 
     const handleBiometricLogin = () => {
         TouchID.authenticate("Login with Biometrics", {
@@ -82,8 +62,7 @@ const LoginScreen = () => {
             sensorErrorDescription: "Biometric authentication failed",
         })
             .then(() => {
-                // Assume we retrieve the role from storage or backend
-                const userRole = "worker"; // Change dynamically based on real authentication
+                const userRole = "worker"; // Dynamically change based on authentication
 
                 if (userRole === "worker") {
                     navigation.navigate("WorkerHomeScreen" as never);
@@ -98,21 +77,19 @@ const LoginScreen = () => {
             });
     };
 
-
     return (
         <ScrollView contentContainerStyle={{ flexGrow: 1 }} keyboardShouldPersistTaps={"always"}>
-            <View style={[styles.container, { backgroundColor: theme.background, flex: 1 }]}>
-                <View style={styles.headerContainer}>
-                    <Image source={require("../assets/logo.png")} style={styles.logo} resizeMode="contain" />
-                    <Text style={[styles.helloText, { color: theme.text }]}>Welcome</Text>
-                    <Text style={[styles.signInText, { color: theme.text }]}>Sign in to your account</Text>
-                </View>
+            <View style={[styles.container, { backgroundColor: theme.background }]}>
+                <Image source={require("../assets/logo.png")} style={styles.logo} resizeMode="contain" />
+                <Text style={[styles.helloText, { color: theme.text }]}>Welcome</Text>
+                <Text style={[styles.signInText, { color: theme.text }]}>Sign in to your account</Text>
 
-                <View style={styles.inputContainer}>
-                    <Icon name="user" size={20} color={theme.icon} style={styles.icon} />
+                {/* Username Field */}
+                <View style={[styles.inputContainer, { backgroundColor: theme.inputBackground }]}>
+                    <Icon name="user" size={18} color={theme.icon} style={styles.icon} />
                     <TextInput
                         placeholder="Username"
-                        style={[styles.input, { color: theme.text, backgroundColor: theme.inputBackground }]}
+                        style={[styles.input, { color: theme.text }]}
                         autoCapitalize="none"
                         value={username}
                         onChangeText={setUsername}
@@ -120,11 +97,12 @@ const LoginScreen = () => {
                     />
                 </View>
 
-                <View style={styles.inputContainer}>
-                    <Icon name="lock" size={20} color={theme.icon} style={styles.icon} />
+                {/* Password Field */}
+                <View style={[styles.inputContainer, { backgroundColor: theme.inputBackground }]}>
+                    <Icon name="lock" size={18} color={theme.icon} style={styles.icon} />
                     <TextInput
                         placeholder="Password"
-                        style={[styles.input, { color: theme.text, backgroundColor: theme.inputBackground }]}
+                        style={[styles.input, { color: theme.text }]}
                         secureTextEntry={secureText}
                         autoCapitalize="none"
                         value={password}
@@ -132,23 +110,26 @@ const LoginScreen = () => {
                         placeholderTextColor={theme.icon}
                     />
                     <TouchableOpacity onPress={() => setSecureText(!secureText)} style={styles.eyeIcon}>
-                        <Icon name={secureText ? "eye-slash" : "eye"} size={20} color={theme.icon} />
+                        <Icon name={secureText ? "eye-slash" : "eye"} size={18} color={theme.icon} />
                     </TouchableOpacity>
                 </View>
+
                 {errorMessage ? <Text style={[styles.errorText, { color: theme.errorColor }]}>{errorMessage}</Text> : null}
 
                 <TouchableOpacity onPress={() => navigation.navigate({ name: "ForgotPassword" } as never)}>
                     <Text style={[styles.forgotPassword, { color: theme.primary }]}>Forgot your password?</Text>
                 </TouchableOpacity>
 
-                <TouchableOpacity style={[styles.button, { backgroundColor: theme.primary }]} onPress={handleLogin}>
-                    <Icon name="sign-in" size={20} color="#fff" style={styles.buttonIcon} />
-                    <Text style={styles.buttonText}> Login</Text>
+                {/* Login Button */}
+                <TouchableOpacity style={[styles.biometricButton, { backgroundColor: theme.primary }]} onPress={handleLogin}>
+                    <MaterialCommunityIcons name="login" size={22} color="#fff" style={styles.buttonIcon} />
+                    <Text style={styles.buttonText}>Login</Text>
                 </TouchableOpacity>
 
+                {/* Biometric Login Button */}
                 <TouchableOpacity style={[styles.biometricButton, { backgroundColor: theme.primary }]} onPress={handleBiometricLogin}>
-                    <MaterialCommunityIcons name="fingerprint" size={24} color="#fff" style={styles.buttonIcon} />
-                    <Text style={styles.buttonText}> Login with Biometrics</Text>
+                    <MaterialCommunityIcons name="fingerprint" size={22} color="#fff" style={styles.buttonIcon} />
+                    <Text style={styles.buttonText}>Login with Biometrics</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity onPress={() => navigation.navigate("Signup")}>
@@ -166,38 +147,33 @@ const styles = StyleSheet.create({
         flex: 1,
         paddingHorizontal: 20,
         justifyContent: "center",
-    },
-    headerContainer: {
         alignItems: "center",
-        marginBottom: 30,
     },
     logo: {
-        width: 140,
-        height: 140,
+        width: 120,
+        height: 120,
         marginBottom: 20,
-        marginLeft: 50,
+        marginLeft: 40,
     },
     helloText: {
-        fontSize: 36,
+        fontSize: 28,
         fontWeight: "bold",
     },
     signInText: {
         fontSize: 16,
-        marginTop: 5,
+        marginBottom: 30,
     },
     inputContainer: {
         flexDirection: "row",
         alignItems: "center",
-        borderRadius: 12,
+        borderRadius: 10,
         paddingHorizontal: 15,
-        height: 55,
-        elevation: 3,
+        height: 50,
         marginBottom: 15,
-        borderWidth: 1,
-        borderColor: "#D1D1D1",
+        width: "100%",
     },
     icon: {
-        marginRight: 12,
+        marginRight: 10,
     },
     input: {
         flex: 1,
@@ -207,37 +183,29 @@ const styles = StyleSheet.create({
         padding: 10,
     },
     forgotPassword: {
-        textAlign: "right",
         fontSize: 14,
-        marginBottom: 20,
         fontWeight: "bold",
+        marginBottom: 20,
     },
     button: {
-        flexDirection: "row",
         padding: 15,
-        borderRadius: 12,
+        borderRadius: 10,
         alignItems: "center",
         justifyContent: "center",
+        width: "80%",
         marginTop: 20,
-        shadowColor: "#000",
-        shadowOpacity: 0.1,
-        shadowRadius: 5,
-        shadowOffset: { width: 0, height: 4 },
     },
     biometricButton: {
         flexDirection: "row",
         padding: 15,
-        borderRadius: 12,
+        borderRadius: 10,
         alignItems: "center",
         justifyContent: "center",
+        width: "80%",
         marginTop: 10,
-        shadowColor: "#007AFF",
-        shadowOpacity: 0.2,
-        shadowRadius: 5,
-        shadowOffset: { width: 0, height: 4 },
     },
     buttonIcon: {
-        marginRight: 12,
+        marginRight: 8,
     },
     buttonText: {
         color: "#fff",
@@ -245,7 +213,6 @@ const styles = StyleSheet.create({
         fontWeight: "bold",
     },
     footerText: {
-        textAlign: "center",
         fontSize: 16,
         marginTop: 20,
     },
@@ -255,8 +222,8 @@ const styles = StyleSheet.create({
     },
     errorText: {
         fontSize: 14,
-        marginBottom: 10,
         textAlign: "center",
+        marginBottom: 10,
     },
 });
 
