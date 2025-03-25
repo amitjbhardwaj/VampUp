@@ -17,7 +17,7 @@ type Project = {
     contractor_phone: string;
     completion_percentage: number;
     status: string;
-    assign_to?: string;
+    contractor_name?: string;
 };
 
 const ContractorAllWorkScreen = () => {
@@ -60,7 +60,7 @@ const ContractorAllWorkScreen = () => {
             const response = await axios.get('http://192.168.129.119:5001/get-all-projects');
             if (response.data.status === "OK") {
                 const allProjects = response.data.data;
-                const assignedProjects = allProjects.filter((project: Project) => project.assign_to === contractorName);
+                const assignedProjects = allProjects.filter((project: Project) => project.contractor_name === contractorName);
                 setProjects(assignedProjects);
             } else {
                 console.log("Error fetching projects", response.data);
@@ -171,7 +171,7 @@ const ContractorAllWorkScreen = () => {
                             <Text style={[styles.projectDetail, { color: theme.text }]}>End Date: {project.project_end_date}</Text>
                             <Text style={[styles.projectDetail, { color: theme.text }]}>Status: {project.status}</Text>
                             <Text style={[styles.projectDetail, { color: theme.text }]}>Completion: {project.completion_percentage}%</Text>
-                            <Text style={[styles.projectDetail, { color: theme.text }]}>Assigned To: {project.assign_to}</Text>
+                            <Text style={[styles.projectDetail, { color: theme.text }]}>Assigned To: {project.contractor_name}</Text>
 
                             <View style={styles.buttonRow}>
                                 <TouchableOpacity
@@ -267,13 +267,13 @@ const ContractorAllWorkScreen = () => {
             </Modal>
 
             {/* Back Button */}
-            <TouchableOpacity
+            {/* <TouchableOpacity
                 style={[styles.backButton, { backgroundColor: theme.mode === 'dark' ? "#333" : "#000" }]}
                 onPress={handleBack}
                 activeOpacity={0.8}
             >
                 <Text style={styles.buttonText}>Back</Text>
-            </TouchableOpacity>
+            </TouchableOpacity> */}
         </View>
     );
 };

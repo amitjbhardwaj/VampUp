@@ -55,7 +55,7 @@ const AdminFindContractorScreen = () => {
     
         try {
             const response = await axios.put(`http://192.168.129.119:5001/update-project/${projectId}`, {
-                assign_to: `${selectedContractorDetails.firstName} ${selectedContractorDetails.lastName}`.trim(),
+                contractor_name: `${selectedContractorDetails.firstName} ${selectedContractorDetails.lastName}`.trim(),
             });
     
             if (response.data.status === "OK") {

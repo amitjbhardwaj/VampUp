@@ -21,7 +21,7 @@ const Home = () => {
     const [contractorName, setContractorName] = useState<string | null>(null);
     const [isRefreshing, setIsRefreshing] = useState(false); // State for pull-to-refresh
 
-    // Fetch contractor name and project counts based on "assign_to"
+    // Fetch contractor name and project counts based on "contractor_name"
     const fetchContractorNameAndProjectCounts = async () => {
         try {
             // Get contractor name from AsyncStorage
@@ -31,7 +31,7 @@ const Home = () => {
                 setContractorName(storedName); // Store the contractor name
 
                 // Fetch All Projects count
-                const allProjectsResponse = await fetch(`http://192.168.129.119:5001/get-projects-by-contractor?assign_to=${storedName}`);
+                const allProjectsResponse = await fetch(`http://192.168.129.119:5001/get-projects-by-contractor?contractor_name=${storedName}`);
                 const allProjectsData = await allProjectsResponse.json();
                 if (allProjectsData.status === 'OK') {
                     setAllProjectsCount(allProjectsData.data.length);
@@ -40,7 +40,7 @@ const Home = () => {
                 }
 
                 // Fetch Active Projects count
-                const activeProjectsResponse = await fetch(`http://192.168.129.119:5001/get-projects-by-contractor?assign_to=${storedName}&status=In-Progress`);
+                const activeProjectsResponse = await fetch(`http://192.168.129.119:5001/get-projects-by-contractor?contractor_name=${storedName}&status=In-Progress`);
                 const activeProjectsData = await activeProjectsResponse.json();
                 if (activeProjectsData.status === 'OK') {
                     setActiveProjectsCount(activeProjectsData.data.length);
@@ -49,7 +49,7 @@ const Home = () => {
                 }
 
                 // Fetch On Hold Projects count
-                const onHoldProjectsResponse = await fetch(`http://192.168.129.119:5001/get-projects-by-contractor?assign_to=${storedName}&status=On-Hold`);
+                const onHoldProjectsResponse = await fetch(`http://192.168.129.119:5001/get-projects-by-contractor?contractor_name=${storedName}&status=On-Hold`);
                 const onHoldProjectsData = await onHoldProjectsResponse.json();
                 if (onHoldProjectsData.status === 'OK') {
                     setOnHoldProjectsCount(onHoldProjectsData.data.length);

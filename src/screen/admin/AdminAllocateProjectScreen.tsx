@@ -18,7 +18,7 @@ type Project = {
     contractor_phone: string;
     completion_percentage: number;
     status: string;
-    assign_to?: string;
+    contractor_name?: string;
 };
 
 const AdminAllocateProjectScreen = () => {
@@ -106,8 +106,8 @@ const AdminAllocateProjectScreen = () => {
                             <Text style={[styles.projectDetail, { color: theme.text }]}>Status: {project.status}</Text>
                             <Text style={[styles.projectDetail, { color: theme.text }]}>Completion: {project.completion_percentage}%</Text>
                             {/* Displaying "Assign To" field */}
-                            {project.assign_to && (
-                                <Text style={[styles.projectDetail, { color: theme.text }]}>Assigned To: {project.assign_to}</Text>
+                            {project.contractor_name && (
+                                <Text style={[styles.projectDetail, { color: theme.text }]}>Assigned To: {project.contractor_name}</Text>
                             )}
                             <View style={styles.buttonRow}>
                                 <TouchableOpacity

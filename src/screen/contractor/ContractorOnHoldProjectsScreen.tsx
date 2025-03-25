@@ -17,7 +17,7 @@ type Project = {
     contractor_phone: string;
     completion_percentage: number;
     status: string;
-    assign_to?: string;
+    contractor_name?: string;
 };
 
 const ContractorOnHoldProjectsScreen = () => {
@@ -100,7 +100,7 @@ const ContractorOnHoldProjectsScreen = () => {
 
                 // Filter only On-Hold projects assigned to the contractor
                 const onHoldProjects = allProjects.filter((project: Project) =>
-                (project.assign_to === contractorName &&
+                (project.contractor_name === contractorName &&
                     project.status === "On-Hold")
                 );
                 setProjects(onHoldProjects);
@@ -202,13 +202,13 @@ const ContractorOnHoldProjectsScreen = () => {
             </Modal>
 
             {/* Back Button */}
-            <TouchableOpacity
+            {/* <TouchableOpacity
                 style={[styles.backButton, { backgroundColor: theme.mode === 'dark' ? "#333" : "#000" }]}
                 onPress={handleBack}
                 activeOpacity={0.8}
             >
                 <Text style={styles.buttonText}>Back</Text>
-            </TouchableOpacity>
+            </TouchableOpacity> */}
         </View>
     );
 };

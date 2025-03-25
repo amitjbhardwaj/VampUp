@@ -16,7 +16,7 @@ type Project = {
     contractor_phone: string;
     completion_percentage: number;
     status: string;
-    assign_to?: string;
+    contractor_name?: string;
 };
 
 const ContractorActiveWorkScreen = () => {
@@ -97,7 +97,7 @@ const ContractorActiveWorkScreen = () => {
 
                 // Filter only active or in-progress projects assigned to the contractor
                 const activeProjects = allProjects.filter((project: Project) =>
-                (project.assign_to === contractorName &&
+                (project.contractor_name === contractorName &&
                     (project.status === "In-Progress" || project.status === "Active"))
                 );
                 setProjects(activeProjects);
@@ -113,12 +113,6 @@ const ContractorActiveWorkScreen = () => {
 
     const handleBack = () => {
         navigation.goBack();
-    };
-
-    const handleOnHold = (projectId: string) => {
-        // Add logic to handle the "On-Hold" action here
-        console.log(`Project ${projectId} is now On-Hold`);
-        // Here you would send a request to your server to update the project's status
     };
 
     return (
@@ -146,7 +140,7 @@ const ContractorActiveWorkScreen = () => {
                             <Text style={[styles.projectDetail, { color: theme.text }]}>End Date: {project.project_end_date}</Text>
                             <Text style={[styles.projectDetail, { color: theme.text }]}>Status: {project.status}</Text>
                             <Text style={[styles.projectDetail, { color: theme.text }]}>Completion: {project.completion_percentage}%</Text>
-                            <Text style={[styles.projectDetail, { color: theme.text }]}>Assigned To: {project.assign_to}</Text>
+                            <Text style={[styles.projectDetail, { color: theme.text }]}>Assigned To: {project.contractor_name}</Text>
 
                             {/* View Details Button and On-Hold Button */}
                             <View style={styles.buttonRow}>
@@ -200,12 +194,12 @@ const ContractorActiveWorkScreen = () => {
             </Modal>
 
             {/* Back Button */}
-            <TouchableOpacity
+            {/* <TouchableOpacity
                 style={[styles.backButton, { backgroundColor: theme.mode === 'dark' ? "#333" : "#000" }]}
                 onPress={handleBack}
             >
                 <Text style={styles.buttonText}>Back</Text>
-            </TouchableOpacity>
+            </TouchableOpacity> */}
         </View>
     );
 };
