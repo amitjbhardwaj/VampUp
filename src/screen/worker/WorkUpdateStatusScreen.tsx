@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, StyleSheet, TouchableOpacity, ToastAndroid, Modal, TextInput, ScrollView } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, ToastAndroid, Modal, TextInput, ScrollView, Alert } from "react-native";
 import { NavigationProp, RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import { RootStackParamList } from "../../RootNavigator";
 import { Picker } from '@react-native-picker/picker';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useTheme } from "../../context/ThemeContext";
+import axios from 'axios';
 
 type WorkUpdateStatusScreenRouteProp = RouteProp<
     RootStackParamList,
@@ -15,7 +16,7 @@ type WorkUpdateStatusScreenNavigationProp = NavigationProp<RootStackParamList, "
 export interface Project {
     project_Id: string;
     project_description: string;
-    assigned_to: string;
+    worker_name: string;
     project_start_date: string;
     project_end_date: string;
     contractor_phone: string;
@@ -33,21 +34,8 @@ const WorkUpdateStatusScreen = () => {
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [reason, setReason] = useState("");
     const [editableEndDate, setEditableEndDate] = useState(project.project_end_date);
+    const [loading, setLoading] = useState(false);  // Add a loading state
 
-    useEffect(() => {
-        const fetchStatus = async () => {
-            try {
-                const savedStatus = await AsyncStorage.getItem(`project_status_${project.project_Id}`);
-                if (savedStatus) {
-                    setStatus(savedStatus);
-                }
-            } catch (error) {
-                console.error("Error fetching saved status from AsyncStorage", error);
-            }
-        };
-
-        fetchStatus();
-    }, [project.project_Id]);
 
     const handleCompletionChange = (newCompletion: string) => {
         setCompletion(newCompletion);
@@ -61,14 +49,23 @@ const WorkUpdateStatusScreen = () => {
     };
 
     const handleUpdate = async () => {
+        if (loading) {
+            // If a request is already in progress, prevent further action
+            return;
+        }
+
+        setLoading(true);  // Mark loading as true
+
         if (!onUpdateCompletion) {
             console.error("onUpdateCompletion is not provided.");
+            setLoading(false);  // Reset loading state in case of error
             return;
         }
 
         const updatedCompletion = parseInt(completion, 10);
         if (isNaN(updatedCompletion) || updatedCompletion < 0 || updatedCompletion > 100) {
-            ToastAndroid.show("Please select a valid percentage (0-100)", ToastAndroid.SHORT);
+            Alert.alert("Please select a valid percentage (0-100)");
+            setLoading(false);  // Reset loading state
             return;
         }
 
@@ -100,35 +97,39 @@ const WorkUpdateStatusScreen = () => {
             } catch (error) {
                 console.error("Error updating AsyncStorage", error);
             }
+            setLoading(false);  // Reset loading state
             return;
         }
 
-
         if (status === "On-Hold") {
-            const updatedProject = {
-                ...project,
-                status: "On-Hold"
-            };
-
-            await onUpdateCompletion(updatedProject.project_Id, 0);
+            const currentDate = new Date().toISOString().split("T")[0]; // Get current date (yyyy-mm-dd)
 
             try {
-                const storedActiveProjects = await AsyncStorage.getItem("activeProjects");
-                let activeProjects = storedActiveProjects ? JSON.parse(storedActiveProjects) : [];
-
-                activeProjects = activeProjects.map((p: Project) =>
-                    p.project_Id === updatedProject.project_Id ? updatedProject : p
+                const response = await axios.put(
+                    `http://192.168.129.119:5001/update-project-on-hold/${project.project_Id}`, // API endpoint
+                    {
+                        project_end_date: currentDate,
+                        status: "On-Hold",
+                        reason_on_hold: reason, // Reason from the modal
+                    }
                 );
-                await AsyncStorage.setItem("activeProjects", JSON.stringify(activeProjects));
-                await AsyncStorage.setItem(`project_status_${project.project_Id}`, "On-Hold");
+
+                if (response.data.status === "OK") {
+                    Alert.alert("Project marked as On Hold");
+                } else {
+                    Alert.alert("Couldn't put project on Hold");
+                }
             } catch (error) {
-                console.error("Error updating AsyncStorage", error);
+                Alert.alert("Error updating project, please try again.");
             }
+            setLoading(false);  // Reset loading state
+        } else {
+            navigation.goBack();
+            setLoading(false);  // Reset loading state
         }
-
-
-        navigation.goBack();
     };
+
+
 
 
     const handleHoldWork = () => {
@@ -137,44 +138,43 @@ const WorkUpdateStatusScreen = () => {
 
     const handleSubmitReason = async () => {
         if (reason.trim() === "") {
-            ToastAndroid.show("Please provide a reason", ToastAndroid.SHORT);
+            Alert.alert("Please provide a reason");
             return;
         }
-    
+
         setStatus("On-Hold");
         setIsModalVisible(false);
-        ToastAndroid.show("Project marked as On Hold", ToastAndroid.SHORT);
-    
+
         const updatedProject = {
             ...project,
             status: "On-Hold",
         };
-    
+
         try {
             // Save status in AsyncStorage
             await AsyncStorage.setItem(`project_status_${project.project_Id}`, "On-Hold");
-    
+
             // Retrieve current on-hold projects
             const storedOnHoldProjects = await AsyncStorage.getItem("onHoldProjects");
             let onHoldProjects = storedOnHoldProjects ? JSON.parse(storedOnHoldProjects) : [];
-    
+
             // Check if the project already exists in storage
             const existingIndex = onHoldProjects.findIndex((p: Project) => p.project_Id === updatedProject.project_Id);
             if (existingIndex === -1) {
                 onHoldProjects.push(updatedProject);
                 await AsyncStorage.setItem("onHoldProjects", JSON.stringify(onHoldProjects));
             }
-    
+
             // ✅ Debugging log
             const savedProjects = await AsyncStorage.getItem("onHoldProjects");
             console.log("Updated On-Hold Projects:", JSON.parse(savedProjects || "[]"));
-    
+
         } catch (error) {
             console.error("Error updating on-hold projects:", error);
         }
     };
-    
-    
+
+
 
     const handleCancel = () => {
         setIsModalVisible(false);
@@ -183,11 +183,14 @@ const WorkUpdateStatusScreen = () => {
 
     const handleResumeWork = async () => {
         setStatus("In-Progress");
-        ToastAndroid.show("Project marked as In-Progress", ToastAndroid.SHORT);
+        Alert.alert("Project marked as In-Progress");
 
         await AsyncStorage.setItem(`project_status_${project.project_Id}`, "In-Progress");
     };
+
     const isDarkMode = theme.mode === "dark";
+
+
     return (
         <ScrollView contentContainerStyle={[styles.scrollContainer, { backgroundColor: theme.mode === 'dark' ? '#121212' : '#f8f8f8' }]}>
             <View style={[styles.container, { backgroundColor: theme.mode === 'dark' ? '#1c1c1c' : '#fff' }]}>
@@ -297,7 +300,7 @@ const projectDetails = (project: Project, status: string) => {
     const details = [
         { label: "Project ID", value: project.project_Id },
         { label: "Description", value: project.project_description },
-        { label: "Assigned To", value: project.assigned_to },
+        { label: "Assigned To", value: project.worker_name },
         { label: "Start Date", value: project.project_start_date },
     ];
 
