@@ -15,7 +15,7 @@ import Settings from '../tabs_contractor/Settings';
 
 type TabParamList = {
   Home: undefined;
-  "My Services": undefined;
+  "My Work": undefined;
   Help: undefined;
   Settings: undefined;
 };
@@ -34,7 +34,7 @@ const ContractorHomeScreen = () => {
   const renderIcon = useCallback(
     ({ route, focused, size }: TabScreenProps) => {
       let iconName = "home-outline"; 
-      if (route.name === "My Services") {
+      if (route.name === "My Work") {
         iconName = "briefcase-outline";
       } else if (route.name === "Help") {
         iconName = "call-outline";
@@ -85,7 +85,7 @@ const ContractorHomeScreen = () => {
       })}
     >
       <Tab.Screen name="Home" component={Home} />
-      <Tab.Screen name="My Services" component={Services} />
+      <Tab.Screen name="My Work" component={Services} />
       <Tab.Screen name="Help" component={HelpContact} />
       <Tab.Screen name="Settings" component={Settings} />
     </Tab.Navigator>

@@ -5,6 +5,7 @@ import {
   Pressable,
 } from "react-native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import { createStackNavigator, CardStyleInterpolators } from "@react-navigation/stack";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import { RouteProp } from '@react-navigation/native';
 import Home from "../tabs_worker/Home";
@@ -15,12 +16,13 @@ import { useTheme } from '../context/ThemeContext';
 
 type TabParamList = {
   Home: undefined;
-  "My Services": undefined;
+  "My Work": undefined;
   Help: undefined;
   Settings: undefined;
 };
 
 const Tab = createBottomTabNavigator<TabParamList>();
+const Stack = createStackNavigator();
 
 type TabScreenProps = {
   route: RouteProp<TabParamList, keyof TabParamList>;
@@ -34,7 +36,7 @@ const WorkerHomeScreen = () => {
   const renderIcon = useCallback(
     ({ route, focused, size }: TabScreenProps) => {
       let iconName = "home-outline"; 
-      if (route.name === "My Services") {
+      if (route.name === "My Work") {
         iconName = "briefcase-outline";
       } else if (route.name === "Help") {
         iconName = "call-outline";
@@ -84,13 +86,58 @@ const WorkerHomeScreen = () => {
         ),
       })}
     >
-      <Tab.Screen name="Home" component={Home} />
-      <Tab.Screen name="My Services" component={Services} />
-      <Tab.Screen name="Help" component={HelpContact} />
-      <Tab.Screen name="Settings" component={Settings} />
+      <Tab.Screen name="Home" component={HomeStack} />
+      <Tab.Screen name="My Work" component={MyWorkStack} />
+      <Tab.Screen name="Help" component={HelpStack} />
+      <Tab.Screen name="Settings" component={SettingsStack} />
     </Tab.Navigator>
   );
 };
+
+// ✅ Each tab is now inside a Stack.Navigator to apply animations
+const HomeStack = () => (
+  <Stack.Navigator
+    screenOptions={{
+      cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS, // ⬅️ Adds shifting effect
+      headerShown: false, 
+    }}
+  >
+    <Stack.Screen name="HomeScreen" component={Home} />
+  </Stack.Navigator>
+);
+
+const MyWorkStack = () => (
+  <Stack.Navigator
+    screenOptions={{
+      cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
+      headerShown: false,
+    }}
+  >
+    <Stack.Screen name="MyWorkScreen" component={Services} />
+  </Stack.Navigator>
+);
+
+const HelpStack = () => (
+  <Stack.Navigator
+    screenOptions={{
+      cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
+      headerShown: false,
+    }}
+  >
+    <Stack.Screen name="HelpScreen" component={HelpContact} />
+  </Stack.Navigator>
+);
+
+const SettingsStack = () => (
+  <Stack.Navigator
+    screenOptions={{
+      cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
+      headerShown: false,
+    }}
+  >
+    <Stack.Screen name="SettingsScreen" component={Settings} />
+  </Stack.Navigator>
+);
 
 const styles = StyleSheet.create({
   tabBar: {
