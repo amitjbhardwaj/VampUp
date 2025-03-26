@@ -65,19 +65,37 @@ const WorkerActiveWorkScreen = () => {
             status: "In-Progress",  // You can modify the status based on your requirements
           }
         });
-
-        const fetchedProjects = response.data.data.map((p: Project) => ({
-          ...p,
-          status: p.status || "In-Progress",
-        }));
-
-        // Filter out projects that are already completed
-        setProjects(fetchedProjects.filter((p: Project) => p.completion_percentage < 100));
+  
+        // Check if the response is valid and contains data
+        if (response.data && response.data.data) {
+          const fetchedProjects = response.data.data.map((p: Project) => ({
+            ...p,
+            status: p.status || "In-Progress",
+          }));
+  
+          // Filter out projects that are already completed
+          setProjects(fetchedProjects.filter((p: Project) => p.completion_percentage < 100));
+        } else {
+          // Handle the case where no projects are returned
+          setProjects([]);
+        }
       }
     } catch (error) {
-      console.error("Error fetching projects:", error);
+      if (axios.isAxiosError(error)) {
+        // You can handle specific status codes here
+        if (error.response?.status === 404) {
+          // If 404 occurs, just set an empty list of projects without logging an error
+          setProjects([]);
+          console.log("No projects found for this worker.");
+        } else {
+          console.error("Error fetching projects:", error.message);
+        }
+      } else {
+        console.error("Error fetching projects:", error);
+      }
     }
   }, [workerName]);
+  
 
   useFocusEffect(
     useCallback(() => {

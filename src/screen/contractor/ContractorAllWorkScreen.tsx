@@ -125,6 +125,7 @@ const ContractorAllWorkScreen = () => {
         const currentDate = new Date().toISOString().split('T')[0]; // "yyyy-mm-dd"
 
         try {
+            console.log(`Projecttttttttt ${selectedProjectId} to put On-Hold!`);
             const response = await axios.put(
                 `http://192.168.129.119:5001/update-project-on-hold/${selectedProjectId}`,
                 {

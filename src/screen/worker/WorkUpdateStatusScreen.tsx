@@ -1,5 +1,14 @@
-import React, { useState, useEffect } from "react";
-import { View, Text, StyleSheet, TouchableOpacity, ToastAndroid, Modal, TextInput, ScrollView, Alert } from "react-native";
+import React, { useState } from "react";
+import {
+    View,
+    Text,
+    StyleSheet,
+    TouchableOpacity,
+    Alert,
+    Modal,
+    TextInput,
+    ScrollView
+} from "react-native";
 import { NavigationProp, RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import { RootStackParamList } from "../../RootNavigator";
 import { Picker } from '@react-native-picker/picker';
@@ -7,13 +16,11 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useTheme } from "../../context/ThemeContext";
 import axios from 'axios';
 
-type WorkUpdateStatusScreenRouteProp = RouteProp<
-    RootStackParamList,
-    "WorkUpdateStatusScreen"
->;
+type WorkUpdateStatusScreenRouteProp = RouteProp<RootStackParamList, "WorkUpdateStatusScreen">;
 type WorkUpdateStatusScreenNavigationProp = NavigationProp<RootStackParamList, "WorkUpdateStatusScreen">;
 
 export interface Project {
+    _id: string;
     project_Id: string;
     project_description: string;
     worker_name: string;
@@ -27,114 +34,120 @@ const WorkUpdateStatusScreen = () => {
     const { theme } = useTheme();
     const route = useRoute<WorkUpdateStatusScreenRouteProp>();
     const navigation = useNavigation<WorkUpdateStatusScreenNavigationProp>();
-    const { project, onUpdateCompletion } = route.params;
+    const { project, onUpdateCompletion } = route.params || {};
 
-    const [completion, setCompletion] = useState<string>(String(project.completion_percentage));
+    const [completion, setCompletion] = useState<string>(String(project?.completion_percentage || 0));
     const [status, setStatus] = useState<string>("In-Progress");
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [reason, setReason] = useState("");
-    const [editableEndDate, setEditableEndDate] = useState(project.project_end_date);
-    const [loading, setLoading] = useState(false);  // Add a loading state
+    const [editableEndDate, setEditableEndDate] = useState(project?.project_end_date || "");
+    const [loading, setLoading] = useState(false);
 
+    // If no project is found, show a message and go back
+    if (!project) {
+        return (
+            <View style={styles.container}>
+                <Text style={[styles.title, { color: theme.mode === 'dark' ? '#fff' : '#000' }]}>
+                    No Project Found
+                </Text>
+                <TouchableOpacity
+                    style={[styles.goBackButton, { backgroundColor: theme.mode === 'dark' ? '#444' : '#000' }]}
+                    onPress={() => navigation.goBack()}
+                >
+                    <Text style={styles.goBackButtonText}>Go Back</Text>
+                </TouchableOpacity>
+            </View>
+        );
+    }
 
     const handleCompletionChange = (newCompletion: string) => {
         setCompletion(newCompletion);
         const updatedCompletion = parseInt(newCompletion, 10);
         if (updatedCompletion === 100) {
             setStatus("Completed");
-            setEditableEndDate(new Date().toISOString().split('T')[0]); // Update end date to current date
+            setEditableEndDate(new Date().toISOString().split('T')[0]); // Set end date to today
         } else if (status !== "On-Hold") {
             setStatus("In-Progress");
         }
     };
 
     const handleUpdate = async () => {
-        if (loading) {
-            // If a request is already in progress, prevent further action
-            return;
-        }
-
-        setLoading(true);  // Mark loading as true
-
+        if (loading) return;
+    
+        setLoading(true);
+    
         if (!onUpdateCompletion) {
             console.error("onUpdateCompletion is not provided.");
-            setLoading(false);  // Reset loading state in case of error
+            setLoading(false);
             return;
         }
-
+    
         const updatedCompletion = parseInt(completion, 10);
         if (isNaN(updatedCompletion) || updatedCompletion < 0 || updatedCompletion > 100) {
             Alert.alert("Please select a valid percentage (0-100)");
-            setLoading(false);  // Reset loading state
+            setLoading(false);
             return;
         }
-
-        onUpdateCompletion(project.project_Id, updatedCompletion);
-
+    
+        onUpdateCompletion(project._id, updatedCompletion);
+    
         if (updatedCompletion === 100) {
-            const completedProject = {
-                ...project,
-                completion_percentage: 100,
-                status: "Completed",
-                project_end_date: editableEndDate, // Use the editable end date
-            };
-
             try {
                 const storedActiveProjects = await AsyncStorage.getItem("activeProjects");
                 let activeProjects = storedActiveProjects ? JSON.parse(storedActiveProjects) : [];
-
-                activeProjects = activeProjects.filter((p: Project) => p.project_Id !== project.project_Id);
+    
+                activeProjects = activeProjects.filter((p: Project) => p._id !== project._id);
                 await AsyncStorage.setItem("activeProjects", JSON.stringify(activeProjects));
-
+    
                 const storedCompletedProjects = await AsyncStorage.getItem("completedProjects");
                 let completedProjects = storedCompletedProjects ? JSON.parse(storedCompletedProjects) : [];
-
-                completedProjects.push(completedProject);
+    
+                completedProjects.push({ ...project, completion_percentage: 100, status: "Completed", project_end_date: editableEndDate });
                 await AsyncStorage.setItem("completedProjects", JSON.stringify(completedProjects));
-
-                await AsyncStorage.setItem(`project_status_${project.project_Id}`, "Completed");
+    
+                await AsyncStorage.setItem(`project_status_${project._id}`, "Completed");
                 navigation.navigate("WorkerWorkHistoryScreen");
             } catch (error) {
                 console.error("Error updating AsyncStorage", error);
             }
-            setLoading(false);  // Reset loading state
+            setLoading(false);
             return;
         }
-
+    
         if (status === "On-Hold") {
-            const currentDate = new Date().toISOString().split("T")[0]; // Get current date (yyyy-mm-dd)
-
             try {
                 const response = await axios.put(
-                    `http://192.168.129.119:5001/update-project-on-hold/${project.project_Id}`, // API endpoint
+                    `http://192.168.129.119:5001/update-project-on-hold/${project._id}`,
                     {
-                        project_end_date: currentDate,
+                        project_end_date: new Date().toISOString().split("T")[0],
                         status: "On-Hold",
-                        reason_on_hold: reason, // Reason from the modal
+                        reason_on_hold: reason,
                     }
                 );
-
-                if (response.data.status === "OK") {
+    
+                if (response.status === 200) {
                     Alert.alert("Project marked as On Hold");
+                    navigation.goBack();
                 } else {
                     Alert.alert("Couldn't put project on Hold");
                 }
             } catch (error) {
-                Alert.alert("Error updating project, please try again.");
+                if (axios.isAxiosError(error) && error.response?.status === 404) {
+                    Alert.alert("No projects available to update.");
+                    navigation.goBack();
+                } else {
+                    Alert.alert("Error updating project, please try again.");
+                }
             }
-            setLoading(false);  // Reset loading state
+            setLoading(false);
         } else {
             navigation.goBack();
-            setLoading(false);  // Reset loading state
+            setLoading(false);
         }
     };
+    
 
 
-
-
-    const handleHoldWork = () => {
-        setIsModalVisible(true);
-    };
 
     const handleSubmitReason = async () => {
         if (reason.trim() === "") {
@@ -181,13 +194,6 @@ const WorkUpdateStatusScreen = () => {
         setReason("");
     };
 
-    const handleResumeWork = async () => {
-        setStatus("In-Progress");
-        Alert.alert("Project marked as In-Progress");
-
-        await AsyncStorage.setItem(`project_status_${project.project_Id}`, "In-Progress");
-    };
-
     const isDarkMode = theme.mode === "dark";
 
 
@@ -218,16 +224,10 @@ const WorkUpdateStatusScreen = () => {
                 <Picker
                     selectedValue={completion}
                     onValueChange={handleCompletionChange}
-                    style={{ color: isDarkMode ? "#fff" : "#000" }} // <-- Set text color
-                    enabled={status !== "On-Hold"}  // Disable Picker when status is "On-Hold"
+                    style={{ color: theme.mode === 'dark' ? "#fff" : "#000" }}
                 >
                     {[...Array(101).keys()].map((i) => (
-                        <Picker.Item
-                            key={i}
-                            label={`${i}%`}
-                            value={String(i)}
-                            style={{ color: theme.mode === 'dark' ? '#333' : '#000' }}  // Set text color based on theme
-                        />
+                        <Picker.Item key={i} label={`${i}%`} value={String(i)} />
                     ))}
                 </Picker>
 
@@ -236,18 +236,11 @@ const WorkUpdateStatusScreen = () => {
                 </TouchableOpacity>
 
                 <TouchableOpacity
-                    style={[styles.onHoldButton, status === "On-Hold" && styles.disabledButton, { backgroundColor: theme.mode === 'dark' ? '#444' : '#000' }]}
-                    onPress={handleHoldWork}
-                    disabled={status === "On-Hold"} // Disable if the status is "On-Hold"
+                    style={[styles.onHoldButton, { backgroundColor: theme.mode === 'dark' ? '#444' : '#000' }]}
+                    onPress={() => setIsModalVisible(true)}
                 >
                     <Text style={styles.onHoldButtonText}>Hold Work</Text>
                 </TouchableOpacity>
-
-                {status === "On-Hold" && (
-                    <TouchableOpacity style={[styles.resumeButton, { backgroundColor: theme.mode === 'dark' ? '#444' : '#000' }]} onPress={handleResumeWork}>
-                        <Text style={styles.resumeButtonText}>Resume Work</Text>
-                    </TouchableOpacity>
-                )}
 
                 <TouchableOpacity style={[styles.goBackButton, { backgroundColor: theme.mode === 'dark' ? '#444' : '#000' }]} onPress={() => navigation.goBack()}>
                     <Text style={styles.goBackButtonText}>Go Back</Text>
@@ -329,13 +322,6 @@ const styles = StyleSheet.create({
         marginTop: 10,
     },
     onHoldButtonText: { color: "#fff", fontWeight: "600", fontSize: 16 },
-    resumeButton: {
-        paddingVertical: 12,
-        borderRadius: 5,
-        alignItems: "center",
-        marginTop: 10,
-    },
-    resumeButtonText: { color: "#fff", fontWeight: "600", fontSize: 16 },
     goBackButton: {
         paddingVertical: 12,
         borderRadius: 5,
