@@ -1,6 +1,16 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
-    View, Text, StyleSheet, TouchableOpacity, Modal, TextInput, Button, Alert
+    View,
+    Text,
+    StyleSheet,
+    TouchableOpacity,
+    Modal,
+    TextInput,
+    Button,
+    Alert,
+    FlatList,
+    RefreshControl,
+    ScrollView
 } from "react-native";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 import Ionicons from "react-native-vector-icons/Ionicons";
@@ -8,6 +18,7 @@ import { RootStackParamList } from "../RootNavigator";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Picker } from "@react-native-picker/picker";
 import { useTheme } from "../context/ThemeContext";
+import axios from "axios";
 
 type HomeNavigationProp = NavigationProp<RootStackParamList>;
 
@@ -24,24 +35,9 @@ const Home = () => {
     const [projects, setProjects] = useState<any[]>([]);
     const [selectedProject, setSelectedProject] = useState<any>(null);
     const [phone, setPhone] = useState("");
+    const [ongoingProjectsCount, setOngoingProjectsCount] = useState(0);
+    const [isRefreshing, setIsRefreshing] = useState(false); // State for pull-to-refresh
 
-    useEffect(() => {
-        loadProjects();
-    }, []);
-
-    const loadProjects = () => {
-        try {
-            const data = require('../assets/projects.json');
-            if (Array.isArray(data)) {
-                const filteredProjects = data.filter(project => project.completion_percentage !== 100);
-                setProjects(filteredProjects);
-            } else {
-                console.error("Projects data is not an array");
-            }
-        } catch (error) {
-            console.error("Error loading project:", error);
-        }
-    };
 
     const handleProjectChange = (selectedDescription: string) => {
         setProjectDescription(selectedDescription);
@@ -101,13 +97,51 @@ const Home = () => {
         navigation.navigate("WorkerComplaintHistoryScreen", { updatedRequests });
     };
 
+    // Fetch ongoing projects count
+    const fetchOngoingProjectsCount = async () => {
+        try {
+            const workerName = await AsyncStorage.getItem("workerName");
+
+            const allProjectsResponse = await fetch(`http://192.168.129.119:5001/get-projects-by-worker?worker_name=${workerName}&status=In-Progress`);
+            const allProjectsData = await allProjectsResponse.json();
+            if (allProjectsData.status === 'OK') {
+                setOngoingProjectsCount(allProjectsData.data.length);
+            } else {
+                setOngoingProjectsCount(0);
+            }
+        } catch (error) {
+            console.error("Error fetching ongoing projects:", error);
+        }
+    };
+
+    useEffect(() => {
+        fetchOngoingProjectsCount(); // Fetch on initial load
+    }, []);
+
+    // Function to handle pull-to-refresh
+    const onRefresh = async () => {
+        setIsRefreshing(true);
+        await fetchOngoingProjectsCount();
+        setIsRefreshing(false);
+    };
+
     return (
-        <View style={[styles.screen, { backgroundColor: theme.background }]}>
+        <ScrollView
+            contentContainerStyle={[styles.screen, { backgroundColor: theme.background }]}
+            refreshControl={
+                <RefreshControl refreshing={isRefreshing} onRefresh={onRefresh} />
+            }
+        >
             <View style={styles.iconContainer}>
                 <View style={styles.iconRow}>
                     <View style={styles.iconItem}>
                         <TouchableOpacity onPress={() => navigation.navigate('WorkerActiveWorkScreen')}>
                             <Ionicons name="briefcase" size={50} color={theme.text} />
+                            {ongoingProjectsCount !== null && ongoingProjectsCount > 0 && (
+                                <View style={styles.notificationBadge}>
+                                    <Text style={styles.notificationText}>{ongoingProjectsCount}</Text>
+                                </View>
+                            )}
                         </TouchableOpacity>
                         <Text style={{ color: theme.text }}>On-going Projects</Text>
                     </View>
@@ -240,8 +274,7 @@ const Home = () => {
                     </View>
                 </View>
             </Modal>
-
-        </View>
+        </ScrollView>
     );
 };
 
@@ -264,6 +297,21 @@ const styles = StyleSheet.create({
     iconItem: {
         alignItems: "center",
         width: "45%",
+    },
+    redDot: {
+        position: "absolute",
+        top: -5,
+        right: -5,
+        backgroundColor: "red",
+        width: 20,
+        height: 20,
+        borderRadius: 10,
+        justifyContent: "center",
+        alignItems: "center",
+    },
+    redDotText: {
+        color: "#fff",
+        fontSize: 12,
     },
     floatingButton: {
         position: "absolute",
@@ -316,15 +364,31 @@ const styles = StyleSheet.create({
         justifyContent: "space-between",
         marginTop: 10,
     },
-    lastRowIcon: {
-        marginLeft: "-145%",
-    },
     backButton: {
         padding: 10,
         borderRadius: 5,
     },
     backButtonText: {
         textAlign: "center",
+    },
+    lastRowIcon: {
+        marginLeft: "-145%",
+    },
+    notificationBadge: {
+        position: "absolute",
+        top: -5,
+        right: -5,
+        backgroundColor: "red",
+        borderRadius: 10,
+        width: 20,
+        height: 20,
+        justifyContent: "center",
+        alignItems: "center",
+    },
+    notificationText: {
+        color: "white",
+        fontSize: 12,
+        fontWeight: "bold",
     },
 });
 
