@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import {
   View,
   Text,
@@ -12,14 +12,14 @@ import {
 import { NavigationProp, useNavigation, useFocusEffect } from "@react-navigation/native";
 import Icon from "react-native-vector-icons/FontAwesome";
 import { RootStackParamList } from "../../RootNavigator";
-import projectsData from "../../assets/projects.json";
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios from 'axios';  // Import Axios
 import { useTheme } from "../../context/ThemeContext";
 
 interface Project {
   project_Id: string;
   project_description: string;
-  assigned_to: string;
+  worker_name: string;
   project_start_date: string;
   project_end_date: string;
   contractor_phone: string;
@@ -28,11 +28,12 @@ interface Project {
 }
 
 const WorkerActiveWorkScreen = () => {
-  const { theme } = useTheme(); // theme is likely an object
+  const { theme } = useTheme();
   const navigation = useNavigation<NavigationProp<RootStackParamList>>();
   const [searchText, setSearchText] = useState<string>("");
-  const [projects, setProjects] = useState<Project[]>(projectsData.map(p => ({ ...p, status: "In-Progress" })));
+  const [projects, setProjects] = useState<Project[]>([]);
   const [animatedValue] = useState(new Animated.Value(0));
+  const [workerName, setWorkerName] = useState<string>("");
 
   // Fade-in animation for the screen
   const fadeIn = () => {
@@ -43,25 +44,46 @@ const WorkerActiveWorkScreen = () => {
     }).start();
   };
 
+  // Fetch worker's name from AsyncStorage or context
+  useEffect(() => {
+    const fetchWorkerName = async () => {
+      const name = await AsyncStorage.getItem('workerName'); // Get worker name from AsyncStorage
+      if (name) {
+        setWorkerName(name);
+      }
+    };
+    fetchWorkerName();
+  }, []);
+
+  // Fetch projects for the worker from the API
+  const fetchProjects = useCallback(async () => {
+    try {
+      if (workerName) {
+        const response = await axios.get(`http://192.168.129.119:5001/get-projects-by-worker`, {
+          params: {
+            worker_name: workerName,
+            status: "In-Progress",  // You can modify the status based on your requirements
+          }
+        });
+
+        const fetchedProjects = response.data.data.map((p: Project) => ({
+          ...p,
+          status: p.status || "In-Progress",
+        }));
+
+        // Filter out projects that are already completed
+        setProjects(fetchedProjects.filter((p: Project) => p.completion_percentage < 100));
+      }
+    } catch (error) {
+      console.error("Error fetching projects:", error);
+    }
+  }, [workerName]);
+
   useFocusEffect(
     useCallback(() => {
       fadeIn();
-      const loadProjects = async () => {
-        try {
-          const storedProjects = await AsyncStorage.getItem("activeProjects");
-          if (storedProjects) {
-            const parsedProjects = JSON.parse(storedProjects).map((p: Project) => ({
-              ...p,
-              status: p.status || "In-Progress",
-            }));
-            setProjects(parsedProjects.filter((p: Project) => p.completion_percentage < 100));
-          }
-        } catch (error) {
-          console.error("Error loading projects", error);
-        }
-      };
-      loadProjects();
-    }, [])
+      fetchProjects();
+    }, [workerName, fetchProjects])
   );
 
   const handleUpdateCompletion = async (projectId: string, newCompletion: number, newStatus?: string) => {
@@ -75,27 +97,24 @@ const WorkerActiveWorkScreen = () => {
             }
           : proj
       );
-  
+
       // Separate projects into correct categories
       const onHoldProjects = updatedProjects.filter((proj) => proj.status === "On-Hold");
       const activeProjects = updatedProjects.filter((proj) => proj.status === "In-Progress" && proj.completion_percentage < 100);
-  
+
       // Save to AsyncStorage
       await AsyncStorage.setItem("activeProjects", JSON.stringify(activeProjects));
       await AsyncStorage.setItem("onHoldProjects", JSON.stringify(onHoldProjects));
-  
+
       console.log("Active Projects Saved:", activeProjects);
       console.log("On-Hold Projects Saved:", onHoldProjects);
-  
+
       // Update state with only active projects
       setProjects(activeProjects);
     } catch (error) {
       console.error("Error updating project completion", error);
     }
   };
-  
-  
-  
 
   const filteredProjects = projects.filter((project) =>
     Object.values(project).some((value) =>
@@ -172,7 +191,7 @@ const WorkerActiveWorkScreen = () => {
 const projectDetails = (project: Project) => [
   { label: "Project ID", value: project.project_Id, icon: "id-badge" },
   { label: "Description", value: project.project_description, icon: "info-circle" },
-  { label: "Assigned To", value: project.assigned_to, icon: "user" },
+  { label: "Assigned To", value: project.worker_name, icon: "user" },
   { label: "Start Date", value: project.project_start_date, icon: "calendar" },
   { label: "End Date", value: project.project_end_date, icon: "calendar" },
   { label: "Contractor Phone", value: project.contractor_phone, icon: "phone" },
