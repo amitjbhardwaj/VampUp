@@ -4,6 +4,8 @@ import axios from 'axios';
 import { useTheme } from "../../context/ThemeContext";
 import { Picker } from '@react-native-picker/picker';
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { NavigationProp, useNavigation } from "@react-navigation/native";
+import { RootStackParamList } from "../../RootNavigator";
 
 // Define the type for the worker
 type Worker = {
@@ -19,6 +21,9 @@ type Project = {
     project_description: string;
 };
 
+type ContractorOnBoardWorkersScreenNavigationProp = NavigationProp<RootStackParamList, "ContractorOnBoardWorkersScreen">;
+
+
 const ContractorOnBoardWorkersScreen = () => {
     const { theme } = useTheme();
     const [form, setForm] = useState({
@@ -27,6 +32,7 @@ const ContractorOnBoardWorkersScreen = () => {
         project_description: "",
         project_Id: "",
     });
+    const navigation = useNavigation<ContractorOnBoardWorkersScreenNavigationProp>();
 
     const [errors, setErrors] = useState<Record<string, string>>({});
     const [workers, setWorkers] = useState<Worker[]>([]);
@@ -155,6 +161,11 @@ const ContractorOnBoardWorkersScreen = () => {
             setLoading(false);
         }
     };
+
+  
+    const handleBackPress = () => {
+        navigation.goBack();
+      };
     
 
     return (
@@ -225,7 +236,7 @@ const ContractorOnBoardWorkersScreen = () => {
                 <TouchableOpacity style={[styles.button, { backgroundColor: theme.mode === 'dark' ? "#333" : "#000" }]} onPress={handleSubmit}>
                     <Text style={styles.buttonText}>Submit</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={[styles.button, { backgroundColor: theme.cancelButton }]} onPress={handleSubmit}>
+                <TouchableOpacity style={[styles.button, { backgroundColor: theme.cancelButton }]} onPress={handleBackPress}>
                     <Text style={styles.buttonText}>Cancel</Text>
                 </TouchableOpacity>
             </View>

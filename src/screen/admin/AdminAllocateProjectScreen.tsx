@@ -133,13 +133,13 @@ const AdminAllocateProjectScreen = () => {
             </ScrollView>
 
             {/* Back Button */}
-            <TouchableOpacity
+            {/* <TouchableOpacity
                 style={[styles.backButton, { backgroundColor: theme.mode === 'dark' ? "#333" : "#000" }]}
                 onPress={handleBack}
                 activeOpacity={0.8}
             >
                 <Text style={styles.buttonText}>Back</Text>
-            </TouchableOpacity>
+            </TouchableOpacity> */}
         </View>
     );
 };

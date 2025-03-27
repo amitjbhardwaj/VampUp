@@ -1,5 +1,5 @@
-import { NavigationProp, useNavigation } from "@react-navigation/native";
-import React, { useState, useEffect } from "react";
+import { NavigationProp, useFocusEffect, useNavigation } from "@react-navigation/native";
+import React, { useState, useEffect, useCallback } from "react";
 import {
     View,
     Text,
@@ -10,13 +10,13 @@ import {
     ToastAndroid,
     ScrollView,
 } from "react-native";
-import Icon from "react-native-vector-icons/MaterialIcons";
 import { Picker } from "@react-native-picker/picker";
 import DateTimePicker from "@react-native-community/datetimepicker";
-import projectsData from "../../assets/projects.json";
 import { RootStackParamList } from "../../RootNavigator";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import TouchID from 'react-native-touch-id';
+import { useTheme } from "../../context/ThemeContext";
+import axios from 'axios';
 
 
 interface Project {
@@ -27,12 +27,14 @@ interface Project {
     project_start_date: string;
     contractor_phone: string;
     completion_percentage: number;
+    status: string;
 }
 
 type WorkerClockInScreenNavigationProp = NavigationProp<RootStackParamList, 'WorkerClockInScreen'>;
 
 
 const WorkerClockInScreen: React.FC = () => {
+    const { theme } = useTheme();
     const navigation = useNavigation<WorkerClockInScreenNavigationProp>();
     const [projects, setProjects] = useState<Project[]>([]);
     const [selectedProject, setSelectedProject] = useState<string | null>(null);
@@ -43,11 +45,67 @@ const WorkerClockInScreen: React.FC = () => {
     const [formattedDate, setFormattedDate] = useState<string>(""); // Displayed date
     const [currentTime, setCurrentTime] = useState<string>("");
     const [showDatePicker, setShowDatePicker] = useState<boolean>(false);
+    const [workerName, setWorkerName] = useState<string>("");
 
+
+    // Fetch worker's name from AsyncStorage or context
     useEffect(() => {
-        const incompleteProjects = projectsData.filter((project) => project.completion_percentage < 100);
-        setProjects(incompleteProjects);
+        const fetchWorkerName = async () => {
+            const name = await AsyncStorage.getItem('workerName'); // Get worker name from AsyncStorage
+            if (name) {
+                setWorkerName(name);
+            }
+        };
+        fetchWorkerName();
     }, []);
+
+    // Fetch projects for the worker from the API
+    const fetchProjects = useCallback(async () => {
+        try {
+            if (workerName) {
+                const response = await axios.get(`http://192.168.129.119:5001/get-projects-by-worker`, {
+                    params: {
+                        worker_name: workerName,
+                        status: "In-Progress",  // You can modify the status based on your requirements
+                    }
+                });
+
+                // Check if the response is valid and contains data
+                if (response.data && response.data.data) {
+                    const fetchedProjects = response.data.data.map((p: Project) => ({
+                        ...p,
+                        status: p.status || "In-Progress",
+                    }));
+
+                    // Filter out projects that are already completed
+                    setProjects(fetchedProjects.filter((p: Project) => p.completion_percentage < 100));
+                } else {
+                    // Handle the case where no projects are returned
+                    setProjects([]);
+                }
+            }
+        } catch (error) {
+            if (axios.isAxiosError(error)) {
+                // You can handle specific status codes here
+                if (error.response?.status === 404) {
+                    // If 404 occurs, just set an empty list of projects without logging an error
+                    setProjects([]);
+                    console.log("No projects found for this worker.");
+                } else {
+                    console.error("Error fetching projects:", error.message);
+                }
+            } else {
+                console.error("Error fetching projects:", error);
+            }
+        }
+    }, [workerName]);
+
+
+    useFocusEffect(
+        useCallback(() => {
+            fetchProjects();
+        }, [fetchProjects])
+    );
 
     const handleProjectChange = (projectId: string | null) => {
         if (!projectId) return;
@@ -157,10 +215,6 @@ const WorkerClockInScreen: React.FC = () => {
         }
     };
 
-
-
-
-
     const today = new Date();
     today.setHours(0, 0, 0, 0);
 
@@ -170,9 +224,6 @@ const WorkerClockInScreen: React.FC = () => {
                 <StatusBar backgroundColor="#fff" barStyle="dark-content" />
 
                 <View style={styles.header}>
-                    {/* <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-                        <Icon name="arrow-back" size={30} color="#000" />
-                    </TouchableOpacity> */}
                     <Text style={styles.headerText}>Clock In</Text>
                 </View>
 
