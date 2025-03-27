@@ -119,13 +119,13 @@ const WorkerWorkHistoryScreen = () => {
                 contentContainerStyle={styles.listContent} // Add padding to the list
             />
 
-            <TouchableOpacity
+           {/*  <TouchableOpacity
                 style={[styles.backButton, { backgroundColor: theme.mode === 'dark' ? '#444' : '#000' }]}
                 onPress={() => navigation.goBack()}
                 activeOpacity={0.7} // Make button feedback smoother
             >
                 <Text style={styles.backButtonText}>Go Back</Text>
-            </TouchableOpacity>
+            </TouchableOpacity> */}
         </View>
     );
 };

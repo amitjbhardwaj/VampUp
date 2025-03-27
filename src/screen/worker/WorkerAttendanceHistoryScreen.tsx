@@ -131,10 +131,10 @@ const WorkerAttendanceHistoryScreen = () => {
 
             {/* Back Button */}
 
-            <TouchableOpacity style={[styles.backButton, { backgroundColor: theme.mode === 'dark' ? '#444' : '#000' }]} onPress={() => navigation.goBack()}>
-                {/* <Icon name="arrow-back" size={18} color="#fff" style={styles.backIcon} /> */}
+            {/* <TouchableOpacity style={[styles.backButton, { backgroundColor: theme.mode === 'dark' ? '#444' : '#000' }]} onPress={() => navigation.goBack()}>
+                <Icon name="arrow-back" size={18} color="#fff" style={styles.backIcon} />
                 <Text style={[styles.backButtonText, { color: theme.mode === 'dark' ? '#fff' : '#fff' }]}>Go Back</Text>
-            </TouchableOpacity>
+            </TouchableOpacity> */}
         </View>
     );
 };

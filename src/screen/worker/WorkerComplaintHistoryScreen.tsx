@@ -192,9 +192,9 @@ const WorkerComplaintHistoryScreen = () => {
                 ListEmptyComponent={<Text style={[styles.emptyText, { color: theme.text }]}>No complaints found.</Text>}
             />
 
-            <TouchableOpacity style={[styles.backButton, { backgroundColor: theme.mode === 'dark' ? '#444' : '#000' }]} onPress={() => navigation.goBack()}>
+            {/* <TouchableOpacity style={[styles.backButton, { backgroundColor: theme.mode === 'dark' ? '#444' : '#000' }]} onPress={() => navigation.goBack()}>
                 <Text style={[styles.backButtonText, { color: theme.mode === 'dark' ? '#fff' : '#fff' }]}>Go Back</Text>
-            </TouchableOpacity>
+            </TouchableOpacity> */}
 
             <Modal visible={modalVisible} transparent>
                 <View style={styles.modalContainer}>
