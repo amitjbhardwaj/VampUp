@@ -2,12 +2,14 @@ import { NavigationProp, useNavigation } from "@react-navigation/native";
 import React, { useEffect, useState } from "react";
 import {
     View, Text, StyleSheet, StatusBar, TouchableOpacity, TextInput, ToastAndroid,
-    ScrollView
+    ScrollView,
+    Alert
 } from "react-native";
 import { Picker } from "@react-native-picker/picker";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { RootStackParamList } from "../../RootNavigator";
 import { useTheme } from "../../context/ThemeContext";
+import axios from "axios";
 
 interface Project {
     project_Id: string;
@@ -27,22 +29,45 @@ const WorkerRequestPaymentScreen = () => {
     const [selectedProject, setSelectedProject] = useState<string>("");
     const [amount, setAmount] = useState<string>("");
     const [selectedProjectDetails, setSelectedProjectDetails] = useState<Project | null>(null);
+    const [error, setError] = useState<string | null>(null); // Error state
+    const [workerName, setWorkerName] = useState<string | null>(null);
+    const [isLoading, setIsLoading] = useState(true);  // Loading state
 
     useEffect(() => {
         const fetchCompletedProjects = async () => {
             try {
-                const storedCompletedProjects = await AsyncStorage.getItem("completedProjects");
-                if (storedCompletedProjects) {
-                    setProjects(JSON.parse(storedCompletedProjects));
+                const storedWorkerName = await AsyncStorage.getItem("workerName");
+                if (!storedWorkerName) {
+                    console.error("No worker name found in AsyncStorage.");
+                    return;
+                }
+
+                console.log(`Retrieved Worker Name: ${storedWorkerName}`);
+                setWorkerName(storedWorkerName);
+
+                const response = await axios.get(
+                    `http://192.168.129.119:5001/get-completed-projects?workerName=${storedWorkerName}`
+                );
+
+                console.log("API Response:", response.data);
+
+                if (response.data.status === "OK" && Array.isArray(response.data.data) && response.data.data.length > 0) {
+                    setProjects(response.data.data);
+
+                } else {
+                    setError("No completed projects found.");
                 }
             } catch (error) {
                 console.error("Error fetching completed projects", error);
+                setError("Failed to fetch completed projects. Please try again.");
+            } finally {
+                setIsLoading(false); // Hide the loading indicator after the fetch completes
             }
         };
-    
+
         fetchCompletedProjects();
     }, []);
-    
+
 
     const handleProjectSelection = (projectId: string) => {
         if (!projectId) return;
@@ -53,12 +78,12 @@ const WorkerRequestPaymentScreen = () => {
 
     const handleSubmit = async () => {
         if (!selectedProject || !amount) {
-            ToastAndroid.show("Please fill all fields", ToastAndroid.SHORT);
+            Alert.alert("Please fill all fields");
             return;
         }
 
         if (!selectedProjectDetails?.project_Id) {
-            ToastAndroid.show("Project ID is missing", ToastAndroid.SHORT);
+            Alert.alert("Project ID is missing");
             return;
         }
 
@@ -71,7 +96,7 @@ const WorkerRequestPaymentScreen = () => {
         );
 
         if (isDuplicateRequest) {
-            ToastAndroid.show("A request with this amount has already been submitted for this project", ToastAndroid.SHORT);
+            Alert.alert("A request with this amount has already been submitted for this project");
             return;
         }
 
@@ -91,12 +116,22 @@ const WorkerRequestPaymentScreen = () => {
             requestList.push(newRequest);
             await AsyncStorage.setItem("worker_requests", JSON.stringify(requestList));
 
-            ToastAndroid.show("Payment Request Submitted", ToastAndroid.SHORT);
+            Alert.alert("Payment Request Submitted");
             navigation.navigate('WorkerRequestHistoryScreen');  // This should work now
         } catch (error) {
-            ToastAndroid.show("Failed to save request", ToastAndroid.SHORT);
+            Alert.alert("Failed to save request");
         }
     };
+
+    if (error) {
+        return (
+            <View style={[styles.errorContainer, { backgroundColor: theme.mode === 'dark' ? '#000' : '#fff' }]}>
+                <Text style={[styles.errorText, { color: theme.mode === 'dark' ? '#fff' : '#000' }]}>
+                    {error}
+                </Text>
+            </View>
+        );
+    }
 
     const isDarkMode = theme.mode === "dark"; // Check if dark mode is enabled
 
@@ -198,13 +233,17 @@ const styles = StyleSheet.create({
         borderRadius: 8,
         fontSize: 16,
         marginBottom: 20,
-        borderWidth: 1, 
-        borderColor: "#666", 
+        borderWidth: 1,
+        borderColor: "#666",
         backgroundColor: "transparent", // <-- Ensure transparency for dark mode
     },
 
     submitButton: { padding: 13, marginTop: 20, alignItems: "center", borderRadius: 10 },
     submitButtonText: { color: "#fff", fontWeight: "bold", fontSize: 16 },
+    loadingContainer: { flex: 1, justifyContent: 'center', alignItems: 'center' },
+    loadingText: { fontSize: 18, marginTop: 10 },
+    errorContainer: { flex: 1, justifyContent: 'center', alignItems: 'center' },
+    errorText: { fontSize: 18, color: 'red', textAlign: 'center' },
 });
 
 export default WorkerRequestPaymentScreen;

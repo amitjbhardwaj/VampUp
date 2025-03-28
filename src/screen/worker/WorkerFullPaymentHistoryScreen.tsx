@@ -88,16 +88,16 @@ const WorkerFullPaymentHistoryScreen = () => {
         </View>
     );
 
-        if (error) {
-            return (
-                <View style={[styles.errorContainer, { backgroundColor: theme.mode === 'dark' ? '#000' : '#fff' }]}>
-                    <Text style={[styles.errorText, { color: theme.mode === 'dark' ? '#fff' : '#000' }]}>
-                        {error}
-                    </Text>
-                </View>
-            );
-        }
-    
+    if (error) {
+        return (
+            <View style={[styles.errorContainer, { backgroundColor: theme.mode === 'dark' ? '#000' : '#fff' }]}>
+                <Text style={[styles.errorText, { color: theme.mode === 'dark' ? '#fff' : '#000' }]}>
+                    {error}
+                </Text>
+            </View>
+        );
+    }
+
 
     return (
         <View style={[styles.container, { backgroundColor: theme.mode === 'dark' ? '#121212' : '#f9f9f9' }]}>
