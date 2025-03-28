@@ -41,7 +41,7 @@ const WorkUpdateStatusScreen = () => {
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [reason, setReason] = useState("");
     const [editableEndDate, setEditableEndDate] = useState(project?.project_end_date || "");
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(false); // This is already defined
 
     // If no project is found, show a message and go back
     if (!project) {
@@ -72,8 +72,7 @@ const WorkUpdateStatusScreen = () => {
     };
 
     const handleUpdate = async () => {
-
-        if (loading) return;
+        if (loading) return; // Prevent multiple clicks
         setLoading(true);
 
         if (!onUpdateCompletion) {
@@ -94,9 +93,9 @@ const WorkUpdateStatusScreen = () => {
 
             const response = await axios.put(
                 `http://192.168.129.119:5001/update-project-completion/${project._id}`,
-                {
+                { 
                     completion_percentage: updatedCompletion,
-                    status: updatedStatus
+                    status: updatedStatus 
                 }
             );
 
@@ -133,45 +132,7 @@ const WorkUpdateStatusScreen = () => {
         } else {
             navigation.goBack();
         }
-
-        setLoading(false);
-        onUpdateCompletion(project._id, updatedCompletion);
-
-        if (status === "On-Hold") {
-            try {
-                const response = await axios.put(
-                    `http://192.168.129.119:5001/update-project-on-hold/${project._id}`,
-                    {
-                        project_end_date: new Date().toISOString().split("T")[0],
-                        status: "On-Hold",
-                        reason_on_hold: reason,
-                    }
-                );
-
-                if (response.status === 200) {
-                    Alert.alert("Project marked as On Hold");
-                    navigation.goBack();
-                } else {
-                    Alert.alert("Couldn't put project on Hold");
-                }
-            } catch (error) {
-                if (axios.isAxiosError(error) && error.response?.status === 404) {
-                    Alert.alert("No projects available to update.");
-                    navigation.goBack();
-                } else {
-                    Alert.alert("Error updating project, please try again.");
-                }
-            }
-            setLoading(false);
-        } else {
-            navigation.goBack();
-            setLoading(false);
-        }
     };
-
-
-
-
 
     const handleSubmitReason = async () => {
         if (reason.trim() === "") {
@@ -201,17 +162,10 @@ const WorkUpdateStatusScreen = () => {
                 onHoldProjects.push(updatedProject);
                 await AsyncStorage.setItem("onHoldProjects", JSON.stringify(onHoldProjects));
             }
-
-            // ✅ Debugging log
-            const savedProjects = await AsyncStorage.getItem("onHoldProjects");
-            console.log("Updated On-Hold Projects:", JSON.parse(savedProjects || "[]"));
-
         } catch (error) {
             console.error("Error updating on-hold projects:", error);
         }
     };
-
-
 
     const handleCancel = () => {
         setIsModalVisible(false);
@@ -255,13 +209,18 @@ const WorkUpdateStatusScreen = () => {
                     ))}
                 </Picker>
 
-                <TouchableOpacity style={[styles.updateButton, { backgroundColor: theme.mode === 'dark' ? '#444' : '#000' }]} onPress={handleUpdate}>
+                <TouchableOpacity 
+                    style={[styles.updateButton, { backgroundColor: theme.mode === 'dark' ? '#444' : '#000' }]} 
+                    onPress={handleUpdate} 
+                    disabled={loading} // Disable when loading is true
+                >
                     <Text style={styles.updateButtonText}>Update</Text>
                 </TouchableOpacity>
 
-                <TouchableOpacity
-                    style={[styles.onHoldButton, { backgroundColor: theme.mode === 'dark' ? '#444' : '#000' }]}
+                <TouchableOpacity 
+                    style={[styles.onHoldButton, { backgroundColor: theme.mode === 'dark' ? '#444' : '#000' }]} 
                     onPress={() => setIsModalVisible(true)}
+                    disabled={loading} // Disable when loading is true
                 >
                     <Text style={styles.onHoldButtonText}>Hold Work</Text>
                 </TouchableOpacity>
@@ -312,6 +271,7 @@ const WorkUpdateStatusScreen = () => {
         </ScrollView>
     );
 };
+
 
 const projectDetails = (project: Project, status: string) => {
     const details = [
