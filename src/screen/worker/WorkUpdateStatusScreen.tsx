@@ -72,48 +72,71 @@ const WorkUpdateStatusScreen = () => {
     };
 
     const handleUpdate = async () => {
+
         if (loading) return;
-    
         setLoading(true);
-    
+
         if (!onUpdateCompletion) {
             console.error("onUpdateCompletion is not provided.");
             setLoading(false);
             return;
         }
-    
+
         const updatedCompletion = parseInt(completion, 10);
         if (isNaN(updatedCompletion) || updatedCompletion < 0 || updatedCompletion > 100) {
             Alert.alert("Please select a valid percentage (0-100)");
             setLoading(false);
             return;
         }
-    
-        onUpdateCompletion(project._id, updatedCompletion);
-    
-        if (updatedCompletion === 100) {
-            try {
-                const storedActiveProjects = await AsyncStorage.getItem("activeProjects");
-                let activeProjects = storedActiveProjects ? JSON.parse(storedActiveProjects) : [];
-    
-                activeProjects = activeProjects.filter((p: Project) => p._id !== project._id);
-                await AsyncStorage.setItem("activeProjects", JSON.stringify(activeProjects));
-    
-                const storedCompletedProjects = await AsyncStorage.getItem("completedProjects");
-                let completedProjects = storedCompletedProjects ? JSON.parse(storedCompletedProjects) : [];
-    
-                completedProjects.push({ ...project, completion_percentage: 100, status: "Completed", project_end_date: editableEndDate });
-                await AsyncStorage.setItem("completedProjects", JSON.stringify(completedProjects));
-    
-                await AsyncStorage.setItem(`project_status_${project._id}`, "Completed");
-                navigation.navigate("WorkerWorkHistoryScreen");
-            } catch (error) {
-                console.error("Error updating AsyncStorage", error);
+
+        try {
+            const updatedStatus = updatedCompletion === 100 ? "Completed" : "In-Progress";
+
+            const response = await axios.put(
+                `http://192.168.129.119:5001/update-project-completion/${project._id}`,
+                {
+                    completion_percentage: updatedCompletion,
+                    status: updatedStatus
+                }
+            );
+
+            if (response.status === 200) {
+                Alert.alert("Project updated successfully");
+
+                if (updatedCompletion === 100) {
+                    // Move project to completed projects list in AsyncStorage
+                    const storedCompletedProjects = await AsyncStorage.getItem("completedProjects");
+                    let completedProjects = storedCompletedProjects ? JSON.parse(storedCompletedProjects) : [];
+
+                    completedProjects.push({ ...project, completion_percentage: 100, status: "Completed" });
+                    await AsyncStorage.setItem("completedProjects", JSON.stringify(completedProjects));
+
+                    // Remove from active projects
+                    const storedActiveProjects = await AsyncStorage.getItem("activeProjects");
+                    let activeProjects = storedActiveProjects ? JSON.parse(storedActiveProjects) : [];
+                    activeProjects = activeProjects.filter((p: Project) => p._id !== project._id);
+                    await AsyncStorage.setItem("activeProjects", JSON.stringify(activeProjects));
+                }
+            } else {
+                Alert.alert("Failed to update project. Please try again.");
             }
-            setLoading(false);
-            return;
+        } catch (error) {
+            console.error("Error updating project:", error);
+            Alert.alert("An error occurred while updating. Please try again.");
         }
-    
+
+        setLoading(false);
+        onUpdateCompletion(project._id, updatedCompletion);
+
+        if (updatedCompletion === 100) {
+            navigation.navigate("WorkerWorkHistoryScreen");
+        } else {
+            navigation.goBack();
+        }
+
+        setLoading(false);
+        onUpdateCompletion(project._id, updatedCompletion);
+
         if (status === "On-Hold") {
             try {
                 const response = await axios.put(
@@ -124,7 +147,7 @@ const WorkUpdateStatusScreen = () => {
                         reason_on_hold: reason,
                     }
                 );
-    
+
                 if (response.status === 200) {
                     Alert.alert("Project marked as On Hold");
                     navigation.goBack();
@@ -145,7 +168,8 @@ const WorkUpdateStatusScreen = () => {
             setLoading(false);
         }
     };
-    
+
+
 
 
 

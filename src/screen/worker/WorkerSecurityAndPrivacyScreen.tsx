@@ -1,7 +1,6 @@
 import { useNavigation } from "@react-navigation/native";
 import React from "react";
 import { View, Text, StyleSheet, StatusBar, TouchableOpacity, ScrollView } from "react-native";
-import Icon from "react-native-vector-icons/MaterialIcons";
 
 const WorkerSecurityAndPrivacyScreen = () => {
     const navigation = useNavigation();

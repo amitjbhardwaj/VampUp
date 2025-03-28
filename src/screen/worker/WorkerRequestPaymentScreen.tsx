@@ -5,7 +5,6 @@ import {
     ScrollView
 } from "react-native";
 import { Picker } from "@react-native-picker/picker";
-import projectsData from "../../assets/projects.json";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { RootStackParamList } from "../../RootNavigator";
 import { useTheme } from "../../context/ThemeContext";
