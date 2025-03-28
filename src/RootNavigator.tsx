@@ -37,6 +37,12 @@ import AdminAllocateProjectScreen from "./screen/admin/AdminAllocateProjectScree
 import AdminFindContractorScreen from "./screen/admin/AdminFindContractorScreen";
 import ContractorAllWorkScreen from "./screen/contractor/ContractorAllWorkScreen";
 import ContractorOnBoardWorkersScreen from "./screen/contractor/ContractorOnBoardWorkersScreen";
+import AdminDocumentsScreen from "./screen/admin/AdminDocumentsScreen";
+import AdminInitiatePaymentScreen from "./screen/admin/AdminInitiatePaymentScreen";
+import AdminOngoingProjectsScreen from "./screen/admin/AdminOngoingProjectsScreen";
+import AdminOnHoldProjectsScreen from "./screen/admin/AdminOnHoldProjectsScreen";
+import AdminReviewProjectsScreen from "./screen/admin/AdminReviewProjectsScreen";
+import AdminReviewRequestsScreen from "./screen/admin/AdminReviewRequestsScreen";
 
 export type RootStackParamList = {
     LoginScreen: undefined;
@@ -93,10 +99,15 @@ export type RootStackParamList = {
     AdminAddNewProjectScreen: undefined;
     AdminAllocateProjectScreen: undefined;
     AdminFindContractorScreen: { projectId: string };
+    AdminDocumentsScreen: undefined;
+    AdminInitiatePaymentScreen: undefined;
+    AdminOngoingProjectsScreen: undefined;
+    AdminOnHoldProjectsScreen: undefined;
+    AdminReviewProjectsScreen: undefined;
+    AdminReviewRequestsScreen: undefined;
 };
 
 const Stack = createStackNavigator<RootStackParamList>();
-
 
 const RootNavigator: React.FC = () => {
     return (
@@ -111,7 +122,7 @@ const RootNavigator: React.FC = () => {
                     <Stack.Screen name="RegistrationFailed" component={RegistrationFailedScreen} />
                     <Stack.Screen name="PasswordUpdatedScreen" component={PasswordUpdatedScreen} />
                     <Stack.Screen name="PersonalDetailsScreen" component={PersonalDetailsScreen} />
-                    
+
                     <Stack.Screen name="WorkerHomeScreen" component={WorkerHomeScreen} />
                     <Stack.Screen name="WorkerWorkHistoryScreen" component={WorkerWorkHistoryScreen} />
                     <Stack.Screen name="WorkerComplaintHistoryScreen" component={WorkerComplaintHistoryScreen} />
@@ -137,13 +148,20 @@ const RootNavigator: React.FC = () => {
                     <Stack.Screen name="ContractorOnHoldProjectsScreen" component={ContractorOnHoldProjectsScreen} />
                     <Stack.Screen name="ContractorOnBoardWorkersScreen" component={ContractorOnBoardWorkersScreen} />
                     <Stack.Screen name="ContractorAllWorkScreen" component={ContractorAllWorkScreen} />
-                    
+
 
 
                     <Stack.Screen name="AdminHomeScreen" component={AdminHomeScreen} />
                     <Stack.Screen name="AdminAddNewProjectScreen" component={AdminAddNewProjectScreen} />
                     <Stack.Screen name="AdminAllocateProjectScreen" component={AdminAllocateProjectScreen} />
                     <Stack.Screen name="AdminFindContractorScreen" component={AdminFindContractorScreen} />
+
+                    <Stack.Screen name="AdminDocumentsScreen" component={AdminDocumentsScreen} />
+                    <Stack.Screen name="AdminInitiatePaymentScreen" component={AdminInitiatePaymentScreen} />
+                    <Stack.Screen name="AdminOngoingProjectsScreen" component={AdminOngoingProjectsScreen} />
+                    <Stack.Screen name="AdminOnHoldProjectsScreen" component={AdminOnHoldProjectsScreen} />
+                    <Stack.Screen name="AdminReviewProjectsScreen" component={AdminReviewProjectsScreen} />
+                    <Stack.Screen name="AdminReviewRequestsScreen" component={AdminReviewRequestsScreen} />
 
                 </Stack.Navigator>
             </NavigationContainer>

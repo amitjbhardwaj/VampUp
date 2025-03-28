@@ -18,6 +18,7 @@ const Home = () => {
 
     const [activeProjectsCount, setActiveProjectsCount] = useState<number | null>(null);
     const [onHoldProjectsCount, setOnHoldProjectsCount] = useState<number | null>(null);
+    const [completedProjectsCount, setCompletedProjectsCount] = useState<number | null>(null);
     const [adminName, setAdminName] = useState<string | null>(null);
     const [isRefreshing, setIsRefreshing] = useState(false); // State for pull-to-refresh
 
@@ -46,6 +47,15 @@ const Home = () => {
                     setOnHoldProjectsCount(onHoldProjectsData.data.length);
                 } else {
                     setOnHoldProjectsCount(0);
+                }
+
+                // Fetch Completed Projects count
+                const completedProjectsResponse = await fetch(`http://192.168.129.119:5001/get-projects-by-admin?created_by=${storedName}&status=Completed`);
+                const completedProjectsData = await completedProjectsResponse.json();
+                if (completedProjectsData.status === 'OK') {
+                    setCompletedProjectsCount(completedProjectsData.data.length);
+                } else {
+                    setCompletedProjectsCount(0);
                 }
 
             } else {
@@ -90,7 +100,7 @@ const Home = () => {
                         <Text style={{ color: theme.text }}>New Project</Text>
                     </View>
                     <View style={styles.iconItem}>
-                        <TouchableOpacity onPress={() => navigation.navigate('WorkerActiveWorkScreen')}>
+                        <TouchableOpacity onPress={() => navigation.navigate('AdminOngoingProjectsScreen')}>
                             <Ionicons name="construct" size={50} color={theme.text} />
                             {activeProjectsCount !== null && activeProjectsCount > 0 && (
                                 <View style={styles.notificationBadge}>
@@ -105,8 +115,13 @@ const Home = () => {
                 {/* Second Row */}
                 <View style={styles.iconRow}>
                     <View style={styles.iconItem}>
-                        <TouchableOpacity onPress={() => navigation.navigate('WorkerActiveWorkScreen')}>
+                        <TouchableOpacity onPress={() => navigation.navigate('AdminReviewProjectsScreen')}>
                             <Ionicons name="clipboard" size={50} color={theme.text} />
+                            {completedProjectsCount !== null && completedProjectsCount > 0 && (
+                                <View style={styles.notificationBadge}>
+                                    <Text style={styles.notificationText}>{completedProjectsCount}</Text>
+                                </View>
+                            )}
                         </TouchableOpacity>
                         <Text style={{ color: theme.text }}>Review Project</Text>
                     </View>
@@ -143,7 +158,7 @@ const Home = () => {
                         <Text style={{ color: theme.text }}>Allocate Project</Text>
                     </View>
                     <View style={styles.iconItem}>
-                        <TouchableOpacity onPress={() => navigation.navigate('WorkerActiveWorkScreen')}>
+                        <TouchableOpacity onPress={() => navigation.navigate('AdminOnHoldProjectsScreen')}>
                             <Ionicons name="pause-circle" size={50} color={theme.text} />
                             {onHoldProjectsCount !== null && onHoldProjectsCount > 0 && (
                                 <View style={styles.notificationBadge}>
