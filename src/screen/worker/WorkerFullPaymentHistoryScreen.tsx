@@ -5,6 +5,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import Icon from "react-native-vector-icons/FontAwesome";
 import { RootStackParamList } from "../../RootNavigator"; // Adjust the path as needed
 import { useTheme } from "../../context/ThemeContext"; // Assuming you have this context for theme management
+import axios from "axios";
 
 // Correctly type the navigation prop using RootStackParamList
 type WorkerFullPaymentHistoryScreenNavigationProp = NavigationProp<RootStackParamList, 'WorkerFullPaymentHistoryScreen'>;
@@ -13,26 +14,51 @@ const WorkerFullPaymentHistoryScreen = () => {
     const { theme } = useTheme(); // Get the current theme (light or dark)
     const navigation = useNavigation<WorkerFullPaymentHistoryScreenNavigationProp>(); // Explicitly set the type here
     const [completedProjects, setCompletedProjects] = useState<any[]>([]);
+    const [error, setError] = useState<string | null>(null); // Error state
+    const [workerName, setWorkerName] = useState<string | null>(null);
+    const [isLoading, setIsLoading] = useState(true);  // Loading state
+
 
     useEffect(() => {
-        const loadCompletedProjects = async () => {
+        const fetchCompletedProjects = async () => {
             try {
-                const storedProjects = await AsyncStorage.getItem("completedProjects");
-                if (storedProjects) {
-                    setCompletedProjects(JSON.parse(storedProjects));
+                const storedWorkerName = await AsyncStorage.getItem("workerName");
+                if (!storedWorkerName) {
+                    console.error("No worker name found in AsyncStorage.");
+                    return;
+                }
+
+                console.log(`Retrieved Worker Name: ${storedWorkerName}`);
+                setWorkerName(storedWorkerName);
+
+                const response = await axios.get(
+                    `http://192.168.129.119:5001/get-completed-projects?workerName=${storedWorkerName}`
+                );
+
+                console.log("API Response:", response.data);
+
+                if (response.data.status === "OK" && Array.isArray(response.data.data) && response.data.data.length > 0) {
+                    setCompletedProjects(response.data.data);
+
+                } else {
+                    setError("No completed projects found.");
                 }
             } catch (error) {
-                console.error("Error loading completed projects", error);
+                console.error("Error fetching completed projects", error);
+                setError("Failed to fetch completed projects. Please try again.");
+            } finally {
+                setIsLoading(false); // Hide the loading indicator after the fetch completes
             }
         };
 
-        loadCompletedProjects();
+        fetchCompletedProjects();
     }, []);
+
 
     const projectDetails = (project: any) => [
         { label: 'Project ID', value: project.project_Id, icon: 'id-badge' },
         { label: 'Description', value: project.project_description, icon: 'info-circle' },
-        { label: 'Assigned To', value: project.assigned_to, icon: 'user' },
+        { label: 'Assigned To', value: project.worker_name, icon: 'user' },
         { label: 'Start Date', value: project.project_start_date, icon: 'calendar' },
         { label: 'End Date', value: project.project_end_date, icon: 'calendar' },
         { label: 'Completion', value: `${project.completion_percentage}%`, icon: 'check-circle' }
@@ -61,6 +87,17 @@ const WorkerFullPaymentHistoryScreen = () => {
             </TouchableOpacity>
         </View>
     );
+
+        if (error) {
+            return (
+                <View style={[styles.errorContainer, { backgroundColor: theme.mode === 'dark' ? '#000' : '#fff' }]}>
+                    <Text style={[styles.errorText, { color: theme.mode === 'dark' ? '#fff' : '#000' }]}>
+                        {error}
+                    </Text>
+                </View>
+            );
+        }
+    
 
     return (
         <View style={[styles.container, { backgroundColor: theme.mode === 'dark' ? '#121212' : '#f9f9f9' }]}>
@@ -116,6 +153,10 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         fontSize: 16,
     },
+    loadingContainer: { flex: 1, justifyContent: 'center', alignItems: 'center' },
+    loadingText: { fontSize: 18, marginTop: 10 },
+    errorContainer: { flex: 1, justifyContent: 'center', alignItems: 'center' },
+    errorText: { fontSize: 18, color: 'red', textAlign: 'center' },
 });
 
 export default WorkerFullPaymentHistoryScreen;
