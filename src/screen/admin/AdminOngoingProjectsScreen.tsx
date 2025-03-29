@@ -163,12 +163,17 @@ const AdminOngoingProjectsScreen = () => {
         <ScrollView style={[styles.container, { backgroundColor: theme.mode === 'dark' ? '#121212' : '#f8f8f8' }]}>
             <Text style={[styles.header, { color: theme.mode === 'dark' ? '#fff' : '#000' }]}>Ongoing Projects</Text>
             {projects.length > 0 ? (
-                projects.map((project: any) => renderProjectDetails(project))
+                projects.map((project: any) => (
+                    <View key={project.project_Id}>
+                        {renderProjectDetails(project)}
+                    </View>
+                ))
             ) : (
                 <Text style={[styles.errorText, { color: theme.mode === 'dark' ? '#fff' : '#000' }]}>
                     No ongoing projects found.
                 </Text>
             )}
+
         </ScrollView>
     );
 };

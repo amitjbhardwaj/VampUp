@@ -43,6 +43,7 @@ import AdminOngoingProjectsScreen from "./screen/admin/AdminOngoingProjectsScree
 import AdminOnHoldProjectsScreen from "./screen/admin/AdminOnHoldProjectsScreen";
 import AdminReviewProjectsScreen from "./screen/admin/AdminReviewProjectsScreen";
 import AdminReviewRequestsScreen from "./screen/admin/AdminReviewRequestsScreen";
+import ContractorCompletedProjectsScreen from "./screen/contractor/ContractorCompletedProjectsScreen";
 
 export type RootStackParamList = {
     LoginScreen: undefined;
@@ -93,6 +94,7 @@ export type RootStackParamList = {
     ContractorOnHoldProjectsScreen: undefined;
     ContractorOnBoardWorkersScreen: undefined;
     ContractorAllWorkScreen: undefined;
+    ContractorCompletedProjectsScreen: undefined;
 
 
     AdminHomeScreen: undefined;
@@ -148,6 +150,7 @@ const RootNavigator: React.FC = () => {
                     <Stack.Screen name="ContractorOnHoldProjectsScreen" component={ContractorOnHoldProjectsScreen} />
                     <Stack.Screen name="ContractorOnBoardWorkersScreen" component={ContractorOnBoardWorkersScreen} />
                     <Stack.Screen name="ContractorAllWorkScreen" component={ContractorAllWorkScreen} />
+                    <Stack.Screen name="ContractorCompletedProjectsScreen" component={ContractorCompletedProjectsScreen} />
 
 
 
@@ -155,7 +158,6 @@ const RootNavigator: React.FC = () => {
                     <Stack.Screen name="AdminAddNewProjectScreen" component={AdminAddNewProjectScreen} />
                     <Stack.Screen name="AdminAllocateProjectScreen" component={AdminAllocateProjectScreen} />
                     <Stack.Screen name="AdminFindContractorScreen" component={AdminFindContractorScreen} />
-
                     <Stack.Screen name="AdminDocumentsScreen" component={AdminDocumentsScreen} />
                     <Stack.Screen name="AdminInitiatePaymentScreen" component={AdminInitiatePaymentScreen} />
                     <Stack.Screen name="AdminOngoingProjectsScreen" component={AdminOngoingProjectsScreen} />

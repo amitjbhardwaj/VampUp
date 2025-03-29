@@ -14,68 +14,60 @@ const Home = () => {
     const { theme } = useTheme();
     const navigation = useNavigation<HomeNavigationProp>();
 
-    // States to hold project counts, contractor name, and status
+    // States to hold project counts
     const [allProjectsCount, setAllProjectsCount] = useState<number | null>(null);
     const [activeProjectsCount, setActiveProjectsCount] = useState<number | null>(null);
     const [onHoldProjectsCount, setOnHoldProjectsCount] = useState<number | null>(null);
+    const [completedProjectsCount, setCompletedProjectsCount] = useState<number | null>(null);
     const [contractorName, setContractorName] = useState<string | null>(null);
-    const [isRefreshing, setIsRefreshing] = useState(false); // State for pull-to-refresh
+    const [isRefreshing, setIsRefreshing] = useState(false);
 
-    // Fetch contractor name and project counts based on "contractor_name"
+    // Fetch contractor name and project counts
     const fetchContractorNameAndProjectCounts = async () => {
         try {
-            // Get contractor name from AsyncStorage
             const storedName = await AsyncStorage.getItem("contractorName");
 
             if (storedName) {
-                setContractorName(storedName); // Store the contractor name
+                setContractorName(storedName);
 
-                // Fetch All Projects count
+                // Fetch all projects count
                 const allProjectsResponse = await fetch(`http://192.168.129.119:5001/get-projects-by-contractor?contractor_name=${storedName}`);
                 const allProjectsData = await allProjectsResponse.json();
-                if (allProjectsData.status === 'OK') {
-                    setAllProjectsCount(allProjectsData.data.length);
-                } else {
-                    setAllProjectsCount(0);
-                }
+                setAllProjectsCount(allProjectsData.status === 'OK' ? allProjectsData.data.length : 0);
 
-                // Fetch Active Projects count
+                // Fetch active projects count
                 const activeProjectsResponse = await fetch(`http://192.168.129.119:5001/get-projects-by-contractor?contractor_name=${storedName}&status=In-Progress`);
                 const activeProjectsData = await activeProjectsResponse.json();
-                if (activeProjectsData.status === 'OK') {
-                    setActiveProjectsCount(activeProjectsData.data.length);
-                } else {
-                    setActiveProjectsCount(0);
-                }
+                setActiveProjectsCount(activeProjectsData.status === 'OK' ? activeProjectsData.data.length : 0);
 
-                // Fetch On Hold Projects count
+                // Fetch on hold projects count
                 const onHoldProjectsResponse = await fetch(`http://192.168.129.119:5001/get-projects-by-contractor?contractor_name=${storedName}&status=On-Hold`);
                 const onHoldProjectsData = await onHoldProjectsResponse.json();
-                if (onHoldProjectsData.status === 'OK') {
-                    setOnHoldProjectsCount(onHoldProjectsData.data.length);
-                } else {
-                    setOnHoldProjectsCount(0);
-                }
+                setOnHoldProjectsCount(onHoldProjectsData.status === 'OK' ? onHoldProjectsData.data.length : 0);
 
+                // Fetch completed projects count
+                const completedProjectsResponse = await fetch(`http://192.168.129.119:5001/get-projects-by-contractor?contractor_name=${storedName}&status=Completed`);
+                const completedProjectsData = await completedProjectsResponse.json();
+                setCompletedProjectsCount(completedProjectsData.status === 'OK' ? completedProjectsData.data.length : 0);
             } else {
                 setAllProjectsCount(0);
                 setActiveProjectsCount(0);
                 setOnHoldProjectsCount(0);
+                setCompletedProjectsCount(0);
             }
         } catch (error) {
-            console.error("Error fetching contractor name or project counts:", error);
+            console.error("Error fetching project counts:", error);
             setAllProjectsCount(0);
             setActiveProjectsCount(0);
             setOnHoldProjectsCount(0);
+            setCompletedProjectsCount(0);
         }
     };
 
-    // Fetch project counts and contractor name on mount
     useEffect(() => {
         fetchContractorNameAndProjectCounts();
-    }, []); // Empty dependency array ensures this runs only when the component mounts
+    }, []);
 
-    // Function to handle pull-to-refresh
     const onRefresh = async () => {
         setIsRefreshing(true);
         await fetchContractorNameAndProjectCounts();
@@ -90,7 +82,6 @@ const Home = () => {
             }
         >
             <View style={styles.iconContainer}>
-                
                 {/* First Row: "All Projects" and "Active Projects" */}
                 <View style={styles.iconRow}>
                     <View style={styles.iconItem}>
@@ -117,7 +108,7 @@ const Home = () => {
                     </View>
                 </View>
 
-                {/* Second Row: "Upcoming Projects" and "On Hold Projects" */}
+                {/* Second Row: "On-board Workers" and "On Hold Projects" */}
                 <View style={styles.iconRow}>
                     <View style={styles.iconItem}>
                         <TouchableOpacity onPress={() => navigation.navigate('ContractorOnBoardWorkersScreen')}>
@@ -138,9 +129,20 @@ const Home = () => {
                     </View>
                 </View>
 
-                {/* Last Row: "Initiate Payment" */}
+                {/* Third Row: "Completed Projects" and "Initiate Payment" */}
                 <View style={styles.iconRow}>
-                    <View style={[styles.iconItem, styles.lastRowIcon]}>
+                    <View style={styles.iconItem}>
+                        <TouchableOpacity onPress={() => navigation.navigate('ContractorCompletedProjectsScreen')}>
+                            <Ionicons name="checkmark-circle" size={50} color={theme.text} />
+                            {completedProjectsCount !== null && completedProjectsCount > 0 && (
+                                <View style={styles.notificationBadge}>
+                                    <Text style={styles.notificationText}>{completedProjectsCount}</Text>
+                                </View>
+                            )}
+                        </TouchableOpacity>
+                        <Text style={{ color: theme.text }}>Completed Projects</Text>
+                    </View>
+                    <View style={styles.iconItem}>
                         <TouchableOpacity onPress={() => navigation.navigate('ContractorInitiatePaymentScreen')}>
                             <Ionicons name="card" size={50} color={theme.text} />
                         </TouchableOpacity>
@@ -171,9 +173,6 @@ const styles = StyleSheet.create({
     iconItem: {
         alignItems: "center",
         width: "45%",
-    },
-    lastRowIcon: {
-        marginLeft: "-145%",
     },
     notificationBadge: {
         position: "absolute",

@@ -10,17 +10,17 @@ const AdminOnHoldProjectsScreen = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
-    const fetchOngoingProjects = async () => {
+    const fetchOnHoldProjects = async () => {
         try {
             // Get admin name from AsyncStorage
             const storedName = await AsyncStorage.getItem("adminName");
 
             if (storedName) {
-                // Fetch the ongoing projects for the admin
+                // Fetch the OnHold projects for the admin
                 const response = await fetch(`http://192.168.129.119:5001/get-projects-by-admin?created_by=${storedName}&status=On-Hold`);
                 const data = await response.json();
                 if (data.status === "OK") {
-                    setProjects(data.data); // Set the list of ongoing projects
+                    setProjects(data.data); // Set the list of OnHold projects
                 } else {
                     setProjects([]); // No projects found
                 }
@@ -28,15 +28,15 @@ const AdminOnHoldProjectsScreen = () => {
                 setProjects([]); // No admin name found
             }
         } catch (error) {
-            console.error("Error fetching ongoing projects:", error);
-            setError("Failed to load ongoing projects.");
+            console.error("Error fetching OnHold projects:", error);
+            setError("Failed to load OnHold projects.");
         } finally {
             setLoading(false);
         }
     };
 
     useEffect(() => {
-        fetchOngoingProjects();
+        fetchOnHoldProjects();
     }, []);
 
     const handleMarkCompleted = (projectId: string) => {
@@ -78,7 +78,7 @@ const AdminOnHoldProjectsScreen = () => {
             });
             const data = await response.json();
             if (data.status === "OK") {
-                fetchOngoingProjects(); // Reload the project list
+                fetchOnHoldProjects(); // Reload the project list
             } else {
                 setError("Failed to update project status.");
             }
@@ -100,7 +100,7 @@ const AdminOnHoldProjectsScreen = () => {
             });
             const data = await response.json();
             if (data.status === "OK") {
-                fetchOngoingProjects(); // Reload the project list
+                fetchOnHoldProjects(); // Reload the project list
             } else {
                 setError("Failed to delete project.");
             }
@@ -161,14 +161,19 @@ const AdminOnHoldProjectsScreen = () => {
 
     return (
         <ScrollView style={[styles.container, { backgroundColor: theme.mode === 'dark' ? '#121212' : '#f8f8f8' }]}>
-            <Text style={[styles.header, { color: theme.mode === 'dark' ? '#fff' : '#000' }]}>Ongoing Projects</Text>
+            <Text style={[styles.header, { color: theme.mode === 'dark' ? '#fff' : '#000' }]}>OnHold Projects</Text>
             {projects.length > 0 ? (
-                projects.map((project: any) => renderProjectDetails(project))
+                projects.map((project: any) => (
+                    <View key={project.project_Id}>
+                        {renderProjectDetails(project)}
+                    </View>
+                ))
             ) : (
                 <Text style={[styles.errorText, { color: theme.mode === 'dark' ? '#fff' : '#000' }]}>
-                    No ongoing projects found.
+                    No on-hold projects found.
                 </Text>
             )}
+
         </ScrollView>
     );
 };
