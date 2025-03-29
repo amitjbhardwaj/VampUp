@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { 
     View, Text, StyleSheet, ScrollView, ActivityIndicator, 
-    Alert, Linking, TouchableOpacity 
+    Alert, Linking, TouchableOpacity, TouchableWithoutFeedback 
 } from "react-native";
 import { useTheme } from "../../context/ThemeContext"; 
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -12,6 +12,7 @@ const ContractorCompletedProjectsScreen = () => {
     const [projects, setProjects] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
 
     const fetchCompletedProjects = async () => {
         try {
@@ -50,38 +51,53 @@ const ContractorCompletedProjectsScreen = () => {
         Alert.alert(`Action: ${action}`, `You selected "${action}" for project ${projectId}`);
     };
 
+    const handleLongPress = (projectId: string) => {
+        setSelectedProjectId(selectedProjectId === projectId ? null : projectId);
+    };
+
+    const dismissButtons = () => {
+        setSelectedProjectId(null);
+    };
+
     const renderProjectDetails = (project: any) => {
         return (
-            <View style={[styles.card, { backgroundColor: theme.mode === 'dark' ? '#333' : '#fff' }]} key={project.project_Id}>
-                 <Text style={[styles.label, { color: theme.mode === 'dark' ? '#fff' : '#000' }]}>Project ID: {project.project_Id}</Text>
-                <Text style={[styles.label, { color: theme.mode === 'dark' ? '#fff' : '#000' }]}>Description: {project.project_description}</Text>
-                <Text style={[styles.label, { color: theme.mode === 'dark' ? '#fff' : '#000' }]}>Project full Description: {project.long_project_description}</Text>
-                <Text style={[styles.label, { color: theme.mode === 'dark' ? '#fff' : '#000' }]}>Worker Name: {project.worker_name}</Text>
-                <Text style={[styles.label, { color: theme.mode === 'dark' ? '#fff' : '#000' }]}>Worker Phone: {project.worker_phone}</Text>
-                <Text style={[styles.label, { color: theme.mode === 'dark' ? '#fff' : '#000' }]}>Start Date: {project.project_start_date}</Text>
-                <Text style={[styles.label, { color: theme.mode === 'dark' ? '#fff' : '#000' }]}>End Date: {project.project_end_date}</Text>
-                <Text style={[styles.label, { color: theme.mode === 'dark' ? '#fff' : '#000' }]}>Status: {project.status}</Text>
-                <Text style={[styles.label, { color: theme.mode === 'dark' ? '#fff' : '#000' }]}>Completion Percentage: {project.completion_percentage}%</Text>
-                <Text style={[styles.label, { color: theme.mode === 'dark' ? '#fff' : '#000' }]}>Contractor Name: {project.contractor_name}</Text>
-                
-                <View style={styles.buttonContainer}>
-                    <TouchableOpacity style={styles.button} onPress={() => handleCallWorker(project.worker_phone)}>
-                        <Text style={styles.buttonText}>Call Worker</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.button} onPress={() => handleButtonPress("Add Evidence", project.project_Id)}>
-                        <Text style={styles.buttonText}>Add Evidence</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.button} onPress={() => handleButtonPress("Need More Work", project.project_Id)}>
-                        <Text style={styles.buttonText}>Need More Work</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity style={styles.button} onPress={() => handleButtonPress("Send for Review", project.project_Id)}>
-                        <Text style={styles.buttonText}>Send for Review</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity style={[styles.button, styles.paymentButton]} onPress={() => handleButtonPress("Make Payment", project.project_Id)}>
-                        <Text style={styles.buttonText}>Make Payment</Text>
-                    </TouchableOpacity>
-                </View>
-            </View>
+            <TouchableWithoutFeedback key={project.project_Id} onPress={dismissButtons}>
+                <TouchableOpacity 
+                    style={[styles.card, { backgroundColor: theme.mode === 'dark' ? '#333' : '#fff' }]}
+                    onLongPress={() => handleLongPress(project.project_Id)}
+                    activeOpacity={0.8}
+                >
+                    <Text style={[styles.label, { color: theme.mode === 'dark' ? '#fff' : '#000' }]}>Project ID: {project.project_Id}</Text>
+                    <Text style={[styles.label, { color: theme.mode === 'dark' ? '#fff' : '#000' }]}>Description: {project.project_description}</Text>
+                    <Text style={[styles.label, { color: theme.mode === 'dark' ? '#fff' : '#000' }]}>Worker Name: {project.worker_name}</Text>
+                    <Text style={[styles.label, { color: theme.mode === 'dark' ? '#fff' : '#000' }]}>Worker Phone: {project.worker_phone}</Text>
+                    <Text style={[styles.label, { color: theme.mode === 'dark' ? '#fff' : '#000' }]}>Start Date: {project.project_start_date}</Text>
+                    <Text style={[styles.label, { color: theme.mode === 'dark' ? '#fff' : '#000' }]}>End Date: {project.project_end_date}</Text>
+                    <Text style={[styles.label, { color: theme.mode === 'dark' ? '#fff' : '#000' }]}>Status: {project.status}</Text>
+                    <Text style={[styles.label, { color: theme.mode === 'dark' ? '#fff' : '#000' }]}>Completion Percentage: {project.completion_percentage}%</Text>
+                    <Text style={[styles.label, { color: theme.mode === 'dark' ? '#fff' : '#000' }]}>Contractor Name: {project.contractor_name}</Text>
+
+                    {selectedProjectId === project.project_Id && (
+                        <View style={styles.buttonContainer}>
+                            <TouchableOpacity style={styles.button} onPress={() => handleCallWorker(project.worker_phone)}>
+                                <Text style={styles.buttonText}>Call Worker</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity style={styles.button} onPress={() => handleButtonPress("Add Evidence", project.project_Id)}>
+                                <Text style={styles.buttonText}>Add Evidence</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity style={styles.button} onPress={() => handleButtonPress("Need More Work", project.project_Id)}>
+                                <Text style={styles.buttonText}>Need More Work</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity style={styles.button} onPress={() => handleButtonPress("Send for Review", project.project_Id)}>
+                                <Text style={styles.buttonText}>Send for Review</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity style={[styles.button, styles.paymentButton]} onPress={() => handleButtonPress("Make Payment", project.project_Id)}>
+                                <Text style={styles.buttonText}>Make Payment</Text>
+                            </TouchableOpacity>
+                        </View>
+                    )}
+                </TouchableOpacity>
+            </TouchableWithoutFeedback>
         );
     };
 
