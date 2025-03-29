@@ -115,9 +115,10 @@ const AdminAllocateProjectScreen = () => {
                                     onPress={() => handleFindContractor(project._id)}
                                     activeOpacity={0.8}
                                 >
-                                    <Text style={styles.buttonText}>Allocate Project</Text>
+                                    <Text style={styles.buttonText}>
+                                        {project.contractor_name ? "Re-Allocate Project" : "Allocate Project"}
+                                    </Text>
                                 </TouchableOpacity>
-                                
 
                                 <TouchableOpacity
                                     style={[styles.actionButton, { backgroundColor: "#e74c3c" }]} // Red color for delete
@@ -127,6 +128,7 @@ const AdminAllocateProjectScreen = () => {
                                     <Text style={styles.buttonText}>Delete</Text>
                                 </TouchableOpacity>
                             </View>
+
                         </View>
                     ))
                 )}

@@ -1,10 +1,13 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet, ScrollView, ActivityIndicator, Alert, Linking, TouchableOpacity } from "react-native";
-import { useTheme } from "../../context/ThemeContext"; // Import your theme context
+import {
+    View, Text, StyleSheet, ScrollView, ActivityIndicator, Alert,
+    Linking, TouchableOpacity
+} from "react-native";
+import { useTheme } from "../../context/ThemeContext";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const AdminReviewProjectsScreen = () => {
-    const { theme } = useTheme(); // Get theme for dark mode handling
+    const { theme } = useTheme();
 
     const [projects, setProjects] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -12,24 +15,22 @@ const AdminReviewProjectsScreen = () => {
 
     const fetchCompletedProjects = async () => {
         try {
-            // Get admin name from AsyncStorage
             const storedName = await AsyncStorage.getItem("adminName");
 
             if (storedName) {
-                // Fetch the Completed projects for the admin
                 const response = await fetch(`http://192.168.129.119:5001/get-projects-by-admin?created_by=${storedName}&status=Completed`);
                 const data = await response.json();
                 if (data.status === "OK") {
-                    setProjects(data.data); // Set the list of Completed projects
+                    setProjects(data.data);
                 } else {
-                    setProjects([]); // No projects found
+                    setProjects([]);
                 }
             } else {
-                setProjects([]); // No admin name found
+                setProjects([]);
             }
         } catch (error) {
-            console.error("Error fetching Completed projects:", error);
-            setError("Failed to load Completed projects.");
+            console.error("Error fetching completed projects:", error);
+            setError("Failed to load completed projects.");
         } finally {
             setLoading(false);
         }
@@ -45,12 +46,16 @@ const AdminReviewProjectsScreen = () => {
         );
     };
 
+    const handleButtonPress = (action: string, projectId: string) => {
+        Alert.alert(`Action: ${action}`, `You selected "${action}" for project ${projectId}`);
+    };
+
     const renderProjectDetails = (project: any) => {
         return (
-            <View style={[styles.card, { backgroundColor: theme.mode === 'dark' ? '#333' : '#fff' }]}>
+            <View key={project.project_Id} style={[styles.card, { backgroundColor: theme.mode === 'dark' ? '#333' : '#fff' }]}>
                 <Text style={[styles.label, { color: theme.mode === 'dark' ? '#fff' : '#000' }]}>Project ID: {project.project_Id}</Text>
                 <Text style={[styles.label, { color: theme.mode === 'dark' ? '#fff' : '#000' }]}>Description: {project.project_description}</Text>
-                <Text style={[styles.label, { color: theme.mode === 'dark' ? '#fff' : '#000' }]}>Project full Description: {project.long_project_description}</Text>
+                <Text style={[styles.label, { color: theme.mode === 'dark' ? '#fff' : '#000' }]}>Project Full Description: {project.long_project_description}</Text>
                 <Text style={[styles.label, { color: theme.mode === 'dark' ? '#fff' : '#000' }]}>Worker Name: {project.worker_name}</Text>
                 <Text style={[styles.label, { color: theme.mode === 'dark' ? '#fff' : '#000' }]}>Start Date: {project.project_start_date}</Text>
                 <Text style={[styles.label, { color: theme.mode === 'dark' ? '#fff' : '#000' }]}>End Date: {project.project_end_date}</Text>
@@ -59,12 +64,22 @@ const AdminReviewProjectsScreen = () => {
                 <Text style={[styles.label, { color: theme.mode === 'dark' ? '#fff' : '#000' }]}>Contractor Name: {project.contractor_name}</Text>
                 <Text style={[styles.label, { color: theme.mode === 'dark' ? '#fff' : '#000' }]}>Contractor Phone: {project.contractor_phone}</Text>
 
-                {/* Buttons with custom padding */}
+                {/* Buttons Section */}
                 <View style={styles.buttonContainer}>
-                    <TouchableOpacity style={styles.button} onPress={() => handleCallContractor(project.contractor_phone)}>
+                    <TouchableOpacity style={[styles.button, styles.callButton]} onPress={() => handleCallContractor(project.contractor_phone)}>
                         <Text style={styles.buttonText}>Call Contractor</Text>
                     </TouchableOpacity>
+                    <TouchableOpacity style={[styles.button, styles.approveButton]} onPress={() => handleButtonPress("Approve", project.project_Id)}>
+                        <Text style={styles.buttonText}>Approve</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={[styles.button, styles.rejectButton]} onPress={() => handleButtonPress("Reject", project.project_Id)}>
+                        <Text style={styles.buttonText}>Reject</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={[styles.button, styles.paymentButton]} onPress={() => handleButtonPress("Make Payment", project.project_Id)}>
+                        <Text style={styles.buttonText}>Make Payment</Text>
+                    </TouchableOpacity>
                 </View>
+
             </View>
         );
     };
@@ -89,17 +104,12 @@ const AdminReviewProjectsScreen = () => {
         <ScrollView style={[styles.container, { backgroundColor: theme.mode === 'dark' ? '#121212' : '#f8f8f8' }]}>
             <Text style={[styles.header, { color: theme.mode === 'dark' ? '#fff' : '#000' }]}>Completed Projects</Text>
             {projects.length > 0 ? (
-                projects.map((project: any) => (
-                    <View key={project.project_Id}>
-                        {renderProjectDetails(project)}
-                    </View>
-                ))
+                projects.map((project) => renderProjectDetails(project))
             ) : (
                 <Text style={[styles.errorText, { color: theme.mode === 'dark' ? '#fff' : '#000' }]}>
                     No completed projects found.
                 </Text>
             )}
-
         </ScrollView>
     );
 };
@@ -126,16 +136,26 @@ const styles = StyleSheet.create({
     },
     buttonContainer: {
         marginTop: 10,
-        flexDirection: "column", // Arrange buttons vertically
-        justifyContent: "space-between",
+        flexDirection: "column",
     },
     button: {
         paddingVertical: 12,
         paddingHorizontal: 20,
-        backgroundColor: "#007bff",
         borderRadius: 5,
         marginVertical: 8,
         alignItems: "center",
+    },
+    callButton: {
+        backgroundColor: "#007bff", // Blue
+    },
+    approveButton: {
+        backgroundColor: "#28a745", // Green
+    },
+    rejectButton: {
+        backgroundColor: "#ff3b30", // Red
+    },
+    paymentButton: {
+        backgroundColor: "#ff9500", // Orange
     },
     buttonText: {
         color: "#fff",
