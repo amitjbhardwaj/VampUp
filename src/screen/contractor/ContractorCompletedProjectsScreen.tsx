@@ -12,7 +12,14 @@ import Icon from 'react-native-vector-icons/FontAwesome'; // Import Icon compone
 type Project = {
     project_Id: string;
     project_description: string;
+    long_project_description: string,
+    worker_name: string;
     worker_phone: string;
+    project_start_date: string,
+    project_end_date: string
+    status: string,
+    completion_percentage: number;
+    contractor_name: string,
     images?: string[];
 };
 
@@ -33,7 +40,7 @@ const ContractorCompletedProjectsScreen = () => {
         try {
             const storedName = await AsyncStorage.getItem("contractorName");
             if (storedName) {
-                const response = await fetch(`http://192.168.129.119:5001/get-projects-by-contractor?contractor_name=${storedName}&status=Completed`);
+                const response = await fetch(IMAGE_BASE_URL + `/get-projects-by-contractor?contractor_name=${storedName}&status=Completed`);
                 const data = await response.json();
                 setProjects(data.status === "OK" ? data.data : []);
             } else {
@@ -106,50 +113,47 @@ const ContractorCompletedProjectsScreen = () => {
     };
 
     const uploadImages = async (projectId: string, images: string[]) => {
-        const formData = new FormData();
-        formData.append("project_Id", projectId);
-
-        // Add images to form data
-        images.forEach((imageUri, index) => {
-            formData.append("images", {
-                uri: imageUri,
-                name: `image_${index}.jpg`,
-                type: "image/jpeg",
-            });
-        });
-
         try {
-            const response = await fetch("http://192.168.129.119:5001/upload-images", {
+            const formData = new FormData();
+            formData.append("project_Id", projectId);
+
+            images.forEach((imageUri, index) => {
+                formData.append("images", {
+                    uri: imageUri,
+                    name: `image_${index}.jpg`,
+                    type: "image/jpeg",
+                });
+            });
+
+            const response = await fetch(IMAGE_BASE_URL + "/upload-images", {
                 method: "POST",
                 body: formData,
                 headers: {
-                    "Content-Type": "multipart/form-data", // This is typically handled automatically with FormData
+                    "Content-Type": "multipart/form-data",
                 },
             });
 
             if (!response.ok) {
-                const errorText = await response.text();
-                console.error("Error response:", errorText);
-                Alert.alert("Upload Failed", "Error: " + errorText);
+                throw new Error(`Upload failed with status: ${response.status}`);
+            }
+
+            const result = await response.json();
+            if (result.status === "OK") {
+                Alert.alert("Success", "Images uploaded successfully.");
+                fetchCompletedProjects();
             } else {
-                const result = await response.json();
-                if (result.status === "OK") {
-                    Alert.alert("Success", "Images uploaded successfully.");
-                    setSelectedImages([]); // Clear selected images
-                    fetchCompletedProjects(); // Refresh the project list
-                } else {
-                    Alert.alert("Error", result.message);
-                }
+                throw new Error(result.message);
             }
         } catch (error) {
-            console.error("Error uploading images:", error);
-            Alert.alert("Upload Failed", "Could not upload images. Please check your network or try again later.");
+            //console.error("Error uploading images:", error.message);
+            Alert.alert("Upload Failed", "Network request failed. Please try again.");
         }
     };
 
+
     const deleteImage = async (projectId: string, imageUrl: string) => {
         try {
-            const response = await fetch("http://192.168.129.119:5001/delete-image", {
+            const response = await fetch(IMAGE_BASE_URL + "/delete-image", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ project_Id: projectId, image_url: imageUrl })
@@ -179,167 +183,173 @@ const ContractorCompletedProjectsScreen = () => {
     };
 
     return (
-        <ScrollView style={[styles.container, { backgroundColor: theme.mode === 'dark' ? '#121212' : '#f8f8f8' }]}>
-            <Text style={[styles.header, { color: theme.mode === 'dark' ? '#fff' : '#000' }]}>Completed Projects</Text>
-            {loading ? (
-                <ActivityIndicator size="large" color="#0000ff" />
-            ) : error ? (
-                <Text style={[styles.errorText, { color: theme.mode === 'dark' ? '#fff' : '#000' }]}>{error}</Text>
-            ) : projects.length > 0 ? (
-                projects.map((project) => (
-                    <TouchableOpacity
-                        key={project.project_Id}
-                        style={[styles.card, { backgroundColor: theme.mode === 'dark' ? '#333' : '#fff' }]}
-                    >
-                        <Text style={[styles.label, { color: theme.mode === 'dark' ? '#fff' : '#000' }]}>Project ID: {project.project_Id}</Text>
-                        <Text style={[styles.label, { color: theme.mode === 'dark' ? '#fff' : '#000' }]}>Description: {project.project_description}</Text>
+        <View style={[styles.container, { backgroundColor: theme.background }]}>
+            <View style={[styles.header, { backgroundColor: theme.background }]}>
+                <Text style={[styles.title, { color: theme.text }]}>Completed Projects</Text>
+            </View>
 
-                        {/* Display Uploaded Images with Trash Icon */}
+            <FlatList
+                contentContainerStyle={styles.scrollContainer}
+                data={projects}
+                keyExtractor={(item) => item.project_Id}
+                ListEmptyComponent={() => (
+                    loading ? (
+                        <View style={styles.loadingContainer}>
+                            <ActivityIndicator size="large" color={theme.primary} />
+                        </View>
+                    ) : (
+                        <Text style={[styles.noProjectsText, { color: theme.text }]}>No completed projects found.</Text>
+                    )
+                )}
+                renderItem={({ item: project }) => (
+                    <View style={[styles.projectCard, { backgroundColor: theme.card, shadowColor: theme.text }]}>
+                        <Text style={[styles.projectTitle, { color: theme.text }]}>{project.project_description}</Text>
+                        <Text style={[styles.projectDetail, { color: theme.text }]}><Icon name="id-card" size={20} /> ID: {project.project_Id}</Text>
+                        <Text style={[styles.projectDetail, { color: theme.text }]}><Icon name="info-circle" size={20} /> Project Description: {project.long_project_description}</Text>
+                        <Text style={[styles.projectDetail, { color: theme.text }]}><Icon name="calendar" size={20} /> Start Date: {project.project_start_date}</Text>
+                        <Text style={[styles.projectDetail, { color: theme.text }]}><Icon name="calendar-check-o" size={20} /> End Date: {project.project_end_date}</Text>
+                        <Text style={[styles.projectDetail, { color: theme.text }]}><Icon name="info-circle" size={20} /> Status: {project.status}</Text>
+                        <Text style={[styles.projectDetail, { color: theme.text }]}><Icon name="percent" size={20} /> Completion: {project.completion_percentage}%</Text>
+                        <Text style={[styles.projectDetail, { color: theme.text }]}><Icon name="user" size={20} /> Contractor Name: {project.contractor_name}</Text>
+                        <Text style={[styles.projectDetail, { color: theme.text }]}><Icon name="user" size={20} /> Worker Name: {project.worker_name}</Text>
+                        <Text style={[styles.projectDetail, { color: theme.text }]}><Icon name="phone" size={20} /> Worker Phone: {project.worker_phone}</Text>
                         {project.images && project.images.length > 0 && (
                             <FlatList
-                                horizontal
                                 data={project.images}
                                 keyExtractor={(item, index) => index.toString()}
-                                renderItem={({ item }) => {
-                                    // Extract image name from the URL (if needed, or use custom logic for names)
-                                    const imageName = item.split('/').pop(); // This assumes the last part of the URL is the image name
-
-                                    return (
-                                        <View style={styles.imageContainer}>
-                                            {/* Only show the image name */}
-                                            <Text style={[styles.imageName, { color: theme.mode === 'dark' ? '#fff' : '#000' }]}>{imageName}</Text>
-                                            {/* Delete button */}
-                                            <TouchableOpacity
-                                                style={styles.deleteButton}
-                                                onPress={() => deleteImage(project.project_Id, item)}
-                                            >
-                                                <Icon name="trash" size={20} color="#fff" />
-                                            </TouchableOpacity>
-                                        </View>
-                                    );
-                                }}
+                                renderItem={({ item }) => (
+                                    <View style={styles.imageContainer}>
+                                        <Text style={[styles.imageName, { color: theme.text }]}>{item.split('/').pop()}</Text>
+                                        <TouchableOpacity style={styles.deleteButton} onPress={() => deleteImage(project.project_Id, item)}>
+                                            <Icon name="trash" size={20} color="#fff" />
+                                        </TouchableOpacity>
+                                    </View>
+                                )}
+                                numColumns={2}
+                                style={{ marginTop: 10 }}
                             />
                         )}
 
-                        {/* Always display the action buttons */}
-                        <View style={styles.buttonContainer}>
-                            <TouchableOpacity style={styles.button} onPress={() => handleCallWorker(project.worker_phone)}>
+                        <View style={styles.buttonRow}>
+                            <TouchableOpacity style={[styles.viewDetailsButton, { backgroundColor: theme.primary }]} onPress={() => handleCallWorker(project.worker_phone)}>
                                 <Text style={styles.buttonText}>Call Worker</Text>
                             </TouchableOpacity>
-                            <TouchableOpacity style={styles.button} onPress={() => handleSendForReview(project.project_Id)}>
-                                <Text style={styles.buttonText}>Upload Evidence</Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity style={styles.button} onPress={() => Alert.alert("Need More Work", `Requesting more work for ${project.project_Id}`)}>
+                            <TouchableOpacity style={[styles.onHoldButton, { backgroundColor: theme.primary }]} onPress={() => Alert.alert("Need More Work", `Requesting more work for ${project.project_Id}`)}>
                                 <Text style={styles.buttonText}>Need More Work</Text>
                             </TouchableOpacity>
-                            <TouchableOpacity style={[styles.button, styles.paymentButton]} onPress={() => Alert.alert("Make Payment", `Processing payment for ${project.project_Id}`)}>
+                            <TouchableOpacity style={[styles.viewDetailsButton, { backgroundColor: theme.primary }]} onPress={() => handleSendForReview(project.project_Id)}>
+                                <Text style={styles.buttonText}>Upload Evidence</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity style={[styles.onHoldButton, { backgroundColor: '#28a745' }]} onPress={() => Alert.alert("Make Payment", `Processing payment for ${project.project_Id}`)}>
                                 <Text style={styles.buttonText}>Make Payment</Text>
                             </TouchableOpacity>
                         </View>
-                    </TouchableOpacity>
-                ))
-            ) : (
-                <Text style={[styles.errorText, { color: theme.mode === 'dark' ? '#fff' : '#000' }]}>
-                    No completed projects found.
-                </Text>
-            )}
-
-            {selectedImages.length > 0 && (
-                <View style={styles.imagePreview}>
-                    <Text style={{ color: theme.mode === 'dark' ? '#fff' : '#000' }}>Selected Images:</Text>
-                    {selectedImages.map((uri, index) => (
-                        <Image key={index} source={{ uri }} style={styles.image} />
-                    ))}
-                </View>
-            )}
-        </ScrollView>
+                    </View>
+                )}
+            />
+        </View>
     );
 };
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        padding: 16,
-    },
-    card: {
-        padding: 16,
-        borderRadius: 8,
-        marginVertical: 10,
-        shadowColor: "#000",
-        shadowOpacity: 0.1,
-        shadowRadius: 8,
-        shadowOffset: { width: 0, height: 2 },
-        elevation: 3,
-    },
-    label: {
-        fontSize: 16,
-        fontWeight: "600",
-        marginBottom: 8,
-    },
-    buttonContainer: {
-        marginTop: 10,
-        flexDirection: "column",
-    },
-    button: {
-        paddingVertical: 12,
-        paddingHorizontal: 20,
-        backgroundColor: "#007bff",
-        borderRadius: 5,
-        marginVertical: 8,
-        alignItems: "center",
-    },
-    paymentButton: {
-        backgroundColor: "#28a745",
-    },
-    buttonText: {
-        color: "#fff",
-        fontSize: 16,
-        fontWeight: "600",
     },
     header: {
-        fontSize: 24,
-        fontWeight: "bold",
-        textAlign: "center",
+        paddingTop: 40,
+        paddingBottom: 10,
+        alignItems: 'center',
+        borderBottomWidth: 1,
+        borderBottomColor: '#ccc',
         marginBottom: 20,
     },
-    errorText: {
-        fontSize: 18,
+    scrollContainer: {
+        padding: 20,
+        paddingBottom: 100,
+    },
+    title: {
+        fontSize: 28,
         fontWeight: "bold",
+        textAlign: 'center',
+    },
+    projectCard: {
+        padding: 20,
+        borderRadius: 15,
+        marginBottom: 20,
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.3,
+        shadowRadius: 6,
+        elevation: 5,
+        backgroundColor: "#fff",
+        borderWidth: 1,
+        borderColor: '#ccc',
+    },
+    projectTitle: {
+        fontSize: 22,
+        fontWeight: "bold",
+        marginBottom: 12,
+    },
+    projectDetail: {
+        fontSize: 16,
+        marginBottom: 6,
+    },
+    noProjectsText: {
+        fontSize: 18,
         textAlign: "center",
         marginTop: 20,
+        color: '#888',
+    },
+    buttonRow: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        marginTop: 15,
+        flexWrap: 'wrap',
+        gap: 10,
+    },
+    viewDetailsButton: {
+        paddingVertical: 12,
+        borderRadius: 8,
+        alignItems: 'center',
+        justifyContent: 'center',
+        elevation: 3,
+        width: '48%',
+        marginBottom: 10,
+    },
+    onHoldButton: {
+        paddingVertical: 12,
+        borderRadius: 8,
+        alignItems: 'center',
+        justifyContent: 'center',
+        elevation: 3,
+        width: '48%',
+        marginBottom: 10,
+    },
+    buttonText: {
+        color: '#fff',
+        fontWeight: 'bold',
+        fontSize: 16,
     },
     imageContainer: {
-        position: "relative",
-        marginRight: 15,  // Increased margin between items in the list
-        flexDirection: 'row',  // To align name and delete button horizontally
-        alignItems: 'center',  // Center align the text and icon
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginVertical: 5,
     },
     imageName: {
         fontSize: 14,
-        color: '#fff',  // Or adapt based on theme
-        textAlign: 'center',
-        marginRight: 10,  // Space between the image name and the delete icon
+        marginRight: 10,
     },
     deleteButton: {
         backgroundColor: "rgba(255, 0, 0, 0.6)",
         borderRadius: 20,
         padding: 5,
     },
-    imagePreview: {
-        alignItems: "center",
-        marginTop: 20,
-    },
-    image: {
-        width: 200,
-        height: 200,
-        borderRadius: 10,
-        marginTop: 10,
-    },
-    deleteText: {
-        color: "#fff",
-        fontSize: 16,
-        fontWeight: "bold",
+    loadingContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        height: 300,
     },
 });
 
 export default ContractorCompletedProjectsScreen;
+
