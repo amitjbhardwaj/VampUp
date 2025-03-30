@@ -20,7 +20,6 @@ const ContractorCompletedProjectsScreen = () => {
     const { theme } = useTheme();
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
-    const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
     const [projects, setProjects] = useState<Project[]>([]);
     const [selectedImages, setSelectedImages] = useState<string[]>([]);
 
@@ -50,14 +49,6 @@ const ContractorCompletedProjectsScreen = () => {
 
     const handleCallWorker = (workerPhone: string) => {
         Linking.openURL(`tel:${workerPhone}`).catch((err) => console.error("Error calling worker:", err));
-    };
-
-    const handleLongPress = (projectId: string) => {
-        setSelectedProjectId(selectedProjectId === projectId ? null : projectId);
-    };
-
-    const dismissButtons = () => {
-        setSelectedProjectId(null);
     };
 
     const handleSendForReview = async (projectId: string) => {
@@ -156,8 +147,6 @@ const ContractorCompletedProjectsScreen = () => {
         }
     };
 
-
-
     const deleteImage = async (projectId: string, imageUrl: string) => {
         try {
             const response = await fetch("http://192.168.129.119:5001/delete-image", {
@@ -198,61 +187,56 @@ const ContractorCompletedProjectsScreen = () => {
                 <Text style={[styles.errorText, { color: theme.mode === 'dark' ? '#fff' : '#000' }]}>{error}</Text>
             ) : projects.length > 0 ? (
                 projects.map((project) => (
-                    <TouchableWithoutFeedback key={project.project_Id} onPress={dismissButtons}>
-                        <TouchableOpacity
-                            style={[styles.card, { backgroundColor: theme.mode === 'dark' ? '#333' : '#fff' }]}
-                            onLongPress={() => handleLongPress(project.project_Id)}
-                            activeOpacity={0.8}
-                        >
-                            <Text style={[styles.label, { color: theme.mode === 'dark' ? '#fff' : '#000' }]}>Project ID: {project.project_Id}</Text>
-                            <Text style={[styles.label, { color: theme.mode === 'dark' ? '#fff' : '#000' }]}>Description: {project.project_description}</Text>
+                    <TouchableOpacity
+                        key={project.project_Id}
+                        style={[styles.card, { backgroundColor: theme.mode === 'dark' ? '#333' : '#fff' }]}
+                    >
+                        <Text style={[styles.label, { color: theme.mode === 'dark' ? '#fff' : '#000' }]}>Project ID: {project.project_Id}</Text>
+                        <Text style={[styles.label, { color: theme.mode === 'dark' ? '#fff' : '#000' }]}>Description: {project.project_description}</Text>
 
-                            {/* Display Uploaded Images with Trash Icon */}
-                            {project.images && project.images.length > 0 && (
-                                <FlatList
-                                    horizontal
-                                    data={project.images}
-                                    keyExtractor={(item, index) => index.toString()}
-                                    renderItem={({ item }) => {
-                                        // Extract image name from the URL (if needed, or use custom logic for names)
-                                        const imageName = item.split('/').pop(); // This assumes the last part of the URL is the image name
+                        {/* Display Uploaded Images with Trash Icon */}
+                        {project.images && project.images.length > 0 && (
+                            <FlatList
+                                horizontal
+                                data={project.images}
+                                keyExtractor={(item, index) => index.toString()}
+                                renderItem={({ item }) => {
+                                    // Extract image name from the URL (if needed, or use custom logic for names)
+                                    const imageName = item.split('/').pop(); // This assumes the last part of the URL is the image name
 
-                                        return (
-                                            <View style={styles.imageContainer}>
-                                                {/* Only show the image name */}
-                                                <Text style={styles.imageName}>{imageName}</Text>
-                                                {/* Delete button */}
-                                                <TouchableOpacity
-                                                    style={styles.deleteButton}
-                                                    onPress={() => deleteImage(project.project_Id, item)}
-                                                >
-                                                    <Icon name="trash" size={20} color="#fff" />
-                                                </TouchableOpacity>
-                                            </View>
-                                        );
-                                    }}
-                                />
+                                    return (
+                                        <View style={styles.imageContainer}>
+                                            {/* Only show the image name */}
+                                            <Text style={[styles.imageName, { color: theme.mode === 'dark' ? '#fff' : '#000' }]}>{imageName}</Text>
+                                            {/* Delete button */}
+                                            <TouchableOpacity
+                                                style={styles.deleteButton}
+                                                onPress={() => deleteImage(project.project_Id, item)}
+                                            >
+                                                <Icon name="trash" size={20} color="#fff" />
+                                            </TouchableOpacity>
+                                        </View>
+                                    );
+                                }}
+                            />
+                        )}
 
-
-                            )}
-                            {selectedProjectId === project.project_Id && (
-                                <View style={styles.buttonContainer}>
-                                    <TouchableOpacity style={styles.button} onPress={() => handleCallWorker(project.worker_phone)}>
-                                        <Text style={styles.buttonText}>Call Worker</Text>
-                                    </TouchableOpacity>
-                                    <TouchableOpacity style={styles.button} onPress={() => handleSendForReview(project.project_Id)}>
-                                        <Text style={styles.buttonText}>Upload Evidence</Text>
-                                    </TouchableOpacity>
-                                    <TouchableOpacity style={styles.button} onPress={() => Alert.alert("Need More Work", `Requesting more work for ${project.project_Id}`)}>
-                                        <Text style={styles.buttonText}>Need More Work</Text>
-                                    </TouchableOpacity>
-                                    <TouchableOpacity style={[styles.button, styles.paymentButton]} onPress={() => Alert.alert("Make Payment", `Processing payment for ${project.project_Id}`)}>
-                                        <Text style={styles.buttonText}>Make Payment</Text>
-                                    </TouchableOpacity>
-                                </View>
-                            )}
-                        </TouchableOpacity>
-                    </TouchableWithoutFeedback>
+                        {/* Always display the action buttons */}
+                        <View style={styles.buttonContainer}>
+                            <TouchableOpacity style={styles.button} onPress={() => handleCallWorker(project.worker_phone)}>
+                                <Text style={styles.buttonText}>Call Worker</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity style={styles.button} onPress={() => handleSendForReview(project.project_Id)}>
+                                <Text style={styles.buttonText}>Upload Evidence</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity style={styles.button} onPress={() => Alert.alert("Need More Work", `Requesting more work for ${project.project_Id}`)}>
+                                <Text style={styles.buttonText}>Need More Work</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity style={[styles.button, styles.paymentButton]} onPress={() => Alert.alert("Make Payment", `Processing payment for ${project.project_Id}`)}>
+                                <Text style={styles.buttonText}>Make Payment</Text>
+                            </TouchableOpacity>
+                        </View>
+                    </TouchableOpacity>
                 ))
             ) : (
                 <Text style={[styles.errorText, { color: theme.mode === 'dark' ? '#fff' : '#000' }]}>
