@@ -126,9 +126,6 @@ const AdminOnHoldProjectsScreen = () => {
 
                 {/* Buttons with custom padding */}
                 <View style={styles.buttonContainer}>
-                    <TouchableOpacity style={styles.button} onPress={() => handleMarkCompleted(project.project_Id)}>
-                        <Text style={styles.buttonText}>Mark Completed</Text>
-                    </TouchableOpacity>
                     <TouchableOpacity style={styles.button} onPress={() => handleActive(project.project_Id)}>
                         <Text style={styles.buttonText}>Active</Text>
                     </TouchableOpacity>
