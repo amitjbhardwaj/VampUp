@@ -7,6 +7,7 @@ import {
 import { launchCamera, launchImageLibrary } from "react-native-image-picker"; // Import image picker
 import { useTheme } from "../../context/ThemeContext";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import Icon from 'react-native-vector-icons/FontAwesome'; // Import Icon component from react-native-vector-icons
 
 type Project = {
     project_Id: string;
@@ -61,7 +62,7 @@ const ContractorCompletedProjectsScreen = () => {
 
     const handleSendForReview = async (projectId: string) => {
         setSelectedImages([]); // Reset previously selected images
-    
+
         Alert.alert(
             "Upload Evidence",
             "Choose an option",
@@ -72,7 +73,7 @@ const ContractorCompletedProjectsScreen = () => {
             ]
         );
     };
-    
+
     const pickImage = (projectId: string) => {
         launchImageLibrary({ mediaType: "photo", quality: 1, selectionLimit: 5 }, (response) => {
             if (response.didCancel) {
@@ -84,7 +85,7 @@ const ContractorCompletedProjectsScreen = () => {
                 Alert.alert("Error", response.errorMessage);
                 return;
             }
-            
+
             const uris = response.assets?.map(asset => asset.uri).filter(uri => uri !== undefined) as string[];
             if (uris.length > 0) {
                 setSelectedImages(uris);
@@ -92,7 +93,7 @@ const ContractorCompletedProjectsScreen = () => {
             }
         });
     };
-    
+
     const takePhoto = (projectId: string) => {
         launchCamera({ mediaType: "photo", quality: 1 }, (response) => {
             if (response.didCancel) {
@@ -104,7 +105,7 @@ const ContractorCompletedProjectsScreen = () => {
                 Alert.alert("Error", response.errorMessage);
                 return;
             }
-            
+
             const uri = response.assets?.[0]?.uri;
             if (uri) {
                 setSelectedImages([uri]);
@@ -112,11 +113,12 @@ const ContractorCompletedProjectsScreen = () => {
             }
         });
     };
-    
+
     const uploadImages = async (projectId: string, images: string[]) => {
         const formData = new FormData();
         formData.append("project_Id", projectId);
-    
+
+        // Add images to form data
         images.forEach((imageUri, index) => {
             formData.append("images", {
                 uri: imageUri,
@@ -124,59 +126,68 @@ const ContractorCompletedProjectsScreen = () => {
                 type: "image/jpeg",
             });
         });
-    
+
         try {
             const response = await fetch("http://192.168.129.119:5001/upload-images", {
                 method: "POST",
                 body: formData,
-                headers: { "Content-Type": "multipart/form-data" },
+                headers: {
+                    "Content-Type": "multipart/form-data", // This is typically handled automatically with FormData
+                },
             });
-    
-            const result = await response.json();
-            if (result.status === "OK") {
-                Alert.alert("Success", "Images uploaded successfully.");
-                setSelectedImages([]); // Clear selected images
-                fetchCompletedProjects(); // Refresh the project list
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                console.error("Error response:", errorText);
+                Alert.alert("Upload Failed", "Error: " + errorText);
             } else {
-                Alert.alert("Error", result.message);
+                const result = await response.json();
+                if (result.status === "OK") {
+                    Alert.alert("Success", "Images uploaded successfully.");
+                    setSelectedImages([]); // Clear selected images
+                    fetchCompletedProjects(); // Refresh the project list
+                } else {
+                    Alert.alert("Error", result.message);
+                }
             }
         } catch (error) {
             console.error("Error uploading images:", error);
-            Alert.alert("Upload Failed", "Could not upload images.");
+            Alert.alert("Upload Failed", "Could not upload images. Please check your network or try again later.");
         }
     };
-    
+
+
+
     const deleteImage = async (projectId: string, imageUrl: string) => {
         try {
-          const response = await fetch("http://192.168.129.119:5001/delete-image", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ project_Id: projectId, image_url: imageUrl })
-          });
-      
-          // Log the response status and text for debugging
-          console.log("Response Status:", response.status);
-          const responseText = await response.text();
-          console.log("Response Body:", responseText);
-      
-          // Parse as JSON if valid, else handle error
-          if (response.ok) {
-            const result = JSON.parse(responseText); // Safely parse the response
-            if (result.status === "OK") {
-              Alert.alert("Success", "Image deleted successfully.");
-              fetchCompletedProjects(); // Refresh project list
+            const response = await fetch("http://192.168.129.119:5001/delete-image", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ project_Id: projectId, image_url: imageUrl })
+            });
+
+            // Log the response status and text for debugging
+            console.log("Response Status:", response.status);
+            const responseText = await response.text();
+            console.log("Response Body:", responseText);
+
+            // Parse as JSON if valid, else handle error
+            if (response.ok) {
+                const result = JSON.parse(responseText); // Safely parse the response
+                if (result.status === "OK") {
+                    Alert.alert("Success", "Image deleted successfully.");
+                    fetchCompletedProjects(); // Refresh project list
+                } else {
+                    Alert.alert("Error", result.message);
+                }
             } else {
-              Alert.alert("Error", result.message);
+                Alert.alert("Error", "Failed to delete image.");
             }
-          } else {
-            Alert.alert("Error", "Failed to delete image.");
-          }
         } catch (error) {
-          console.error("Error deleting image:", error);
-          Alert.alert("Delete Failed", "Could not delete image.");
+            console.error("Error deleting image:", error);
+            Alert.alert("Delete Failed", "Could not delete image.");
         }
-      };
-      
+    };
 
     return (
         <ScrollView style={[styles.container, { backgroundColor: theme.mode === 'dark' ? '#121212' : '#f8f8f8' }]}>
@@ -196,21 +207,33 @@ const ContractorCompletedProjectsScreen = () => {
                             <Text style={[styles.label, { color: theme.mode === 'dark' ? '#fff' : '#000' }]}>Project ID: {project.project_Id}</Text>
                             <Text style={[styles.label, { color: theme.mode === 'dark' ? '#fff' : '#000' }]}>Description: {project.project_description}</Text>
 
-                            {/* Display Uploaded Images */}
+                            {/* Display Uploaded Images with Trash Icon */}
                             {project.images && project.images.length > 0 && (
                                 <FlatList
                                     horizontal
                                     data={project.images}
                                     keyExtractor={(item, index) => index.toString()}
-                                    renderItem={({ item }) => (
-                                        <View style={styles.imageContainer}>
-                                            <Image source={{ uri: `${IMAGE_BASE_URL}${item}` }} style={styles.image} />
-                                            <TouchableOpacity style={styles.deleteButton} onPress={() => deleteImage(project.project_Id, item)}>
-                                                <Text style={styles.deleteText}>X</Text>
-                                            </TouchableOpacity>
-                                        </View>
-                                    )}
+                                    renderItem={({ item }) => {
+                                        // Extract image name from the URL (if needed, or use custom logic for names)
+                                        const imageName = item.split('/').pop(); // This assumes the last part of the URL is the image name
+
+                                        return (
+                                            <View style={styles.imageContainer}>
+                                                {/* Only show the image name */}
+                                                <Text style={styles.imageName}>{imageName}</Text>
+                                                {/* Delete button */}
+                                                <TouchableOpacity
+                                                    style={styles.deleteButton}
+                                                    onPress={() => deleteImage(project.project_Id, item)}
+                                                >
+                                                    <Icon name="trash" size={20} color="#fff" />
+                                                </TouchableOpacity>
+                                            </View>
+                                        );
+                                    }}
                                 />
+
+
                             )}
                             {selectedProjectId === project.project_Id && (
                                 <View style={styles.buttonContainer}>
@@ -303,7 +326,20 @@ const styles = StyleSheet.create({
     },
     imageContainer: {
         position: "relative",
-        marginRight: 10,
+        marginRight: 15,  // Increased margin between items in the list
+        flexDirection: 'row',  // To align name and delete button horizontally
+        alignItems: 'center',  // Center align the text and icon
+    },
+    imageName: {
+        fontSize: 14,
+        color: '#fff',  // Or adapt based on theme
+        textAlign: 'center',
+        marginRight: 10,  // Space between the image name and the delete icon
+    },
+    deleteButton: {
+        backgroundColor: "rgba(255, 0, 0, 0.6)",
+        borderRadius: 20,
+        padding: 5,
     },
     imagePreview: {
         alignItems: "center",
@@ -314,14 +350,6 @@ const styles = StyleSheet.create({
         height: 200,
         borderRadius: 10,
         marginTop: 10,
-    },
-    deleteButton: {
-        position: "absolute",
-        top: 0,
-        right: 0,
-        backgroundColor: "rgba(255, 0, 0, 0.6)",
-        borderRadius: 10,
-        padding: 5,
     },
     deleteText: {
         color: "#fff",
