@@ -8,7 +8,7 @@ import {
 import { useTheme } from "../../context/ThemeContext";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Icon from "react-native-vector-icons/MaterialIcons"; // Using vector icons
-import FontAwesome from 'react-native-vector-icons/FontAwesome'; // Import Icon component from react-native-vector-icons
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
 
 
 const AdminReviewProjectsScreen = () => {
@@ -233,8 +233,8 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         alignItems: "center",
         justifyContent: "flex-start",
-        gap: 8, // Keeps name and icon close
-        marginBottom: 5, // Reduced spacing
+        gap: 5, // Keeps name and icon close
+        marginBottom: 6, // Reduced spacing
     },
 
     modalContainer: {

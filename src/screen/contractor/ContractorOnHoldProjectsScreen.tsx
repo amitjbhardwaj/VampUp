@@ -5,6 +5,7 @@ import axios from 'axios';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation } from "@react-navigation/native";
 import DatePicker from "react-native-date-picker";
+import FontAwesome from 'react-native-vector-icons/FontAwesome';
 
 type Project = {
     _id: string;
@@ -138,10 +139,12 @@ const ContractorOnHoldProjectsScreen = () => {
                                 <Text style={[styles.statusText, { color: 'orange' }]}>On-Hold</Text>
                             </View>
                             <Text style={[styles.projectTitle, { color: theme.text }]}>{project.project_description}</Text>
-                            <Text style={[styles.projectDetail, { color: theme.text }]}>ID: {project.project_Id}</Text>
-                            <Text style={[styles.projectDetail, { color: theme.text }]}>Start Date: {project.project_start_date}</Text>
-                            <Text style={[styles.projectDetail, { color: theme.text }]}>End Date: {project.project_end_date}</Text>
-                            <Text style={[styles.projectDetail, { color: theme.text }]}>Completion: {project.completion_percentage}%</Text>
+                            <Text style={[styles.projectDetail, { color: theme.text }]}><FontAwesome name="hashtag" size={20} /> ID: {project.project_Id}</Text>
+                            <Text style={[styles.projectDetail, { color: theme.text }]}><FontAwesome name="calendar" size={20} /> Start Date: {project.project_start_date}</Text>
+                            <Text style={[styles.projectDetail, { color: theme.text }]}><FontAwesome name="calendar-check-o" size={20} /> End Date: {project.project_end_date}</Text>
+                            <Text style={[styles.projectDetail, { color: theme.text }]}><FontAwesome name="info-circle" size={20} /> Status: {project.status}</Text>
+                            <Text style={[styles.projectDetail, { color: theme.text }]}><FontAwesome name="percent" size={20} /> Completion: {project.completion_percentage}%</Text>
+                            <Text style={[styles.projectDetail, { color: theme.text }]}><FontAwesome name="user" size={20} /> Assigned To: {project.contractor_name}</Text>
 
                             {/* Action Buttons */}
                             <View style={styles.buttonRow}>
