@@ -68,10 +68,7 @@ const AdminFindContractorScreen = () => {
             console.error("Error updating project:", error);
         }
     };
-    
-    
-
-
+ 
     const handleCancel = () => {
         setSelectedContractor("");
         navigation.goBack();

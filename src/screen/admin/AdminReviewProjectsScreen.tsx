@@ -9,16 +9,20 @@ import { useTheme } from "../../context/ThemeContext";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Icon from "react-native-vector-icons/MaterialIcons"; // Using vector icons
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
-
+import axios from "axios";
 
 const AdminReviewProjectsScreen = () => {
     const { theme } = useTheme();
+
 
     const [projects, setProjects] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [selectedImage, setSelectedImage] = useState<string | null>(null);
     const [modalVisible, setModalVisible] = useState(false);
+    const [success, setSuccess] = useState(false);
+    const [reject, setReject] = useState(false);
+    const [disableButtons, setDisableButtons] = useState(false);
 
     const fetchCompletedProjects = async () => {
         try {
@@ -67,6 +71,58 @@ const AdminReviewProjectsScreen = () => {
         setSelectedImage(null);
     };
 
+    const handleApprove = async (projectId: string) => {
+        console.log(`project iddddd ${projectId}`)
+        if (!projectId) {
+            Alert.alert("Error", "Project ID is missing.");
+            return;
+        }
+
+        try {
+            const response = await axios.put(`http://192.168.129.119:5001/update-project-status/${projectId}`, {
+                project_status: 'Approved',
+            });
+
+            if (response.data.status === "OK") {
+                setSuccess(true);
+                // Hide the animation after 2 seconds
+                setTimeout(() => {
+                    setSuccess(false);
+                }, 2000);
+                //navigation.navigate("AdminInitiatePaymentScreen");
+            } else {
+                console.log("Error updating project:", response.data);
+            }
+        } catch (error) {
+            console.error("Error updating project:", error);
+        }
+    };
+
+    const handleReject = async (projectId: string) => {
+        if (!projectId) {
+            Alert.alert("Error", "Project ID is missing.");
+            return;
+        }
+
+        try {
+            const response = await axios.put(`http://192.168.129.119:5001/update-project-status/${projectId}`, {
+                project_status: 'Rejected',
+            });
+
+            if (response.data.status === "OK") {
+                setReject(true);
+                // Hide the animation after 2 seconds
+                setTimeout(() => {
+                    setReject(false);
+                }, 2000);
+            } else {
+                console.log("Error updating project:", response.data);
+            }
+        } catch (error) {
+            console.error("Error updating project:", error);
+        }
+    };
+
     const renderProjectDetails = (project: any) => {
         return (
             <View key={project.project_Id} style={[styles.card, { backgroundColor: theme.mode === 'dark' ? '#333' : '#fff' }]}>
@@ -80,6 +136,20 @@ const AdminReviewProjectsScreen = () => {
                 <Text style={[styles.label, { color: theme.mode === 'dark' ? '#fff' : '#000' }]}><FontAwesome name="percent" size={20} /> Completion Percentage: {project.completion_percentage}%</Text>
                 <Text style={[styles.label, { color: theme.mode === 'dark' ? '#fff' : '#000' }]}><FontAwesome name="user" size={20} /> Contractor Name: {project.contractor_name}</Text>
                 <Text style={[styles.label, { color: theme.mode === 'dark' ? '#fff' : '#000' }]}><FontAwesome name="phone" size={20} /> Contractor Phone: {project.contractor_phone}</Text>
+
+                {/* Success animation */}
+                {success && (
+                    <View style={styles.successMessageContainer}>
+                        <Text style={styles.successMessage}>Approved!</Text>
+                    </View>
+                )}
+
+                {/* Reject animation */}
+                {reject && (
+                    <View style={styles.rejectMessageContainer}>
+                        <Text style={styles.rejectMessage}>Rejected!</Text>
+                    </View>
+                )}
 
                 {/* Image List with View Icons */}
                 {project.images && project.images.length > 0 && (
@@ -115,14 +185,11 @@ const AdminReviewProjectsScreen = () => {
                     <TouchableOpacity style={[styles.button, styles.callButton]} onPress={() => handleCallContractor(project.contractor_phone)}>
                         <Text style={styles.buttonText}>Call Contractor</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity style={[styles.button, styles.approveButton]} onPress={() => handleButtonPress("Approve", project.project_Id)}>
+                    <TouchableOpacity style={[styles.button, styles.approveButton]} onPress={() => handleApprove(project._id)}>
                         <Text style={styles.buttonText}>Approve</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity style={[styles.button, styles.rejectButton]} onPress={() => handleButtonPress("Reject", project.project_Id)}>
+                    <TouchableOpacity style={[styles.button, styles.rejectButton]} onPress={() => handleReject(project._id)}>
                         <Text style={styles.buttonText}>Reject</Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity style={[styles.button, styles.paymentButton]} onPress={() => handleButtonPress("Make Payment", project.project_Id)}>
-                        <Text style={styles.buttonText}>Make Payment</Text>
                     </TouchableOpacity>
                 </View>
 
@@ -273,6 +340,24 @@ const styles = StyleSheet.create({
         fontSize: 22,
         fontWeight: "bold",
         marginBottom: 12,
+    },
+    successMessageContainer: {
+        marginBottom: 10,
+        alignItems: "center",
+    },
+    successMessage: {
+        fontSize: 18,
+        fontWeight: "bold",
+        color: "#28a745", // Green color for success message
+    },
+    rejectMessageContainer: {
+        marginBottom: 10,
+        alignItems: "center",
+    },
+    rejectMessage: {
+        fontSize: 18,
+        fontWeight: "bold",
+        color: "rgba(241, 0, 0, 0.8)",
     },
 });
 

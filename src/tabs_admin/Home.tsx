@@ -19,6 +19,8 @@ const Home = () => {
     const [activeProjectsCount, setActiveProjectsCount] = useState<number | null>(null);
     const [onHoldProjectsCount, setOnHoldProjectsCount] = useState<number | null>(null);
     const [completedProjectsCount, setCompletedProjectsCount] = useState<number | null>(null);
+    const [approvedProjectsCount, setApprovedProjectsCount] = useState<number | null>(null);
+    const [rejectedProjectsCount, setRejectedProjectsCount] = useState<number | null>(null);
     const [adminName, setAdminName] = useState<string | null>(null);
     const [isRefreshing, setIsRefreshing] = useState(false); // State for pull-to-refresh
 
@@ -169,7 +171,30 @@ const Home = () => {
                         <Text style={{ color: theme.text }}>On-Hold Projects</Text>
                     </View>
                 </View>
-
+                <View style={styles.iconRow}>
+                    <View style={styles.iconItem}>
+                        <TouchableOpacity onPress={() => navigation.navigate('AdminOnHoldProjectsScreen')}>
+                            <Ionicons name="checkmark-circle" size={50} color={theme.text} />
+                            {approvedProjectsCount !== null && approvedProjectsCount > 0 && (
+                                <View style={styles.notificationBadge}>
+                                    <Text style={styles.notificationText}>{approvedProjectsCount}</Text>
+                                </View>
+                            )}
+                        </TouchableOpacity>
+                        <Text style={{ color: theme.text }}>Approved Projects</Text>
+                    </View>
+                    <View style={styles.iconItem}>
+                        <TouchableOpacity onPress={() => navigation.navigate('AdminOnHoldProjectsScreen')}>
+                            <Ionicons name="close-circle" size={50} color={theme.text} />
+                            {rejectedProjectsCount !== null && rejectedProjectsCount > 0 && (
+                                <View style={styles.notificationBadge}>
+                                    <Text style={styles.notificationText}>{rejectedProjectsCount}</Text>
+                                </View>
+                            )}
+                        </TouchableOpacity>
+                        <Text style={{ color: theme.text }}>Rejected Projects</Text>
+                    </View>
+                </View>
             </View>
         </ScrollView>
     );
