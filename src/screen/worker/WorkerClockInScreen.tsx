@@ -23,7 +23,7 @@ interface Project {
     project_Id: string;
     project_description: string;
     long_project_description: string;
-    assigned_to: string;
+    worker_name: string;
     project_start_date: string;
     contractor_phone: string;
     completion_percentage: number;
@@ -35,6 +35,7 @@ type WorkerClockInScreenNavigationProp = NavigationProp<RootStackParamList, 'Wor
 
 const WorkerClockInScreen: React.FC = () => {
     const { theme } = useTheme();
+    const styles = getStyles(theme); 
     const navigation = useNavigation<WorkerClockInScreenNavigationProp>();
     const [projects, setProjects] = useState<Project[]>([]);
     const [selectedProject, setSelectedProject] = useState<string | null>(null);
@@ -195,7 +196,7 @@ const WorkerClockInScreen: React.FC = () => {
                 project_Id: projectDetails.project_Id,
                 project_description: projectDetails.project_description,
                 long_project_description: projectDetails.long_project_description,
-                assigned_to: projectDetails.assigned_to,
+                assigned_to: projectDetails.worker_name,
                 project_start_date: projectDetails.project_start_date,
                 completion_percentage: projectDetails.completion_percentage,
                 date: formattedDate || todayFormatted,
@@ -244,7 +245,7 @@ const WorkerClockInScreen: React.FC = () => {
                         <View>
                             <TextInput style={styles.input} value={projectDetails.project_Id} editable={false} placeholder="Project ID" />
                             <TextInput style={styles.input} value={projectDetails.long_project_description} editable={false} placeholder="Long Description" />
-                            <TextInput style={styles.input} value={projectDetails.assigned_to} editable={false} placeholder="Assigned To" />
+                            <TextInput style={styles.input} value={projectDetails.worker_name} editable={false} placeholder="Assigned To" />
                             <TextInput style={styles.input} value={projectDetails.project_start_date} editable={false} placeholder="Start Date" />
                             <TextInput style={styles.input} value={`${projectDetails.completion_percentage}%`} editable={false} placeholder="Completion %" />
                         </View>
@@ -267,7 +268,7 @@ const WorkerClockInScreen: React.FC = () => {
                         <View>
                             <Text style={styles.label}>Date</Text>
                             <TouchableOpacity onPress={() => setShowDatePicker(true)} style={styles.dateInput}>
-                                <Text style={{ color: formattedDate ? "#000" : "#aaa" }}>
+                                <Text style={{ color: theme.mode === 'dark' ? '#fff' : '#000' }}>
                                     {formattedDate || "Select Date"}
                                 </Text>
                             </TouchableOpacity>
@@ -309,29 +310,33 @@ const WorkerClockInScreen: React.FC = () => {
     );
 };
 
-const styles = StyleSheet.create({
+const getStyles = (theme: any) => StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: "#f8f8f8",
+        backgroundColor: theme.background,
+        paddingBottom: 20,
+        minHeight: "100%",
     },
     header: {
         height: 90,
-        backgroundColor: "#fff",
+        backgroundColor: theme.card,
         justifyContent: "center",
         alignItems: "center",
         flexDirection: "row",
         paddingTop: StatusBar.currentHeight,
-    },
-    backButton: {
-        position: "absolute",
-        left: 20,
-        top: "180%",
-        transform: [{ translateY: -12 }],
+        borderBottomWidth: 1,
+        borderBottomColor: theme.text,
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.2,
+        shadowRadius: 3,
+        elevation: 5,
     },
     headerText: {
-        fontSize: 20,
+        fontSize: 22,
         fontWeight: "bold",
-        color: "#000",
+        color: theme.text,
+        letterSpacing: 1,
     },
     content: {
         marginTop: 20,
@@ -341,30 +346,37 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: "bold",
         marginBottom: 5,
+        color: theme.text,
     },
     picker: {
-        backgroundColor: "#fff",
+        backgroundColor: theme.card,
+        color: theme.text,
         marginBottom: 10,
+        borderRadius: 8,
+        borderWidth: 1,
+        borderColor: theme.text,
+        paddingHorizontal: 10,
     },
     input: {
-        backgroundColor: "#fff",
-        padding: 10,
+        backgroundColor: theme.card,
+        padding: 12,
         marginVertical: 5,
         borderRadius: 8,
-    },
-    dateInput: {
-        backgroundColor: "#fff",
-        padding: 10,
-        marginVertical: 5,
-        borderRadius: 8,
-        justifyContent: "center",
+        color: theme.text,
+        borderWidth: 1,
+        borderColor: theme.text,
     },
     submitButton: {
-        backgroundColor: "#000",
-        paddingVertical: 12,
+        backgroundColor: theme.primary,
+        paddingVertical: 14,
         borderRadius: 8,
         alignItems: "center",
         marginTop: 20,
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.2,
+        shadowRadius: 3,
+        elevation: 5,
     },
     submitButtonText: {
         color: "#fff",
@@ -374,6 +386,16 @@ const styles = StyleSheet.create({
     disabledButton: {
         backgroundColor: "#a0a0a0",
     },
+    dateInput: {
+        backgroundColor: theme.card,
+        padding: 12,
+        marginVertical: 5,
+        borderRadius: 8,
+        justifyContent: "center",
+        borderWidth: 1,
+        borderColor: theme.text,
+    },
 });
+
 
 export default WorkerClockInScreen;

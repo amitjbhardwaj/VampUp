@@ -28,8 +28,9 @@ interface Project {
 type WorkerClockOutScreenNavigationProp = NavigationProp<RootStackParamList, 'WorkerClockOutScreen'>;
 
 const WorkerClockOutScreen: React.FC = () => {
-      const { theme } = useTheme();
-    
+    const { theme } = useTheme();
+    const styles = getStyles(theme); 
+
     const navigation = useNavigation<WorkerClockOutScreenNavigationProp>();
     const [projects, setProjects] = useState<Project[]>([]);
     const [selectedProject, setSelectedProject] = useState<string | null>(null);
@@ -263,7 +264,7 @@ const WorkerClockOutScreen: React.FC = () => {
                         <View>
                             <Text style={styles.label}>Date</Text>
                             <TouchableOpacity onPress={() => setShowDatePicker(true)} style={styles.dateInput}>
-                                <Text style={{ color: formattedDate ? "#000" : "#aaa" }}>{formattedDate || "Select Date"}</Text>
+                                <Text style={{ color: formattedDate ? "#fff" : "#000" }}>{formattedDate || "Select Date"}</Text>
                             </TouchableOpacity>
                             {showDatePicker && (
                                 <DateTimePicker
@@ -299,29 +300,33 @@ const WorkerClockOutScreen: React.FC = () => {
 };
 
 
-const styles = StyleSheet.create({
+const getStyles = (theme: any) => StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: "#f8f8f8",
+        backgroundColor: theme.background,
+        paddingBottom: 20,
+        minHeight: "100%",
     },
     header: {
         height: 90,
-        backgroundColor: "#fff",
+        backgroundColor: theme.card,
         justifyContent: "center",
         alignItems: "center",
         flexDirection: "row",
         paddingTop: StatusBar.currentHeight,
-    },
-    backButton: {
-        position: "absolute",
-        left: 20,
-        top: "180%",
-        transform: [{ translateY: -12 }],
+        borderBottomWidth: 1,
+        borderBottomColor: theme.text,
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.2,
+        shadowRadius: 3,
+        elevation: 5,
     },
     headerText: {
-        fontSize: 20,
+        fontSize: 22,
         fontWeight: "bold",
-        color: "#000",
+        color: theme.text,
+        letterSpacing: 1,
     },
     content: {
         marginTop: 20,
@@ -331,23 +336,37 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: "bold",
         marginBottom: 5,
+        color: theme.text,
     },
     picker: {
-        backgroundColor: "#fff",
+        backgroundColor: theme.card,
+        color: theme.text,
         marginBottom: 10,
+        borderRadius: 8,
+        borderWidth: 1,
+        borderColor: theme.text,
+        paddingHorizontal: 10,
     },
     input: {
-        backgroundColor: "#fff",
-        padding: 10,
+        backgroundColor: theme.card,
+        padding: 12,
         marginVertical: 5,
         borderRadius: 8,
+        color: theme.text,
+        borderWidth: 1,
+        borderColor: theme.text,
     },
     submitButton: {
-        backgroundColor: "#000",
-        paddingVertical: 12,
+        backgroundColor: theme.primary,
+        paddingVertical: 14,
         borderRadius: 8,
         alignItems: "center",
         marginTop: 20,
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.2,
+        shadowRadius: 3,
+        elevation: 5,
     },
     submitButtonText: {
         color: "#fff",
@@ -358,12 +377,16 @@ const styles = StyleSheet.create({
         backgroundColor: "#a0a0a0",
     },
     dateInput: {
-        backgroundColor: "#fff",
-        padding: 10,
+        backgroundColor: theme.card,
+        padding: 12,
         marginVertical: 5,
         borderRadius: 8,
         justifyContent: "center",
+        borderWidth: 1,
+        borderColor: theme.text,
     },
 });
+
+
 
 export default WorkerClockOutScreen;

@@ -139,33 +139,48 @@ const WorkUpdateStatusScreen = () => {
             Alert.alert("Please provide a reason");
             return;
         }
-
-        setStatus("On-Hold");
-        setIsModalVisible(false);
-
-        const updatedProject = {
-            ...project,
-            status: "On-Hold",
-        };
-
+    
+        setLoading(true);
+    
         try {
-            // Save status in AsyncStorage
-            await AsyncStorage.setItem(`project_status_${project.project_Id}`, "On-Hold");
-
-            // Retrieve current on-hold projects
-            const storedOnHoldProjects = await AsyncStorage.getItem("onHoldProjects");
-            let onHoldProjects = storedOnHoldProjects ? JSON.parse(storedOnHoldProjects) : [];
-
-            // Check if the project already exists in storage
-            const existingIndex = onHoldProjects.findIndex((p: Project) => p.project_Id === updatedProject.project_Id);
-            if (existingIndex === -1) {
-                onHoldProjects.push(updatedProject);
-                await AsyncStorage.setItem("onHoldProjects", JSON.stringify(onHoldProjects));
+            const response = await axios.put(
+                `http://192.168.129.119:5001/update-project-on-hold/${project._id}`,
+                {
+                    status: "On-Hold",
+                    project_end_date: '2025-04-01',
+                    reason_on_hold: reason.trim(),
+                }
+            );
+    
+            if (response.status === 200) {
+                Alert.alert("Project marked as On-Hold successfully");
+                setStatus("On-Hold");
+                setIsModalVisible(false);
+    
+                // Save status in AsyncStorage
+                await AsyncStorage.setItem(`project_status_${project.project_Id}`, "On-Hold");
+    
+                // Retrieve and update on-hold projects
+                const storedOnHoldProjects = await AsyncStorage.getItem("onHoldProjects");
+                let onHoldProjects = storedOnHoldProjects ? JSON.parse(storedOnHoldProjects) : [];
+    
+                // Check if the project already exists in storage
+                const existingIndex = onHoldProjects.findIndex((p: Project) => p.project_Id === project.project_Id);
+                if (existingIndex === -1) {
+                    onHoldProjects.push({ ...project, status: "On-Hold" });
+                    await AsyncStorage.setItem("onHoldProjects", JSON.stringify(onHoldProjects));
+                }
+            } else {
+                Alert.alert("Failed to update project status. Please try again.");
             }
         } catch (error) {
-            console.error("Error updating on-hold projects:", error);
+            console.error("Error updating project status:", error);
+            Alert.alert("An error occurred while updating. Please try again.");
+        } finally {
+            setLoading(false);
         }
     };
+    
 
     const handleCancel = () => {
         setIsModalVisible(false);
