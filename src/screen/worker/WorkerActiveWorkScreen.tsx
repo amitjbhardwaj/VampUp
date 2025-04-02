@@ -199,9 +199,9 @@ const WorkerActiveWorkScreen = () => {
         ListEmptyComponent={<Text style={[styles.emptyText, { color: theme.mode === 'dark' ? "#fff" : "#777" }]}>No active projects found.</Text>}
         ItemSeparatorComponent={() => <View style={styles.separator} />}
       />
-      <TouchableOpacity style={[styles.backButton, { backgroundColor: theme.mode === 'dark' ? "#333" : "#000" }]} onPress={() => navigation.goBack()}>
+      {/* <TouchableOpacity style={[styles.backButton, { backgroundColor: theme.mode === 'dark' ? "#333" : "#000" }]} onPress={() => navigation.goBack()}>
         <Text style={styles.backButtonText}>Go Back</Text>
-      </TouchableOpacity>
+      </TouchableOpacity> */}
     </View>
   );
 };
