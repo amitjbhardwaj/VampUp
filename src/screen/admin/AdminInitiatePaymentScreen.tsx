@@ -133,7 +133,7 @@ const AdminInitiatePaymentScreen = () => {
 
                         <Pressable
                             style={[styles.paymentButton, { backgroundColor: theme.primary }]}
-                            onPress={() => navigation.navigate("AdminSelectPaymentModeScreen", { projectId: item.project_Id })}
+                            onPress={() => navigation.navigate("PaymentModeScreen", { projectId: item.project_Id })}
                         >
                             <Text style={styles.buttonText}>Make Payment</Text>
                         </Pressable>

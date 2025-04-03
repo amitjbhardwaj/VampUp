@@ -17,9 +17,9 @@ const paymentModes = [
     { name: "IMPS", icon: "flash-on" }
 ];
 
-type NavigationProps = StackNavigationProp<RootStackParamList, "AdminSelectPaymentModeScreen">;
+type NavigationProps = StackNavigationProp<RootStackParamList, "PaymentModeScreen">;
 
-const AdminSelectPaymentModeScreen = () => {
+const PaymentModeScreen = () => {
     const { theme } = useTheme();
     const navigation = useNavigation<NavigationProps>();
     const route = useRoute();
@@ -103,4 +103,4 @@ const styles = StyleSheet.create({
     buttonText: { color: "white", fontWeight: "bold", fontSize: 16 }
 });
 
-export default AdminSelectPaymentModeScreen;
+export default PaymentModeScreen;

@@ -46,7 +46,6 @@ import AdminReviewRequestsScreen from "./screen/admin/AdminReviewRequestsScreen"
 import ContractorCompletedProjectsScreen from "./screen/contractor/ContractorCompletedProjectsScreen";
 import AdminApprovedProjectsScreen from "./screen/admin/AdminApprovedProjectsScreen";
 import AdminRejectedProjectsScreen from "./screen/admin/AdminRejectedProjectsScreen";
-import AdminSelectPaymentModeScreen from "./screen/payment/AdminSelectPaymentModeScreen";
 import UPIPaymentScreen from "./screen/payment/UPIPaymentScreen";
 import NetBankingPaymentScreen from "./screen/payment/NetBankingPaymentScreen";
 import CreditCardPaymentScreen from "./screen/payment/CreditCardPaymentScreen";
@@ -55,6 +54,7 @@ import WalletsPaymentScreen from "./screen/payment/WalletsPaymentScreen";
 import NEFTPaymentScreen from "./screen/payment/NEFTPaymentScreen";
 import RTGSPaymentScreen from "./screen/payment/RTGSPaymentScreen";
 import IMPSPaymentScreen from "./screen/payment/IMPSPaymentScreen";
+import PaymentModeScreen from "./screen/payment/PaymentModeScreen";
 
 export type RootStackParamList = {
     LoginScreen: undefined;
@@ -121,7 +121,7 @@ export type RootStackParamList = {
     AdminApprovedProjectsScreen: undefined;
     AdminRejectedProjectsScreen: undefined;
 
-    AdminSelectPaymentModeScreen: { projectId: string };
+    PaymentModeScreen: { projectId: string };
     UPIPaymentScreen: { projectId: string };
     NetBankingPaymentScreen: { projectId: string };
     DebitCardPaymentScreen: { projectId: string };
@@ -189,7 +189,7 @@ const RootNavigator: React.FC = () => {
                     <Stack.Screen name="AdminReviewRequestsScreen" component={AdminReviewRequestsScreen} />
                     <Stack.Screen name="AdminApprovedProjectsScreen" component={AdminApprovedProjectsScreen} />
                     <Stack.Screen name="AdminRejectedProjectsScreen" component={AdminRejectedProjectsScreen} />
-                    <Stack.Screen name="AdminSelectPaymentModeScreen" component={AdminSelectPaymentModeScreen} />
+                    <Stack.Screen name="PaymentModeScreen" component={PaymentModeScreen} />
 
 
                     <Stack.Screen name="UPIPaymentScreen" component={UPIPaymentScreen} />
