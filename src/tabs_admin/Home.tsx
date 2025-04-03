@@ -12,6 +12,13 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 
 type HomeNavigationProp = NavigationProp<RootStackParamList>;
 
+type Project = {
+    id: string;
+    name: string;
+    project_status: string;
+};
+
+
 const Home = () => {
     const { theme } = useTheme();
     const navigation = useNavigation<HomeNavigationProp>();
@@ -19,7 +26,7 @@ const Home = () => {
     const [activeProjectsCount, setActiveProjectsCount] = useState<number | null>(null);
     const [onHoldProjectsCount, setOnHoldProjectsCount] = useState<number | null>(null);
     const [completedProjectsCount, setCompletedProjectsCount] = useState<number | null>(null);
-    const [approvedProjectsCount, setApprovedProjectsCount] = useState<number | null>(null);
+    const [approvedProjectsCount, setApprovedProjectsCount] = useState<number | null>(null); // Count for approved projects
     const [rejectedProjectsCount, setRejectedProjectsCount] = useState<number | null>(null);
     const [adminName, setAdminName] = useState<string | null>(null);
     const [isRefreshing, setIsRefreshing] = useState(false); // State for pull-to-refresh
@@ -60,9 +67,33 @@ const Home = () => {
                     setCompletedProjectsCount(0);
                 }
 
+                // Fetch Approved Projects count
+                const approvedProjectsResponse = await fetch(`http://192.168.129.119:5001/get-projects-by-admin?created_by=${storedName}&status=Completed`);
+                const approvedProjectsData = await approvedProjectsResponse.json();
+                if (approvedProjectsData.status === 'OK') {
+                    const approvedProjects = (approvedProjectsData.data as Project[]).filter(
+                        (project) => project.project_status === "Approved"
+                    );
+                    setApprovedProjectsCount(approvedProjects.length);
+                } else {
+                    setApprovedProjectsCount(0);
+                }
+
+                // Fetch Rejected Projects count (if needed)
+                const rejectedProjectsResponse = await fetch(`http://192.168.129.119:5001/get-projects-by-admin?created_by=${storedName}&status=Completed`);
+                const rejectedProjectsData = await rejectedProjectsResponse.json();
+                if (rejectedProjectsData.status === 'OK') {
+                    const rejectedProjects = (rejectedProjectsData.data as Project[]).filter(
+                        (project) => project.project_status === "Rejected"
+                    );
+                    setRejectedProjectsCount(rejectedProjects.length);
+                } else {
+                    setRejectedProjectsCount(0);
+                }
             } else {
                 setActiveProjectsCount(0);
                 setOnHoldProjectsCount(0);
+                setCompletedProjectsCount(0);
                 setApprovedProjectsCount(0);
                 setRejectedProjectsCount(0);
             }
@@ -70,6 +101,7 @@ const Home = () => {
             console.error("Error fetching contractor name or project counts:", error);
             setActiveProjectsCount(0);
             setOnHoldProjectsCount(0);
+            setCompletedProjectsCount(0);
             setApprovedProjectsCount(0);
             setRejectedProjectsCount(0);
         }
@@ -87,7 +119,6 @@ const Home = () => {
         setIsRefreshing(false);
     };
 
-
     return (
         <ScrollView
             contentContainerStyle={[styles.screen, { backgroundColor: theme.background }]}
@@ -96,7 +127,6 @@ const Home = () => {
             }
         >
             <View style={styles.iconContainer}>
-
                 {/* First Row */}
                 <View style={styles.iconRow}>
                     <View style={styles.iconItem}>
@@ -132,7 +162,7 @@ const Home = () => {
                         <Text style={{ color: theme.text }}>Review Project</Text>
                     </View>
                     <View style={styles.iconItem}>
-                        <TouchableOpacity onPress={() => navigation.navigate('WorkerActiveWorkScreen')}>
+                        <TouchableOpacity onPress={() => navigation.navigate('AdminInitiatePaymentScreen')}>
                             <Ionicons name="card" size={50} color={theme.text} />
                         </TouchableOpacity>
                         <Text style={{ color: theme.text }}>Initiate Payment</Text>
