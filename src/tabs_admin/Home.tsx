@@ -63,11 +63,15 @@ const Home = () => {
             } else {
                 setActiveProjectsCount(0);
                 setOnHoldProjectsCount(0);
+                setApprovedProjectsCount(0);
+                setRejectedProjectsCount(0);
             }
         } catch (error) {
             console.error("Error fetching contractor name or project counts:", error);
             setActiveProjectsCount(0);
             setOnHoldProjectsCount(0);
+            setApprovedProjectsCount(0);
+            setRejectedProjectsCount(0);
         }
     };
 
@@ -173,7 +177,7 @@ const Home = () => {
                 </View>
                 <View style={styles.iconRow}>
                     <View style={styles.iconItem}>
-                        <TouchableOpacity onPress={() => navigation.navigate('AdminOnHoldProjectsScreen')}>
+                        <TouchableOpacity onPress={() => navigation.navigate('AdminApprovedProjectsScreen')}>
                             <Ionicons name="checkmark-circle" size={50} color={theme.text} />
                             {approvedProjectsCount !== null && approvedProjectsCount > 0 && (
                                 <View style={styles.notificationBadge}>
@@ -184,7 +188,7 @@ const Home = () => {
                         <Text style={{ color: theme.text }}>Approved Projects</Text>
                     </View>
                     <View style={styles.iconItem}>
-                        <TouchableOpacity onPress={() => navigation.navigate('AdminOnHoldProjectsScreen')}>
+                        <TouchableOpacity onPress={() => navigation.navigate('AdminRejectedProjectsScreen')}>
                             <Ionicons name="close-circle" size={50} color={theme.text} />
                             {rejectedProjectsCount !== null && rejectedProjectsCount > 0 && (
                                 <View style={styles.notificationBadge}>

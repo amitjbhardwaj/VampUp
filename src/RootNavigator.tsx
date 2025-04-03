@@ -44,6 +44,8 @@ import AdminOnHoldProjectsScreen from "./screen/admin/AdminOnHoldProjectsScreen"
 import AdminReviewProjectsScreen from "./screen/admin/AdminReviewProjectsScreen";
 import AdminReviewRequestsScreen from "./screen/admin/AdminReviewRequestsScreen";
 import ContractorCompletedProjectsScreen from "./screen/contractor/ContractorCompletedProjectsScreen";
+import AdminApprovedProjectsScreen from "./screen/admin/AdminApprovedProjectsScreen";
+import AdminRejectedProjectsScreen from "./screen/admin/AdminRejectedProjectsScreen";
 
 export type RootStackParamList = {
     LoginScreen: undefined;
@@ -107,6 +109,8 @@ export type RootStackParamList = {
     AdminOnHoldProjectsScreen: undefined;
     AdminReviewProjectsScreen: undefined;
     AdminReviewRequestsScreen: undefined;
+    AdminApprovedProjectsScreen: undefined;
+    AdminRejectedProjectsScreen: undefined;
 };
 
 const Stack = createStackNavigator<RootStackParamList>();
@@ -164,6 +168,8 @@ const RootNavigator: React.FC = () => {
                     <Stack.Screen name="AdminOnHoldProjectsScreen" component={AdminOnHoldProjectsScreen} />
                     <Stack.Screen name="AdminReviewProjectsScreen" component={AdminReviewProjectsScreen} />
                     <Stack.Screen name="AdminReviewRequestsScreen" component={AdminReviewRequestsScreen} />
+                    <Stack.Screen name="AdminApprovedProjectsScreen" component={AdminApprovedProjectsScreen} />
+                    <Stack.Screen name="AdminRejectedProjectsScreen" component={AdminRejectedProjectsScreen} />
 
                 </Stack.Navigator>
             </NavigationContainer>
