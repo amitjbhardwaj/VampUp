@@ -61,8 +61,12 @@ const Home = () => {
                 // Fetch Completed Projects count
                 const completedProjectsResponse = await fetch(`http://192.168.129.119:5001/get-projects-by-admin?created_by=${storedName}&status=Completed`);
                 const completedProjectsData = await completedProjectsResponse.json();
-                if (completedProjectsData.status === 'OK') {
-                    setCompletedProjectsCount(completedProjectsData.data.length);
+                if (completedProjectsData.status === "OK") {
+                    // Filter out projects that have status 'Approved' or 'Rejected'
+                    const filteredProjects = completedProjectsData.data.filter((project: Project) =>
+                        project.project_status !== 'Approved' && project.project_status !== 'Rejected'
+                    );
+                    setCompletedProjectsCount(filteredProjects);
                 } else {
                     setCompletedProjectsCount(0);
                 }

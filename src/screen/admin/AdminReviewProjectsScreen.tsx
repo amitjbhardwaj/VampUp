@@ -11,18 +11,22 @@ import Icon from "react-native-vector-icons/MaterialIcons"; // Using vector icon
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import axios from "axios";
 
+interface Project {
+    _id: string;
+    project_status: string,
+}
+
+
 const AdminReviewProjectsScreen = () => {
     const { theme } = useTheme();
 
-
-    const [projects, setProjects] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [selectedImage, setSelectedImage] = useState<string | null>(null);
     const [modalVisible, setModalVisible] = useState(false);
-    const [success, setSuccess] = useState(false);
-    const [reject, setReject] = useState(false);
-    const [disableButtons, setDisableButtons] = useState(false);
+    const [projectStatus, setProjectStatus] = useState<{ [key: string]: { success: boolean, reject: boolean } }>({});
+    const [projects, setProjects] = useState<Project[]>([]);
+
 
     const fetchCompletedProjects = async () => {
         try {
@@ -32,7 +36,11 @@ const AdminReviewProjectsScreen = () => {
                 const response = await fetch(`http://192.168.129.119:5001/get-projects-by-admin?created_by=${storedName}&status=Completed`);
                 const data = await response.json();
                 if (data.status === "OK") {
-                    setProjects(data.data);
+                    // Filter out projects that have status 'Approved' or 'Rejected'
+                    const filteredProjects = data.data.filter((project: Project) =>
+                        project.project_status !== 'Approved' && project.project_status !== 'Rejected'
+                    );
+                    setProjects(filteredProjects);
                 } else {
                     setProjects([]);
                 }
@@ -57,22 +65,7 @@ const AdminReviewProjectsScreen = () => {
         );
     };
 
-    const handleButtonPress = (action: string, projectId: string) => {
-        Alert.alert(`Action: ${action}`, `You selected "${action}" for project ${projectId}`);
-    };
-
-    const openImageModal = (imageUrl: string) => {
-        setSelectedImage(`http://192.168.129.119:5001${imageUrl}`);
-        setModalVisible(true);
-    };
-
-    const closeImageModal = () => {
-        setModalVisible(false);
-        setSelectedImage(null);
-    };
-
     const handleApprove = async (projectId: string) => {
-        console.log(`project iddddd ${projectId}`)
         if (!projectId) {
             Alert.alert("Error", "Project ID is missing.");
             return;
@@ -84,12 +77,24 @@ const AdminReviewProjectsScreen = () => {
             });
 
             if (response.data.status === "OK") {
-                setSuccess(true);
+                // Update the state to reflect the project approval
+                setProjectStatus(prevState => ({
+                    ...prevState,
+                    [projectId]: { success: true, reject: false },
+                }));
+
+                // Remove the approved project from the list
+                setProjects((prevProjects) =>
+                    prevProjects.filter(project => project._id !== projectId)
+                );
+
                 // Hide the animation after 2 seconds
                 setTimeout(() => {
-                    setSuccess(false);
+                    setProjectStatus(prevState => ({
+                        ...prevState,
+                        [projectId]: { success: false, reject: false },
+                    }));
                 }, 2000);
-                //navigation.navigate("AdminInitiatePaymentScreen");
             } else {
                 console.log("Error updating project:", response.data);
             }
@@ -97,6 +102,7 @@ const AdminReviewProjectsScreen = () => {
             console.error("Error updating project:", error);
         }
     };
+
 
     const handleReject = async (projectId: string) => {
         if (!projectId) {
@@ -110,10 +116,22 @@ const AdminReviewProjectsScreen = () => {
             });
 
             if (response.data.status === "OK") {
-                setReject(true);
+                setProjectStatus(prevState => ({
+                    ...prevState,
+                    [projectId]: { success: false, reject: true },
+                }));
+
+                // Remove the approved project from the list
+                setProjects((prevProjects) =>
+                    prevProjects.filter(project => project._id !== projectId)
+                );
+
                 // Hide the animation after 2 seconds
                 setTimeout(() => {
-                    setReject(false);
+                    setProjectStatus(prevState => ({
+                        ...prevState,
+                        [projectId]: { success: false, reject: false },
+                    }));
                 }, 2000);
             } else {
                 console.log("Error updating project:", response.data);
@@ -123,7 +141,19 @@ const AdminReviewProjectsScreen = () => {
         }
     };
 
+    const openImageModal = (imageUrl: string) => {
+        setSelectedImage(`http://192.168.129.119:5001${imageUrl}`);
+        setModalVisible(true);
+    };
+
+    const closeImageModal = () => {
+        setModalVisible(false);
+        setSelectedImage(null);
+    };
+
     const renderProjectDetails = (project: any) => {
+        const status = projectStatus[project._id] || { success: false, reject: false };
+
         return (
             <View key={project.project_Id} style={[styles.card, { backgroundColor: theme.mode === 'dark' ? '#333' : '#fff' }]}>
                 <Text style={[styles.projectTitle, { color: theme.text }]}>{project.project_description}</Text>
@@ -137,18 +167,14 @@ const AdminReviewProjectsScreen = () => {
                 <Text style={[styles.label, { color: theme.mode === 'dark' ? '#fff' : '#000' }]}><FontAwesome name="user" size={20} /> Contractor Name: {project.contractor_name}</Text>
                 <Text style={[styles.label, { color: theme.mode === 'dark' ? '#fff' : '#000' }]}><FontAwesome name="phone" size={20} /> Contractor Phone: {project.contractor_phone}</Text>
 
-                {/* Success animation */}
-                {success && (
-                    <View style={styles.successMessageContainer}>
-                        <Text style={styles.successMessage}>Approved!</Text>
-                    </View>
+                {/* Success animation without background */}
+                {status.success && (
+                    <Text style={[styles.successMessage, { color: 'green' }]}>Approved!</Text>
                 )}
 
-                {/* Reject animation */}
-                {reject && (
-                    <View style={styles.rejectMessageContainer}>
-                        <Text style={styles.rejectMessage}>Rejected!</Text>
-                    </View>
+                {/* Reject animation without background */}
+                {status.reject && (
+                    <Text style={[styles.rejectMessage, { color: 'red' }]}>Rejected!</Text>
                 )}
 
                 {/* Image List with View Icons */}
@@ -192,10 +218,10 @@ const AdminReviewProjectsScreen = () => {
                         <Text style={styles.buttonText}>Reject</Text>
                     </TouchableOpacity>
                 </View>
-
             </View>
         );
     };
+
 
     if (loading) {
         return (
@@ -267,9 +293,6 @@ const styles = StyleSheet.create({
     rejectButton: {
         backgroundColor: "#ff3b30", // Red
     },
-    paymentButton: {
-        backgroundColor: "#ff9500", // Orange
-    },
     buttonText: {
         color: "#fff",
         fontSize: 16,
@@ -283,81 +306,70 @@ const styles = StyleSheet.create({
     },
     errorText: {
         fontSize: 18,
-        fontWeight: "bold",
+        color: "red",
         textAlign: "center",
-        marginTop: 20,
+    },
+    successMessageContainer: {
+        backgroundColor: "green",
+        padding: 5,
+        borderRadius: 5,
+        marginBottom: 10,
+    },
+    successMessage: {
+        color: "#fff",
+        fontSize: 16,
+        fontWeight: "bold",
+    },
+    rejectMessageContainer: {
+        backgroundColor: "red",
+        padding: 5,
+        borderRadius: 5,
+        marginBottom: 10,
+    },
+    rejectMessage: {
+        color: "#fff",
+        fontSize: 16,
+        fontWeight: "bold",
     },
     imageList: {
-        marginTop: 5, // Reduced top margin
+        marginTop: 10,
     },
-
-    imageText: {
-        fontSize: 16,
-        fontWeight: "500", // Slightly bold for better readability
-    }
-    ,
     imageRow: {
         flexDirection: "row",
+        justifyContent: "space-between",
         alignItems: "center",
-        justifyContent: "flex-start",
-        gap: 5, // Keeps name and icon close
-        marginBottom: 6, // Reduced spacing
+        marginBottom: 10,
     },
-
+    imageText: {
+        color: "#007bff",
+        fontWeight: "500",
+    },
     modalContainer: {
         flex: 1,
-        backgroundColor: "rgba(0, 0, 0, 0.8)",
         justifyContent: "center",
         alignItems: "center",
+        backgroundColor: "rgba(0, 0, 0, 0.7)",
     },
     modalContent: {
-        width: "90%",
-        height: "70%",
-        alignItems: "center",
-        justifyContent: "center",
-    },
-    fullImage: {
-        width: "100%",
-        height: "100%",
-        resizeMode: "contain",
+        backgroundColor: "#fff",
+        padding: 20,
+        borderRadius: 10,
+        position: "relative",
     },
     closeButton: {
         position: "absolute",
-        top: 20,
-        right: 20,
-        zIndex: 10,
+        top: 10,
+        right: 10,
     },
-    imageContainer: {
-        marginVertical: 10,
-    },
-    projectImage: {
-        width: 200,
-        height: 150,
-        borderRadius: 8,
-        marginRight: 10,
+    fullImage: {
+        width: 300,
+        height: 300,
+        borderRadius: 10,
     },
     projectTitle: {
-        fontSize: 22,
+        fontSize: 20,
         fontWeight: "bold",
-        marginBottom: 12,
-    },
-    successMessageContainer: {
-        marginBottom: 10,
-        alignItems: "center",
-    },
-    successMessage: {
-        fontSize: 18,
-        fontWeight: "bold",
-        color: "#28a745", // Green color for success message
-    },
-    rejectMessageContainer: {
-        marginBottom: 10,
-        alignItems: "center",
-    },
-    rejectMessage: {
-        fontSize: 18,
-        fontWeight: "bold",
-        color: "rgba(241, 0, 0, 0.8)",
+        marginBottom: 8,
     },
 });
 
