@@ -7,10 +7,12 @@ import {
     ActivityIndicator,
     TouchableOpacity,
     TextInput,
+    Alert,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useTheme } from "../../context/ThemeContext";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
+import axios from "axios";
 
 type Project = {
     _id: string;
@@ -79,10 +81,34 @@ const AdminAllocateFundsScreen = () => {
         setAllocationAmount("");
     };
 
-    const handleSaveFunds = (projectId: string) => {
-        console.log(`Allocating ₹${allocationAmount} to project ID: ${projectId}`);
-        setAllocatedFunds((prev) => ({ ...prev, [projectId]: allocationAmount })); // Save the allocated amount
-        setActiveAllocation(null);
+    const handleSaveFunds = async (projectId: string) => {
+        if (!allocationAmount) {
+            Alert.alert("Please enter an amount.");
+            return;
+        }
+
+        const data = {
+            project_Id: projectId,
+            amount_allocated: parseFloat(allocationAmount),
+        };
+
+        axios
+            .post("http://192.168.129.119:5001/allocate-amount", data)
+            .then((res) => {
+                if (res.data.status === "OK") {
+                    console.log(`Allocating ₹${allocationAmount} to project ID: ${projectId}`);
+                    setAllocatedFunds((prev) => ({ ...prev, [projectId]: allocationAmount })); // Save the allocated amount
+                    setActiveAllocation(null);
+
+                    Alert.alert("Funds allocated successfully!");
+                } else {
+                    Alert.alert("Failed to allocate funds");
+                }
+            })
+            .catch((e) => {
+                console.error("Error allocating funds", e);
+                Alert.alert("An error occurred while allocating funds.");
+            });
     };
 
     const handleUpdateFunds = (projectId: string) => {
@@ -152,23 +178,23 @@ const AdminAllocateFundsScreen = () => {
                 </Text>
             </View>
 
-            {allocatedFunds[item._id] && (
+            {allocatedFunds[item.project_Id] && (
                 <View style={styles.allocatedFundsSection}>
                     <Text style={[styles.allocatedFundsLabel, { color: theme.text }]}>
-                        Allocated Funds: ₹{allocatedFunds[item._id]}
+                        Allocated Funds: ₹{allocatedFunds[item.project_Id]}
                     </Text>
                 </View>
             )}
 
-            {updatedFunds[item._id] && (
+            {updatedFunds[item.project_Id] && (
                 <View style={styles.allocatedFundsSection}>
                     <Text style={[styles.allocatedFundsLabel, { color: theme.text }]}>
-                        Updated Funds: ₹{updatedFunds[item._id]}
+                        Updated Funds: ₹{updatedFunds[item.project_Id]}
                     </Text>
                 </View>
             )}
 
-            {(activeAllocation === item._id) && !allocatedFunds[item._id] && (
+            {(activeAllocation === item.project_Id) && !allocatedFunds[item.project_Id] && (
                 <View style={styles.allocationSection}>
                     <TextInput
                         style={[styles.input, { color: theme.text, borderColor: theme.primary }]}
@@ -180,7 +206,7 @@ const AdminAllocateFundsScreen = () => {
                     />
                     <TouchableOpacity
                         style={[styles.button, styles.saveButton]}
-                        onPress={() => handleSaveFunds(item._id)}
+                        onPress={() => handleSaveFunds(item.project_Id)}
                     >
                         <Text style={styles.buttonText}>Save</Text>
                     </TouchableOpacity>
@@ -193,7 +219,7 @@ const AdminAllocateFundsScreen = () => {
                 </View>
             )}
 
-            {(activeAllocation === item._id) && allocatedFunds[item._id] && (
+            {(activeAllocation === item.project_Id) && allocatedFunds[item.project_Id] && (
                 <View style={styles.allocationSection}>
                     <TextInput
                         style={[styles.input, { color: theme.text, borderColor: theme.primary }]}
@@ -205,7 +231,7 @@ const AdminAllocateFundsScreen = () => {
                     />
                     <TouchableOpacity
                         style={[styles.button, styles.saveButton]}
-                        onPress={() => handleSaveUpdatedFunds(item._id)}
+                        onPress={() => handleSaveUpdatedFunds(item.project_Id)}
                     >
                         <Text style={styles.buttonText}>Save Updated Funds</Text>
                     </TouchableOpacity>
@@ -219,11 +245,11 @@ const AdminAllocateFundsScreen = () => {
             )}
 
             <TouchableOpacity
-                style={[styles.button, { backgroundColor: allocatedFunds[item._id] ? "#3498DB" : "#2ECC71" }]}
-                onPress={() => allocatedFunds[item._id] ? handleUpdateFunds(item._id) : handleAllocateFunds(item._id)}
+                style={[styles.button, { backgroundColor: allocatedFunds[item.project_Id] ? "#3498DB" : "#2ECC71" }]}
+                onPress={() => allocatedFunds[item.project_Id] ? handleUpdateFunds(item.project_Id) : handleAllocateFunds(item.project_Id)}
             >
                 <Text style={styles.buttonText}>
-                    {allocatedFunds[item._id] ? "Update Funds" : "Allocate Funds"}
+                    {allocatedFunds[item.project_Id] ? "Update Funds" : "Allocate Funds"}
                 </Text>
             </TouchableOpacity>
         </View>
@@ -236,7 +262,7 @@ const AdminAllocateFundsScreen = () => {
             ) : (
                 <FlatList
                     data={projects}
-                    keyExtractor={(item) => item._id}
+                    keyExtractor={(item) => item.project_Id}
                     renderItem={renderItem}
                     contentContainerStyle={{ paddingBottom: 20 }}
                 />
