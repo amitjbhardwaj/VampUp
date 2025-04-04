@@ -86,6 +86,11 @@ const AdminAllocateFundsScreen = () => {
     };
 
     const handleUpdateFunds = (projectId: string) => {
+        setActiveAllocation(projectId); // Ensure you're working with the right project
+        setAllocationAmount(updatedFunds[projectId] || ""); // Pre-fill the input with the current updated amount
+    };
+
+    const handleSaveUpdatedFunds = (projectId: string) => {
         console.log(`Updating ₹${allocationAmount} for project ID: ${projectId}`);
         setUpdatedFunds((prev) => ({ ...prev, [projectId]: allocationAmount })); // Update the funds
         setActiveAllocation(null);
@@ -163,7 +168,7 @@ const AdminAllocateFundsScreen = () => {
                 </View>
             )}
 
-            {activeAllocation === item._id && (
+            {(activeAllocation === item._id) && !allocatedFunds[item._id] && (
                 <View style={styles.allocationSection}>
                     <TextInput
                         style={[styles.input, { color: theme.text, borderColor: theme.primary }]}
@@ -182,6 +187,31 @@ const AdminAllocateFundsScreen = () => {
                     <TouchableOpacity
                         style={[styles.button, styles.cancelButton]}
                         onPress={handleCancel} // Cancel the allocation action
+                    >
+                        <Text style={styles.buttonText}>Cancel</Text>
+                    </TouchableOpacity>
+                </View>
+            )}
+
+            {(activeAllocation === item._id) && allocatedFunds[item._id] && (
+                <View style={styles.allocationSection}>
+                    <TextInput
+                        style={[styles.input, { color: theme.text, borderColor: theme.primary }]}
+                        placeholder="Enter amount"
+                        placeholderTextColor="#888"
+                        keyboardType="numeric"
+                        value={allocationAmount}
+                        onChangeText={setAllocationAmount}
+                    />
+                    <TouchableOpacity
+                        style={[styles.button, styles.saveButton]}
+                        onPress={() => handleSaveUpdatedFunds(item._id)}
+                    >
+                        <Text style={styles.buttonText}>Save Updated Funds</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                        style={[styles.button, styles.cancelButton]}
+                        onPress={handleCancel} // Cancel the update action
                     >
                         <Text style={styles.buttonText}>Cancel</Text>
                     </TouchableOpacity>
