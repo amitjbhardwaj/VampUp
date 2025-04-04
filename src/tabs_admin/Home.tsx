@@ -253,6 +253,15 @@ const Home = () => {
                         <Text style={{ color: theme.text }}>Rejected Projects</Text>
                     </View>
                 </View>
+                {/* Fifth Row - Allocate Funds */}
+                <View style={styles.iconRow}>
+                    <View style={[styles.iconItem, styles.lastRowIcon]}>
+                        <TouchableOpacity onPress={() => navigation.navigate('AdminAllocateFundsScreen')}>
+                            <Ionicons name="cash" size={50} color={theme.text} />
+                        </TouchableOpacity>
+                        <Text style={{ color: theme.text }}>Allocate Funds</Text>
+                    </View>
+                </View>
             </View>
         </ScrollView>
     );
@@ -293,6 +302,9 @@ const styles = StyleSheet.create({
         color: "white",
         fontSize: 12,
         fontWeight: "bold",
+    },
+    lastRowIcon: {
+        marginLeft: "-145%",
     },
 });
 

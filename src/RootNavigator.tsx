@@ -55,6 +55,7 @@ import NEFTPaymentScreen from "./screen/payment/NEFTPaymentScreen";
 import RTGSPaymentScreen from "./screen/payment/RTGSPaymentScreen";
 import IMPSPaymentScreen from "./screen/payment/IMPSPaymentScreen";
 import PaymentModeScreen from "./screen/payment/PaymentModeScreen";
+import AdminAllocateFundsScreen from "./screen/admin/AdminAllocateFundsScreen";
 
 export type RootStackParamList = {
     LoginScreen: undefined;
@@ -120,6 +121,7 @@ export type RootStackParamList = {
     AdminReviewRequestsScreen: undefined;
     AdminApprovedProjectsScreen: undefined;
     AdminRejectedProjectsScreen: undefined;
+    AdminAllocateFundsScreen: undefined;
 
     PaymentModeScreen: { projectId: string };
     UPIPaymentScreen: { projectId: string };
@@ -190,6 +192,7 @@ const RootNavigator: React.FC = () => {
                     <Stack.Screen name="AdminApprovedProjectsScreen" component={AdminApprovedProjectsScreen} />
                     <Stack.Screen name="AdminRejectedProjectsScreen" component={AdminRejectedProjectsScreen} />
                     <Stack.Screen name="PaymentModeScreen" component={PaymentModeScreen} />
+                    <Stack.Screen name="AdminAllocateFundsScreen" component={AdminAllocateFundsScreen} />
 
 
                     <Stack.Screen name="UPIPaymentScreen" component={UPIPaymentScreen} />
