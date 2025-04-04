@@ -28,6 +28,7 @@ const Home = () => {
     const [completedProjectsCount, setCompletedProjectsCount] = useState<number | null>(null);
     const [approvedProjectsCount, setApprovedProjectsCount] = useState<number | null>(null); // Count for approved projects
     const [rejectedProjectsCount, setRejectedProjectsCount] = useState<number | null>(null);
+    const [initiatePaymentProjectCount, setInitiatePaymentProjectCount] = useState<number | null>(null);
     const [adminName, setAdminName] = useState<string | null>(null);
     const [isRefreshing, setIsRefreshing] = useState(false); // State for pull-to-refresh
 
@@ -94,12 +95,25 @@ const Home = () => {
                 } else {
                     setRejectedProjectsCount(0);
                 }
+
+                // Fetch Initiate Payment count (if needed)
+                const initiatePaymentResponse = await fetch(`http://192.168.129.119:5001/get-projects-by-admin?created_by=${storedName}&status=Completed`);
+                const initiatePaymentData = await initiatePaymentResponse.json();
+                if (initiatePaymentData.status === 'OK') {
+                    const initiateProjects = (initiatePaymentData.data as Project[]).filter(
+                        (project) => project.project_status === "Approved"
+                    );
+                    setInitiatePaymentProjectCount(initiateProjects.length);
+                } else {
+                    setInitiatePaymentProjectCount(0);
+                }
             } else {
                 setActiveProjectsCount(0);
                 setOnHoldProjectsCount(0);
                 setCompletedProjectsCount(0);
                 setApprovedProjectsCount(0);
                 setRejectedProjectsCount(0);
+                setInitiatePaymentProjectCount(0);
             }
         } catch (error) {
             console.error("Error fetching contractor name or project counts:", error);
@@ -108,6 +122,7 @@ const Home = () => {
             setCompletedProjectsCount(0);
             setApprovedProjectsCount(0);
             setRejectedProjectsCount(0);
+            setInitiatePaymentProjectCount(0);
         }
     };
 
@@ -168,6 +183,11 @@ const Home = () => {
                     <View style={styles.iconItem}>
                         <TouchableOpacity onPress={() => navigation.navigate('AdminInitiatePaymentScreen')}>
                             <Ionicons name="card" size={50} color={theme.text} />
+                            {initiatePaymentProjectCount !== null && initiatePaymentProjectCount > 0 && (
+                                <View style={styles.notificationBadge}>
+                                    <Text style={styles.notificationText}>{initiatePaymentProjectCount}</Text>
+                                </View>
+                            )}
                         </TouchableOpacity>
                         <Text style={{ color: theme.text }}>Initiate Payment</Text>
                     </View>

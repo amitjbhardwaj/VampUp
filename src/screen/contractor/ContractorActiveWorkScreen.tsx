@@ -17,7 +17,8 @@ type Project = {
     contractor_phone: string;
     completion_percentage: number;
     status: string;
-    contractor_name?: string;
+    contractor_name?: string; 
+    worker_name?: string;
 };
 
 const ContractorActiveWorkScreen = () => {
@@ -141,7 +142,8 @@ const ContractorActiveWorkScreen = () => {
                             <Text style={[styles.projectDetail, { color: theme.text }]}><FontAwesome name="calendar-check-o" size={20} /> End Date: {project.project_end_date}</Text>
                             <Text style={[styles.projectDetail, { color: theme.text }]}><FontAwesome name="info-circle" size={20} /> Status: {project.status}</Text>
                             <Text style={[styles.projectDetail, { color: theme.text }]}><FontAwesome name="percent" size={20} /> Completion: {project.completion_percentage}%</Text>
-                            <Text style={[styles.projectDetail, { color: theme.text }]}><FontAwesome name="user" size={20} /> Assigned To: {project.contractor_name}</Text>
+                            <Text style={[styles.projectDetail, { color: theme.text }]}><FontAwesome name="user" size={20} /> Contractor Name: {project.contractor_name}</Text>
+                            <Text style={[styles.projectDetail, { color: theme.text }]}><FontAwesome name="user" size={20} /> Worker Name: {project.worker_name}</Text>
 
                             {/* View Details Button and On-Hold Button */}
                             <View style={styles.buttonRow}>
