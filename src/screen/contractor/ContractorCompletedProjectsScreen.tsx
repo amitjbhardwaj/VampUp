@@ -8,6 +8,9 @@ import { launchCamera, launchImageLibrary } from "react-native-image-picker"; //
 import { useTheme } from "../../context/ThemeContext";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Icon from 'react-native-vector-icons/FontAwesome'; // Import Icon component from react-native-vector-icons
+import { RootStackParamList } from "../../RootNavigator";
+import { StackNavigationProp } from "@react-navigation/stack";
+import { useNavigation } from "@react-navigation/native";
 
 type Project = {
     project_Id: string;
@@ -23,8 +26,13 @@ type Project = {
     images?: string[];
 };
 
+type NavigationProps = StackNavigationProp<RootStackParamList, "ContractorCompletedProjectsScreen">;
+
+
 const ContractorCompletedProjectsScreen = () => {
     const { theme } = useTheme();
+    const navigation = useNavigation<NavigationProps>();
+    
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [projects, setProjects] = useState<Project[]>([]);
@@ -240,7 +248,7 @@ const ContractorCompletedProjectsScreen = () => {
                             <TouchableOpacity style={[styles.viewDetailsButton, { backgroundColor: theme.primary }]} onPress={() => handleSendForReview(project.project_Id)}>
                                 <Text style={styles.buttonText}>Upload Evidence</Text>
                             </TouchableOpacity>
-                            <TouchableOpacity style={[styles.onHoldButton, { backgroundColor: '#28a745' }]} onPress={() => Alert.alert("Make Payment", `Processing payment for ${project.project_Id}`)}>
+                            <TouchableOpacity style={[styles.onHoldButton, { backgroundColor: '#28a745' }]} onPress={() => navigation.navigate("PaymentModeScreen", { projectId: project.project_Id })}>
                                 <Text style={styles.buttonText}>Make Payment</Text>
                             </TouchableOpacity>
                         </View>

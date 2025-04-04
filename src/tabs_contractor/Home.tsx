@@ -10,6 +10,12 @@ import AsyncStorage from '@react-native-async-storage/async-storage'; // Import 
 
 type HomeNavigationProp = NavigationProp<RootStackParamList>;
 
+type Project = {
+    id: string;
+    name: string;
+    project_status: string;
+};
+
 const Home = () => {
     const { theme } = useTheme();
     const navigation = useNavigation<HomeNavigationProp>();
@@ -21,6 +27,8 @@ const Home = () => {
     const [completedProjectsCount, setCompletedProjectsCount] = useState<number | null>(null);
     const [contractorName, setContractorName] = useState<string | null>(null);
     const [isRefreshing, setIsRefreshing] = useState(false);
+    const [initiatePaymentProjectCount, setInitiatePaymentProjectCount] = useState<number | null>(null);
+
 
     // Fetch contractor name and project counts
     const fetchContractorNameAndProjectCounts = async () => {
@@ -49,11 +57,25 @@ const Home = () => {
                 const completedProjectsResponse = await fetch(`http://192.168.129.119:5001/get-projects-by-contractor?contractor_name=${storedName}&status=Completed`);
                 const completedProjectsData = await completedProjectsResponse.json();
                 setCompletedProjectsCount(completedProjectsData.status === 'OK' ? completedProjectsData.data.length : 0);
+
+                // Fetch Initiate Payment count (if needed)
+                const initiatePaymentResponse = await fetch(`http://192.168.129.119:5001/get-projects-by-contractor?contractor_name=${storedName}&status=Completed`);
+                const initiatePaymentData = await initiatePaymentResponse.json();
+                if (initiatePaymentData.status === 'OK') {
+                    const initiateProjects = (initiatePaymentData.data as Project[]).filter(
+                        (project) => project.project_status === "Approved"
+                    );
+                    setInitiatePaymentProjectCount(initiateProjects.length);
+                } else {
+                    setInitiatePaymentProjectCount(0);
+                }
+
             } else {
                 setAllProjectsCount(0);
                 setActiveProjectsCount(0);
                 setOnHoldProjectsCount(0);
                 setCompletedProjectsCount(0);
+                setInitiatePaymentProjectCount(0);
             }
         } catch (error) {
             console.error("Error fetching project counts:", error);
@@ -61,6 +83,7 @@ const Home = () => {
             setActiveProjectsCount(0);
             setOnHoldProjectsCount(0);
             setCompletedProjectsCount(0);
+            setInitiatePaymentProjectCount(0);
         }
     };
 
@@ -145,6 +168,11 @@ const Home = () => {
                     <View style={styles.iconItem}>
                         <TouchableOpacity onPress={() => navigation.navigate('ContractorInitiatePaymentScreen')}>
                             <Ionicons name="card" size={50} color={theme.text} />
+                            {initiatePaymentProjectCount !== null && initiatePaymentProjectCount > 0 && (
+                                <View style={styles.notificationBadge}>
+                                    <Text style={styles.notificationText}>{initiatePaymentProjectCount}</Text>
+                                </View>
+                            )}
                         </TouchableOpacity>
                         <Text style={{ color: theme.text }}>Initiate Payment</Text>
                     </View>
