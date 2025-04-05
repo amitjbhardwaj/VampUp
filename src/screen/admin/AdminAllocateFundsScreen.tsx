@@ -12,7 +12,7 @@ import {
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useTheme } from "../../context/ThemeContext";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
-import axios from "axios";
+import axios, { isAxiosError } from "axios";
 
 type Project = {
     _id: string;
@@ -96,7 +96,6 @@ const AdminAllocateFundsScreen = () => {
             .post("http://192.168.129.119:5001/allocate-amount", data)
             .then((res) => {
                 if (res.data.status === "OK") {
-                    console.log(`Allocating ₹${allocationAmount} to project ID: ${projectId}`);
                     setAllocatedFunds((prev) => ({ ...prev, [projectId]: allocationAmount })); // Save the allocated amount
                     setActiveAllocation(null);
 
@@ -116,10 +115,36 @@ const AdminAllocateFundsScreen = () => {
         setAllocationAmount(updatedFunds[projectId] || ""); // Pre-fill the input with the current updated amount
     };
 
-    const handleSaveUpdatedFunds = (projectId: string) => {
+
+    const handleSaveUpdatedFunds = async (projectId: string) => {
+        
         console.log(`Updating ₹${allocationAmount} for project ID: ${projectId}`);
-        setUpdatedFunds((prev) => ({ ...prev, [projectId]: allocationAmount })); // Update the funds
-        setActiveAllocation(null);
+        if (!allocationAmount) {
+            Alert.alert("Please enter an amount.");
+            return;
+        }
+
+        try {
+            const res = await axios.put(
+                `http://192.168.129.119:5001/update-allocated-amount?project_Id=${projectId}`,
+                {
+                    new_amount_allocated: parseFloat(allocationAmount),
+                }
+            );
+
+            if (res.status === 200) {
+                Alert.alert("Amount updated successfully!");
+                
+                setUpdatedFunds((prev) => ({ ...prev, [projectId]: allocationAmount })); // Update the funds
+                setActiveAllocation(null);
+
+            } else {
+                Alert.alert("Failed to update amount.");
+            }
+        } catch (error) {
+            //console.error("Error updating funds", error.response || error.message);
+            Alert.alert("An error occurred while updating the funds.");
+        }
     };
 
     const handleCancel = () => {
@@ -223,7 +248,7 @@ const AdminAllocateFundsScreen = () => {
                 <View style={styles.allocationSection}>
                     <TextInput
                         style={[styles.input, { color: theme.text, borderColor: theme.primary }]}
-                        placeholder="Enter amount"
+                        placeholder="Enter updated amount"
                         placeholderTextColor="#888"
                         keyboardType="numeric"
                         value={allocationAmount}
