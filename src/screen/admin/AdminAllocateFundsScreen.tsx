@@ -43,14 +43,42 @@ const AdminAllocateFundsScreen = () => {
             const storedName = await AsyncStorage.getItem("adminName");
             if (!storedName) return;
 
-            const response = await fetch(
+            // 1. Fetch projects
+            const resProjects = await fetch(
                 `http://192.168.129.119:5001/get-projects-by-admin?created_by=${storedName}`
             );
-            const data = await response.json();
+            const dataProjects = await resProjects.json();
 
-            if (data.status === "OK") {
-                const filtered = data.data.filter((project: Project) => project.status !== "Completed");
-                setProjects(filtered);
+            if (dataProjects.status === "OK") {
+                const filteredProjects = dataProjects.data.filter((project: Project) => project.status !== "Completed");
+                setProjects(filteredProjects);
+
+                // 2. Fetch allocated funds
+                const resFunds = await fetch(
+                    `http://192.168.129.119:5001/get-allocated-funds-by-admin?created_by=${storedName}`
+                );
+                const dataFunds = await resFunds.json();
+
+                if (dataFunds.status === "OK") {
+                    const fundMap = dataFunds.data;
+
+                    // Extract allocated and updated amounts
+                    const initialAllocated: { [key: string]: string } = {};
+                    const initialUpdated: { [key: string]: string } = {};
+
+                    for (const projectId in fundMap) {
+                        const fund = fundMap[projectId];
+                        if (fund.amount_allocated !== undefined) {
+                            initialAllocated[projectId] = fund.amount_allocated.toString();
+                        }
+                        if (fund.new_amount_allocated !== undefined) {
+                            initialUpdated[projectId] = fund.new_amount_allocated.toString();
+                        }
+                    }
+
+                    setAllocatedFunds(initialAllocated);
+                    setUpdatedFunds(initialUpdated);
+                }
             }
         } catch (error) {
             console.error("Fetch error:", error);
@@ -58,6 +86,7 @@ const AdminAllocateFundsScreen = () => {
             setLoading(false);
         }
     };
+
 
     useEffect(() => {
         fetchProjects();
@@ -117,7 +146,7 @@ const AdminAllocateFundsScreen = () => {
 
 
     const handleSaveUpdatedFunds = async (projectId: string) => {
-        
+
         console.log(`Updating ₹${allocationAmount} for project ID: ${projectId}`);
         if (!allocationAmount) {
             Alert.alert("Please enter an amount.");
@@ -134,7 +163,7 @@ const AdminAllocateFundsScreen = () => {
 
             if (res.status === 200) {
                 Alert.alert("Amount updated successfully!");
-                
+
                 setUpdatedFunds((prev) => ({ ...prev, [projectId]: allocationAmount })); // Update the funds
                 setActiveAllocation(null);
 
