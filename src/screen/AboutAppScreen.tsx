@@ -1,24 +1,18 @@
 import { useNavigation } from "@react-navigation/native";
 import React from "react";
-import { ScrollView } from "react-native";
+import { Platform, SafeAreaView, ScrollView } from "react-native";
 import { View, Text, StyleSheet, StatusBar, TouchableOpacity } from "react-native";
 import Icon from "react-native-vector-icons/MaterialIcons";
+import Header from "./Header";
+import { useTheme } from "../context/ThemeContext";
 
 const AboutAppScreen = () => {
-    const navigation = useNavigation();
+     const { theme } = useTheme();
 
     return (
-        <ScrollView>
-            <View style={styles.container}>
-                {/* Status bar for proper spacing */}
-                <StatusBar backgroundColor="#fff" barStyle="dark-content" />
-
-                {/* Full-width Header with Back Button */}
-                <View style={styles.header}>
-                    <Text style={styles.headerText}>About</Text>
-                </View>
-            </View>
-        </ScrollView>
+        <SafeAreaView style={[styles.safeArea, { backgroundColor: theme.background }]}>
+            <Header title="About" />
+        </SafeAreaView>
     );
 };
 
@@ -51,7 +45,7 @@ const styles = StyleSheet.create({
         color: "#000",
     },
     content: {
-        marginTop: 110, // Push options further down
+        marginTop: 0, // Push options further down
         paddingHorizontal: 20,
     },
     option: {
@@ -66,6 +60,10 @@ const styles = StyleSheet.create({
     optionText: {
         fontSize: 16,
         marginLeft: 10,
+    },
+    safeArea: {
+        flex: 1,
+        paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
     },
 });
 
