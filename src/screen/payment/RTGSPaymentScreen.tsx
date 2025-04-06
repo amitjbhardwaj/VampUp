@@ -26,6 +26,10 @@ const RTGSPaymentScreen = () => {
         ]);
     };
 
+    const handleCancel = ()=>{
+        navigation.goBack();
+    }
+
     return (
         <View style={[styles.container, { backgroundColor: theme.background }]}>
             <Text style={[styles.header, { color: theme.primary }]}>RTGS Payment</Text>
@@ -64,12 +68,20 @@ const RTGSPaymentScreen = () => {
                 onChangeText={setAmount}
             />
 
-            <Pressable
-                style={[styles.payButton, { backgroundColor: theme.primary }]}
-                onPress={handlePayment}
-            >
-                <Text style={styles.buttonText}>Pay Now</Text>
-            </Pressable>
+            <View style={styles.buttonContainer}>
+                <Pressable
+                    style={[styles.payButton, { backgroundColor: theme.primary, marginRight: 10 }]}
+                    onPress={handlePayment}
+                >
+                    <Text style={styles.buttonText}>Pay Now</Text>
+                </Pressable>
+                <Pressable
+                    style={[styles.payButton, { backgroundColor: theme.primary }]}
+                    onPress={handleCancel}
+                >
+                    <Text style={styles.buttonText}>Cancel</Text>
+                </Pressable>
+            </View>
         </View>
     );
 };
@@ -85,7 +97,16 @@ const styles = StyleSheet.create({
         fontSize: 16,
         marginBottom: 20
     },
-    payButton: { padding: 15, borderRadius: 8, alignItems: "center" },
+    buttonContainer: {
+        flexDirection: "row",
+        justifyContent: "space-between",
+    },
+    payButton: {
+        flex: 1,
+        padding: 15,
+        borderRadius: 8,
+        alignItems: "center",
+    },    
     buttonText: { color: "white", fontWeight: "bold", fontSize: 16 },
 });
 

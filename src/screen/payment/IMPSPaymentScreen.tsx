@@ -25,6 +25,10 @@ const IMPSPaymentScreen = () => {
         ]);
     };
 
+    const handleCancel = ()=>{
+        navigation.goBack();
+    }
+
     return (
         <View style={[styles.container, { backgroundColor: theme.background }]}>
             <Text style={[styles.header, { color: theme.primary }]}>IMPS Payment</Text>
@@ -54,13 +58,21 @@ const IMPSPaymentScreen = () => {
                 value={amount}
                 onChangeText={setAmount}
             />
-
-            <Pressable
-                style={[styles.payButton, { backgroundColor: theme.primary }]}
-                onPress={handlePayment}
-            >
+            <View style={styles.buttonContainer}>
+                <Pressable
+                    style={[styles.payButton, { backgroundColor: theme.primary, marginRight: 10 }]}
+                    onPress={handlePayment}
+                >
+                
                 <Text style={styles.buttonText}>Pay Now</Text>
-            </Pressable>
+                </Pressable>
+                <Pressable
+                    style={[styles.payButton, { backgroundColor: theme.primary }]}
+                    onPress={handleCancel}
+                >
+                    <Text style={styles.buttonText}>Cancel</Text>
+                </Pressable>
+            </View>
         </View>
     );
 };
@@ -76,8 +88,16 @@ const styles = StyleSheet.create({
         fontSize: 16,
         marginBottom: 20
     },
-    payButton: { padding: 15, borderRadius: 8, alignItems: "center" },
-    buttonText: { color: "white", fontWeight: "bold", fontSize: 16 },
+    buttonContainer: {
+        flexDirection: "row",
+        justifyContent: "space-between",
+    },
+    payButton: {
+        flex: 1,
+        padding: 15,
+        borderRadius: 8,
+        alignItems: "center",
+    },    buttonText: { color: "white", fontWeight: "bold", fontSize: 16 },
 });
 
 export default IMPSPaymentScreen;

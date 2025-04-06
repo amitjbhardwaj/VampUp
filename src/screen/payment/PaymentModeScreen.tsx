@@ -31,6 +31,10 @@ const PaymentModeScreen = () => {
         setSelectedMode(mode);
     };
 
+    const handleCancel = ()=>{
+        navigation.goBack();
+    }
+
     return (
         <View style={[styles.container, { backgroundColor: theme.background }]}>
             <Text style={[styles.header, { color: theme.primary }]}>Select Payment Mode</Text>
@@ -101,6 +105,7 @@ const styles = StyleSheet.create({
     optionText: { fontSize: 16, fontWeight: "bold", flex: 1, marginLeft: 10 },
     proceedButton: { padding: 15, borderRadius: 8, alignItems: "center", marginTop: 15 },
     buttonText: { color: "white", fontWeight: "bold", fontSize: 16 }
+    
 });
 
 export default PaymentModeScreen;

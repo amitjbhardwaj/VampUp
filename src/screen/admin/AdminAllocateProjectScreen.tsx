@@ -91,7 +91,7 @@ const AdminAllocateProjectScreen = () => {
                 <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
                     <Icon name="arrow-left" size={24} color={theme.text} />
                 </TouchableOpacity>
-                <Text style={[styles.screenTitle, { color: theme.text }]}>All Projects</Text>
+                <Text style={[styles.screenTitle, { color: theme.text }]}>Allocate Project</Text>
             </View>
             {/* Scrollable Content */}
             <ScrollView contentContainerStyle={styles.scrollContainer}>
