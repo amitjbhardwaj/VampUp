@@ -3,13 +3,18 @@ import {
     View, Text, StyleSheet, ScrollView, ActivityIndicator, Alert,
     Linking, TouchableOpacity,
     Image,
-    Modal
+    Modal,
+    SafeAreaView,
+    Platform,
+    StatusBar
 } from "react-native";
 import { useTheme } from "../../context/ThemeContext";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Icon from "react-native-vector-icons/MaterialIcons"; // Using vector icons
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import axios from "axios";
+import BackIcon from "react-native-vector-icons/MaterialCommunityIcons";
+import { useNavigation } from "@react-navigation/native";
 
 interface Project {
     _id: string;
@@ -19,7 +24,7 @@ interface Project {
 
 const AdminReviewProjectsScreen = () => {
     const { theme } = useTheme();
-
+    const navigation = useNavigation();
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [selectedImage, setSelectedImage] = useState<string | null>(null);
@@ -240,16 +245,23 @@ const AdminReviewProjectsScreen = () => {
     }
 
     return (
-        <ScrollView style={[styles.container, { backgroundColor: theme.mode === 'dark' ? '#121212' : '#f8f8f8' }]}>
-            <Text style={[styles.header, { color: theme.mode === 'dark' ? '#fff' : '#000' }]}>Completed Projects</Text>
-            {projects.length > 0 ? (
-                projects.map((project) => renderProjectDetails(project))
-            ) : (
-                <Text style={[styles.errorText, { color: theme.mode === 'dark' ? '#fff' : '#000' }]}>
-                    No completed projects found.
-                </Text>
-            )}
-        </ScrollView>
+        <SafeAreaView style={[styles.safeArea, { backgroundColor: theme.background }]}>
+            <View style={styles.headerContainer}>
+                <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+                    <BackIcon name="arrow-left" size={24} color={theme.text} />
+                </TouchableOpacity>
+                <Text style={[styles.screenTitle, { color: theme.text }]}>Completed Projects</Text>
+            </View>
+            <ScrollView style={[styles.container, { backgroundColor: theme.mode === 'dark' ? '#121212' : '#f8f8f8' }]}>
+                {projects.length > 0 ? (
+                    projects.map((project) => renderProjectDetails(project))
+                ) : (
+                    <Text style={[styles.errorText, { color: theme.mode === 'dark' ? '#fff' : '#000' }]}>
+                        No completed projects found.
+                    </Text>
+                )}
+            </ScrollView>
+        </SafeAreaView>
     );
 };
 
@@ -307,7 +319,7 @@ const styles = StyleSheet.create({
     errorText: {
         fontSize: 18,
         color: "red",
-        textAlign: "center",
+        textAlign: "center",     
     },
     successMessageContainer: {
         backgroundColor: "green",
@@ -370,6 +382,24 @@ const styles = StyleSheet.create({
         fontSize: 20,
         fontWeight: "bold",
         marginBottom: 8,
+    },
+    safeArea: {
+        flex: 1,
+        paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
+    },
+    headerContainer: {
+        flexDirection: "row",
+        alignItems: "center",
+        paddingHorizontal: 16,
+        paddingBottom: 10,
+    },
+    backButton: {
+        marginRight: 10,
+        padding: 8,
+    },
+    screenTitle: {
+        fontSize: 20,
+        fontWeight: "bold",
     },
 });
 

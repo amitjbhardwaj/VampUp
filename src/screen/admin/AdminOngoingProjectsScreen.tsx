@@ -1,13 +1,15 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet, ScrollView, ActivityIndicator, Alert, Linking, TouchableOpacity } from "react-native";
+import { View, Text, StyleSheet, ScrollView, ActivityIndicator, Alert, Linking, TouchableOpacity, SafeAreaView, Platform, StatusBar } from "react-native";
 import { useTheme } from "../../context/ThemeContext"; // Import your theme context
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import FontAwesome from 'react-native-vector-icons/FontAwesome'; // Import Icon component from react-native-vector-icons
+import { useNavigation } from "@react-navigation/native";
+import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 
 
 const AdminOngoingProjectsScreen = () => {
     const { theme } = useTheme(); // Get theme for dark mode handling
-
+    const navigation = useNavigation();
     const [projects, setProjects] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -161,8 +163,15 @@ const AdminOngoingProjectsScreen = () => {
     }
 
     return (
+
+        <SafeAreaView style={[styles.safeArea, { backgroundColor: theme.background }]}>
+        <View style={styles.headerContainer}>
+            <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+                <Icon name="arrow-left" size={24} color={theme.text} />
+            </TouchableOpacity>
+            <Text style={[styles.screenTitle, { color: theme.text }]}>Ongoing Projects</Text>
+        </View>
         <ScrollView style={[styles.container, { backgroundColor: theme.mode === 'dark' ? '#121212' : '#f8f8f8' }]}>
-            <Text style={[styles.header, { color: theme.mode === 'dark' ? '#fff' : '#000' }]}>Ongoing Projects</Text>
             {projects.length > 0 ? (
                 projects.map((project: any) => (
                     <View key={project.project_Id}>
@@ -176,6 +185,7 @@ const AdminOngoingProjectsScreen = () => {
             )}
 
         </ScrollView>
+        </SafeAreaView>
     );
 };
 
@@ -234,6 +244,25 @@ const styles = StyleSheet.create({
         fontWeight: "bold",
         marginBottom: 12,
     },
+    safeArea: {
+        flex: 1,
+        paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
+    },
+    headerContainer: {
+        flexDirection: "row",
+        alignItems: "center",
+        paddingHorizontal: 16,
+        paddingBottom: 10,
+    },
+    backButton: {
+        marginRight: 10,
+        padding: 8,
+    },
+    screenTitle: {
+        fontSize: 20,
+        fontWeight: "bold",
+    },
+    
 });
 
 export default AdminOngoingProjectsScreen;

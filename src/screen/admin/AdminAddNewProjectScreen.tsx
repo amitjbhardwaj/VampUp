@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, TextInput, StyleSheet, ScrollView, TouchableOpacity, ToastAndroid, Alert } from "react-native";
+import { View, Text, TextInput, StyleSheet, ScrollView, TouchableOpacity, ToastAndroid, Alert, SafeAreaView, Platform, StatusBar } from "react-native";
 import { useTheme } from "../../context/ThemeContext";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 import DatePicker from "react-native-date-picker";
@@ -7,6 +7,7 @@ import { RootStackParamList } from "../../RootNavigator";
 import { Picker } from "@react-native-picker/picker";
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 
 // Define the type for the project state
 type Project = {
@@ -110,125 +111,127 @@ const AdminAddNewProjectScreen = () => {
     }, []);
 
     return (
-        <ScrollView style={[styles.container, { backgroundColor: theme.mode === 'dark' ? '#121212' : '#f8f8f8' }]}>
-            <Text style={[styles.title, { color: theme.mode === 'dark' ? '#fff' : '#000', textAlign: 'center' }]}>
-                Add New Project
-            </Text>
+        <SafeAreaView style={[styles.safeArea, { backgroundColor: theme.background }]}>
+            <View style={styles.headerContainer}>
+                <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+                    <Icon name="arrow-left" size={24} color={theme.text} />
+                </TouchableOpacity>
+                <Text style={[styles.screenTitle, { color: theme.text }]}>New Project</Text>
+            </View>
+            <View style={{ flex: 1 }}>
+                <ScrollView style={[styles.container, { backgroundColor: theme.mode === 'dark' ? '#121212' : '#f8f8f8' }]}>
+                    {Object.keys(project).map((key) => {
+                        const currentValue = project[key as keyof Project];
 
-            {Object.keys(project).map((key) => {
-                const currentValue = project[key as keyof Project];
+                        if (key === "created_by") {
+                            return (
+                                <View key={key} style={styles.inputContainer}>
+                                    <Text style={[styles.label, { color: theme.mode === 'dark' ? '#fff' : '#000' }]}>{labels[key as keyof Project]}</Text>
+                                    <TextInput
+                                        style={[styles.input, { backgroundColor: theme.mode === 'dark' ? '#333' : '#fff', color: theme.mode === 'dark' ? '#fff' : '#000', borderColor: theme.mode === 'dark' ? '#555' : '#ccc' }]}
+                                        value={currentValue?.toString()}
+                                        editable={false}
+                                    />
+                                </View>
+                            );
+                        }
 
-                if (key === "created_by") {
-                    return (
-                        <View key={key} style={styles.inputContainer}>
-                            <Text style={[styles.label, { color: theme.mode === 'dark' ? '#fff' : '#000' }]}>{labels[key as keyof Project]}</Text>
-                            <TextInput
-                                style={[styles.input, { backgroundColor: theme.mode === 'dark' ? '#333' : '#fff', color: theme.mode === 'dark' ? '#fff' : '#000', borderColor: theme.mode === 'dark' ? '#555' : '#ccc' }]}
-                                value={currentValue?.toString()}
-                                editable={false}
-                            />
-                        </View>
-                    );
-                }
+                        if (key === "project_start_date" || key === "project_end_date") {
+                            const isStart = key === "project_start_date";
+                            return (
+                                <View key={key} style={styles.inputContainer}>
+                                    <Text style={[styles.label, { color: theme.mode === 'dark' ? '#fff' : '#000' }]}>{labels[key as keyof Project]}</Text>
+                                    <TouchableOpacity onPress={() => isStart ? setOpenStartDate(true) : setOpenEndDate(true)}>
+                                        <TextInput
+                                            style={[styles.input, { backgroundColor: theme.mode === 'dark' ? '#333' : '#fff', color: theme.mode === 'dark' ? '#fff' : '#000', borderColor: theme.mode === 'dark' ? '#555' : '#ccc' }]}
+                                            value={currentValue instanceof Date ? formatDate(currentValue) : (currentValue === "--" ? "--" : "")}
+                                            editable={false}
+                                        />
+                                    </TouchableOpacity>
+                                    <DatePicker
+                                        modal
+                                        open={isStart ? openStartDate : openEndDate}
+                                        date={currentValue instanceof Date ? currentValue : new Date()}
+                                        mode="date"
+                                        onConfirm={(date) => {
+                                            handleChange(key as keyof Project, date);
+                                            isStart ? setOpenStartDate(false) : setOpenEndDate(false);
+                                        }}
+                                        onCancel={() => isStart ? setOpenStartDate(false) : setOpenEndDate(false)}
+                                    />
+                                </View>
+                            );
+                        }
 
-                if (key === "project_start_date" || key === "project_end_date") {
-                    const isStart = key === "project_start_date";
-                    return (
-                        <View key={key} style={styles.inputContainer}>
-                            <Text style={[styles.label, { color: theme.mode === 'dark' ? '#fff' : '#000' }]}>{labels[key as keyof Project]}</Text>
-                            <TouchableOpacity onPress={() => isStart ? setOpenStartDate(true) : setOpenEndDate(true)}>
+                        const percentageOptions = Array.from({ length: 101 }, (_, i) => i);
+
+                        if (key === "completion_percentage") {
+                            return (
+                                <View key={key} style={styles.inputContainer}>
+                                    <Text style={[styles.label, { color: theme.mode === 'dark' ? '#fff' : '#000' }]}>{labels[key as keyof Project]}</Text>
+                                    <View style={[styles.pickerWrapper, { backgroundColor: theme.mode === 'dark' ? '#333' : '#fff' }]}>
+                                        <Picker
+                                            selectedValue={currentValue}
+                                            onValueChange={(value) => handleChange(key as keyof Project, value)}
+                                            style={{ color: theme.mode === 'dark' ? '#fff' : '#000' }}
+                                            dropdownIconColor={theme.mode === 'dark' ? '#fff' : '#000'}
+                                        >
+                                            {percentageOptions.map((percentage) => (
+                                                <Picker.Item key={percentage} label={`${percentage}%`} value={percentage.toString()} />
+                                            ))}
+                                        </Picker>
+                                    </View>
+                                </View>
+                            );
+                        }
+
+                        if (key === "status") {
+                            return (
+                                <View key={key} style={styles.inputContainer}>
+                                    <Text style={[styles.label, { color: theme.mode === 'dark' ? '#fff' : '#000' }]}>{labels[key as keyof Project]}</Text>
+                                    <View style={[styles.pickerWrapper, { backgroundColor: theme.mode === 'dark' ? '#333' : '#fff' }]}>
+                                        <Picker
+                                            selectedValue={currentValue}
+                                            onValueChange={(value) => handleChange(key as keyof Project, value)}
+                                            style={{ color: theme.mode === 'dark' ? '#fff' : '#000' }}
+                                            dropdownIconColor={theme.mode === 'dark' ? '#fff' : '#000'}
+                                        >
+                                            <Picker.Item label="Yet to start" value="Yet to start" />
+                                            <Picker.Item label="Active" value="Active" />
+                                            <Picker.Item label="In-Progress" value="In-Progress" />
+                                            <Picker.Item label="On-Hold" value="On-Hold" />
+                                        </Picker>
+                                    </View>
+                                </View>
+                            );
+                        }
+
+                        return (
+                            <View key={key} style={styles.inputContainer}>
+                                <Text style={[styles.label, { color: theme.mode === 'dark' ? '#fff' : '#000' }]}>{labels[key as keyof Project]}</Text>
                                 <TextInput
                                     style={[styles.input, { backgroundColor: theme.mode === 'dark' ? '#333' : '#fff', color: theme.mode === 'dark' ? '#fff' : '#000', borderColor: theme.mode === 'dark' ? '#555' : '#ccc' }]}
-                                    value={currentValue instanceof Date ? formatDate(currentValue) : (currentValue === "--" ? "--" : "")}
-                                    editable={false}
+                                    value={currentValue?.toString()}
+                                    onChangeText={(text) => handleChange(key as keyof Project, text)}
                                 />
-                            </TouchableOpacity>
-                            <DatePicker
-                                modal
-                                open={isStart ? openStartDate : openEndDate}
-                                date={currentValue instanceof Date ? currentValue : new Date()}
-                                mode="date"
-                                onConfirm={(date) => {
-                                    handleChange(key as keyof Project, date);
-                                    isStart ? setOpenStartDate(false) : setOpenEndDate(false);
-                                }}
-                                onCancel={() => isStart ? setOpenStartDate(false) : setOpenEndDate(false)}
-                            />
-                        </View>
-                    );
-                }
-
-                const percentageOptions = Array.from({ length: 101 }, (_, i) => i);
-
-                if (key === "completion_percentage") {
-                    return (
-                        <View key={key} style={styles.inputContainer}>
-                            <Text style={[styles.label, { color: theme.mode === 'dark' ? '#fff' : '#000' }]}>{labels[key as keyof Project]}</Text>
-                            <View style={[styles.pickerWrapper, { backgroundColor: theme.mode === 'dark' ? '#333' : '#fff' }]}>
-                                <Picker
-                                    selectedValue={currentValue}
-                                    onValueChange={(value) => handleChange(key as keyof Project, value)}
-                                    style={{ color: theme.mode === 'dark' ? '#fff' : '#000' }}
-                                    dropdownIconColor={theme.mode === 'dark' ? '#fff' : '#000'}
-                                >
-                                    {percentageOptions.map((percentage) => (
-                                        <Picker.Item key={percentage} label={`${percentage}%`} value={percentage.toString()} />
-                                    ))}
-                                </Picker>
                             </View>
-                        </View>
-                    );
-                }
+                        );
+                    })}
 
-                if (key === "status") {
-                    return (
-                        <View key={key} style={styles.inputContainer}>
-                            <Text style={[styles.label, { color: theme.mode === 'dark' ? '#fff' : '#000' }]}>{labels[key as keyof Project]}</Text>
-                            <View style={[styles.pickerWrapper, { backgroundColor: theme.mode === 'dark' ? '#333' : '#fff' }]}>
-                                <Picker
-                                    selectedValue={currentValue}
-                                    onValueChange={(value) => handleChange(key as keyof Project, value)}
-                                    style={{ color: theme.mode === 'dark' ? '#fff' : '#000' }}
-                                    dropdownIconColor={theme.mode === 'dark' ? '#fff' : '#000'}
-                                >
-                                    <Picker.Item label="Yet to start" value="Yet to start" />
-                                    <Picker.Item label="Active" value="Active" />
-                                    <Picker.Item label="In-Progress" value="In-Progress" />
-                                    <Picker.Item label="On-Hold" value="On-Hold" />
-                                </Picker>
-                            </View>
-                        </View>
-                    );
-                }
 
-                return (
-                    <View key={key} style={styles.inputContainer}>
-                        <Text style={[styles.label, { color: theme.mode === 'dark' ? '#fff' : '#000' }]}>{labels[key as keyof Project]}</Text>
-                        <TextInput
-                            style={[styles.input, { backgroundColor: theme.mode === 'dark' ? '#333' : '#fff', color: theme.mode === 'dark' ? '#fff' : '#000', borderColor: theme.mode === 'dark' ? '#555' : '#ccc' }]}
-                            value={currentValue?.toString()}
-                            onChangeText={(text) => handleChange(key as keyof Project, text)}
-                        />
-                    </View>
-                );
-            })}
-
-            <View style={styles.buttonContainer}>
+                </ScrollView>
+            </View>
+            {/* Fixed bottom button */}
+            <View style={[styles.fixedButtonContainer, { backgroundColor: theme.background }]}>
                 <TouchableOpacity
-                    style={[styles.button, { backgroundColor: theme.mode === 'dark' ? "#333" : "#000", width: "48%" }]}
+                    style={[styles.button, { backgroundColor: theme.primary }]}
                     onPress={handleSubmit}
                 >
-                    <Text style={styles.buttonText}>Add Project</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                    style={[styles.button, { backgroundColor: theme.cancelButton, width: "48%" }]}
-                    onPress={handleBack}
-                >
-                    <Text style={styles.buttonText}>Back</Text>
+                    <Text style={styles.buttonText}>Add</Text>
                 </TouchableOpacity>
             </View>
 
-        </ScrollView>
+        </SafeAreaView>
     );
 };
 
@@ -265,15 +268,44 @@ const styles = StyleSheet.create({
         marginTop: 24,
     },
     button: {
-        paddingVertical: 12,
-        paddingHorizontal: 20,
-        borderRadius: 8,
-        alignItems: "center",
+        width: '100%',
+        paddingVertical: 14,
+        borderRadius: 10,
+        alignItems: 'center',
+        justifyContent: 'center',
     },
+    
     buttonText: {
         color: "#fff",
         fontSize: 16,
         fontWeight: "600",
+    },
+    fixedButtonContainer: {
+        position: 'absolute',
+        bottom: 10,
+        left: 0,
+        right: 0,
+        alignItems: 'center',
+        paddingHorizontal: 20,
+        paddingBottom: 10,
+    },
+    safeArea: {
+        flex: 1,
+        paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
+    },
+    headerContainer: {
+        flexDirection: "row",
+        alignItems: "center",
+        paddingHorizontal: 16,
+        paddingBottom: 10,
+    },
+    backButton: {
+        marginRight: 10,
+        padding: 8,
+    },
+    screenTitle: {
+        fontSize: 20,
+        fontWeight: "bold",
     },
 });
 

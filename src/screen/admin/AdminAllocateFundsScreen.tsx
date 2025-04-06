@@ -8,11 +8,15 @@ import {
     TouchableOpacity,
     TextInput,
     Alert,
+    SafeAreaView,
+    Platform,
+    StatusBar,
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useTheme } from "../../context/ThemeContext";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import axios, { isAxiosError } from "axios";
+import { useNavigation } from "@react-navigation/native";
 
 type Project = {
     _id: string;
@@ -31,6 +35,7 @@ type Project = {
 
 const AdminAllocateFundsScreen = () => {
     const { theme } = useTheme();
+    const navigation = useNavigation();
     const [projects, setProjects] = useState<Project[]>([]);
     const [loading, setLoading] = useState(true);
     const [activeAllocation, setActiveAllocation] = useState<string | null>(null);
@@ -310,18 +315,27 @@ const AdminAllocateFundsScreen = () => {
     );
 
     return (
-        <View style={[styles.container, { backgroundColor: theme.background }]}>
-            {loading ? (
-                <ActivityIndicator size="large" color={theme.text} />
-            ) : (
-                <FlatList
-                    data={projects}
-                    keyExtractor={(item) => item.project_Id}
-                    renderItem={renderItem}
-                    contentContainerStyle={{ paddingBottom: 20 }}
-                />
-            )}
-        </View>
+
+        <SafeAreaView style={[styles.safeArea, { backgroundColor: theme.background }]}>
+            <View style={[styles.container]}>
+                <View style={styles.header}>
+                    <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+                        <Icon name="arrow-left" size={24} color={theme.text} />
+                    </TouchableOpacity>
+                    <Text style={[styles.headerTitle, { color: theme.text }]}>Allocate Project Funds</Text>
+                </View>
+                {loading ? (
+                    <ActivityIndicator size="large" color={theme.text} />
+                ) : (
+                    <FlatList
+                        data={projects}
+                        keyExtractor={(item) => item.project_Id}
+                        renderItem={renderItem}
+                        contentContainerStyle={{ paddingBottom: 20 }}
+                    />
+                )}
+            </View>
+        </SafeAreaView>
     );
 };
 
@@ -330,6 +344,11 @@ const styles = StyleSheet.create({
         flex: 1,
         padding: 16,
     },
+    safeArea: {
+        flex: 1,
+        paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
+    },
+
     card: {
         padding: 16,
         marginBottom: 14,
@@ -417,6 +436,20 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: "600",
     },
+    header: {
+        flexDirection: "row",
+        alignItems: "center",
+        marginBottom: 16,
+    },
+    backButton: {
+        marginRight: 12,
+        padding: 4,
+    },
+    headerTitle: {
+        fontSize: 20,
+        fontWeight: "bold",
+    },
+
 });
 
 export default AdminAllocateFundsScreen;

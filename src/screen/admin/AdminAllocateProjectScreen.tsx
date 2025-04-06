@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet, ScrollView, ActivityIndicator, TouchableOpacity, Alert } from "react-native";
+import { View, Text, StyleSheet, ScrollView, ActivityIndicator, TouchableOpacity, Alert, SafeAreaView, Platform, StatusBar } from "react-native";
 import { useTheme } from "../../context/ThemeContext";
 import { NavigationProp, useNavigation, useRoute } from "@react-navigation/native";
 import { RootStackParamList } from "../../RootNavigator";
 import axios from 'axios';
+import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 
 type AdminAllocateProjectScreenNavigationProp = NavigationProp<RootStackParamList, "AdminAllocateProjectScreen">;
 
@@ -85,12 +86,13 @@ const AdminAllocateProjectScreen = () => {
 
 
     return (
-        <View style={[styles.container, { backgroundColor: theme.background }]}>
-            {/* Fixed Header */}
-            <View style={[styles.header, { backgroundColor: theme.background }]}>
-                <Text style={[styles.title, { color: theme.text }]}>All Projects</Text>
+        <SafeAreaView style={[styles.safeArea, { backgroundColor: theme.background }]}>
+            <View style={styles.headerContainer}>
+                <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+                    <Icon name="arrow-left" size={24} color={theme.text} />
+                </TouchableOpacity>
+                <Text style={[styles.screenTitle, { color: theme.text }]}>All Projects</Text>
             </View>
-
             {/* Scrollable Content */}
             <ScrollView contentContainerStyle={styles.scrollContainer}>
                 {loading ? (
@@ -133,16 +135,7 @@ const AdminAllocateProjectScreen = () => {
                     ))
                 )}
             </ScrollView>
-
-            {/* Back Button */}
-            {/* <TouchableOpacity
-                style={[styles.backButton, { backgroundColor: theme.mode === 'dark' ? "#333" : "#000" }]}
-                onPress={handleBack}
-                activeOpacity={0.8}
-            >
-                <Text style={styles.buttonText}>Back</Text>
-            </TouchableOpacity> */}
-        </View>
+        </SafeAreaView>
     );
 };
 
@@ -201,12 +194,31 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         fontSize: 14,
     },
-    backButton: {
+    backButton1: {
         padding: 14,
         borderRadius: 10,
         marginHorizontal: 20,
         marginBottom: 20,
         alignItems: 'center',
+    },
+    safeArea: {
+        flex: 1,
+        paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
+    },
+    headerContainer: {
+        flexDirection: "row",
+        alignItems: "center", // Align items vertically in the center
+        paddingHorizontal: 16,
+        paddingBottom: 10,
+    },
+    backButton: {
+        marginRight: 10, // Space between the back button and the title
+        padding: 8,
+    },
+    screenTitle: {
+        fontSize: 20,
+        fontWeight: "bold",
+        marginLeft: 5, // Slight margin to ensure the text doesn't touch the back button
     },
 });
 

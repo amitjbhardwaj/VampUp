@@ -196,13 +196,13 @@ const Home = () => {
                 {/* Third Row */}
                 <View style={styles.iconRow}>
                     <View style={styles.iconItem}>
-                        <TouchableOpacity onPress={() => navigation.navigate('WorkerActiveWorkScreen')}>
+                        <TouchableOpacity onPress={() => navigation.navigate('AdminReviewRequestsScreen')}>
                             <Ionicons name="chatbox-ellipses" size={50} color={theme.text} />
                         </TouchableOpacity>
                         <Text style={{ color: theme.text }}>Review Requests</Text>
                     </View>
                     <View style={styles.iconItem}>
-                        <TouchableOpacity onPress={() => navigation.navigate('WorkerActiveWorkScreen')}>
+                        <TouchableOpacity onPress={() => navigation.navigate('AdminDocumentsScreen')}>
                             <Ionicons name="document-text" size={50} color={theme.text} />
                         </TouchableOpacity>
                         <Text style={{ color: theme.text }}>Documents</Text>
