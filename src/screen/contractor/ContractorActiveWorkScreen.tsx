@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet, ScrollView, ActivityIndicator, TouchableOpacity, TextInput, Modal, Alert } from "react-native";
+import { View, Text, StyleSheet, ScrollView, ActivityIndicator, TouchableOpacity, TextInput, Modal, Alert, Platform, StatusBar, SafeAreaView } from "react-native";
 import { useTheme } from "../../context/ThemeContext";
 import axios from 'axios';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation } from "@react-navigation/native";
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 
 type Project = {
     _id: string;
@@ -17,7 +18,7 @@ type Project = {
     contractor_phone: string;
     completion_percentage: number;
     status: string;
-    contractor_name?: string; 
+    contractor_name?: string;
     worker_name?: string;
 };
 
@@ -118,92 +119,88 @@ const ContractorActiveWorkScreen = () => {
     };
 
     return (
-        <View style={[styles.container, { backgroundColor: theme.background }]}>
-            <View style={[styles.header, { backgroundColor: theme.background }]}>
-                <Text style={[styles.title, { color: theme.text }]}>Active Projects</Text>
+        <SafeAreaView style={[styles.safeArea, { backgroundColor: theme.background }]}>
+            <View style={styles.headerContainer}>
+                <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton1}>
+                    <Icon name="arrow-left" size={24} color={theme.text} />
+                </TouchableOpacity>
+                <Text style={[styles.screenTitle, { color: theme.text }]}>Active Projects</Text>
             </View>
+            <View style={[styles.container, { backgroundColor: theme.background }]}>
+                <ScrollView contentContainerStyle={styles.scrollContainer}>
+                    {loading ? (
+                        <View style={styles.loadingContainer}>
+                            <ActivityIndicator size="large" color={theme.primary} />
+                        </View>
+                    ) : projects.length === 0 ? (
+                        <Text style={[styles.noProjectsText, { color: theme.text }]}>No active projects assigned to you.</Text>
+                    ) : (
+                        projects.map((project) => (
+                            <View key={project._id} style={[styles.projectCard, { backgroundColor: theme.card, shadowColor: theme.text }]}>
+                                <View style={styles.statusContainer}>
+                                    <Text style={[styles.statusText, { color: 'green' }]}>In-Progress</Text>
+                                </View>
+                                <Text style={[styles.projectTitle, { color: theme.text }]}>{project.project_description}</Text>
+                                <Text style={[styles.projectDetail, { color: theme.text }]}><FontAwesome name="hashtag" size={20} /> ID: {project.project_Id}</Text>
+                                <Text style={[styles.projectDetail, { color: theme.text }]}><FontAwesome name="calendar" size={20} /> Start Date: {project.project_start_date}</Text>
+                                <Text style={[styles.projectDetail, { color: theme.text }]}><FontAwesome name="calendar-check-o" size={20} /> End Date: {project.project_end_date}</Text>
+                                <Text style={[styles.projectDetail, { color: theme.text }]}><FontAwesome name="info-circle" size={20} /> Status: {project.status}</Text>
+                                <Text style={[styles.projectDetail, { color: theme.text }]}><FontAwesome name="percent" size={20} /> Completion: {project.completion_percentage}%</Text>
+                                <Text style={[styles.projectDetail, { color: theme.text }]}><FontAwesome name="user" size={20} /> Contractor Name: {project.contractor_name}</Text>
+                                <Text style={[styles.projectDetail, { color: theme.text }]}><FontAwesome name="user" size={20} /> Worker Name: {project.worker_name}</Text>
 
-            <ScrollView contentContainerStyle={styles.scrollContainer}>
-                {loading ? (
-                    <View style={styles.loadingContainer}>
-                        <ActivityIndicator size="large" color={theme.primary} />
-                    </View>
-                ) : projects.length === 0 ? (
-                    <Text style={[styles.noProjectsText, { color: theme.text }]}>No active projects assigned to you.</Text>
-                ) : (
-                    projects.map((project) => (
-                        <View key={project._id} style={[styles.projectCard, { backgroundColor: theme.card, shadowColor: theme.text }]}>
-                            <View style={styles.statusContainer}>
-                                <Text style={[styles.statusText, { color: 'green' }]}>In-Progress</Text>
+                                {/* View Details Button and On-Hold Button */}
+                                <View style={styles.buttonRow}>
+                                    <TouchableOpacity
+                                        style={[styles.viewDetailsButton, { backgroundColor: theme.primary }]}
+                                        activeOpacity={0.8}
+                                    >
+                                        <Text style={styles.buttonText}>View Details</Text>
+                                    </TouchableOpacity>
+
+                                    <TouchableOpacity
+                                        style={[styles.onHoldButton, { backgroundColor: theme.secondary }]}
+                                        activeOpacity={0.8}
+                                        onPress={() => openOnHoldModal(project._id)}
+                                    >
+                                        <Text style={styles.buttonText}>On-Hold</Text>
+                                    </TouchableOpacity>
+                                </View>
                             </View>
-                            <Text style={[styles.projectTitle, { color: theme.text }]}>{project.project_description}</Text>
-                            <Text style={[styles.projectDetail, { color: theme.text }]}><FontAwesome name="hashtag" size={20} /> ID: {project.project_Id}</Text>
-                            <Text style={[styles.projectDetail, { color: theme.text }]}><FontAwesome name="calendar" size={20} /> Start Date: {project.project_start_date}</Text>
-                            <Text style={[styles.projectDetail, { color: theme.text }]}><FontAwesome name="calendar-check-o" size={20} /> End Date: {project.project_end_date}</Text>
-                            <Text style={[styles.projectDetail, { color: theme.text }]}><FontAwesome name="info-circle" size={20} /> Status: {project.status}</Text>
-                            <Text style={[styles.projectDetail, { color: theme.text }]}><FontAwesome name="percent" size={20} /> Completion: {project.completion_percentage}%</Text>
-                            <Text style={[styles.projectDetail, { color: theme.text }]}><FontAwesome name="user" size={20} /> Contractor Name: {project.contractor_name}</Text>
-                            <Text style={[styles.projectDetail, { color: theme.text }]}><FontAwesome name="user" size={20} /> Worker Name: {project.worker_name}</Text>
+                        ))
+                    )}
+                </ScrollView>
 
-                            {/* View Details Button and On-Hold Button */}
+                {/* On Hold Modal */}
+                <Modal
+                    animationType="slide"
+                    transparent={true}
+                    visible={onHoldModalVisible}
+                    onRequestClose={() => setOnHoldModalVisible(false)}
+                >
+                    <View style={styles.modalContainer}>
+                        <View style={[styles.modalView, { backgroundColor: theme.card }]}>
+                            <Text style={[styles.modalTitle, { color: theme.text }]}>Reason To On-Hold</Text>
+                            <TextInput
+                                style={[styles.input, { color: theme.text, borderColor: theme.primary }]}
+                                placeholder="Enter reason"
+                                placeholderTextColor={theme.text}
+                                value={reason}
+                                onChangeText={setReason}
+                            />
                             <View style={styles.buttonRow}>
-                                <TouchableOpacity
-                                    style={[styles.viewDetailsButton, { backgroundColor: theme.primary }]}
-                                    activeOpacity={0.8}
-                                >
-                                    <Text style={styles.buttonText}>View Details</Text>
+                                <TouchableOpacity style={[styles.modalButton, { backgroundColor: theme.primary }]} onPress={handleConfirmOnHold}>
+                                    <Text style={styles.buttonText}>OK</Text>
                                 </TouchableOpacity>
-
-                                <TouchableOpacity
-                                    style={[styles.onHoldButton, { backgroundColor: theme.secondary }]}
-                                    activeOpacity={0.8}
-                                    onPress={() => openOnHoldModal(project._id)}
-                                >
-                                    <Text style={styles.buttonText}>On-Hold</Text>
+                                <TouchableOpacity style={[styles.modalButton, { backgroundColor: theme.secondary }]} onPress={() => setOnHoldModalVisible(false)}>
+                                    <Text style={styles.buttonText}>Cancel</Text>
                                 </TouchableOpacity>
                             </View>
                         </View>
-                    ))
-                )}
-            </ScrollView>
-
-            {/* On Hold Modal */}
-            <Modal
-                animationType="slide"
-                transparent={true}
-                visible={onHoldModalVisible}
-                onRequestClose={() => setOnHoldModalVisible(false)}
-            >
-                <View style={styles.modalContainer}>
-                    <View style={[styles.modalView, { backgroundColor: theme.card }]}>
-                        <Text style={[styles.modalTitle, { color: theme.text }]}>Reason To On-Hold</Text>
-                        <TextInput
-                            style={[styles.input, { color: theme.text, borderColor: theme.primary }]}
-                            placeholder="Enter reason"
-                            placeholderTextColor={theme.text}
-                            value={reason}
-                            onChangeText={setReason}
-                        />
-                        <View style={styles.buttonRow}>
-                            <TouchableOpacity style={[styles.modalButton, { backgroundColor: theme.primary }]} onPress={handleConfirmOnHold}>
-                                <Text style={styles.buttonText}>OK</Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity style={[styles.modalButton, { backgroundColor: theme.secondary }]} onPress={() => setOnHoldModalVisible(false)}>
-                                <Text style={styles.buttonText}>Cancel</Text>
-                            </TouchableOpacity>
-                        </View>
                     </View>
-                </View>
-            </Modal>
-
-            {/* Back Button */}
-            {/* <TouchableOpacity
-                style={[styles.backButton, { backgroundColor: theme.mode === 'dark' ? "#333" : "#000" }]}
-                onPress={handleBack}
-            >
-                <Text style={styles.buttonText}>Back</Text>
-            </TouchableOpacity> */}
-        </View>
+                </Modal>
+            </View>
+        </SafeAreaView>
     );
 };
 
@@ -324,6 +321,24 @@ const styles = StyleSheet.create({
         color: '#000',
         textAlign: 'center',
         marginVertical: 10,
+    },
+    safeArea: {
+        flex: 1,
+        paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
+    },
+    headerContainer: {
+        flexDirection: "row",
+        alignItems: "center",
+        paddingHorizontal: 16,
+        paddingBottom: 10,
+    },
+    backButton1: {
+        marginRight: 10,
+        padding: 8,
+    },
+    screenTitle: {
+        fontSize: 20,
+        fontWeight: "bold",
     },
 });
 

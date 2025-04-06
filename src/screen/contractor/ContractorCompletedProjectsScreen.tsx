@@ -2,15 +2,20 @@ import React, { useEffect, useState } from "react";
 import {
     View, Text, StyleSheet, ScrollView, ActivityIndicator,
     Alert, Linking, TouchableOpacity, TouchableWithoutFeedback, Image,
-    FlatList
+    FlatList,
+    SafeAreaView,
+    Platform,
+    StatusBar
 } from "react-native";
 import { launchCamera, launchImageLibrary } from "react-native-image-picker"; // Import image picker
 import { useTheme } from "../../context/ThemeContext";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import Icon from 'react-native-vector-icons/FontAwesome'; // Import Icon component from react-native-vector-icons
+import FontAwesome from 'react-native-vector-icons/FontAwesome'; // Import Icon component from react-native-vector-icons
 import { RootStackParamList } from "../../RootNavigator";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { useNavigation } from "@react-navigation/native";
+import Icon from "react-native-vector-icons/MaterialCommunityIcons";
+
 
 type Project = {
     project_Id: string;
@@ -32,7 +37,7 @@ type NavigationProps = StackNavigationProp<RootStackParamList, "ContractorComple
 const ContractorCompletedProjectsScreen = () => {
     const { theme } = useTheme();
     const navigation = useNavigation<NavigationProps>();
-    
+
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [projects, setProjects] = useState<Project[]>([]);
@@ -191,71 +196,76 @@ const ContractorCompletedProjectsScreen = () => {
     };
 
     return (
-        <View style={[styles.container, { backgroundColor: theme.background }]}>
-            <View style={[styles.header, { backgroundColor: theme.background }]}>
-                <Text style={[styles.title, { color: theme.text }]}>Completed Projects</Text>
+
+        <SafeAreaView style={[styles.safeArea, { backgroundColor: theme.background }]}>
+            <View style={styles.headerContainer}>
+                <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+                    <Icon name="arrow-left" size={24} color={theme.text} />
+                </TouchableOpacity>
+                <Text style={[styles.screenTitle, { color: theme.text }]}>Completed Projects</Text>
             </View>
+            <View style={[styles.container, { backgroundColor: theme.background }]}>
+                <FlatList
+                    contentContainerStyle={styles.scrollContainer}
+                    data={projects}
+                    keyExtractor={(item) => item.project_Id}
+                    ListEmptyComponent={() => (
+                        loading ? (
+                            <View style={styles.loadingContainer}>
+                                <ActivityIndicator size="large" color={theme.primary} />
+                            </View>
+                        ) : (
+                            <Text style={[styles.noProjectsText, { color: theme.text }]}>No completed projects found.</Text>
+                        )
+                    )}
+                    renderItem={({ item: project }) => (
+                        <View style={[styles.projectCard, { backgroundColor: theme.card, shadowColor: theme.text }]}>
+                            <Text style={[styles.projectTitle, { color: theme.text }]}>{project.project_description}</Text>
+                            <Text style={[styles.projectDetail, { color: theme.text }]}><FontAwesome name="id-card" size={20} /> ID: {project.project_Id}</Text>
+                            <Text style={[styles.projectDetail, { color: theme.text }]}><FontAwesome name="info-circle" size={20} /> Project Description: {project.long_project_description}</Text>
+                            <Text style={[styles.projectDetail, { color: theme.text }]}><FontAwesome name="calendar" size={20} /> Start Date: {project.project_start_date}</Text>
+                            <Text style={[styles.projectDetail, { color: theme.text }]}><FontAwesome name="calendar-check-o" size={20} /> End Date: {project.project_end_date}</Text>
+                            <Text style={[styles.projectDetail, { color: theme.text }]}><FontAwesome name="info-circle" size={20} /> Status: {project.status}</Text>
+                            <Text style={[styles.projectDetail, { color: theme.text }]}><FontAwesome name="percent" size={20} /> Completion: {project.completion_percentage}%</Text>
+                            <Text style={[styles.projectDetail, { color: theme.text }]}><FontAwesome name="user" size={20} /> Contractor Name: {project.contractor_name}</Text>
+                            <Text style={[styles.projectDetail, { color: theme.text }]}><FontAwesome name="user" size={20} /> Worker Name: {project.worker_name}</Text>
+                            <Text style={[styles.projectDetail, { color: theme.text }]}><FontAwesome name="phone" size={20} /> Worker Phone: {project.worker_phone}</Text>
+                            {project.images && project.images.length > 0 && (
+                                <FlatList
+                                    data={project.images}
+                                    keyExtractor={(item, index) => index.toString()}
+                                    renderItem={({ item }) => (
+                                        <View style={styles.imageContainer}>
+                                            <Text style={[styles.imageName, { color: theme.text }]}>{item.split('/').pop()}</Text>
+                                            <TouchableOpacity style={styles.deleteButton} onPress={() => deleteImage(project.project_Id, item)}>
+                                                <FontAwesome name="trash" size={20} color="#fff" />
+                                            </TouchableOpacity>
+                                        </View>
+                                    )}
+                                    numColumns={2}
+                                    style={{ marginTop: 10 }}
+                                />
+                            )}
 
-            <FlatList
-                contentContainerStyle={styles.scrollContainer}
-                data={projects}
-                keyExtractor={(item) => item.project_Id}
-                ListEmptyComponent={() => (
-                    loading ? (
-                        <View style={styles.loadingContainer}>
-                            <ActivityIndicator size="large" color={theme.primary} />
+                            <View style={styles.buttonRow}>
+                                <TouchableOpacity style={[styles.viewDetailsButton, { backgroundColor: theme.primary }]} onPress={() => handleCallWorker(project.worker_phone)}>
+                                    <Text style={styles.buttonText}>Call Worker</Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity style={[styles.onHoldButton, { backgroundColor: theme.primary }]} onPress={() => Alert.alert("Need More Work", `Requesting more work for ${project.project_Id}`)}>
+                                    <Text style={styles.buttonText}>Need More Work</Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity style={[styles.viewDetailsButton, { backgroundColor: theme.primary }]} onPress={() => handleSendForReview(project.project_Id)}>
+                                    <Text style={styles.buttonText}>Upload Evidence</Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity style={[styles.onHoldButton, { backgroundColor: '#28a745' }]} onPress={() => navigation.navigate("PaymentModeScreen", { projectId: project.project_Id })}>
+                                    <Text style={styles.buttonText}>Make Payment</Text>
+                                </TouchableOpacity>
+                            </View>
                         </View>
-                    ) : (
-                        <Text style={[styles.noProjectsText, { color: theme.text }]}>No completed projects found.</Text>
-                    )
-                )}
-                renderItem={({ item: project }) => (
-                    <View style={[styles.projectCard, { backgroundColor: theme.card, shadowColor: theme.text }]}>
-                        <Text style={[styles.projectTitle, { color: theme.text }]}>{project.project_description}</Text>
-                        <Text style={[styles.projectDetail, { color: theme.text }]}><Icon name="id-card" size={20} /> ID: {project.project_Id}</Text>
-                        <Text style={[styles.projectDetail, { color: theme.text }]}><Icon name="info-circle" size={20} /> Project Description: {project.long_project_description}</Text>
-                        <Text style={[styles.projectDetail, { color: theme.text }]}><Icon name="calendar" size={20} /> Start Date: {project.project_start_date}</Text>
-                        <Text style={[styles.projectDetail, { color: theme.text }]}><Icon name="calendar-check-o" size={20} /> End Date: {project.project_end_date}</Text>
-                        <Text style={[styles.projectDetail, { color: theme.text }]}><Icon name="info-circle" size={20} /> Status: {project.status}</Text>
-                        <Text style={[styles.projectDetail, { color: theme.text }]}><Icon name="percent" size={20} /> Completion: {project.completion_percentage}%</Text>
-                        <Text style={[styles.projectDetail, { color: theme.text }]}><Icon name="user" size={20} /> Contractor Name: {project.contractor_name}</Text>
-                        <Text style={[styles.projectDetail, { color: theme.text }]}><Icon name="user" size={20} /> Worker Name: {project.worker_name}</Text>
-                        <Text style={[styles.projectDetail, { color: theme.text }]}><Icon name="phone" size={20} /> Worker Phone: {project.worker_phone}</Text>
-                        {project.images && project.images.length > 0 && (
-                            <FlatList
-                                data={project.images}
-                                keyExtractor={(item, index) => index.toString()}
-                                renderItem={({ item }) => (
-                                    <View style={styles.imageContainer}>
-                                        <Text style={[styles.imageName, { color: theme.text }]}>{item.split('/').pop()}</Text>
-                                        <TouchableOpacity style={styles.deleteButton} onPress={() => deleteImage(project.project_Id, item)}>
-                                            <Icon name="trash" size={20} color="#fff" />
-                                        </TouchableOpacity>
-                                    </View>
-                                )}
-                                numColumns={2}
-                                style={{ marginTop: 10 }}
-                            />
-                        )}
-
-                        <View style={styles.buttonRow}>
-                            <TouchableOpacity style={[styles.viewDetailsButton, { backgroundColor: theme.primary }]} onPress={() => handleCallWorker(project.worker_phone)}>
-                                <Text style={styles.buttonText}>Call Worker</Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity style={[styles.onHoldButton, { backgroundColor: theme.primary }]} onPress={() => Alert.alert("Need More Work", `Requesting more work for ${project.project_Id}`)}>
-                                <Text style={styles.buttonText}>Need More Work</Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity style={[styles.viewDetailsButton, { backgroundColor: theme.primary }]} onPress={() => handleSendForReview(project.project_Id)}>
-                                <Text style={styles.buttonText}>Upload Evidence</Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity style={[styles.onHoldButton, { backgroundColor: '#28a745' }]} onPress={() => navigation.navigate("PaymentModeScreen", { projectId: project.project_Id })}>
-                                <Text style={styles.buttonText}>Make Payment</Text>
-                            </TouchableOpacity>
-                        </View>
-                    </View>
-                )}
-            />
-        </View>
+                    )}
+                />
+            </View>
+        </SafeAreaView>
     );
 };
 
@@ -357,6 +367,24 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         height: 300,
     },
+        safeArea: {
+            flex: 1,
+            paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
+        },
+        headerContainer: {
+            flexDirection: "row",
+            alignItems: "center",
+            paddingHorizontal: 16,
+            paddingBottom: 10,
+        },
+        backButton: {
+            marginRight: 10,
+            padding: 8,
+        },
+        screenTitle: {
+            fontSize: 20,
+            fontWeight: "bold",
+        },
 });
 
 export default ContractorCompletedProjectsScreen;

@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet, ScrollView, ActivityIndicator, TouchableOpacity, Modal, Alert } from "react-native";
+import { View, Text, StyleSheet, ScrollView, ActivityIndicator, TouchableOpacity, Modal, Alert, Platform, StatusBar, SafeAreaView } from "react-native";
 import { useTheme } from "../../context/ThemeContext";
 import axios from 'axios';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation } from "@react-navigation/native";
 import DatePicker from "react-native-date-picker";
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 
 type Project = {
     _id: string;
@@ -120,99 +121,94 @@ const ContractorOnHoldProjectsScreen = () => {
     };
 
     return (
-        <View style={[styles.container, { backgroundColor: theme.background }]}>
-            <View style={[styles.header, { backgroundColor: theme.background }]}>
-                <Text style={[styles.title, { color: theme.text }]}>On-Hold Projects</Text>
+        <SafeAreaView style={[styles.safeArea, { backgroundColor: theme.background }]}>
+            <View style={styles.headerContainer}>
+                <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton1}>
+                    <Icon name="arrow-left" size={24} color={theme.text} />
+                </TouchableOpacity>
+                <Text style={[styles.screenTitle, { color: theme.text }]}>On-Hold Projects</Text>
             </View>
+            <View style={[styles.container, { backgroundColor: theme.background }]}>
+                <ScrollView contentContainerStyle={styles.scrollContainer}>
+                    {loading ? (
+                        <View style={styles.loadingContainer}>
+                            <ActivityIndicator size="large" color={theme.primary} />
+                        </View>
+                    ) : projects.length === 0 ? (
+                        <Text style={[styles.noProjectsText, { color: theme.text }]}>No on-hold projects assigned to you.</Text>
+                    ) : (
+                        projects.map((project) => (
+                            <View key={project._id} style={[styles.projectCard, { backgroundColor: theme.card, shadowColor: theme.text }]}>
+                                <View style={styles.statusContainer}>
+                                    <Text style={[styles.statusText, { color: 'orange' }]}>On-Hold</Text>
+                                </View>
+                                <Text style={[styles.projectTitle, { color: theme.text }]}>{project.project_description}</Text>
+                                <Text style={[styles.projectDetail, { color: theme.text }]}><FontAwesome name="hashtag" size={20} /> ID: {project.project_Id}</Text>
+                                <Text style={[styles.projectDetail, { color: theme.text }]}><FontAwesome name="calendar" size={20} /> Start Date: {project.project_start_date}</Text>
+                                <Text style={[styles.projectDetail, { color: theme.text }]}><FontAwesome name="calendar-check-o" size={20} /> End Date: {project.project_end_date}</Text>
+                                <Text style={[styles.projectDetail, { color: theme.text }]}><FontAwesome name="info-circle" size={20} /> Status: {project.status}</Text>
+                                <Text style={[styles.projectDetail, { color: theme.text }]}><FontAwesome name="percent" size={20} /> Completion: {project.completion_percentage}%</Text>
+                                <Text style={[styles.projectDetail, { color: theme.text }]}><FontAwesome name="user" size={20} /> Assigned To: {project.contractor_name}</Text>
 
-            <ScrollView contentContainerStyle={styles.scrollContainer}>
-                {loading ? (
-                    <View style={styles.loadingContainer}>
-                        <ActivityIndicator size="large" color={theme.primary} />
-                    </View>
-                ) : projects.length === 0 ? (
-                    <Text style={[styles.noProjectsText, { color: theme.text }]}>No on-hold projects assigned to you.</Text>
-                ) : (
-                    projects.map((project) => (
-                        <View key={project._id} style={[styles.projectCard, { backgroundColor: theme.card, shadowColor: theme.text }]}>
-                            <View style={styles.statusContainer}>
-                                <Text style={[styles.statusText, { color: 'orange' }]}>On-Hold</Text>
+                                {/* Action Buttons */}
+                                <View style={styles.buttonRow}>
+                                    <TouchableOpacity
+                                        style={[styles.resumeButton, { backgroundColor: theme.primary }]}
+                                        activeOpacity={0.8}
+                                    >
+                                        <Text style={styles.buttonText}>View Details</Text>
+                                    </TouchableOpacity>
+
+                                    <TouchableOpacity
+                                        style={[styles.resumeButton, { backgroundColor: theme.secondary }]}
+                                        onPress={() => openActivateModal(project._id)}
+                                        activeOpacity={0.8}
+                                    >
+                                        <Text style={styles.buttonText}>Resume Project</Text>
+                                    </TouchableOpacity>
+                                </View>
                             </View>
-                            <Text style={[styles.projectTitle, { color: theme.text }]}>{project.project_description}</Text>
-                            <Text style={[styles.projectDetail, { color: theme.text }]}><FontAwesome name="hashtag" size={20} /> ID: {project.project_Id}</Text>
-                            <Text style={[styles.projectDetail, { color: theme.text }]}><FontAwesome name="calendar" size={20} /> Start Date: {project.project_start_date}</Text>
-                            <Text style={[styles.projectDetail, { color: theme.text }]}><FontAwesome name="calendar-check-o" size={20} /> End Date: {project.project_end_date}</Text>
-                            <Text style={[styles.projectDetail, { color: theme.text }]}><FontAwesome name="info-circle" size={20} /> Status: {project.status}</Text>
-                            <Text style={[styles.projectDetail, { color: theme.text }]}><FontAwesome name="percent" size={20} /> Completion: {project.completion_percentage}%</Text>
-                            <Text style={[styles.projectDetail, { color: theme.text }]}><FontAwesome name="user" size={20} /> Assigned To: {project.contractor_name}</Text>
+                        ))
+                    )}
+                </ScrollView>
 
-                            {/* Action Buttons */}
+                {/* Modal */}
+                <Modal
+                    animationType="slide"
+                    transparent={true}
+                    visible={activateModalVisible}
+                    onRequestClose={() => setActivateModalVisible(false)}
+                >
+                    {/* Show DatePicker when openEndDate is true */}
+                    <DatePicker
+                        modal
+                        open={openEndDate}
+                        date={endDate}
+                        mode="date"
+                        onConfirm={(date) => {
+                            setEndDate(date);
+                            setOpenEndDate(false); // Close the DatePicker when a date is selected
+                        }}
+                        onCancel={() => setOpenEndDate(false)} // Close DatePicker if canceled
+                    />
+                    <View style={styles.modalContainer}>
+                        <View style={[styles.modalView, { backgroundColor: theme.card }]}>
+                            <Text style={[styles.modalTitle, { color: theme.text }]}>Confirm Activation</Text>
+                            {/* Display End Date in yyyy-mm-dd format */}
+                            <Text style={styles.dateText}>End Date: {endDate.toISOString().split('T')[0]}</Text>
                             <View style={styles.buttonRow}>
-                                <TouchableOpacity
-                                    style={[styles.resumeButton, { backgroundColor: theme.primary }]}
-                                    activeOpacity={0.8}
-                                >
-                                    <Text style={styles.buttonText}>View Details</Text>
+                                <TouchableOpacity style={[styles.modalButton, { backgroundColor: theme.primary }]} onPress={handleConfirmActivate}>
+                                    <Text style={styles.buttonText}>Confirm</Text>
                                 </TouchableOpacity>
-
-                                <TouchableOpacity
-                                    style={[styles.resumeButton, { backgroundColor: theme.secondary }]}
-                                    onPress={() => openActivateModal(project._id)}
-                                    activeOpacity={0.8}
-                                >
-                                    <Text style={styles.buttonText}>Resume Project</Text>
+                                <TouchableOpacity style={[styles.modalButton, { backgroundColor: theme.secondary }]} onPress={() => setActivateModalVisible(false)}>
+                                    <Text style={styles.buttonText}>Cancel</Text>
                                 </TouchableOpacity>
                             </View>
                         </View>
-                    ))
-                )}
-            </ScrollView>
-
-            {/* Modal */}
-            <Modal
-                animationType="slide"
-                transparent={true}
-                visible={activateModalVisible}
-                onRequestClose={() => setActivateModalVisible(false)}
-            >
-                {/* Show DatePicker when openEndDate is true */}
-                <DatePicker
-                    modal
-                    open={openEndDate}
-                    date={endDate}
-                    mode="date"
-                    onConfirm={(date) => {
-                        setEndDate(date);
-                        setOpenEndDate(false); // Close the DatePicker when a date is selected
-                    }}
-                    onCancel={() => setOpenEndDate(false)} // Close DatePicker if canceled
-                />
-                <View style={styles.modalContainer}>
-                    <View style={[styles.modalView, { backgroundColor: theme.card }]}>
-                        <Text style={[styles.modalTitle, { color: theme.text }]}>Confirm Activation</Text>
-                        {/* Display End Date in yyyy-mm-dd format */}
-                        <Text style={styles.dateText}>End Date: {endDate.toISOString().split('T')[0]}</Text>
-                        <View style={styles.buttonRow}>
-                            <TouchableOpacity style={[styles.modalButton, { backgroundColor: theme.primary }]} onPress={handleConfirmActivate}>
-                                <Text style={styles.buttonText}>Confirm</Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity style={[styles.modalButton, { backgroundColor: theme.secondary }]} onPress={() => setActivateModalVisible(false)}>
-                                <Text style={styles.buttonText}>Cancel</Text>
-                            </TouchableOpacity>
-                        </View>
                     </View>
-                </View>
-            </Modal>
-
-            {/* Back Button */}
-            {/* <TouchableOpacity
-                style={[styles.backButton, { backgroundColor: theme.mode === 'dark' ? "#333" : "#000" }]}
-                onPress={handleBack}
-                activeOpacity={0.8}
-            >
-                <Text style={styles.buttonText}>Back</Text>
-            </TouchableOpacity> */}
-        </View>
+                </Modal>
+            </View>
+        </SafeAreaView>
     );
 };
 
@@ -324,6 +320,24 @@ const styles = StyleSheet.create({
         color: '#000',
         textAlign: 'center',
         marginVertical: 10,
+    },
+    safeArea: {
+        flex: 1,
+        paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
+    },
+    headerContainer: {
+        flexDirection: "row",
+        alignItems: "center",
+        paddingHorizontal: 16,
+        paddingBottom: 10,
+    },
+    backButton1: {
+        marginRight: 10,
+        padding: 8,
+    },
+    screenTitle: {
+        fontSize: 20,
+        fontWeight: "bold",
     },
 });
 

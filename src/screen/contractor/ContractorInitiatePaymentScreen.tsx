@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, FlatList, ActivityIndicator, StyleSheet, ScrollView, Pressable } from "react-native";
+import { View, Text, FlatList, ActivityIndicator, StyleSheet, ScrollView, Pressable, Platform, StatusBar, SafeAreaView, TouchableOpacity } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useTheme } from "../../context/ThemeContext";
 import { useNavigation } from "@react-navigation/native";
 import { RootStackParamList } from "../../RootNavigator";
 import { StackNavigationProp } from "@react-navigation/stack";
+import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 
 interface Project {
     _id: string;
@@ -61,86 +62,93 @@ const ContractorInitiatePaymentScreen = () => {
     }
 
     return (
-        <View style={[styles.container, { backgroundColor: theme.background }]}>
-            <Text style={[styles.header, { color: theme.primary }]}>Initiate Payment</Text>
-            <FlatList
-                data={projects}
-                keyExtractor={(item) => item.project_Id}
-                renderItem={({ item }) => (
-                    <View style={[styles.projectCard, { backgroundColor: theme.card, borderLeftColor: theme.primary }]}>
-                        <Text style={[styles.title, { color: theme.text }]}>{item.project_description}</Text>
+        <SafeAreaView style={[styles.safeArea, { backgroundColor: theme.background }]}>
+            <View style={styles.headerContainer}>
+                <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+                    <Icon name="arrow-left" size={24} color={theme.text} />
+                </TouchableOpacity>
+                <Text style={[styles.screenTitle, { color: theme.text }]}>Initiate Payment</Text>
+            </View>
+            <View style={[styles.container, { backgroundColor: theme.background }]}>
+                <FlatList
+                    data={projects}
+                    keyExtractor={(item) => item.project_Id}
+                    renderItem={({ item }) => (
+                        <View style={[styles.projectCard, { backgroundColor: theme.card, borderLeftColor: theme.primary }]}>
+                            <Text style={[styles.title, { color: theme.text }]}>{item.project_description}</Text>
 
-                        <View style={styles.row}>
-                            <Text style={[styles.label, { color: theme.text }]}>📌 Project ID:</Text>
-                            <Text style={[styles.value, { color: theme.text }]}>{item.project_Id}</Text>
-                        </View>
+                            <View style={styles.row}>
+                                <Text style={[styles.label, { color: theme.text }]}>📌 Project ID:</Text>
+                                <Text style={[styles.value, { color: theme.text }]}>{item.project_Id}</Text>
+                            </View>
 
-                        <ScrollView style={styles.descriptionContainer}>
-                            <Text style={[styles.label, { color: theme.text }]}>📄 Description:</Text>
-                            <Text style={[styles.description, { backgroundColor: theme.background, color: theme.text }]}>
-                                {item.long_project_description}
-                            </Text>
-                        </ScrollView>
+                            <ScrollView style={styles.descriptionContainer}>
+                                <Text style={[styles.label, { color: theme.text }]}>📄 Description:</Text>
+                                <Text style={[styles.description, { backgroundColor: theme.background, color: theme.text }]}>
+                                    {item.long_project_description}
+                                </Text>
+                            </ScrollView>
 
-                        <View style={styles.row}>
-                            <Text style={[styles.label, { color: theme.text }]}>👤 Created By:</Text>
-                            <Text style={[styles.value, { color: theme.text }]}>{item.created_by}</Text>
-                        </View>
+                            <View style={styles.row}>
+                                <Text style={[styles.label, { color: theme.text }]}>👤 Created By:</Text>
+                                <Text style={[styles.value, { color: theme.text }]}>{item.created_by}</Text>
+                            </View>
 
-                        <View style={styles.row}>
-                            <Text style={[styles.label, { color: theme.text }]}>📅 Start Date:</Text>
-                            <Text style={[styles.value, { color: theme.text }]}>{item.project_start_date}</Text>
-                        </View>
+                            <View style={styles.row}>
+                                <Text style={[styles.label, { color: theme.text }]}>📅 Start Date:</Text>
+                                <Text style={[styles.value, { color: theme.text }]}>{item.project_start_date}</Text>
+                            </View>
 
-                        <View style={styles.row}>
-                            <Text style={[styles.label, { color: theme.text }]}>📅 End Date:</Text>
-                            <Text style={[styles.value, { color: theme.text }]}>{item.project_end_date}</Text>
-                        </View>
+                            <View style={styles.row}>
+                                <Text style={[styles.label, { color: theme.text }]}>📅 End Date:</Text>
+                                <Text style={[styles.value, { color: theme.text }]}>{item.project_end_date}</Text>
+                            </View>
 
-                        <View style={styles.row}>
-                            <Text style={[styles.label, { color: theme.text }]}>📞 Contractor Phone:</Text>
-                            <Text style={[styles.value, { color: theme.text }]}>{item.contractor_phone}</Text>
-                        </View>
+                            <View style={styles.row}>
+                                <Text style={[styles.label, { color: theme.text }]}>📞 Contractor Phone:</Text>
+                                <Text style={[styles.value, { color: theme.text }]}>{item.contractor_phone}</Text>
+                            </View>
 
-                        <View style={styles.row}>
-                            <Text style={[styles.label, { color: theme.text }]}>🏗 Contractor Name:</Text>
-                            <Text style={[styles.value, { color: theme.text }]}>{item.contractor_name}</Text>
-                        </View>
+                            <View style={styles.row}>
+                                <Text style={[styles.label, { color: theme.text }]}>🏗 Contractor Name:</Text>
+                                <Text style={[styles.value, { color: theme.text }]}>{item.contractor_name}</Text>
+                            </View>
 
-                        <View style={styles.row}>
-                            <Text style={[styles.label, { color: theme.text }]}>👷 Worker:</Text>
-                            <Text style={[styles.value, { color: theme.text }]}>{item.worker_name}</Text>
-                        </View>
+                            <View style={styles.row}>
+                                <Text style={[styles.label, { color: theme.text }]}>👷 Worker:</Text>
+                                <Text style={[styles.value, { color: theme.text }]}>{item.worker_name}</Text>
+                            </View>
 
-                        <View style={styles.row}>
-                            <Text style={[styles.label, { color: theme.text }]}>⚡ Status:</Text>
-                            <Text style={[styles.value, { color: "green", fontWeight: "bold" }]}>
-                                {item.status}
-                            </Text>
-                        </View>
+                            <View style={styles.row}>
+                                <Text style={[styles.label, { color: theme.text }]}>⚡ Status:</Text>
+                                <Text style={[styles.value, { color: "green", fontWeight: "bold" }]}>
+                                    {item.status}
+                                </Text>
+                            </View>
 
-                        <View style={styles.row}>
-                            <Text style={[styles.label, { color: theme.text }]}>📊 Completion:</Text>
-                            <Text
-                                style={[
-                                    styles.value,
-                                    { color: item.completion_percentage < 50 ? "#ff9800" : "#28a745", fontWeight: "bold" },
-                                ]}
+                            <View style={styles.row}>
+                                <Text style={[styles.label, { color: theme.text }]}>📊 Completion:</Text>
+                                <Text
+                                    style={[
+                                        styles.value,
+                                        { color: item.completion_percentage < 50 ? "#ff9800" : "#28a745", fontWeight: "bold" },
+                                    ]}
+                                >
+                                    {item.completion_percentage} %
+                                </Text>
+                            </View>
+
+                            <Pressable
+                                style={[styles.paymentButton, { backgroundColor: theme.primary }]}
+                                onPress={() => navigation.navigate("PaymentModeScreen", { projectId: item.project_Id })}
                             >
-                                {item.completion_percentage} %
-                            </Text>
+                                <Text style={styles.buttonText}>Make Payment</Text>
+                            </Pressable>
                         </View>
-
-                        <Pressable
-                            style={[styles.paymentButton, { backgroundColor: theme.primary }]}
-                            onPress={() => navigation.navigate("PaymentModeScreen", { projectId: item.project_Id })}
-                        >
-                            <Text style={styles.buttonText}>Make Payment</Text>
-                        </Pressable>
-                    </View>
-                )}
-            />
-        </View>
+                    )}
+                />
+            </View>
+        </SafeAreaView>
     );
 };
 
@@ -222,6 +230,24 @@ const styles = StyleSheet.create({
         color: "white",
         fontWeight: "bold",
         fontSize: 16,
+    },
+    safeArea: {
+        flex: 1,
+        paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
+    },
+    headerContainer: {
+        flexDirection: "row",
+        alignItems: "center",
+        paddingHorizontal: 16,
+        paddingBottom: 10,
+    },
+    backButton: {
+        marginRight: 10,
+        padding: 8,
+    },
+    screenTitle: {
+        fontSize: 20,
+        fontWeight: "bold",
     },
 });
 
