@@ -1,18 +1,15 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet, FlatList, Animated, Easing, ActivityIndicator } from "react-native";
+import { View, Text, StyleSheet, FlatList, Animated, Easing, ActivityIndicator, SafeAreaView, Platform, StatusBar } from "react-native";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Icon from "react-native-vector-icons/FontAwesome";
 import { RootStackParamList } from "../../RootNavigator";
 import { useTheme } from "../../context/ThemeContext";
 import axios from "axios";
-
-// Correctly type the navigation prop using RootStackParamList
-type WorkerWorkHistoryScreenNavigationProp = NavigationProp<RootStackParamList, 'WorkerWorkHistoryScreen'>;
+import Header from "../Header";
 
 const WorkerWorkHistoryScreen = () => {
     const { theme } = useTheme(); // `theme` is expected to be an object
-    const navigation = useNavigation<WorkerWorkHistoryScreenNavigationProp>();
     const [completedProjects, setCompletedProjects] = useState<any[]>([]);
     const [isLoading, setIsLoading] = useState(true);  // Loading state
     const [error, setError] = useState<string | null>(null); // Error state
@@ -124,24 +121,25 @@ const WorkerWorkHistoryScreen = () => {
     }
 
     return (
-        <View style={[styles.container, { backgroundColor: theme.mode === 'dark' ? '#333' : '#f9f9f9' }]}>
-            <Text style={[styles.title, { color: theme.mode === 'dark' ? '#fff' : '#000' }]}>
-                Completed Projects
-            </Text>
+        <SafeAreaView style={[styles.safeArea, { backgroundColor: theme.background }]}>
+            <Header title="Completed Projects" />
+            <View style={[styles.container, { backgroundColor: theme.mode === 'dark' ? '#333' : '#f9f9f9' }]}>
 
-            {/* FlatList handles the scrolling of the project list */}
-            <FlatList
-                data={completedProjects}
-                keyExtractor={(item, index) => item.project_Id || index.toString()}
-                renderItem={renderProjectCard}
-                ListEmptyComponent={
-                    <Text style={[styles.emptyText, { color: theme.mode === 'dark' ? '#ccc' : '#777' }]}>
-                        No completed projects yet.
-                    </Text>
-                }
-                contentContainerStyle={styles.listContent} // Add padding to the list
-            />
-        </View>
+
+                {/* FlatList handles the scrolling of the project list */}
+                <FlatList
+                    data={completedProjects}
+                    keyExtractor={(item, index) => item.project_Id || index.toString()}
+                    renderItem={renderProjectCard}
+                    ListEmptyComponent={
+                        <Text style={[styles.emptyText, { color: theme.mode === 'dark' ? '#ccc' : '#777' }]}>
+                            No completed projects yet.
+                        </Text>
+                    }
+                    contentContainerStyle={styles.listContent} // Add padding to the list
+                />
+            </View>
+        </SafeAreaView>
     );
 };
 
@@ -168,6 +166,10 @@ const styles = StyleSheet.create({
     loadingText: { fontSize: 18, marginTop: 10 },
     errorContainer: { flex: 1, justifyContent: 'center', alignItems: 'center' },
     errorText: { fontSize: 18, color: 'red', textAlign: 'center' },
+    safeArea: {
+        flex: 1,
+        paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
+    },
 });
 
 export default WorkerWorkHistoryScreen;

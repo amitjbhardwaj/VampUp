@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, FlatList, StyleSheet, TouchableOpacity, Modal, TextInput, Alert } from "react-native";
+import { View, Text, FlatList, StyleSheet, TouchableOpacity, Modal, TextInput, Alert, SafeAreaView, Platform, StatusBar } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Icon from "react-native-vector-icons/FontAwesome";
 import Back from "react-native-vector-icons/MaterialIcons";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 import { RootStackParamList } from "../../RootNavigator";
 import { useTheme } from "../../context/ThemeContext";
+import Header from "../Header";
 
 interface PaymentRequest {
     requestId: string;
@@ -94,41 +95,39 @@ const WorkerRequestHistoryScreen = () => {
     );
 
     return (
-        <View style={[styles.container, { backgroundColor: theme.background }]}>
-            <Text style={[styles.header, { color: theme.text }]}>Requests History</Text>
-            <FlatList
-                data={requests}
-                keyExtractor={(item) => item.requestId}
-                renderItem={renderItem}
-                ListEmptyComponent={<Text style={[styles.emptyText, { color: theme.text }]}>No requests found.</Text>}
-            />
+        <SafeAreaView style={[styles.safeArea, { backgroundColor: theme.background }]}>
+            <Header title="Requests History" />
+            <View style={[styles.container, { backgroundColor: theme.background }]}>
+                <FlatList
+                    data={requests}
+                    keyExtractor={(item) => item.requestId}
+                    renderItem={renderItem}
+                    ListEmptyComponent={<Text style={[styles.emptyText, { color: theme.text }]}>No requests found.</Text>}
+                />
 
-            {/* <TouchableOpacity style={[styles.backButton, { backgroundColor: theme.mode === 'dark' ? '#444' : '#000' }]} onPress={() => navigation.goBack()}>
-                <Text style={[styles.backButtonText, { color: theme.mode === 'dark' ? '#fff' : '#fff' }]}>Go Back</Text>
-            </TouchableOpacity> */}
-
-            <Modal visible={modalVisible} animationType="slide" transparent>
-                <View style={styles.modalContainer}>
-                    <View style={[styles.modalContent, { backgroundColor: theme.cardBackground }]}>
-                        <Text style={[styles.modalTitle, { color: theme.text }]}>Edit Amount</Text>
-                        <TextInput
-                            style={[styles.input, { color: theme.text, borderColor: theme.border }]}
-                            keyboardType="numeric"
-                            value={newAmount}
-                            onChangeText={setNewAmount}
-                        />
-                        <View style={styles.modalButtonRow}>
-                            <TouchableOpacity style={[styles.saveButton, { backgroundColor: theme.success }]} onPress={editRequest}>
-                                <Text style={styles.buttonText}>Save</Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity style={[styles.cancelButton, { backgroundColor: theme.secondary }]} onPress={() => setModalVisible(false)}>
-                                <Text style={styles.buttonText}>Cancel</Text>
-                            </TouchableOpacity>
+                <Modal visible={modalVisible} animationType="slide" transparent>
+                    <View style={styles.modalContainer}>
+                        <View style={[styles.modalContent, { backgroundColor: theme.cardBackground }]}>
+                            <Text style={[styles.modalTitle, { color: theme.text }]}>Edit Amount</Text>
+                            <TextInput
+                                style={[styles.input, { color: theme.text, borderColor: theme.border }]}
+                                keyboardType="numeric"
+                                value={newAmount}
+                                onChangeText={setNewAmount}
+                            />
+                            <View style={styles.modalButtonRow}>
+                                <TouchableOpacity style={[styles.saveButton, { backgroundColor: theme.success }]} onPress={editRequest}>
+                                    <Text style={styles.buttonText}>Save</Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity style={[styles.cancelButton, { backgroundColor: theme.secondary }]} onPress={() => setModalVisible(false)}>
+                                    <Text style={styles.buttonText}>Cancel</Text>
+                                </TouchableOpacity>
+                            </View>
                         </View>
                     </View>
-                </View>
-            </Modal>
-        </View>
+                </Modal>
+            </View>
+        </SafeAreaView>
     );
 };
 
@@ -166,6 +165,10 @@ const styles = StyleSheet.create({
     modalButtonRow: { flexDirection: "row", justifyContent: "space-between", marginTop: 10 },
     backIcon: {
         marginRight: 8,
+    },
+    safeArea: {
+        flex: 1,
+        paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
     },
 });
 

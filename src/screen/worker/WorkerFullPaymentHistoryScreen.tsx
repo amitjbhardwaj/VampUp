@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, ScrollView } from "react-native";
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, ScrollView, Platform, StatusBar, SafeAreaView } from "react-native";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Icon from "react-native-vector-icons/FontAwesome";
 import { RootStackParamList } from "../../RootNavigator"; // Adjust the path as needed
 import { useTheme } from "../../context/ThemeContext"; // Assuming you have this context for theme management
 import axios from "axios";
+import Header from "../Header";
 
 // Correctly type the navigation prop using RootStackParamList
 type WorkerFullPaymentHistoryScreenNavigationProp = NavigationProp<RootStackParamList, 'WorkerFullPaymentHistoryScreen'>;
@@ -100,21 +101,18 @@ const WorkerFullPaymentHistoryScreen = () => {
 
 
     return (
-        <View style={[styles.container, { backgroundColor: theme.mode === 'dark' ? '#121212' : '#f9f9f9' }]}>
-            <Text style={[styles.title, { color: theme.mode === 'dark' ? '#fff' : '#000' }]}>Payment History</Text>
-
-            {/* FlatList handles the scrolling of the project list */}
-            <FlatList
-                data={completedProjects}
-                keyExtractor={(item, index) => item.project_Id || index.toString()}
-                renderItem={renderProjectCard}
-                ListEmptyComponent={<Text style={[styles.emptyText, { color: theme.mode === 'dark' ? '#fff' : '#777' }]}>No completed projects yet.</Text>}
-            />
-
-            {/* <TouchableOpacity style={[styles.backButton, { backgroundColor: theme.mode === 'dark' ? '#444' : '#000' }]} onPress={() => navigation.goBack()}>
-                <Text style={[styles.backButtonText, { color: theme.mode === 'dark' ? '#fff' : '#fff' }]}>Go Back</Text>
-            </TouchableOpacity> */}
-        </View>
+        <SafeAreaView style={[styles.safeArea, { backgroundColor: theme.background }]}>
+            <Header title="Payment History" />
+            <View style={[styles.container, { backgroundColor: theme.mode === 'dark' ? '#121212' : '#f9f9f9' }]}>
+                {/* FlatList handles the scrolling of the project list */}
+                <FlatList
+                    data={completedProjects}
+                    keyExtractor={(item, index) => item.project_Id || index.toString()}
+                    renderItem={renderProjectCard}
+                    ListEmptyComponent={<Text style={[styles.emptyText, { color: theme.mode === 'dark' ? '#fff' : '#777' }]}>No completed projects yet.</Text>}
+                />
+            </View>
+        </SafeAreaView>
     );
 };
 
@@ -157,6 +155,10 @@ const styles = StyleSheet.create({
     loadingText: { fontSize: 18, marginTop: 10 },
     errorContainer: { flex: 1, justifyContent: 'center', alignItems: 'center' },
     errorText: { fontSize: 18, color: 'red', textAlign: 'center' },
+    safeArea: {
+        flex: 1,
+        paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
+    },
 });
 
 export default WorkerFullPaymentHistoryScreen;

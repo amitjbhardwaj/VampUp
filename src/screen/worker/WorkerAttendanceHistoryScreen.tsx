@@ -5,13 +5,17 @@ import {
     FlatList,
     StyleSheet,
     TouchableOpacity,
-    TextInput
+    TextInput,
+    SafeAreaView,
+    Platform,
+    StatusBar
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import { NavigationProp, useNavigation, useFocusEffect } from "@react-navigation/native";
 import { RootStackParamList } from "../../RootNavigator";
 import { useTheme } from "../../context/ThemeContext";
+import Header from "../Header";
 
 interface AttendanceRecord {
     project_Id: string;
@@ -95,47 +99,42 @@ const WorkerAttendanceHistoryScreen = () => {
     );
 
     return (
-        <View style={[styles.container, { backgroundColor: theme.mode === 'dark' ? '#222' : '#f4f4f4' }]}>
-            <Text style={[styles.header, { color: theme.mode === 'dark' ? '#fff' : '#333' }]}>Attendance History</Text>
+        <SafeAreaView style={[styles.safeArea, { backgroundColor: theme.background }]}>
+            <Header title="Attendance History" />
+            <View style={[styles.container, { backgroundColor: theme.mode === 'dark' ? '#222' : '#f4f4f4' }]}>
 
-            {/* Search Bar */}
-            <View style={[styles.searchContainer, { backgroundColor: theme.mode === 'dark' ? '#333' : '#fff' }]}>
-                <Icon name="search" size={20} color={theme.mode === 'dark' ? '#bbb' : '#888'} style={styles.searchIcon} />
-                <TextInput
-                    style={[styles.searchInput, { color: theme.mode === 'dark' ? '#fff' : '#333' }]}
-                    placeholder="Search by project, name, or date..."
-                    placeholderTextColor={theme.mode === 'dark' ? '#bbb' : '#888'}
-                    value={searchQuery}
-                    onChangeText={handleSearch}
-                />
-                {searchQuery.length > 0 && (
-                    <TouchableOpacity onPress={() => handleSearch("")}>
-                        <Icon name="close" size={20} color={theme.mode === 'dark' ? '#bbb' : '#888'} style={styles.clearIcon} />
-                    </TouchableOpacity>
+                {/* Search Bar */}
+                <View style={[styles.searchContainer, { backgroundColor: theme.mode === 'dark' ? '#333' : '#fff' }]}>
+                    <Icon name="search" size={20} color={theme.mode === 'dark' ? '#bbb' : '#888'} style={styles.searchIcon} />
+                    <TextInput
+                        style={[styles.searchInput, { color: theme.mode === 'dark' ? '#fff' : '#333' }]}
+                        placeholder="Search by project, name, or date..."
+                        placeholderTextColor={theme.mode === 'dark' ? '#bbb' : '#888'}
+                        value={searchQuery}
+                        onChangeText={handleSearch}
+                    />
+                    {searchQuery.length > 0 && (
+                        <TouchableOpacity onPress={() => handleSearch("")}>
+                            <Icon name="close" size={20} color={theme.mode === 'dark' ? '#bbb' : '#888'} style={styles.clearIcon} />
+                        </TouchableOpacity>
+                    )}
+                </View>
+
+                {/* List of Attendance Records */}
+                {filteredRecords.length > 0 ? (
+                    <FlatList
+                        data={filteredRecords}
+                        keyExtractor={(item) => item.project_Id + item.date}
+                        renderItem={renderItem}
+                    />
+                ) : (
+                    <View style={styles.emptyContainer}>
+                        <Icon name="history" size={60} color={theme.mode === 'dark' ? '#777' : '#bbb'} />
+                        <Text style={[styles.emptyText, { color: theme.mode === 'dark' ? '#bbb' : '#777' }]}>No matching records found.</Text>
+                    </View>
                 )}
             </View>
-
-            {/* List of Attendance Records */}
-            {filteredRecords.length > 0 ? (
-                <FlatList
-                    data={filteredRecords}
-                    keyExtractor={(item) => item.project_Id + item.date}
-                    renderItem={renderItem}
-                />
-            ) : (
-                <View style={styles.emptyContainer}>
-                    <Icon name="history" size={60} color={theme.mode === 'dark' ? '#777' : '#bbb'} />
-                    <Text style={[styles.emptyText, { color: theme.mode === 'dark' ? '#bbb' : '#777' }]}>No matching records found.</Text>
-                </View>
-            )}
-
-            {/* Back Button */}
-
-            {/* <TouchableOpacity style={[styles.backButton, { backgroundColor: theme.mode === 'dark' ? '#444' : '#000' }]} onPress={() => navigation.goBack()}>
-                <Icon name="arrow-back" size={18} color="#fff" style={styles.backIcon} />
-                <Text style={[styles.backButtonText, { color: theme.mode === 'dark' ? '#fff' : '#fff' }]}>Go Back</Text>
-            </TouchableOpacity> */}
-        </View>
+        </SafeAreaView>
     );
 };
 
@@ -239,6 +238,10 @@ const styles = StyleSheet.create({
         color: "#fff",
         fontWeight: "bold",
         fontSize: 16,
+    },
+    safeArea: {
+        flex: 1,
+        paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
     },
 });
 

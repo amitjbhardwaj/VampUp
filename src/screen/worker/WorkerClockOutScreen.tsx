@@ -9,6 +9,8 @@ import {
     TextInput,
     ToastAndroid,
     ScrollView,
+    SafeAreaView,
+    Platform,
 } from "react-native";
 import { Picker } from "@react-native-picker/picker";
 import DateTimePicker from "@react-native-community/datetimepicker";
@@ -17,6 +19,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import TouchID from 'react-native-touch-id';
 import { useTheme } from "../../context/ThemeContext";
 import axios from "axios";
+import Header from "../Header";
 
 interface Project {
     project_Id: string;
@@ -29,7 +32,7 @@ type WorkerClockOutScreenNavigationProp = NavigationProp<RootStackParamList, 'Wo
 
 const WorkerClockOutScreen: React.FC = () => {
     const { theme } = useTheme();
-    const styles = getStyles(theme); 
+    const styles = getStyles(theme);
 
     const navigation = useNavigation<WorkerClockOutScreenNavigationProp>();
     const [projects, setProjects] = useState<Project[]>([]);
@@ -45,7 +48,7 @@ const WorkerClockOutScreen: React.FC = () => {
     const [workerName, setWorkerName] = useState<string>("");
 
 
-  
+
 
     // Fetch worker's name from AsyncStorage or context
     useEffect(() => {
@@ -218,84 +221,78 @@ const WorkerClockOutScreen: React.FC = () => {
     today.setHours(0, 0, 0, 0);
 
     return (
-        <ScrollView>
-            <View style={styles.container}>
-                <StatusBar backgroundColor="#fff" barStyle="dark-content" />
+        <SafeAreaView style={[styles.safeArea, { backgroundColor: theme.background }]}>
+            <Header title="Clock Out" />
+            <ScrollView>
+                <View style={styles.container}>
+                    <View style={styles.content}>
+                        <Text style={styles.label}>Select Project</Text>
+                        <Picker
+                            selectedValue={selectedProject}
+                            onValueChange={(itemValue) => handleProjectChange(itemValue ?? "")}
+                            style={styles.picker}
+                        >
+                            <Picker.Item label="Select a Project" value={null} />
+                            {projects.map((project) => (
+                                <Picker.Item key={project.project_Id} label={project.project_description} value={project.project_Id} />
+                            ))}
+                        </Picker>
 
-                <View style={styles.header}>
-                    {/* <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-                        <Icon name="arrow-back" size={30} color="#000" />
-                    </TouchableOpacity> */}
-                    <Text style={styles.headerText}>Clock Out</Text>
+                        {projectDetails && (
+                            <View>
+                                <TextInput style={styles.input} value={projectDetails.project_Id} editable={false} placeholder="Project ID" />
+                            </View>
+                        )}
+
+                        <Text style={styles.label}>Attendance Type</Text>
+                        <Picker
+                            selectedValue={attendanceType}
+                            onValueChange={handleAttendanceTypeChange}
+                            style={styles.picker}
+                            enabled={isAttendanceEnabled}
+                        >
+                            <Picker.Item label="Select Attendance Type" value="" />
+                            <Picker.Item label="Manually" value="Manually" />
+                            <Picker.Item label="Biometrics" value="Biometrics" />
+                        </Picker>
+
+                        {attendanceType === "Manually" && (
+                            <View>
+                                <Text style={styles.label}>Date</Text>
+                                <TouchableOpacity onPress={() => setShowDatePicker(true)} style={styles.dateInput}>
+                                    <Text style={{ color: formattedDate ? "#fff" : "#000" }}>{formattedDate || "Select Date"}</Text>
+                                </TouchableOpacity>
+                                {showDatePicker && (
+                                    <DateTimePicker
+                                        value={selectedDate || new Date()}
+                                        mode="date"
+                                        display="default"
+                                        onChange={handleDateChange}
+                                        minimumDate={today}
+                                        maximumDate={today}
+                                    />
+                                )}
+                            </View>
+                        )}
+
+
+                        {selectedDate && (
+                            <View>
+                                <Text style={styles.label}>Logout Time</Text>
+                                <TextInput style={styles.input} value={currentTime} editable={false} placeholder="Time" />
+                            </View>
+                        )}
+                        <TouchableOpacity
+                            style={[styles.submitButton, !selectedProject || !attendanceType || (attendanceType === "Manually" && !selectedDate) ? styles.disabledButton : null]}
+                            onPress={handleClockOut}
+                            disabled={!selectedProject || !attendanceType || (attendanceType === "Manually" && !selectedDate)}
+                        >
+                            <Text style={styles.submitButtonText}>Clock Out</Text>
+                        </TouchableOpacity>
+                    </View>
                 </View>
-
-                <View style={styles.content}>
-                    <Text style={styles.label}>Select Project</Text>
-                    <Picker
-                        selectedValue={selectedProject}
-                        onValueChange={(itemValue) => handleProjectChange(itemValue ?? "")}
-                        style={styles.picker}
-                    >
-                        <Picker.Item label="Select a Project" value={null} />
-                        {projects.map((project) => (
-                            <Picker.Item key={project.project_Id} label={project.project_description} value={project.project_Id} />
-                        ))}
-                    </Picker>
-
-                    {projectDetails && (
-                        <View>
-                            <TextInput style={styles.input} value={projectDetails.project_Id} editable={false} placeholder="Project ID" />
-                        </View>
-                    )}
-
-                    <Text style={styles.label}>Attendance Type</Text>
-                    <Picker
-                        selectedValue={attendanceType}
-                        onValueChange={handleAttendanceTypeChange}
-                        style={styles.picker}
-                        enabled={isAttendanceEnabled}
-                    >
-                        <Picker.Item label="Select Attendance Type" value="" />
-                        <Picker.Item label="Manually" value="Manually" />
-                        <Picker.Item label="Biometrics" value="Biometrics" />
-                    </Picker>
-
-                    {attendanceType === "Manually" && (
-                        <View>
-                            <Text style={styles.label}>Date</Text>
-                            <TouchableOpacity onPress={() => setShowDatePicker(true)} style={styles.dateInput}>
-                                <Text style={{ color: formattedDate ? "#fff" : "#000" }}>{formattedDate || "Select Date"}</Text>
-                            </TouchableOpacity>
-                            {showDatePicker && (
-                                <DateTimePicker
-                                    value={selectedDate || new Date()}
-                                    mode="date"
-                                    display="default"
-                                    onChange={handleDateChange}
-                                    minimumDate={today}
-                                    maximumDate={today}
-                                />
-                            )}
-                        </View>
-                    )}
-
-
-                    {selectedDate && (
-                        <View>
-                            <Text style={styles.label}>Logout Time</Text>
-                            <TextInput style={styles.input} value={currentTime} editable={false} placeholder="Time" />
-                        </View>
-                    )}
-                    <TouchableOpacity
-                        style={[styles.submitButton, !selectedProject || !attendanceType || (attendanceType === "Manually" && !selectedDate) ? styles.disabledButton : null]}
-                        onPress={handleClockOut}
-                        disabled={!selectedProject || !attendanceType || (attendanceType === "Manually" && !selectedDate)}
-                    >
-                        <Text style={styles.submitButtonText}>Clock Out</Text>
-                    </TouchableOpacity>
-                </View>
-            </View>
-        </ScrollView>
+            </ScrollView>
+        </SafeAreaView>
     );
 };
 
@@ -384,6 +381,10 @@ const getStyles = (theme: any) => StyleSheet.create({
         justifyContent: "center",
         borderWidth: 1,
         borderColor: theme.text,
+    },
+    safeArea: {
+        flex: 1,
+        paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
     },
 });
 

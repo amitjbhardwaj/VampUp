@@ -8,6 +8,9 @@ import {
   Linking,
   TextInput,
   Animated,
+  SafeAreaView,
+  Platform,
+  StatusBar,
 } from "react-native";
 import { NavigationProp, useNavigation, useFocusEffect } from "@react-navigation/native";
 import Icon from "react-native-vector-icons/FontAwesome";
@@ -15,6 +18,7 @@ import { RootStackParamList } from "../../RootNavigator";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';  // Import Axios
 import { useTheme } from "../../context/ThemeContext";
+import Header from "../Header";
 
 interface Project {
   project_Id: string;
@@ -65,14 +69,14 @@ const WorkerActiveWorkScreen = () => {
             status: "In-Progress",  // You can modify the status based on your requirements
           }
         });
-  
+
         // Check if the response is valid and contains data
         if (response.data && response.data.data) {
           const fetchedProjects = response.data.data.map((p: Project) => ({
             ...p,
             status: p.status || "In-Progress",
           }));
-  
+
           // Filter out projects that are already completed
           setProjects(fetchedProjects.filter((p: Project) => p.completion_percentage < 100));
         } else {
@@ -95,7 +99,7 @@ const WorkerActiveWorkScreen = () => {
       }
     }
   }, [workerName]);
-  
+
 
   useFocusEffect(
     useCallback(() => {
@@ -109,10 +113,10 @@ const WorkerActiveWorkScreen = () => {
       let updatedProjects = projects.map((proj) =>
         proj.project_Id === projectId
           ? {
-              ...proj,
-              completion_percentage: newCompletion,
-              status: newStatus || (newCompletion === 100 ? "Completed" : "In-Progress"),
-            }
+            ...proj,
+            completion_percentage: newCompletion,
+            status: newStatus || (newCompletion === 100 ? "Completed" : "In-Progress"),
+          }
           : proj
       );
 
@@ -176,33 +180,33 @@ const WorkerActiveWorkScreen = () => {
   );
 
   return (
-    <View style={[styles.container, { backgroundColor: theme.mode === 'dark' ? "#121212" : "#f9f9f9" }]}>
-      <Text style={[styles.title, { color: theme.mode === 'dark' ? "#fff" : "#000" }]}>Active Projects</Text>
-      <TextInput
-        style={[
-          styles.searchBar,
-          {
-            backgroundColor: theme.mode === 'dark' ? "#333" : "#fff",
-            color: theme.mode === 'dark' ? "#fff" : "#000",
-          },
-        ]}
-        placeholder="Search Projects..."
-        placeholderTextColor={theme.mode === 'dark' ? "#fff" : "#aaa"}  // Set the placeholder color
-        value={searchText}
-        onChangeText={setSearchText}
-      />
+    <SafeAreaView style={[styles.safeArea, { backgroundColor: theme.background }]}>
+      <Header title="All Projects" />
 
-      <FlatList
-        data={filteredProjects}
-        keyExtractor={(item) => item.project_Id}
-        renderItem={({ item }) => <ProjectCard project={item} />}
-        ListEmptyComponent={<Text style={[styles.emptyText, { color: theme.mode === 'dark' ? "#fff" : "#777" }]}>No active projects found.</Text>}
-        ItemSeparatorComponent={() => <View style={styles.separator} />}
-      />
-      {/* <TouchableOpacity style={[styles.backButton, { backgroundColor: theme.mode === 'dark' ? "#333" : "#000" }]} onPress={() => navigation.goBack()}>
-        <Text style={styles.backButtonText}>Go Back</Text>
-      </TouchableOpacity> */}
-    </View>
+      <View style={[styles.container, { backgroundColor: theme.mode === 'dark' ? "#121212" : "#f9f9f9" }]}>
+        <TextInput
+          style={[
+            styles.searchBar,
+            {
+              backgroundColor: theme.mode === 'dark' ? "#333" : "#fff",
+              color: theme.mode === 'dark' ? "#fff" : "#000",
+            },
+          ]}
+          placeholder="Search Projects..."
+          placeholderTextColor={theme.mode === 'dark' ? "#fff" : "#aaa"}  // Set the placeholder color
+          value={searchText}
+          onChangeText={setSearchText}
+        />
+
+        <FlatList
+          data={filteredProjects}
+          keyExtractor={(item) => item.project_Id}
+          renderItem={({ item }) => <ProjectCard project={item} />}
+          ListEmptyComponent={<Text style={[styles.emptyText, { color: theme.mode === 'dark' ? "#fff" : "#777" }]}>No active projects found.</Text>}
+          ItemSeparatorComponent={() => <View style={styles.separator} />}
+        />
+      </View>
+    </SafeAreaView>
   );
 };
 
@@ -243,7 +247,11 @@ const styles = StyleSheet.create({
   updateButton: { padding: 10, marginTop: 15, alignItems: "center", borderRadius: 10 },
   updateButtonText: { color: "#fff", fontWeight: "bold", fontSize: 16 },
   callButton: { padding: 10, marginTop: 10, alignItems: "center", borderRadius: 10 },
-  callButtonText: { color: "#fff", fontWeight: "bold", fontSize: 16 }
+  callButtonText: { color: "#fff", fontWeight: "bold", fontSize: 16 },
+  safeArea: {
+    flex: 1,
+    paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
+  },
 });
 
 export default WorkerActiveWorkScreen;

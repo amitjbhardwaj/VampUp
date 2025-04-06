@@ -4,13 +4,17 @@ import {
     Alert,
     TextInput,
     Modal,
-    ScrollView
+    ScrollView,
+    SafeAreaView,
+    Platform,
+    StatusBar
 } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Icon from "react-native-vector-icons/FontAwesome";
 import { NavigationProp, RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import { RootStackParamList } from "../../RootNavigator";
 import { useTheme } from "../../context/ThemeContext";
+import Header from "../Header";
 
 interface Complaint {
     complaintId: string;
@@ -138,13 +142,12 @@ const WorkerComplaintHistoryScreen = () => {
                 <Icon name="pencil" size={20} color={theme.text} style={styles.icon} />
                 <Text style={[styles.itemText, { color: theme.text }]}>{`Complaint: ${item.complaintDescription}`}</Text>
             </View>
-
-            {/* Buttons */}
+            
             {/* Buttons */}
             <View style={styles.buttonContainer}>
                 {/* First Row: Edit, Delete */}
                 <View style={styles.buttonRow}>
-                 
+
                     <TouchableOpacity style={[styles.button, { backgroundColor: theme.mode === 'dark' ? '#444' : '#000' }]} onPress={() => handleEdit(item)}>
                         <Icon name="phone" size={18} color={theme.buttonText} />
                         <Text style={[styles.buttonText, { color: theme.mode === 'dark' ? '#fff' : '#fff' }]}>Edit</Text>
@@ -176,55 +179,49 @@ const WorkerComplaintHistoryScreen = () => {
                     </TouchableOpacity>
                 </View>
             </View>
-
-
-
         </View>
     );
 
     return (
-        <View style={[styles.container, { backgroundColor: theme.background }]}>
-            <Text style={[styles.header, { color: theme.text }]}>Complaint History</Text>
-            <FlatList
-                data={complaints}
-                keyExtractor={(item) => item.complaintId}
-                renderItem={renderItem}
-                ListEmptyComponent={<Text style={[styles.emptyText, { color: theme.text }]}>No complaints found.</Text>}
-            />
-
-            {/* <TouchableOpacity style={[styles.backButton, { backgroundColor: theme.mode === 'dark' ? '#444' : '#000' }]} onPress={() => navigation.goBack()}>
-                <Text style={[styles.backButtonText, { color: theme.mode === 'dark' ? '#fff' : '#fff' }]}>Go Back</Text>
-            </TouchableOpacity> */}
-
-            <Modal visible={modalVisible} transparent>
-                <View style={styles.modalContainer}>
-                    <View style={styles.modalContent}>
-                        <Text style={[styles.modalHeader, { color: theme.text }]}>Edit Complaint</Text>
-                        <TextInput
-                            style={[styles.input, { backgroundColor: theme.inputBackground, color: theme.text }]}
-                            value={updatedSubject}
-                            onChangeText={setUpdatedSubject}
-                            placeholder="Update Subject"
-                        />
-                        <TextInput
-                            style={[styles.input, styles.textArea, { backgroundColor: theme.inputBackground, color: theme.text }]}
-                            value={updatedComplaint}
-                            onChangeText={setUpdatedComplaint}
-                            placeholder="Update Complaint Description"
-                            multiline
-                        />
-                        <View style={styles.modalButtonRow}>
-                            <TouchableOpacity style={[styles.button, { backgroundColor: theme.primary }]} onPress={handleSaveEdit}>
-                                <Text style={[styles.buttonText, { color: theme.buttonText }]}>Save</Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity style={[styles.buttonDelete, { backgroundColor: theme.primary }]} onPress={() => setModalVisible(false)}>
-                                <Text style={[styles.buttonText, { color: theme.buttonText }]}>Cancel</Text>
-                            </TouchableOpacity>
+        <SafeAreaView style={[styles.safeArea, { backgroundColor: theme.background }]}>
+            <Header title="Complaint History" />
+            <View style={[styles.container, { backgroundColor: theme.background }]}>
+                <FlatList
+                    data={complaints}
+                    keyExtractor={(item) => item.complaintId}
+                    renderItem={renderItem}
+                    ListEmptyComponent={<Text style={[styles.emptyText, { color: theme.text }]}>No complaints found.</Text>}
+                />
+                <Modal visible={modalVisible} transparent>
+                    <View style={styles.modalContainer}>
+                        <View style={styles.modalContent}>
+                            <Text style={[styles.modalHeader, { color: theme.text }]}>Edit Complaint</Text>
+                            <TextInput
+                                style={[styles.input, { backgroundColor: theme.inputBackground, color: theme.text }]}
+                                value={updatedSubject}
+                                onChangeText={setUpdatedSubject}
+                                placeholder="Update Subject"
+                            />
+                            <TextInput
+                                style={[styles.input, styles.textArea, { backgroundColor: theme.inputBackground, color: theme.text }]}
+                                value={updatedComplaint}
+                                onChangeText={setUpdatedComplaint}
+                                placeholder="Update Complaint Description"
+                                multiline
+                            />
+                            <View style={styles.modalButtonRow}>
+                                <TouchableOpacity style={[styles.button, { backgroundColor: theme.primary }]} onPress={handleSaveEdit}>
+                                    <Text style={[styles.buttonText, { color: theme.buttonText }]}>Save</Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity style={[styles.buttonDelete, { backgroundColor: theme.primary }]} onPress={() => setModalVisible(false)}>
+                                    <Text style={[styles.buttonText, { color: theme.buttonText }]}>Cancel</Text>
+                                </TouchableOpacity>
+                            </View>
                         </View>
                     </View>
-                </View>
-            </Modal>
-        </View>
+                </Modal>
+            </View>
+        </SafeAreaView>
     );
 };
 
@@ -351,7 +348,10 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         justifyContent: "space-between",
     },
-
+    safeArea: {
+        flex: 1,
+        paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
+    },
 });
 
 export default WorkerComplaintHistoryScreen;

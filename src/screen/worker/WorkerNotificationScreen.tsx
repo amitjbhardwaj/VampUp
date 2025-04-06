@@ -1,23 +1,15 @@
-import { useNavigation } from "@react-navigation/native";
 import React from "react";
-import { View, Text, StyleSheet, StatusBar, TouchableOpacity, ScrollView } from "react-native";
-import Icon from "react-native-vector-icons/MaterialIcons";
+import { View, Text, StyleSheet, StatusBar, ScrollView, SafeAreaView, Platform } from "react-native";
+import Header from "../Header";
+import { useTheme } from "../../context/ThemeContext";
 
 const WorkerNotificationScreen = () => {
-    const navigation = useNavigation();
-
+    const { theme } = useTheme();
     return (
-        <ScrollView>
-            <View style={styles.container}>
-                {/* Status bar for proper spacing */}
-                <StatusBar backgroundColor="#fff" barStyle="dark-content" />
-
-                {/* Full-width Header with Back Button */}
-                <View style={styles.header}>
-                    <Text style={styles.headerText}>Notifications</Text>
-                </View>
-            </View>
-        </ScrollView>
+        <SafeAreaView style={[styles.safeArea, { backgroundColor: theme.background }]}>
+            <Header title="Notifications" />
+            
+        </SafeAreaView>
     );
 };
 
@@ -65,6 +57,10 @@ const styles = StyleSheet.create({
     optionText: {
         fontSize: 16,
         marginLeft: 10,
+    },
+    safeArea: {
+        flex: 1,
+        paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
     },
 });
 

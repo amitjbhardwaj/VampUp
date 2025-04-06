@@ -7,7 +7,10 @@ import {
     Alert,
     Modal,
     TextInput,
-    ScrollView
+    ScrollView,
+    SafeAreaView,
+    Platform,
+    StatusBar
 } from "react-native";
 import { NavigationProp, RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import { RootStackParamList } from "../../RootNavigator";
@@ -15,6 +18,7 @@ import { Picker } from '@react-native-picker/picker';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useTheme } from "../../context/ThemeContext";
 import axios from 'axios';
+import Header from "../Header";
 
 type WorkUpdateStatusScreenRouteProp = RouteProp<RootStackParamList, "WorkUpdateStatusScreen">;
 type WorkUpdateStatusScreenNavigationProp = NavigationProp<RootStackParamList, "WorkUpdateStatusScreen">;
@@ -163,105 +167,103 @@ const WorkUpdateStatusScreen = () => {
 
 
     return (
-        <ScrollView contentContainerStyle={[styles.scrollContainer, { backgroundColor: theme.mode === 'dark' ? '#121212' : '#f8f8f8' }]}>
-            <View style={[styles.container, { backgroundColor: theme.mode === 'dark' ? '#1c1c1c' : '#fff' }]}>
-                <Text style={[styles.title, { color: theme.mode === 'dark' ? '#fff' : '#000' }]}>Update Project Status</Text>
+        <SafeAreaView style={[styles.safeArea, { backgroundColor: theme.background }]}>
+            <Header title="Update Project Status" />
+            <ScrollView contentContainerStyle={[styles.scrollContainer, { backgroundColor: theme.mode === 'dark' ? '#121212' : '#f8f8f8' }]}>
+                <View style={[styles.container, { backgroundColor: theme.mode === 'dark' ? '#1c1c1c' : '#fff' }]}>
 
-                {projectDetails(project, status).map(({ label, value }) => (
-                    <View key={label} style={[styles.card, { backgroundColor: theme.mode === 'dark' ? '#333' : '#fff' }]}>
-                        <Text style={[styles.label, { color: theme.mode === 'dark' ? '#fff' : '#000' }]}>{label}</Text>
-                        <Text style={[styles.value, { color: theme.mode === 'dark' ? '#ccc' : '#555' }]}>{value}</Text>
-                    </View>
-                ))}
-                <View>
-                    <Text style={[styles.label, { color: theme.mode === 'dark' ? '#fff' : '#000' }]}>End Date</Text>
-                    <TextInput
-                        style={[styles.input, { color: theme.mode === 'dark' ? '#fff' : '#000' }]}
-                        value={editableEndDate}
-                        onChangeText={setEditableEndDate}
-                        placeholder="Enter End Date"
-                        placeholderTextColor={theme.mode === 'dark' ? '#bbb' : '#888'}
-                    />
-                </View>
-
-
-                <Text style={[styles.label, { color: isDarkMode ? "#fff" : "#000" }]}>Completion Percentage</Text>
-                <Picker
-                    selectedValue={completion}
-                    onValueChange={handleCompletionChange}
-                    style={{ color: theme.mode === 'dark' ? "#fff" : "#000" }}
-                >
-                    {[...Array(101).keys()].map((i) => (
-                        <Picker.Item key={i} label={`${i}%`} value={String(i)} />
+                    {projectDetails(project, status).map(({ label, value }) => (
+                        <View key={label} style={[styles.card, { backgroundColor: theme.mode === 'dark' ? '#333' : '#fff' }]}>
+                            <Text style={[styles.label, { color: theme.mode === 'dark' ? '#fff' : '#000' }]}>{label}</Text>
+                            <Text style={[styles.value, { color: theme.mode === 'dark' ? '#ccc' : '#555' }]}>{value}</Text>
+                        </View>
                     ))}
-                </Picker>
-
-                <TouchableOpacity
-                    style={[
-                        styles.updateButton,{ backgroundColor: theme.mode === 'dark' ? '#444' : '#000' },
-                        (status === "On-Hold" || loading) && styles.disabledButton // Apply disabled styling
-                    ]}
-                    onPress={handleUpdate}
-                    disabled={status === "On-Hold" || loading} // Disable when On-Hold or loading
-                >
-                    <Text style={styles.updateButtonText}>Update</Text>
-                </TouchableOpacity>
+                    <View>
+                        <Text style={[styles.label, { color: theme.mode === 'dark' ? '#fff' : '#000' }]}>End Date</Text>
+                        <TextInput
+                            style={[styles.input, { color: theme.mode === 'dark' ? '#fff' : '#000' }]}
+                            value={editableEndDate}
+                            onChangeText={setEditableEndDate}
+                            placeholder="Enter End Date"
+                            placeholderTextColor={theme.mode === 'dark' ? '#bbb' : '#888'}
+                        />
+                    </View>
 
 
-                <TouchableOpacity
-                    style={[styles.onHoldButton, { backgroundColor: theme.mode === 'dark' ? '#444' : '#000' }
-                        ,(status === "On-Hold" || loading) && styles.disabledButton
-                    ]}
-                    onPress={() => setIsModalVisible(true)}
-                    disabled={status === "On-Hold" || loading} // Disable when loading is true
-                >
-                    <Text style={styles.onHoldButtonText}>Hold Work</Text>
-                </TouchableOpacity>
+                    <Text style={[styles.label, { color: isDarkMode ? "#fff" : "#000" }]}>Completion Percentage</Text>
+                    <Picker
+                        selectedValue={completion}
+                        onValueChange={handleCompletionChange}
+                        style={{ color: theme.mode === 'dark' ? "#fff" : "#000" }}
+                    >
+                        {[...Array(101).keys()].map((i) => (
+                            <Picker.Item key={i} label={`${i}%`} value={String(i)} />
+                        ))}
+                    </Picker>
 
-                 <TouchableOpacity style={[styles.goBackButton, { backgroundColor: theme.mode === 'dark' ? '#444' : '#000' }]} onPress={() => navigation.goBack()}>
-                    <Text style={styles.goBackButtonText}>Go Back</Text>
-                </TouchableOpacity> 
+                    <TouchableOpacity
+                        style={[
+                            styles.updateButton, { backgroundColor: theme.mode === 'dark' ? '#444' : '#000' },
+                            (status === "On-Hold" || loading) && styles.disabledButton // Apply disabled styling
+                        ]}
+                        onPress={handleUpdate}
+                        disabled={status === "On-Hold" || loading} // Disable when On-Hold or loading
+                    >
+                        <Text style={styles.updateButtonText}>Update</Text>
+                    </TouchableOpacity>
 
-                {/* Modal */}
-                <Modal visible={isModalVisible} animationType="fade" transparent={true} onRequestClose={handleCancel}>
-                    <ScrollView>
-                        <View style={styles.modalOverlay}>
-                            <View style={[styles.modalContent, { backgroundColor: theme.mode === 'dark' ? '#333' : '#fff' }]}>
-                                <Text style={[styles.modalTitle, { color: theme.mode === 'dark' ? '#fff' : '#000' }]}>Project On Hold</Text>
 
-                                {projectDetails(project, status).map(({ label, value }) => (
-                                    <View key={label} style={[styles.card, { backgroundColor: theme.mode === 'dark' ? '#444' : '#fff' }]}>
-                                        <Text style={[styles.label, { color: theme.mode === 'dark' ? '#fff' : '#000' }]}>{label}</Text>
-                                        <Text style={[styles.value, { color: theme.mode === 'dark' ? '#ccc' : '#555' }]}>{value}</Text>
+                    <TouchableOpacity
+                        style={[styles.onHoldButton, { backgroundColor: theme.mode === 'dark' ? '#444' : '#000' }
+                            , (status === "On-Hold" || loading) && styles.disabledButton
+                        ]}
+                        onPress={() => setIsModalVisible(true)}
+                        disabled={status === "On-Hold" || loading} // Disable when loading is true
+                    >
+                        <Text style={styles.onHoldButtonText}>Hold Work</Text>
+                    </TouchableOpacity>
+
+                    {/* Modal */}
+                    <Modal visible={isModalVisible} animationType="fade" transparent={true} onRequestClose={handleCancel}>
+                        <ScrollView>
+                            <View style={styles.modalOverlay}>
+                                <View style={[styles.modalContent, { backgroundColor: theme.mode === 'dark' ? '#333' : '#fff' }]}>
+                                    <Text style={[styles.modalTitle, { color: theme.mode === 'dark' ? '#fff' : '#000' }]}>Project On Hold</Text>
+
+                                    {projectDetails(project, status).map(({ label, value }) => (
+                                        <View key={label} style={[styles.card, { backgroundColor: theme.mode === 'dark' ? '#444' : '#fff' }]}>
+                                            <Text style={[styles.label, { color: theme.mode === 'dark' ? '#fff' : '#000' }]}>{label}</Text>
+                                            <Text style={[styles.value, { color: theme.mode === 'dark' ? '#ccc' : '#555' }]}>{value}</Text>
+                                        </View>
+                                    ))}
+
+                                    <Text style={[styles.label, { color: theme.mode === 'dark' ? '#fff' : '#000' }]}>Reason for Hold</Text>
+                                    <TextInput
+                                        style={[styles.reasonInput, { backgroundColor: theme.mode === 'dark' ? '#444' : '#fff' }]}
+                                        value={reason}
+                                        onChangeText={setReason}
+                                        placeholder="Enter reason"
+                                        placeholderTextColor={theme.mode === 'dark' ? '#aaa' : '#888'}
+                                        multiline
+                                        numberOfLines={4}
+                                    />
+
+                                    <View style={styles.modalButtons}>
+                                        <TouchableOpacity style={[styles.submitButton, { backgroundColor: theme.mode === 'dark' ? '#4CAF50' : '#4CAF50' }]} onPress={handleSubmitReason}>
+                                            <Text style={styles.submitButtonText}>Submit</Text>
+                                        </TouchableOpacity>
+
+                                        <TouchableOpacity style={[styles.cancelButton, { backgroundColor: theme.mode === 'dark' ? '#000' : '#000' }]} onPress={handleCancel}>
+                                            <Text style={styles.cancelButtonText}>Cancel</Text>
+                                        </TouchableOpacity>
                                     </View>
-                                ))}
-
-                                <Text style={[styles.label, { color: theme.mode === 'dark' ? '#fff' : '#000' }]}>Reason for Hold</Text>
-                                <TextInput
-                                    style={[styles.reasonInput, { backgroundColor: theme.mode === 'dark' ? '#444' : '#fff' }]}
-                                    value={reason}
-                                    onChangeText={setReason}
-                                    placeholder="Enter reason"
-                                    placeholderTextColor={theme.mode === 'dark' ? '#aaa' : '#888'}
-                                    multiline
-                                    numberOfLines={4}
-                                />
-
-                                <View style={styles.modalButtons}>
-                                    <TouchableOpacity style={[styles.submitButton, { backgroundColor: theme.mode === 'dark' ? '#4CAF50' : '#4CAF50' }]} onPress={handleSubmitReason}>
-                                        <Text style={styles.submitButtonText}>Submit</Text>
-                                    </TouchableOpacity>
-
-                                    <TouchableOpacity style={[styles.cancelButton, { backgroundColor: theme.mode === 'dark' ? '#000' : '#000' }]} onPress={handleCancel}>
-                                        <Text style={styles.cancelButtonText}>Cancel</Text>
-                                    </TouchableOpacity>
                                 </View>
                             </View>
-                        </View>
-                    </ScrollView>
-                </Modal>
-            </View>
-        </ScrollView>
+                        </ScrollView>
+                    </Modal>
+                </View>
+            </ScrollView>
+        </SafeAreaView>
     );
 };
 
@@ -353,6 +355,10 @@ const styles = StyleSheet.create({
         borderRadius: 5,
         marginVertical: 10,
         color: "#000",
+    },
+    safeArea: {
+        flex: 1,
+        paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
     },
 });
 

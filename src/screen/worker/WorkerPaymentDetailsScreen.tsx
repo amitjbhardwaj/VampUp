@@ -1,16 +1,16 @@
 import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
-import { StackNavigationProp } from "@react-navigation/stack";
 import React from "react";
 import Icon from "react-native-vector-icons/MaterialIcons";
-import { View, Text, StyleSheet, TouchableOpacity, StatusBar, ToastAndroid, Linking, Animated, FlatList, Easing } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, StatusBar, ToastAndroid, Linking, Animated, FlatList, Easing, SafeAreaView, Platform } from "react-native";
 import { RootStackParamList } from "../../RootNavigator";
 import { useTheme } from "../../context/ThemeContext";
+import Header from "../Header";
 
 
 type WorkerPaymentDetailsScreenRouteProp = RouteProp<RootStackParamList, 'WorkerPaymentDetailsScreen'>;
 
 const WorkerPaymentDetailsScreen = () => {
-  const { theme } = useTheme(); 
+  const { theme } = useTheme();
   const route = useRoute<WorkerPaymentDetailsScreenRouteProp>();
   const navigation = useNavigation();
 
@@ -67,40 +67,43 @@ const WorkerPaymentDetailsScreen = () => {
     Linking.openURL('tel:+1234567890');
   };
   const shouldShowCallContractor = ['P0016', 'P0015', 'P0014', 'P0013', 'P0012'].includes(project.project_Id);
-  
-  return (
-    <Animated.View style={[styles.container, { opacity: fadeAnim, backgroundColor: theme.mode === 'dark' ? '#333' : '#f9f9f9' }]}>
-      <FlatList
-        data={projectDetails}
-        keyExtractor={(item) => item.label}
-        renderItem={({ item }) => (
-          <View style={[styles.card, { backgroundColor: theme.mode === 'dark' ? '#444' : '#fff' }]}>
-            <Icon name={item.icon} size={25} color={theme.mode === 'dark' ? '#fff' : '#28a745'} style={styles.icon} />
-            <View style={{ flex: 1 }}>
-              <Text style={[styles.label, { color: theme.mode === 'dark' ? '#fff' : '#000' }]}>{item.label}</Text>
-              <Text style={[styles.value, item.label === 'Payment Status' && styles.boldText, { color: theme.mode === 'dark' ? '#fff' : '#000' }]}>
-                {item.label === 'Payment Status' ? <Text style={styles.boldText}>{item.value}</Text> : item.value}
-              </Text>
-            </View>
-          </View>
-        )}
-      />
 
-      {shouldShowCallContractor ? (
-        <TouchableOpacity style={[styles.downloadButton, { backgroundColor: theme.mode === 'dark' ? '#555' : '#28a745' }]} onPress={callContractor}>
-          <Icon name="phone" size={20} color="#fff" />
-          <Text style={styles.downloadButtonText}>Call Contractor</Text>
+  return (
+    <SafeAreaView style={[styles.safeArea, { backgroundColor: theme.background }]}>
+      <Header title="Payments Details" />
+      <Animated.View style={[styles.container, { opacity: fadeAnim, backgroundColor: theme.mode === 'dark' ? '#333' : '#f9f9f9' }]}>
+        <FlatList
+          data={projectDetails}
+          keyExtractor={(item) => item.label}
+          renderItem={({ item }) => (
+            <View style={[styles.card, { backgroundColor: theme.mode === 'dark' ? '#444' : '#fff' }]}>
+              <Icon name={item.icon} size={25} color={theme.mode === 'dark' ? '#fff' : '#28a745'} style={styles.icon} />
+              <View style={{ flex: 1 }}>
+                <Text style={[styles.label, { color: theme.mode === 'dark' ? '#fff' : '#000' }]}>{item.label}</Text>
+                <Text style={[styles.value, item.label === 'Payment Status' && styles.boldText, { color: theme.mode === 'dark' ? '#fff' : '#000' }]}>
+                  {item.label === 'Payment Status' ? <Text style={styles.boldText}>{item.value}</Text> : item.value}
+                </Text>
+              </View>
+            </View>
+          )}
+        />
+
+        {shouldShowCallContractor ? (
+          <TouchableOpacity style={[styles.downloadButton, { backgroundColor: theme.mode === 'dark' ? '#555' : '#28a745' }]} onPress={callContractor}>
+            <Icon name="phone" size={20} color="#fff" />
+            <Text style={styles.downloadButtonText}>Call Contractor</Text>
+          </TouchableOpacity>
+        ) : (
+          <TouchableOpacity style={[styles.downloadButton, { backgroundColor: theme.mode === 'dark' ? '#555' : '#28a745' }]} onPress={downloadReceipt}>
+            <Icon name="download" size={20} color="#fff" />
+            <Text style={styles.downloadButtonText}>Download Receipt</Text>
+          </TouchableOpacity>
+        )}
+        <TouchableOpacity style={[styles.backButton, { backgroundColor: theme.mode === 'dark' ? '#444' : '#000' }]} onPress={() => navigation.goBack()}>
+          <Text style={[styles.backButtonText, { color: theme.mode === 'dark' ? '#fff' : '#fff' }]}>Go Back</Text>
         </TouchableOpacity>
-      ) : (
-        <TouchableOpacity style={[styles.downloadButton, { backgroundColor: theme.mode === 'dark' ? '#555' : '#28a745' }]} onPress={downloadReceipt}>
-          <Icon name="download" size={20} color="#fff" />
-          <Text style={styles.downloadButtonText}>Download Receipt</Text>
-        </TouchableOpacity>
-      )}
-      <TouchableOpacity style={[styles.backButton, { backgroundColor: theme.mode === 'dark' ? '#444' : '#000' }]} onPress={() => navigation.goBack()}>
-        <Text style={[styles.backButtonText, { color: theme.mode === 'dark' ? '#fff' : '#fff' }]}>Go Back</Text>
-      </TouchableOpacity>
-    </Animated.View>
+      </Animated.View>
+    </SafeAreaView>
   );
 };
 
@@ -134,6 +137,10 @@ const styles = StyleSheet.create({
   },
   backButtonText: {
     fontWeight: 'bold',
+  },
+  safeArea: {
+    flex: 1,
+    paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
   },
 });
 

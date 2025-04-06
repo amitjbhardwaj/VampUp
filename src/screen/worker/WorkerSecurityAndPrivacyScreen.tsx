@@ -1,22 +1,22 @@
-import { useNavigation } from "@react-navigation/native";
 import React from "react";
-import { View, Text, StyleSheet, StatusBar, TouchableOpacity, ScrollView } from "react-native";
+import { View, Text, StyleSheet, StatusBar, TouchableOpacity, ScrollView, SafeAreaView, Platform } from "react-native";
+import Header from "../Header";
+import { useTheme } from "../../context/ThemeContext";
 
 const WorkerSecurityAndPrivacyScreen = () => {
-    const navigation = useNavigation();
+    const { theme } = useTheme();
 
     return (
-        <ScrollView>
-            <View style={styles.container}>
-                {/* Status bar for proper spacing */}
-                <StatusBar backgroundColor="#fff" barStyle="dark-content" />
+        <SafeAreaView style={[styles.safeArea, { backgroundColor: theme.background }]}>
+            <Header title="Security & Privacy" />
+            <ScrollView>
+                <View style={styles.container}>
+                    {/* Status bar for proper spacing */}
+                    <StatusBar backgroundColor="#fff" barStyle="dark-content" />
 
-                {/* Full-width Header with Back Button */}
-                <View style={styles.header}>
-                    <Text style={styles.headerText}>Security & Privacy</Text>
                 </View>
-            </View>
-        </ScrollView>
+            </ScrollView>
+        </SafeAreaView>
     );
 };
 
@@ -64,6 +64,10 @@ const styles = StyleSheet.create({
     optionText: {
         fontSize: 16,
         marginLeft: 10,
+    },
+    safeArea: {
+        flex: 1,
+        paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
     },
 });
 
