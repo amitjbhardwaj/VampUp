@@ -38,7 +38,8 @@ const AdminAllocateProjectScreen = () => {
         try {
             const response = await axios.get('http://192.168.129.119:5001/get-all-projects');
             if (response.data.status === "OK") {
-                setProjects(response.data.data);
+                const filteredProjects = response.data.data.filter((project: Project) => project.status !== "Completed");
+                setProjects(filteredProjects);
             } else {
                 console.log("Error fetching projects", response.data);
             }
