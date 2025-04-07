@@ -113,13 +113,17 @@ const AdminAddNewProjectScreen = () => {
     return (
         <SafeAreaView style={[styles.safeArea, { backgroundColor: theme.background }]}>
             <View style={styles.headerContainer}>
-                <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+                <TouchableOpacity onPress={handleBack} style={styles.backButton}>
                     <Icon name="arrow-left" size={24} color={theme.text} />
                 </TouchableOpacity>
                 <Text style={[styles.screenTitle, { color: theme.text }]}>New Project</Text>
             </View>
+
             <View style={{ flex: 1 }}>
-                <ScrollView style={[styles.container, { backgroundColor: theme.mode === 'dark' ? '#121212' : '#f8f8f8' }]}>
+                <ScrollView
+                    style={[styles.container, { backgroundColor: theme.mode === 'dark' ? '#121212' : '#f8f8f8' }]}
+                    contentContainerStyle={{ paddingBottom: 20 }}
+                >
                     {Object.keys(project).map((key) => {
                         const currentValue = project[key as keyof Project];
 
@@ -222,7 +226,7 @@ const AdminAddNewProjectScreen = () => {
                 </ScrollView>
             </View>
             {/* Fixed bottom button */}
-            <View style={[styles.fixedButtonContainer, { backgroundColor: theme.background }]}>
+            <View style={{ backgroundColor: theme.background, padding: 16 }}>
                 <TouchableOpacity
                     style={[styles.button, { backgroundColor: theme.primary }]}
                     onPress={handleSubmit}
@@ -230,6 +234,7 @@ const AdminAddNewProjectScreen = () => {
                     <Text style={styles.buttonText}>Add</Text>
                 </TouchableOpacity>
             </View>
+
 
         </SafeAreaView>
     );
@@ -274,7 +279,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
     },
-    
+
     buttonText: {
         color: "#fff",
         fontSize: 16,
