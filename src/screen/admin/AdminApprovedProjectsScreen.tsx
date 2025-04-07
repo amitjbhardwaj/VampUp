@@ -4,6 +4,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useTheme } from "../../context/ThemeContext";
 import { useNavigation } from "@react-navigation/native";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
+import Header from "../Header";
 
 interface Project {
     _id: string;
@@ -58,12 +59,7 @@ const AdminApprovedProjectsScreen = () => {
 
     return (
         <SafeAreaView style={[styles.safeArea, { backgroundColor: theme.background }]}>
-            <View style={styles.headerContainer}>
-                <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-                    <Icon name="arrow-left" size={24} color={theme.text} />
-                </TouchableOpacity>
-                <Text style={[styles.screenTitle, { color: theme.text }]}>Approved Projects</Text>
-            </View>
+            <Header title="Approved Project" />
             <View style={[styles.container, { backgroundColor: theme.background }]}>
                 <FlatList
                     data={projects}

@@ -1,21 +1,14 @@
-import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import { useTheme } from "../../context/ThemeContext";
-import { useNavigation } from "@react-navigation/native";
 import { Platform, SafeAreaView, StatusBar, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import Header from "../Header";
 
 const AdminReviewRequestsScreen = () => {
     const { theme } = useTheme();
-    const navigation = useNavigation();
 
     return (
 
         <SafeAreaView style={[styles.safeArea, { backgroundColor: theme.background }]}>
-            <View style={styles.headerContainer}>
-                <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-                    <Icon name="arrow-left" size={24} color={theme.text} />
-                </TouchableOpacity>
-                <Text style={[styles.screenTitle, { color: theme.text }]}>Review Requests</Text>
-            </View>
+            <Header title="Review Requests" />
 
         </SafeAreaView>
     );

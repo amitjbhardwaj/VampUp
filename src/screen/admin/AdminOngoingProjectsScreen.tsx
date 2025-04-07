@@ -4,7 +4,7 @@ import { useTheme } from "../../context/ThemeContext"; // Import your theme cont
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import FontAwesome from 'react-native-vector-icons/FontAwesome'; // Import Icon component from react-native-vector-icons
 import { useNavigation } from "@react-navigation/native";
-import Icon from "react-native-vector-icons/MaterialCommunityIcons";
+import Header from "../Header";
 
 
 const AdminOngoingProjectsScreen = () => {
@@ -163,28 +163,22 @@ const AdminOngoingProjectsScreen = () => {
     }
 
     return (
-
         <SafeAreaView style={[styles.safeArea, { backgroundColor: theme.background }]}>
-        <View style={styles.headerContainer}>
-            <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-                <Icon name="arrow-left" size={24} color={theme.text} />
-            </TouchableOpacity>
-            <Text style={[styles.screenTitle, { color: theme.text }]}>Ongoing Projects</Text>
-        </View>
-        <ScrollView style={[styles.container, { backgroundColor: theme.mode === 'dark' ? '#121212' : '#f8f8f8' }]}>
-            {projects.length > 0 ? (
-                projects.map((project: any) => (
-                    <View key={project.project_Id}>
-                        {renderProjectDetails(project)}
-                    </View>
-                ))
-            ) : (
-                <Text style={[styles.errorText, { color: theme.mode === 'dark' ? '#fff' : '#000' }]}>
-                    No ongoing projects found.
-                </Text>
-            )}
+            <Header title="Ongoing Projects" />
+            <ScrollView style={[styles.container, { backgroundColor: theme.mode === 'dark' ? '#121212' : '#f8f8f8' }]}>
+                {projects.length > 0 ? (
+                    projects.map((project: any) => (
+                        <View key={project.project_Id}>
+                            {renderProjectDetails(project)}
+                        </View>
+                    ))
+                ) : (
+                    <Text style={[styles.errorText, { color: theme.mode === 'dark' ? '#fff' : '#000' }]}>
+                        No ongoing projects found.
+                    </Text>
+                )}
 
-        </ScrollView>
+            </ScrollView>
         </SafeAreaView>
     );
 };
@@ -262,7 +256,7 @@ const styles = StyleSheet.create({
         fontSize: 20,
         fontWeight: "bold",
     },
-    
+
 });
 
 export default AdminOngoingProjectsScreen;

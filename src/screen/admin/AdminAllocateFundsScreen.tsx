@@ -17,6 +17,7 @@ import { useTheme } from "../../context/ThemeContext";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import axios, { isAxiosError } from "axios";
 import { useNavigation } from "@react-navigation/native";
+import Header from "../Header";
 
 type Project = {
     _id: string;
@@ -35,7 +36,6 @@ type Project = {
 
 const AdminAllocateFundsScreen = () => {
     const { theme } = useTheme();
-    const navigation = useNavigation();
     const [projects, setProjects] = useState<Project[]>([]);
     const [loading, setLoading] = useState(true);
     const [activeAllocation, setActiveAllocation] = useState<string | null>(null);
@@ -315,15 +315,9 @@ const AdminAllocateFundsScreen = () => {
     );
 
     return (
-
         <SafeAreaView style={[styles.safeArea, { backgroundColor: theme.background }]}>
+            <Header title="Allocate Project Funds" />
             <View style={[styles.container]}>
-                <View style={styles.header}>
-                    <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-                        <Icon name="arrow-left" size={24} color={theme.text} />
-                    </TouchableOpacity>
-                    <Text style={[styles.headerTitle, { color: theme.text }]}>Allocate Project Funds</Text>
-                </View>
                 {loading ? (
                     <ActivityIndicator size="large" color={theme.text} />
                 ) : (

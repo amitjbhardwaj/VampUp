@@ -8,6 +8,7 @@ import { Picker } from "@react-native-picker/picker";
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
+import Header from "../Header";
 
 // Define the type for the project state
 type Project = {
@@ -73,10 +74,6 @@ const AdminAddNewProjectScreen = () => {
             });
     };
 
-    const handleBack = () => {
-        navigation.goBack();
-    };
-
     const labels = {
         project_Id: "Project ID",
         project_description: "Project Description",
@@ -112,12 +109,7 @@ const AdminAddNewProjectScreen = () => {
 
     return (
         <SafeAreaView style={[styles.safeArea, { backgroundColor: theme.background }]}>
-            <View style={styles.headerContainer}>
-                <TouchableOpacity onPress={handleBack} style={styles.backButton}>
-                    <Icon name="arrow-left" size={24} color={theme.text} />
-                </TouchableOpacity>
-                <Text style={[styles.screenTitle, { color: theme.text }]}>New Project</Text>
-            </View>
+            <Header title="New Project" />
 
             <View style={{ flex: 1 }}>
                 <ScrollView

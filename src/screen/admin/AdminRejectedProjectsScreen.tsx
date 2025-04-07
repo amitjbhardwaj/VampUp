@@ -2,8 +2,8 @@ import React, { useEffect, useState } from "react";
 import { View, Text, FlatList, ActivityIndicator, StyleSheet, ScrollView, SafeAreaView, Platform, StatusBar, TouchableOpacity } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useTheme } from "../../context/ThemeContext";
-import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import { useNavigation } from "@react-navigation/native";
+import Header from "../Header";
 
 interface Project {
     _id: string;
@@ -58,12 +58,7 @@ const AdminRejectedProjectsScreen = () => {
 
     return (
         <SafeAreaView style={[styles.safeArea, { backgroundColor: theme.background }]}>
-            <View style={styles.headerContainer}>
-                <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-                    <Icon name="arrow-left" size={24} color={theme.text} />
-                </TouchableOpacity>
-                <Text style={[styles.screenTitle, { color: theme.text }]}>Rejected Projects</Text>
-            </View>
+            <Header title="Rejected Projects" />
             <View style={[styles.container, { backgroundColor: theme.background }]}>
                 <FlatList
                     data={projects}

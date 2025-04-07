@@ -14,7 +14,7 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome'; // Import Icon 
 import { RootStackParamList } from "../../RootNavigator";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { useNavigation } from "@react-navigation/native";
-import Icon from "react-native-vector-icons/MaterialCommunityIcons";
+import Header from "../Header";
 
 
 type Project = {
@@ -196,14 +196,8 @@ const ContractorCompletedProjectsScreen = () => {
     };
 
     return (
-
         <SafeAreaView style={[styles.safeArea, { backgroundColor: theme.background }]}>
-            <View style={styles.headerContainer}>
-                <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-                    <Icon name="arrow-left" size={24} color={theme.text} />
-                </TouchableOpacity>
-                <Text style={[styles.screenTitle, { color: theme.text }]}>Completed Projects</Text>
-            </View>
+            <Header title="Completed Projects" />
             <View style={[styles.container, { backgroundColor: theme.background }]}>
                 <FlatList
                     contentContainerStyle={styles.scrollContainer}

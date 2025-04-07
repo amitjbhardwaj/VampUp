@@ -5,6 +5,7 @@ import { NavigationProp, useNavigation, useRoute } from "@react-navigation/nativ
 import { RootStackParamList } from "../../RootNavigator";
 import axios from 'axios';
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
+import Header from "../Header";
 
 type AdminAllocateProjectScreenNavigationProp = NavigationProp<RootStackParamList, "AdminAllocateProjectScreen">;
 
@@ -88,12 +89,7 @@ const AdminAllocateProjectScreen = () => {
 
     return (
         <SafeAreaView style={[styles.safeArea, { backgroundColor: theme.background }]}>
-            <View style={styles.headerContainer}>
-                <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-                    <Icon name="arrow-left" size={24} color={theme.text} />
-                </TouchableOpacity>
-                <Text style={[styles.screenTitle, { color: theme.text }]}>Allocate Project</Text>
-            </View>
+            <Header title="Allocate Project" />
             {/* Scrollable Content */}
             <ScrollView contentContainerStyle={styles.scrollContainer}>
                 {loading ? (

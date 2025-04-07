@@ -3,8 +3,8 @@ import { View, Text, StyleSheet, ScrollView, ActivityIndicator, Alert, Linking, 
 import { useTheme } from "../../context/ThemeContext"; // Import your theme context
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
-import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import { useNavigation } from "@react-navigation/native";
+import Header from "../Header";
 
 const AdminOnHoldProjectsScreen = () => {
     const { theme } = useTheme(); // Get theme for dark mode handling
@@ -162,12 +162,7 @@ const AdminOnHoldProjectsScreen = () => {
 
     return (
         <SafeAreaView style={[styles.safeArea, { backgroundColor: theme.background }]}>
-            <View style={styles.headerContainer}>
-                <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-                    <Icon name="arrow-left" size={24} color={theme.text} />
-                </TouchableOpacity>
-                <Text style={[styles.screenTitle, { color: theme.text }]}>OnHold Projects</Text>
-            </View>
+            <Header title="On Hold Projects" />
             <ScrollView style={[styles.container, { backgroundColor: theme.mode === 'dark' ? '#121212' : '#f8f8f8' }]}>
                 {projects.length > 0 ? (
                     projects.map((project: any) => (

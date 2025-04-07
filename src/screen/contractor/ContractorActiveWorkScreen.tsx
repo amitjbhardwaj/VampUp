@@ -5,7 +5,7 @@ import axios from 'axios';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation } from "@react-navigation/native";
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
-import Icon from "react-native-vector-icons/MaterialCommunityIcons";
+import Header from "../Header";
 
 type Project = {
     _id: string;
@@ -114,18 +114,9 @@ const ContractorActiveWorkScreen = () => {
         }
     };
 
-    const handleBack = () => {
-        navigation.goBack();
-    };
-
     return (
         <SafeAreaView style={[styles.safeArea, { backgroundColor: theme.background }]}>
-            <View style={styles.headerContainer}>
-                <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton1}>
-                    <Icon name="arrow-left" size={24} color={theme.text} />
-                </TouchableOpacity>
-                <Text style={[styles.screenTitle, { color: theme.text }]}>Active Projects</Text>
-            </View>
+            <Header title="Active Projects" />
             <View style={[styles.container, { backgroundColor: theme.background }]}>
                 <ScrollView contentContainerStyle={styles.scrollContainer}>
                     {loading ? (

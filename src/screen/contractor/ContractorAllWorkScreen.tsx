@@ -6,7 +6,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useNavigation } from "@react-navigation/native";
 import DatePicker from "react-native-date-picker";
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
-import Icon from "react-native-vector-icons/MaterialCommunityIcons";
+import Header from "../Header";
 
 type Project = {
     _id: string;
@@ -150,15 +150,8 @@ const ContractorAllWorkScreen = () => {
     };
 
     return (
-
-
         <SafeAreaView style={[styles.safeArea, { backgroundColor: theme.background }]}>
-            <View style={styles.headerContainer}>
-                <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton1}>
-                    <Icon name="arrow-left" size={24} color={theme.text} />
-                </TouchableOpacity>
-                <Text style={[styles.screenTitle, { color: theme.text }]}>My Projects</Text>
-            </View>
+            <Header title="My Projects" />
             <View style={[styles.container, { backgroundColor: theme.background }]}>
                 <ScrollView contentContainerStyle={styles.scrollContainer}>
                     {loading ? (
