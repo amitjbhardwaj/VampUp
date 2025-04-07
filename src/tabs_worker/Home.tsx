@@ -252,25 +252,20 @@ const Home = () => {
                         />
 
                         <View style={styles.buttonContainer}>
-                            <Button title="Submit" onPress={handleSubmit} />
                             <TouchableOpacity
-                                style={[
-                                    styles.backButton,
-                                    { backgroundColor: theme.mode === "dark" ? "#444" : "#fff" } // Dynamic background
-                                ]}
+                                style={[styles.submitButton, { backgroundColor: theme.primary }]}
+                                onPress={handleSubmit}
+                            >
+                                <Text style={styles.submitButtonText}>Submit</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity
+                                style={[styles.submitButton, { backgroundColor: theme.secondary }]}
                                 onPress={() => setModalVisible(false)}
                             >
-                                <Text
-                                    style={[
-                                        styles.backButtonText,
-                                        { color: theme.mode === "dark" ? "#fff" : "#000" } // Dynamic text color
-                                    ]}
-                                >
-                                    Back
-                                </Text>
+                                <Text style={[styles.submitButtonText]}>Back</Text>
                             </TouchableOpacity>
-
                         </View>
+
                     </View>
                 </View>
             </Modal>
@@ -389,6 +384,19 @@ const styles = StyleSheet.create({
         color: "white",
         fontSize: 12,
         fontWeight: "bold",
+    },
+    submitButton: {
+        paddingVertical: 10,
+        paddingHorizontal: 20,
+        borderRadius: 8,
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginBottom: 10
+    },
+    submitButtonText: {
+        color: '#fff',
+        fontSize: 16,
+        fontWeight: 'bold',
     },
 });
 
