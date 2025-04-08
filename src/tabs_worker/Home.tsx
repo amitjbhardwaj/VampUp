@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect } from "react";
 import {
     View,
     Text,
@@ -6,9 +6,7 @@ import {
     TouchableOpacity,
     Modal,
     TextInput,
-    Button,
     Alert,
-    FlatList,
     RefreshControl,
     ScrollView
 } from "react-native";
@@ -18,7 +16,6 @@ import { RootStackParamList } from "../RootNavigator";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Picker } from "@react-native-picker/picker";
 import { useTheme } from "../context/ThemeContext";
-import axios from "axios";
 
 type HomeNavigationProp = NavigationProp<RootStackParamList>;
 
