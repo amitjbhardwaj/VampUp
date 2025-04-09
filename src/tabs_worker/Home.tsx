@@ -16,6 +16,7 @@ import { RootStackParamList } from "../RootNavigator";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Picker } from "@react-native-picker/picker";
 import { useTheme } from "../context/ThemeContext";
+import axios from "axios";
 
 type HomeNavigationProp = NavigationProp<RootStackParamList>;
 
@@ -34,6 +35,24 @@ const Home = () => {
     const [phone, setPhone] = useState("");
     const [ongoingProjectsCount, setOngoingProjectsCount] = useState(0);
     const [isRefreshing, setIsRefreshing] = useState(false); // State for pull-to-refresh
+
+    const fetchOngoingProjects = async () => {
+        try {
+            const workerName = await AsyncStorage.getItem("workerName");
+
+            const response = await fetch(`http://192.168.129.119:5001/get-projects-by-worker?worker_name=${workerName}&status=In-Progress`);
+            const data = await response.json();
+
+            if (data.status === 'OK') {
+                setProjects(data.data); // Set the actual projects to the state
+            } else {
+                setProjects([]);
+            }
+        } catch (error) {
+            console.error("Error fetching ongoing projects for dropdown:", error);
+            setProjects([]);
+        }
+    };
 
 
     const handleProjectChange = (selectedDescription: string) => {
@@ -60,39 +79,45 @@ const Home = () => {
         }
 
         const complaintId = `CMP-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
+        const complaintDate = new Date().toISOString().split("T")[0];
 
-        const newRequest = {
-            complaintId,
-            projectId,
-            subject,
-            complaintDescription,
-            projectDescription,
-            longProjectDescription,
-            projectStartDate,
-            phone,
+        const newComplaint = {
+            project_Id: projectId,
+            complaint_Id: complaintId,
+            subject: subject,
+            complaint_Description: complaintDescription,
+            project_Description: projectDescription,
+            long_Project_Description: longProjectDescription,
+            project_Start_Date: projectStartDate,
+            complaint_Date: complaintDate,
+            phone: phone,
         };
 
-        const storedRequests = await AsyncStorage.getItem("submittedRequests");
-        const parsedRequests = storedRequests ? JSON.parse(storedRequests) : [];
+        axios
+            .post("http://192.168.129.119:5001/create-complaint", newComplaint)
+            .then(async res => {
+                if (res.data.status === "OK") {
+                    Alert.alert("Success", "Complaint submitted successfully.");
 
-        const isDuplicate = parsedRequests.some(
-            (req: any) =>
-                req.projectId === newRequest.projectId &&
-                req.subject === newRequest.subject &&
-                req.complaintDescription === newRequest.complaintDescription
-        );
+                    // Optionally store locally
+                    const storedRequests = await AsyncStorage.getItem("submittedRequests");
+                    const parsedRequests = storedRequests ? JSON.parse(storedRequests) : [];
+                    const updatedRequests = [...parsedRequests, newComplaint];
+                    await AsyncStorage.setItem("submittedRequests", JSON.stringify(updatedRequests));
 
-        if (isDuplicate) {
-            Alert.alert("Duplicate Request", "Same request has already been submitted!!");
-            return;
-        }
-
-        const updatedRequests = [...parsedRequests, newRequest];
-        await AsyncStorage.setItem("submittedRequests", JSON.stringify(updatedRequests));
-
-        setModalVisible(false);
-        navigation.navigate("WorkerComplaintHistoryScreen", { updatedRequests });
+                    setModalVisible(false);
+                    navigation.navigate("WorkerComplaintHistoryScreen", { updatedRequests });
+                } else {
+                    console.error("API Error:", res.data.data);
+                    Alert.alert("Error", "Failed to submit complaint. Please try again.");
+                }
+            })
+            .catch(e => {
+                console.error("Request failed:", e);
+                Alert.alert("Network Error", "Could not connect to server.");
+            });
     };
+
 
     // Fetch ongoing projects count
     const fetchOngoingProjectsCount = async () => {
@@ -112,13 +137,16 @@ const Home = () => {
     };
 
     useEffect(() => {
-        fetchOngoingProjectsCount(); // Fetch on initial load
+        fetchOngoingProjectsCount(); // For badge count
+        fetchOngoingProjects();      // For dropdown list
     }, []);
+
 
     // Function to handle pull-to-refresh
     const onRefresh = async () => {
         setIsRefreshing(true);
         await fetchOngoingProjectsCount();
+        await fetchOngoingProjects();
         setIsRefreshing(false);
     };
 
@@ -188,13 +216,14 @@ const Home = () => {
                             dropdownIconColor={theme.text}
                         >
                             <Picker.Item label="Select Project Description" value="" />
-                            {projects.map((project: any) => (
+                            {projects.map((project: any, index: number) => (
                                 <Picker.Item
-                                    key={project.project_Id}
+                                    key={project.project_Id || `project-${index}`}
                                     label={project.project_description}
                                     value={project.project_description}
                                 />
                             ))}
+
                         </Picker>
 
                         {selectedProject && (

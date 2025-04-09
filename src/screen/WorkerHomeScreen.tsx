@@ -101,7 +101,7 @@ const WorkerHomeScreen = () => {
   );
 };
 
-// 🧭 Stack Navigators
+// Stack Navigators
 const HomeStack = () => (
   <Stack.Navigator
     screenOptions={{

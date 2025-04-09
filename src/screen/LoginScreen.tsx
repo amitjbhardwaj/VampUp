@@ -49,13 +49,13 @@ const LoginScreen = () => {
                         AsyncStorage.setItem("adminName", `${firstName ?? ""} ${lastName ?? ""}`.trim());
                         navigation.navigate("AdminHomeScreen" as never);
                     } else {
-                        ToastAndroid.show("Unknown role detected", ToastAndroid.SHORT);
+                        Alert.alert("Unknown role detected");
                     }
                 } else {
-                    ToastAndroid.show("Login failed: " + res.data.error, ToastAndroid.SHORT);
+                    Alert.alert("Login failed: " + res.data.error);
                 }
             })
-            .catch(() => ToastAndroid.show("An error occurred while logging in.", ToastAndroid.SHORT));
+            .catch(() => Alert.alert("An error occurred while logging in."));
     };
 
     const handleBiometricLogin = () => {
