@@ -34,13 +34,15 @@ const Home = () => {
     const [selectedProject, setSelectedProject] = useState<any>(null);
     const [phone, setPhone] = useState("");
     const [ongoingProjectsCount, setOngoingProjectsCount] = useState(0);
-    const [isRefreshing, setIsRefreshing] = useState(false); // State for pull-to-refresh
+    const [isRefreshing, setIsRefreshing] = useState(false);
+    const [name, setName] = useState("");
 
     const fetchOngoingProjects = async () => {
         try {
-            const workerName = await AsyncStorage.getItem("workerName");
+            const name = await AsyncStorage.getItem("workerName");
+            
 
-            const response = await fetch(`http://192.168.129.119:5001/get-projects-by-worker?worker_name=${workerName}&status=In-Progress`);
+            const response = await fetch(`http://192.168.129.119:5001/get-projects-by-worker?worker_name=${name}&status=In-Progress`);
             const data = await response.json();
 
             if (data.status === 'OK') {
@@ -53,6 +55,18 @@ const Home = () => {
             setProjects([]);
         }
     };
+
+    useEffect(() => {
+        const getWorkerName = async () => {
+            const storedName = await AsyncStorage.getItem("workerName");
+            if (storedName) {
+                setName(storedName);
+            }
+        };
+    
+        getWorkerName();
+    }, []);
+    
 
 
     const handleProjectChange = (selectedDescription: string) => {
@@ -79,7 +93,7 @@ const Home = () => {
         }
 
         const complaintId = `CMP-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
-        const complaintDate = new Date().toISOString().split("T")[0];
+        const complaintDate = new Date().toLocaleDateString("en-CA");
 
         const newComplaint = {
             project_Id: projectId,
@@ -90,6 +104,7 @@ const Home = () => {
             long_Project_Description: longProjectDescription,
             project_Start_Date: projectStartDate,
             complaint_Date: complaintDate,
+            created_by: name,
             phone: phone,
         };
 

@@ -19,17 +19,13 @@ interface Complaint {
     complaint_Description: string;
     project_Start_Date: string;
     complaint_Date: string;
+    created_by: string;
     phone: string;
 }
-
-type WorkerComplaintHistoryScreenNavigationProp = NavigationProp<RootStackParamList, 'WorkerComplaintHistoryScreen'>;
-type WorkerComplaintHistoryScreenRouteProp = RouteProp<RootStackParamList, "WorkerComplaintHistoryScreen">;
 
 const WorkerComplaintHistoryScreen = () => {
     const { theme } = useTheme();
     const [complaints, setComplaints] = useState<Complaint[]>([]);
-    const navigation = useNavigation<WorkerComplaintHistoryScreenNavigationProp>();
-    const route = useRoute<WorkerComplaintHistoryScreenRouteProp>();
 
     const [modalVisible, setModalVisible] = useState(false);
     const [selectedComplaint, setSelectedComplaint] = useState<Complaint | null>(null);
@@ -39,16 +35,31 @@ const WorkerComplaintHistoryScreen = () => {
     useEffect(() => {
         const fetchComplaints = async () => {
             try {
-                const storedComplaints = await AsyncStorage.getItem("submittedRequests");
-                if (storedComplaints) {
-                    setComplaints(JSON.parse(storedComplaints));
+                const workerName = await AsyncStorage.getItem("workerName"); // store this during login or onboarding
+
+                if (!workerName) {
+                    Alert.alert("Error", "Worker name not found");
+                    return;
                 }
+
+                const response = await fetch(`http://192.168.129.119:5001/get-complaints-by-worker/${workerName}`);
+                const data = await response.json();
+
+                if (data.status === "OK") {
+                    setComplaints(data.data);
+                    await AsyncStorage.setItem("submittedRequests", JSON.stringify(data.data)); // optional caching
+                } else {
+                    Alert.alert("Error", data.message || "Could not fetch complaints");
+                }
+
             } catch (error) {
                 console.error("Failed to load complaints", error);
             }
         };
+
         fetchComplaints();
     }, []);
+
 
     const handleCall = (phone: string) => Linking.openURL(`tel:${phone}`);
     const handleMessage = (phone: string) => Linking.openURL(`sms:${phone}`);
@@ -156,7 +167,8 @@ const WorkerComplaintHistoryScreen = () => {
             {renderRow("calendar", `Start: ${item.project_Start_Date}`)}
             {renderRow("edit", `Subject: ${item.subject}`)}
             {renderRow("pencil", `Description: ${item.complaint_Description}`)}
-            {renderRow("calendar", `Date: ${item.complaint_Date}`)}
+            {renderRow("calendar", `Complaint Date: ${item.complaint_Date}`)}
+            {renderRow("user", `Created by: ${item.created_by}`)}
 
             <View style={styles.buttonContainer}>
                 {/* First Row: Edit, Delete */}
@@ -377,9 +389,6 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         width: '48%', // Adjust width to fit both buttons
     },
-
-
-
 
 });
 
