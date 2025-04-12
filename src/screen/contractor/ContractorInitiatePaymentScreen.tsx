@@ -21,6 +21,7 @@ interface Project {
     status: string;
     contractor_name: string;
     worker_name: string;
+    worker_phone: string;
     project_status: string;
 }
 
@@ -130,18 +131,18 @@ const ContractorInitiatePaymentScreen = () => {
                             </View>
 
                             <View style={styles.row}>
-                                <Text style={[styles.label, { color: theme.text }]}>📞 Contractor Phone:</Text>
-                                <Text style={[styles.value, { color: theme.text }]}>{item.contractor_phone}</Text>
-                            </View>
-
-                            <View style={styles.row}>
                                 <Text style={[styles.label, { color: theme.text }]}>🏗 Contractor Name:</Text>
                                 <Text style={[styles.value, { color: theme.text }]}>{item.contractor_name}</Text>
                             </View>
 
                             <View style={styles.row}>
-                                <Text style={[styles.label, { color: theme.text }]}>👷 Worker:</Text>
+                                <Text style={[styles.label, { color: theme.text }]}>👷 Worker Name:</Text>
                                 <Text style={[styles.value, { color: theme.text }]}>{item.worker_name}</Text>
+                            </View>
+
+                            <View style={styles.row}>
+                                <Text style={[styles.label, { color: theme.text }]}>📞 Worker Phone:</Text>
+                                <Text style={[styles.value, { color: theme.text }]}>{item.worker_phone}</Text>
                             </View>
 
                             <View style={styles.row}>
