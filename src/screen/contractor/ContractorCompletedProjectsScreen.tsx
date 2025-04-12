@@ -42,8 +42,30 @@ const ContractorCompletedProjectsScreen = () => {
     const [error, setError] = useState<string | null>(null);
     const [projects, setProjects] = useState<Project[]>([]);
     const [selectedImages, setSelectedImages] = useState<string[]>([]);
+    const [funds, setFunds] = useState<Record<string, number>>({});
 
     const IMAGE_BASE_URL = 'http://192.168.129.119:5001'; // Adjust this base URL to your image server base URL.
+
+    const fetchFundsForProjects = async (projects: any[]) => {
+        const fundMap: Record<string, number> = {};
+
+        for (const project of projects) {
+            try {
+                const response = await fetch(`http://192.168.129.119:5001/get-fund-by-project?project_Id=${project.project_Id}`);
+                const data = await response.json();
+                if (data.status === "OK") {
+                    fundMap[project.project_Id] = data.data.new_amount_allocated || 0;
+                } else {
+                    fundMap[project.project_Id] = 0;
+                }
+            } catch (error) {
+                console.error(`Error fetching fund for ${project.project_Id}:`, error);
+                fundMap[project.project_Id] = 0;
+            }
+        }
+
+        setFunds(fundMap);
+    };
 
     useEffect(() => {
         fetchCompletedProjects();
@@ -56,6 +78,8 @@ const ContractorCompletedProjectsScreen = () => {
                 const response = await fetch(IMAGE_BASE_URL + `/get-projects-by-contractor?contractor_name=${storedName}&status=Completed`);
                 const data = await response.json();
                 setProjects(data.status === "OK" ? data.data : []);
+                fetchFundsForProjects(data.data); // Fetch funds after projects load
+
             } else {
                 setProjects([]);
             }
@@ -223,7 +247,9 @@ const ContractorCompletedProjectsScreen = () => {
                             <Text style={[styles.projectDetail, { color: theme.text }]}><FontAwesome name="percent" size={20} /> Completion: {project.completion_percentage}%</Text>
                             <Text style={[styles.projectDetail, { color: theme.text }]}><FontAwesome name="user" size={20} /> Contractor Name: {project.contractor_name}</Text>
                             <Text style={[styles.projectDetail, { color: theme.text }]}><FontAwesome name="user" size={20} /> Worker Name: {project.worker_name}</Text>
-                            <Text style={[styles.projectDetail, { color: theme.text }]}><FontAwesome name="phone" size={20} /> Worker Phone: {project.worker_phone}</Text>
+                            <Text style={[styles.projectDetail, { color: theme.mode === 'dark' ? '#fff' : '#000' }]}>
+                                <FontAwesome name="money" size={20} /> Fund Allocated: ₹{funds[project.project_Id] ?? 0}
+                            </Text>                            
                             {project.images && project.images.length > 0 && (
                                 <FlatList
                                     data={project.images}
@@ -361,24 +387,24 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         height: 300,
     },
-        safeArea: {
-            flex: 1,
-            paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
-        },
-        headerContainer: {
-            flexDirection: "row",
-            alignItems: "center",
-            paddingHorizontal: 16,
-            paddingBottom: 10,
-        },
-        backButton: {
-            marginRight: 10,
-            padding: 8,
-        },
-        screenTitle: {
-            fontSize: 20,
-            fontWeight: "bold",
-        },
+    safeArea: {
+        flex: 1,
+        paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
+    },
+    headerContainer: {
+        flexDirection: "row",
+        alignItems: "center",
+        paddingHorizontal: 16,
+        paddingBottom: 10,
+    },
+    backButton: {
+        marginRight: 10,
+        padding: 8,
+    },
+    screenTitle: {
+        fontSize: 20,
+        fontWeight: "bold",
+    },
 });
 
 export default ContractorCompletedProjectsScreen;

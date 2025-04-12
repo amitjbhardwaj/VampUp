@@ -32,6 +32,7 @@ const ContractorOnHoldProjectsScreen = () => {
     const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
     const [openEndDate, setOpenEndDate] = useState(false);
     const [endDate, setEndDate] = useState<Date>(new Date()); // Store as Date object
+    const [funds, setFunds] = useState<Record<string, number>>({});
 
 
     useEffect(() => {
@@ -43,6 +44,27 @@ const ContractorOnHoldProjectsScreen = () => {
             fetchProjects();
         }
     }, [contractorName]);
+
+    const fetchFundsForProjects = async (projects: any[]) => {
+        const fundMap: Record<string, number> = {};
+
+        for (const project of projects) {
+            try {
+                const response = await fetch(`http://192.168.129.119:5001/get-fund-by-project?project_Id=${project.project_Id}`);
+                const data = await response.json();
+                if (data.status === "OK") {
+                    fundMap[project.project_Id] = data.data.new_amount_allocated || 0;
+                } else {
+                    fundMap[project.project_Id] = 0;
+                }
+            } catch (error) {
+                console.error(`Error fetching fund for ${project.project_Id}:`, error);
+                fundMap[project.project_Id] = 0;
+            }
+        }
+
+        setFunds(fundMap);
+    };
 
     const getContractorInfo = async () => {
         try {
@@ -106,6 +128,8 @@ const ContractorOnHoldProjectsScreen = () => {
                     project.status === "On-Hold")
                 );
                 setProjects(onHoldProjects);
+                fetchFundsForProjects(onHoldProjects);
+
             } else {
                 console.log("Error fetching projects", response.data);
             }
@@ -149,7 +173,9 @@ const ContractorOnHoldProjectsScreen = () => {
                                 <Text style={[styles.projectDetail, { color: theme.text }]}><FontAwesome name="info-circle" size={20} /> Status: {project.status}</Text>
                                 <Text style={[styles.projectDetail, { color: theme.text }]}><FontAwesome name="percent" size={20} /> Completion: {project.completion_percentage}%</Text>
                                 <Text style={[styles.projectDetail, { color: theme.text }]}><FontAwesome name="user" size={20} /> Assigned To: {project.contractor_name}</Text>
-
+                                <Text style={[styles.projectDetail, { color: theme.mode === 'dark' ? '#fff' : '#000' }]}>
+                                    <FontAwesome name="money" size={20} /> Fund Allocated: ₹{funds[project.project_Id] ?? 0}
+                                </Text>
                                 {/* Action Buttons */}
                                 <View style={styles.buttonRow}>
                                     <TouchableOpacity
