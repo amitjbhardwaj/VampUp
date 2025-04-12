@@ -3,11 +3,14 @@ import {
   Text,
   StyleSheet,
   Platform,
+  View,
 } from "react-native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createStackNavigator, CardStyleInterpolators } from "@react-navigation/stack";
 import Ionicons from "react-native-vector-icons/Ionicons";
-import { RouteProp } from '@react-navigation/native';
+import { RouteProp, useNavigation } from '@react-navigation/native';
+import { PanGestureHandler } from 'react-native-gesture-handler';
+
 import Home from "../tabs_contractor/Home";
 import Services from "../tabs_contractor/Services";
 import HelpContact from "../tabs_contractor/HelpContact";
@@ -21,9 +24,35 @@ type TabParamList = {
   Settings: undefined;
 };
 
+const TABS = ["Start", "My Work", "Help", "Settings"];
 const Tab = createBottomTabNavigator<TabParamList>();
 const Stack = createStackNavigator();
 
+// HOC for swipe gesture
+const withSwipe = (Component: React.ComponentType<any>, tabName: keyof TabParamList) => {
+  return (props: any) => {
+    const navigation = useNavigation<any>();
+
+    const handleGesture = ({ nativeEvent }: any) => {
+      const currentIndex = TABS.indexOf(tabName);
+      if (nativeEvent.translationX < -50 && currentIndex < TABS.length - 1) {
+        navigation.navigate(TABS[currentIndex + 1]);
+      } else if (nativeEvent.translationX > 50 && currentIndex > 0) {
+        navigation.navigate(TABS[currentIndex - 1]);
+      }
+    };
+
+    return (
+      <PanGestureHandler onEnded={handleGesture}>
+        <View style={{ flex: 1 }}>
+          <Component {...props} />
+        </View>
+      </PanGestureHandler>
+    );
+  };
+};
+
+// Tab icons
 type TabScreenProps = {
   route: RouteProp<TabParamList, keyof TabParamList>;
   focused: boolean;
@@ -44,7 +73,6 @@ const WorkerHomeScreen = () => {
         iconName = "settings";
       }
 
-      // Append "-outline" if not focused
       const finalIconName = focused ? iconName : `${iconName}-outline`;
 
       return (
@@ -75,12 +103,11 @@ const WorkerHomeScreen = () => {
         tabBarShowLabel: true,
         tabBarStyle: {
           backgroundColor: theme.background,
-          height: Platform.OS === "ios" ? 100 : 100, // Increased height
+          height: Platform.OS === "ios" ? 100 : 100,
           borderTopWidth: StyleSheet.hairlineWidth,
           borderTopColor: "#ccc",
-          paddingBottom: Platform.OS === "ios" ? 25 : 10, // optional for spacing
+          paddingBottom: Platform.OS === "ios" ? 25 : 10,
         },
-        
         headerStyle: {
           backgroundColor: theme.background,
           shadowColor: 'transparent',
@@ -101,7 +128,7 @@ const WorkerHomeScreen = () => {
   );
 };
 
-// 🧭 Stack Navigators
+// Stack Navigators with swipe-wrapped screens
 const HomeStack = () => (
   <Stack.Navigator
     screenOptions={{
@@ -109,7 +136,7 @@ const HomeStack = () => (
       headerShown: false,
     }}
   >
-    <Stack.Screen name="HomeScreen" component={Home} />
+    <Stack.Screen name="HomeScreen" component={withSwipe(Home, "Start")} />
   </Stack.Navigator>
 );
 
@@ -120,7 +147,7 @@ const MyWorkStack = () => (
       headerShown: false,
     }}
   >
-    <Stack.Screen name="MyWorkScreen" component={Services} />
+    <Stack.Screen name="MyWorkScreen" component={withSwipe(Services, "My Work")} />
   </Stack.Navigator>
 );
 
@@ -131,7 +158,7 @@ const HelpStack = () => (
       headerShown: false,
     }}
   >
-    <Stack.Screen name="HelpScreen" component={HelpContact} />
+    <Stack.Screen name="HelpScreen" component={withSwipe(HelpContact, "Help")} />
   </Stack.Navigator>
 );
 
@@ -142,7 +169,7 @@ const SettingsStack = () => (
       headerShown: false,
     }}
   >
-    <Stack.Screen name="SettingsScreen" component={Settings} />
+    <Stack.Screen name="SettingsScreen" component={withSwipe(Settings, "Settings")} />
   </Stack.Navigator>
 );
 
