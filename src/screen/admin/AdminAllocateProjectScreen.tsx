@@ -26,7 +26,6 @@ type Project = {
 const AdminAllocateProjectScreen = () => {
     const { theme } = useTheme();
     const navigation = useNavigation<AdminAllocateProjectScreenNavigationProp>();
-    const route = useRoute();
 
     const [projects, setProjects] = useState<Project[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
@@ -53,10 +52,6 @@ const AdminAllocateProjectScreen = () => {
 
     const handleFindContractor = (projectId: string) => {
         navigation.navigate("AdminFindContractorScreen", { projectId });
-    };
-
-    const handleBack = () => {
-        navigation.goBack();
     };
 
     const handleDeleteProject = async (projectId: string) => {

@@ -24,7 +24,6 @@ interface Project {
 
 const AdminApprovedProjectsScreen = () => {
     const { theme } = useTheme();
-    const navigation = useNavigation();
     const [loading, setLoading] = useState(true);
     const [projects, setProjects] = useState<Project[] | null>(null);
     const [funds, setFunds] = useState<Record<string, number>>({});

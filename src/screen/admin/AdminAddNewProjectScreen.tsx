@@ -18,7 +18,7 @@ type Project = {
     created_by: string;
     project_start_date: Date;
     project_end_date: string | Date; // Allow string ("--") or Date
-    contractor_phone: string;
+    mobile: string;
     completion_percentage: string;
     status: string;
 };
@@ -36,7 +36,7 @@ const AdminAddNewProjectScreen = () => {
         created_by: "",
         project_start_date: new Date(),
         project_end_date: "--", // Default "--"
-        contractor_phone: "",
+        mobile: "",
         completion_percentage: "0",
         status: "Yet to start",
     });
@@ -81,7 +81,7 @@ const AdminAddNewProjectScreen = () => {
         created_by: "Created By",
         project_start_date: "Project Start Date",
         project_end_date: "Project End Date",
-        contractor_phone: "Contractor Phone No.",
+        mobile: "Mobile No.",
         completion_percentage: "Completion Percentage",
         status: "Status"
     };
@@ -95,7 +95,8 @@ const AdminAddNewProjectScreen = () => {
                     if (response.data.status === "OK") {
                         const user = response.data.data;
                         const fullName = `${user.firstName} ${user.lastName}`;
-                        setProject(prev => ({ ...prev, created_by: fullName }));
+                        const mobile = `${user.mobile}`;
+                        setProject(prev => ({ ...prev, created_by: fullName, mobile: mobile }));
                     } else {
                         ToastAndroid.show('Failed to fetch user data', ToastAndroid.SHORT);
                     }

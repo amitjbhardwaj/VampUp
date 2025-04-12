@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, TextInput, ScrollView, StyleSheet, ToastAndroid, TouchableOpacity, ActivityIndicator, Alert } from "react-native";
+import { View, Text, TextInput, ScrollView, StyleSheet, ToastAndroid, TouchableOpacity, ActivityIndicator, Alert, SafeAreaView, Platform, StatusBar } from "react-native";
 import axios from 'axios';
 import { useTheme } from "../../context/ThemeContext";
 import { Picker } from '@react-native-picker/picker';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 import { RootStackParamList } from "../../RootNavigator";
+import Header from "../Header";
 
 // Define the type for the worker
 type Worker = {
@@ -13,6 +14,7 @@ type Worker = {
     firstName: string;
     lastName: string;
     role: string;
+    mobile: Number,
 };
 
 // Define the type for the project
@@ -104,11 +106,12 @@ const ContractorOnBoardWorkersScreen = () => {
     const handleChange = (field: string, value: string) => {
         if (field === "worker_name") {
             const selectedWorker = workers.find(worker => worker._id === value);
+
             if (selectedWorker) {
-                console.log("Selected Worker:", selectedWorker.firstName, selectedWorker.lastName); // Debugging
+                //console.log("Selected Worker:", selectedWorker.firstName, selectedWorker.lastName); // Debugging
                 setForm(prev => ({
                     ...prev,
-                    worker_name: `${selectedWorker.firstName} ${selectedWorker.lastName}` // Store actual name
+                    worker_name: `${selectedWorker.firstName} ${selectedWorker.lastName}`, // Store actual name
                 }));
             }
         } else if (field === "project_description") {
@@ -127,30 +130,32 @@ const ContractorOnBoardWorkersScreen = () => {
 
     const handleSubmit = async () => {
         const selectedWorker = workers.find(worker => worker.firstName + " " + worker.lastName === form.worker_name);
-    
+
         if (!selectedWorker || !form.project_description.trim()) {
             Alert.alert('Please select a worker and a project');
             return;
         }
-    
+
         const projectData = {
             worker_id: selectedWorker._id, // Send worker ID
             worker_name: form.worker_name.trim(), // Send worker Name
             contractor_name: form.contractor_name.trim(),
             project_description: form.project_description.trim(),
+            worker_phone: selectedWorker.mobile,
         };
-    
+
         console.log("Submitting Data:", projectData); // Debugging
-    
+
         setLoading(true);
         try {
             const response = await axios.put(
                 `http://192.168.129.119:5001/update-worker-name`,
                 projectData
             );
-    
+
             if (response.data.status === "OK") {
                 Alert.alert('Worker updated successfully');
+                //navigation.navigate("AdminAllocateProjectScreen");
             } else {
                 Alert.alert('Error updating worker');
             }
@@ -162,85 +167,89 @@ const ContractorOnBoardWorkersScreen = () => {
         }
     };
 
-  
+
     const handleBackPress = () => {
         navigation.goBack();
-      };
-    
+    };
+
 
     return (
-        <View style={[styles.container, { backgroundColor: theme.background }]}>
-            <Text style={[styles.title, { color: theme.text }]}>On-board Worker</Text>
 
-            {/* Contractor Name Field */}
-            <View style={styles.fieldWrapper}>
-                <Text style={[styles.label, { color: theme.text }]}>Contractor Name</Text>
-                <View style={[styles.inputContainer, errors.contractor_name && styles.inputError, { backgroundColor: theme.inputBackground }]}>
-                    <TextInput
-                        placeholder="Contractor name"
-                        placeholderTextColor={theme.mode === "dark" ? "#fff" : "#999"}
-                        style={[styles.input, { color: theme.text }]}
-                        onChangeText={(value) => handleChange("contractor_name", value)}
-                        value={form.contractor_name} // Display the fetched contractor name
-                        editable={false} // Make the contractor name field non-editable
-                    />
+        <SafeAreaView style={[styles.safeArea, { backgroundColor: theme.background }]}>
+            <Header title="On-board Worker" />
+            <View style={[styles.container, { backgroundColor: theme.background }]}>
+
+                {/* Contractor Name Field */}
+                <View style={styles.fieldWrapper}>
+                    <Text style={[styles.label, { color: theme.text }]}>Contractor Name</Text>
+                    <View style={[styles.inputContainer, errors.contractor_name && styles.inputError, { backgroundColor: theme.inputBackground }]}>
+                        <TextInput
+                            placeholder="Contractor name"
+                            placeholderTextColor={theme.mode === "dark" ? "#fff" : "#999"}
+                            style={[styles.input, { color: theme.text }]}
+                            onChangeText={(value) => handleChange("contractor_name", value)}
+                            value={form.contractor_name} // Display the fetched contractor name
+                            editable={false} // Make the contractor name field non-editable
+                        />
+                    </View>
                 </View>
-            </View>
 
-            {/* Worker Selection Field */}
-            <View style={styles.fieldWrapper}>
-                <Text style={[styles.label, { color: theme.text }]}>Select Worker</Text>
-                <View style={[styles.inputContainer, { backgroundColor: theme.inputBackground }]}>
-                    <Picker
-                        selectedValue={workers.find(worker => worker.firstName + " " + worker.lastName === form.worker_name)?._id || ""}
-                        onValueChange={(itemValue) => handleChange("worker_name", itemValue)}
-                        style={{ color: theme.text }}
+                {/* Worker Selection Field */}
+                <View style={styles.fieldWrapper}>
+                    <Text style={[styles.label, { color: theme.text }]}>Select Worker</Text>
+                    <View style={[styles.inputContainer, { backgroundColor: theme.inputBackground }]}>
+                        <Picker
+                            selectedValue={workers.find(worker => worker.firstName + " " + worker.lastName === form.worker_name)?._id || ""}
+                            onValueChange={(itemValue) => handleChange("worker_name", itemValue)}
+                            style={{ color: theme.text }}
+                        >
+                            <Picker.Item label="Select a worker..." value="" />
+                            {workers.map((worker) => (
+                                <Picker.Item
+                                    key={worker._id}
+                                    label={`${worker.firstName} ${worker.lastName}`}
+                                    value={worker._id} // Stores worker ID
+                                />
+                            ))}
+                        </Picker>
+
+                    </View>
+                </View>
+
+                {/* Project Description Field */}
+                <View style={styles.fieldWrapper}>
+                    <Text style={[styles.label, { color: theme.text }]}>Select Project Description</Text>
+                    <View style={[styles.inputContainer, { backgroundColor: theme.inputBackground }]}>
+                        <Picker
+                            selectedValue={JSON.stringify({ id: form.project_Id, description: form.project_description })}
+                            onValueChange={(itemValue) => handleChange("project_description", itemValue)}
+                            style={{ color: theme.text }}
+                        >
+                            <Picker.Item label="Select a project..." value="" />
+                            {projects.map((project) => (
+                                <Picker.Item
+                                    key={project.value}
+                                    label={project.label}
+                                    value={project.value} // Contains JSON string with both Id and Description
+                                />
+                            ))}
+                        </Picker>
+
+                    </View>
+                </View>
+
+                {/* Submit Button */}
+                <View style={styles.buttonContainer}>
+                    <TouchableOpacity
+                        style={[styles.button, { backgroundColor: theme.mode === 'dark' ? "#333" : "#000" }]}
+                        onPress={handleSubmit}
                     >
-                        <Picker.Item label="Select a worker..." value="" />
-                        {workers.map((worker) => (
-                            <Picker.Item
-                                key={worker._id}
-                                label={`${worker.firstName} ${worker.lastName}`}
-                                value={worker._id} // Stores worker ID
-                            />
-                        ))}
-                    </Picker>
-
+                        <Text style={styles.buttonText}>Submit</Text>
+                    </TouchableOpacity>
                 </View>
-            </View>
 
-            {/* Project Description Field */}
-            <View style={styles.fieldWrapper}>
-                <Text style={[styles.label, { color: theme.text }]}>Select Project Description</Text>
-                <View style={[styles.inputContainer, { backgroundColor: theme.inputBackground }]}>
-                    <Picker
-                        selectedValue={JSON.stringify({ id: form.project_Id, description: form.project_description })}
-                        onValueChange={(itemValue) => handleChange("project_description", itemValue)}
-                        style={{ color: theme.text }}
-                    >
-                        <Picker.Item label="Select a project..." value="" />
-                        {projects.map((project) => (
-                            <Picker.Item
-                                key={project.value}
-                                label={project.label}
-                                value={project.value} // Contains JSON string with both Id and Description
-                            />
-                        ))}
-                    </Picker>
-
-                </View>
             </View>
-
-            {/* Submit Button */}
-            <View style={styles.buttonContainer}>
-                <TouchableOpacity style={[styles.button, { backgroundColor: theme.mode === 'dark' ? "#333" : "#000" }]} onPress={handleSubmit}>
-                    <Text style={styles.buttonText}>Submit</Text>
-                </TouchableOpacity>
-                <TouchableOpacity style={[styles.button, { backgroundColor: theme.cancelButton }]} onPress={handleBackPress}>
-                    <Text style={styles.buttonText}>Cancel</Text>
-                </TouchableOpacity>
-            </View>
-        </View>
+        </SafeAreaView>
     );
 };
 
@@ -282,21 +291,25 @@ const styles = StyleSheet.create({
         borderColor: "#e74c3c", // Error color
     },
     buttonContainer: {
-        flexDirection: 'row',
-        justifyContent: 'space-between',
         marginTop: 30,
+        alignItems: 'center', // centers child horizontally
     },
     button: {
-        flex: 0.48,
         padding: 15,
         borderRadius: 12,
         alignItems: 'center',
         elevation: 2,
+        width: '60%', // optional: controls button width
     },
+
     buttonText: {
         color: '#fff',
         fontWeight: 'bold',
         fontSize: 16,
+    },
+    safeArea: {
+        flex: 1,
+        paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
     },
 });
 
