@@ -27,6 +27,28 @@ const AdminApprovedProjectsScreen = () => {
     const navigation = useNavigation();
     const [loading, setLoading] = useState(true);
     const [projects, setProjects] = useState<Project[] | null>(null);
+    const [funds, setFunds] = useState<Record<string, number>>({});
+
+    const fetchFundsForProjects = async (projects: Project[]) => {
+        const fundMap: Record<string, number> = {};
+
+        for (const project of projects) {
+            try {
+                const response = await fetch(`http://192.168.129.119:5001/get-fund-by-project?project_Id=${project.project_Id}`);
+                const data = await response.json();
+                if (data.status === "OK") {
+                    fundMap[project.project_Id] = data.data.new_amount_allocated || 0;
+                } else {
+                    fundMap[project.project_Id] = 0;
+                }
+            } catch (error) {
+                console.error(`Error fetching fund for ${project.project_Id}:`, error);
+                fundMap[project.project_Id] = 0;
+            }
+        }
+
+        setFunds(fundMap);
+    };
 
     useEffect(() => {
         const fetchApprovedProjects = async () => {
@@ -43,6 +65,7 @@ const AdminApprovedProjectsScreen = () => {
                 );
 
                 setProjects(approvedProjects);
+                fetchFundsForProjects(approvedProjects); // <-- Fetch funds after projects
             } catch (err) {
                 setProjects(null);
             } finally {
@@ -128,10 +151,17 @@ const AdminApprovedProjectsScreen = () => {
                                     {item.completion_percentage} %
                                 </Text>
                             </View>
-
+                            <View style={styles.row}>
+                                <Text style={[styles.label, { color: theme.text }]}>💰 Amount Allocated:</Text>
+                                <Text style={[styles.value, { color: theme.text }]}>
+                                    ₹ {funds[item.project_Id]?.toLocaleString("en-IN") || "0"}
+                                </Text>
+                            </View>
                             <View style={[styles.statusBadge, { backgroundColor: theme.primary }]}>
                                 <Text style={styles.statusText}>{item.project_status}</Text>
                             </View>
+
+
                         </View>
                     )}
                 />

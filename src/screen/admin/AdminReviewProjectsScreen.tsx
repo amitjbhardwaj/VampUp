@@ -31,6 +31,28 @@ const AdminReviewProjectsScreen = () => {
     const [modalVisible, setModalVisible] = useState(false);
     const [projectStatus, setProjectStatus] = useState<{ [key: string]: { success: boolean, reject: boolean } }>({});
     const [projects, setProjects] = useState<Project[]>([]);
+    const [funds, setFunds] = useState<Record<string, number>>({});
+
+    const fetchFundsForProjects = async (projects: any[]) => {
+        const fundMap: Record<string, number> = {};
+
+        for (const project of projects) {
+            try {
+                const response = await fetch(`http://192.168.129.119:5001/get-fund-by-project?project_Id=${project.project_Id}`);
+                const data = await response.json();
+                if (data.status === "OK") {
+                    fundMap[project.project_Id] = data.data.new_amount_allocated || 0;
+                } else {
+                    fundMap[project.project_Id] = 0;
+                }
+            } catch (error) {
+                console.error(`Error fetching fund for ${project.project_Id}:`, error);
+                fundMap[project.project_Id] = 0;
+            }
+        }
+
+        setFunds(fundMap);
+    };
 
 
     const fetchCompletedProjects = async () => {
@@ -46,6 +68,7 @@ const AdminReviewProjectsScreen = () => {
                         project.project_status !== 'Approved' && project.project_status !== 'Rejected'
                     );
                     setProjects(filteredProjects);
+                    fetchFundsForProjects(data.data); // Fetch funds after projects load
                 } else {
                     setProjects([]);
                 }
@@ -171,7 +194,9 @@ const AdminReviewProjectsScreen = () => {
                 <Text style={[styles.label, { color: theme.mode === 'dark' ? '#fff' : '#000' }]}><FontAwesome name="percent" size={20} /> Completion Percentage: {project.completion_percentage}%</Text>
                 <Text style={[styles.label, { color: theme.mode === 'dark' ? '#fff' : '#000' }]}><FontAwesome name="user" size={20} /> Contractor Name: {project.contractor_name}</Text>
                 <Text style={[styles.label, { color: theme.mode === 'dark' ? '#fff' : '#000' }]}><FontAwesome name="phone" size={20} /> Contractor Phone: {project.contractor_phone}</Text>
-
+                <Text style={[styles.label, { color: theme.mode === 'dark' ? '#fff' : '#000' }]}>
+                    <FontAwesome name="money" size={20} /> Fund Allocated: ₹{funds[project.project_Id] ?? 0}
+                </Text>
                 {/* Success animation without background */}
                 {status.success && (
                     <Text style={[styles.successMessage, { color: 'green' }]}>Approved!</Text>
