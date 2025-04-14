@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -6,10 +6,14 @@ import {
   StyleSheet,
   Vibration,
   Animated,
+  SafeAreaView,
+  Platform,
+  StatusBar,
 } from "react-native";
 import { NavigationProp } from "@react-navigation/native";
 import { RootStackParamList } from "../RootNavigator";
 import { useTheme } from "../context/ThemeContext";
+import Header from "./Header";
 
 type PassCodeScreenNavigationProp = NavigationProp<RootStackParamList, "PassCodeScreen">;
 
@@ -17,6 +21,7 @@ const PassCodeScreen = ({ navigation }: { navigation: PassCodeScreenNavigationPr
   const { theme } = useTheme();
   const [passcode, setPasscode] = useState<string>("");
   const [errorShake] = useState(new Animated.Value(0));
+  const [pressedKey, setPressedKey] = useState<string | null>(null);
 
   const triggerShake = () => {
     Animated.sequence([
@@ -27,15 +32,31 @@ const PassCodeScreen = ({ navigation }: { navigation: PassCodeScreenNavigationPr
     ]).start();
   };
 
+  useEffect(() => {
+    if (passcode.length === 4) {
+      setTimeout(() => {
+        navigation.navigate("ConfirmPassCodeScreen", { passcode });
+      }, 150); // small delay to let the UI finish highlighting the last key
+    }
+  }, [passcode]);
+  
   const handleKeyPress = (key: string) => {
     if (passcode.length < 4) {
       setPasscode(prev => prev + key);
     }
+
+    // Set key highlight
+    setPressedKey(key);
+    setTimeout(() => setPressedKey(null), 200);
   };
 
   const handleBackspace = () => {
     setPasscode(prev => prev.slice(0, -1));
+    setPressedKey("←");
+    setTimeout(() => setPressedKey(null), 200);
   };
+
+  const handleReset = () => setPasscode("");
 
   const handleSubmit = () => {
     if (passcode.length === 4) {
@@ -54,8 +75,7 @@ const PassCodeScreen = ({ navigation }: { navigation: PassCodeScreenNavigationPr
           style={[
             styles.dot,
             {
-              backgroundColor: index < passcode.length ? theme.primary : theme.inactiveDot || "#ccc",
-              shadowColor: theme.primary,
+              backgroundColor: index < passcode.length ? theme.primary : "#ccc",
             },
           ]}
         />
@@ -63,85 +83,112 @@ const PassCodeScreen = ({ navigation }: { navigation: PassCodeScreenNavigationPr
     </Animated.View>
   );
 
-  const keypadLayout = [["1", "2", "3"], ["4", "5", "6"], ["7", "8", "9"], ["←", "0", "✓"]];
+  const keypadLayout = [["1", "2", "3"], ["4", "5", "6"], ["7", "8", "9"], ["", "0", "←"]];
 
   return (
-    <View style={[styles.container, { backgroundColor: theme.background }]}>
-      <Text style={[styles.title, { color: theme.text }]}>Set Your Passcode</Text>
-      {renderDots()}
-      <View style={styles.keypad}>
+    <SafeAreaView style={[styles.container, { backgroundColor: theme.background }]}>
+      <View style={{ marginTop: 25 }}>
+        <Header title="" />
+      </View>
+
+
+      <View style={styles.topContainer}>
+        <Text style={[styles.promptText, { color: theme.text }]}>Set Your Passcode</Text>
+        {renderDots()}
+        <TouchableOpacity onPress={handleReset}>
+          <Text style={[styles.resetText, { color: theme.primary }]}>Reset</Text>
+        </TouchableOpacity>
+      </View>
+
+      <View style={styles.keypadContainer}>
         {keypadLayout.map((row, rowIndex) => (
           <View key={rowIndex} style={styles.keypadRow}>
-            {row.map(key => (
-              <TouchableOpacity
-                key={key}
-                style={[
-                  styles.key,
-                  {
-                    backgroundColor: theme.card,
-                    shadowColor: theme.shadow || "#000",
-                  },
-                ]}
-                onPress={() => {
-                  if (key === "←") handleBackspace();
-                  else if (key === "✓") handleSubmit();
-                  else handleKeyPress(key);
-                }}
-                activeOpacity={0.6}
-              >
-                <Text style={[styles.keyText, { color: theme.text }]}>{key}</Text>
-              </TouchableOpacity>
-            ))}
+            {row.map((key, index) => {
+              const isHighlighted = pressedKey === key;
+              return (
+                <TouchableOpacity
+                  key={index}
+                  style={[
+                    styles.keypadKey,
+                    isHighlighted && { backgroundColor: theme.primary, borderRadius: 12 },
+                  ]}
+                  onPress={() => {
+                    if (key === "←") handleBackspace();
+                    else if (key !== "") handleKeyPress(key);
+                  }}
+                  disabled={key === ""}
+                  activeOpacity={0.6}
+                >
+                  <Text
+                    style={[
+                      styles.keyText,
+                      { color: isHighlighted ? "#fff" : theme.text },
+                    ]}
+                  >
+                    {key}
+                  </Text>
+                </TouchableOpacity>
+              );
+            })}
           </View>
         ))}
       </View>
-    </View>
+    </SafeAreaView>
+
   );
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, justifyContent: "center", alignItems: "center", padding: 20 },
-  title: { fontSize: 26, fontWeight: "600", marginBottom: 40 },
+  safeArea: {
+    flex: 1,
+    paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
+  },
+  container: {
+    flex: 1,
+    justifyContent: "space-between",
+  },
+  topContainer: {
+    alignItems: "center",
+    marginTop: 80,
+  },
+  promptText: {
+    fontSize: 18,
+    fontWeight: "500",
+    marginBottom: 30,
+  },
   dotsContainer: {
     flexDirection: "row",
-    marginBottom: 50,
-    gap: 25,
+    justifyContent: "center",
+    marginBottom: 12,
+    gap: 18,
   },
   dot: {
-    width: 20,
-    height: 20,
-    borderRadius: 10,
-    elevation: 4,
-    shadowOpacity: 0.4,
-    shadowOffset: { width: 1, height: 2 },
-    shadowRadius: 4,
+    width: 12,
+    height: 12,
+    borderRadius: 6,
   },
-  keypad: {
-    width: "85%",
-    alignItems: "center",
-    justifyContent: "center",
+  resetText: {
+    fontSize: 14,
+    marginTop: 10,
+    marginBottom: 20,
+  },
+  keypadContainer: {
+    paddingBottom: 30,
   },
   keypadRow: {
     flexDirection: "row",
-    justifyContent: "space-between",
-    marginBottom: 18,
-    width: "100%",
+    justifyContent: "space-evenly",
+    marginVertical: 10,
   },
-  key: {
-    flex: 1,
-    marginHorizontal: 8,
-    paddingVertical: 18,
-    borderRadius: 18,
+  keypadKey: {
+    width: 70,
+    height: 70,
     alignItems: "center",
     justifyContent: "center",
-    elevation: 4,
-    shadowOpacity: 0.2,
-    shadowOffset: { width: 1, height: 1 },
-    shadowRadius: 3,
   },
   keyText: {
     fontSize: 26,
-    fontWeight: "bold",
+    fontWeight: "400",
   },
 });
 
