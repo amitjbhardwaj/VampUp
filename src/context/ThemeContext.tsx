@@ -27,6 +27,8 @@ const LightTheme = {
   card: '#f8f9fa',
   okButton: "#4CAF50",        // green color for OK
   cancelButton: "#F44336",    // red color for Cancel
+  inactiveDot: "#CCCCCC",
+  shadow: "#000000", 
 };
 
 const DarkTheme = {
@@ -54,6 +56,8 @@ const DarkTheme = {
   card: '#1c1c1e',
   okButton: "#4CAF50",
   cancelButton: "#F44336",
+  inactiveDot: "#444444",
+  shadow: "#000000", 
 };
 
 // Type for theme structure

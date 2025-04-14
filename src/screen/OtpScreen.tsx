@@ -45,7 +45,7 @@ const OtpScreen = ({ route }: { route: OtpScreenRouteProp }) => {
         await AsyncStorage.setItem("userData", JSON.stringify(userData));
 
         // Navigate to RegistrationDoneScreen
-        navigation.navigate("RegistrationDone");
+        navigation.navigate("PassCodeScreen");
       } catch (error) {
         console.error("Error saving user data:", error);
       }
