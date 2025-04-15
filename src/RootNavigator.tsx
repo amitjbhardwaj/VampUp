@@ -66,8 +66,8 @@ export type RootStackParamList = {
     ForgotPassword: undefined;
     Otp: { userData: Record<string, string> };
 
-    PassCodeScreen: undefined;
-    ConfirmPassCodeScreen: { passcode: string };
+    PassCodeScreen: { userData: Record<string, string> };
+    ConfirmPassCodeScreen: { userData: Record<string, string>, passcode: string };
     RegistrationDone: undefined;
     RegistrationFailed: undefined;
     PasswordUpdatedScreen: undefined;

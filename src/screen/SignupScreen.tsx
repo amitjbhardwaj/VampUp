@@ -75,18 +75,7 @@ const SignupScreen = () => {
       mobile: form.mobile,
     };
   
-    axios
-      .post("http://192.168.129.119:5001/register", userData)
-      .then(res => {
-        if (res.data.status === "OK") {
-          navigation.navigate("Otp", { userData: form }); // Navigate on success
-        } else {
-          ToastAndroid.show("Registration failed: " + res.data.data, ToastAndroid.SHORT);
-        }
-      })
-      .catch(e => {
-        ToastAndroid.show(e, ToastAndroid.SHORT);
-      });
+    navigation.navigate("Otp", { userData: form });
   };
   
   const handleBackPress = () => {

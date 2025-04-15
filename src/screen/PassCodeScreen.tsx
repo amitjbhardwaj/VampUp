@@ -10,15 +10,19 @@ import {
   Platform,
   StatusBar,
 } from "react-native";
-import { NavigationProp } from "@react-navigation/native";
+import { NavigationProp, RouteProp, useRoute } from "@react-navigation/native";
 import { RootStackParamList } from "../RootNavigator";
 import { useTheme } from "../context/ThemeContext";
 import Header from "./Header";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 type PassCodeScreenNavigationProp = NavigationProp<RootStackParamList, "PassCodeScreen">;
+type PassCodeScreenProp = RouteProp<RootStackParamList, "PassCodeScreen">;
 
 const PassCodeScreen = ({ navigation }: { navigation: PassCodeScreenNavigationProp }) => {
   const { theme } = useTheme();
+  const route = useRoute<PassCodeScreenProp>();
+  const { userData } = route.params;
   const [passcode, setPasscode] = useState<string>("");
   const [errorShake] = useState(new Animated.Value(0));
   const [pressedKey, setPressedKey] = useState<string | null>(null);
@@ -34,8 +38,9 @@ const PassCodeScreen = ({ navigation }: { navigation: PassCodeScreenNavigationPr
 
   useEffect(() => {
     if (passcode.length === 4) {
-      setTimeout(() => {
-        navigation.navigate("ConfirmPassCodeScreen", { passcode });
+      setTimeout(async () => {
+        await AsyncStorage.setItem("userData", JSON.stringify(userData));
+        navigation.navigate("ConfirmPassCodeScreen", { userData: userData, passcode });
       }, 150); // small delay to let the UI finish highlighting the last key
     }
   }, [passcode]);
@@ -57,15 +62,6 @@ const PassCodeScreen = ({ navigation }: { navigation: PassCodeScreenNavigationPr
   };
 
   const handleReset = () => setPasscode("");
-
-  const handleSubmit = () => {
-    if (passcode.length === 4) {
-      navigation.navigate("ConfirmPassCodeScreen", { passcode });
-    } else {
-      Vibration.vibrate(100);
-      triggerShake();
-    }
-  };
 
   const renderDots = () => (
     <Animated.View style={[styles.dotsContainer, { transform: [{ translateX: errorShake }] }]}>

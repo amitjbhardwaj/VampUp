@@ -53,7 +53,7 @@ const OtpScreen = ({ route }: { route: OtpScreenRouteProp }) => {
     } else {
       try {
         await AsyncStorage.setItem("userData", JSON.stringify(userData));
-        navigation.navigate("PassCodeScreen");
+        navigation.navigate("PassCodeScreen", { userData: userData });
       } catch (error) {
         console.error("Error saving user data:", error);
       }

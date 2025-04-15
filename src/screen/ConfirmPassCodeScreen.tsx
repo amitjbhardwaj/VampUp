@@ -1,10 +1,11 @@
 import React, { useState } from "react";
-import { View, Text, TouchableOpacity, StyleSheet, Vibration, Animated, Platform, StatusBar } from "react-native";
+import { View, Text, TouchableOpacity, StyleSheet, Vibration, Animated, Platform, StatusBar, ToastAndroid } from "react-native";
 import { RouteProp, NavigationProp } from "@react-navigation/native";
 import { RootStackParamList } from "../RootNavigator";
 import { useTheme } from "../context/ThemeContext";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Header from "./Header";
+import axios from "axios";
 
 type ConfirmPassCodeRouteProp = RouteProp<RootStackParamList, "ConfirmPassCodeScreen">;
 type ConfirmPassCodeNavigationProp = NavigationProp<RootStackParamList, "ConfirmPassCodeScreen">;
@@ -18,6 +19,7 @@ const ConfirmPassCodeScreen = ({
 }) => {
     const { passcode } = route.params;
     const { theme } = useTheme();
+    const { userData } = route.params;
     const [confirmCode, setConfirmCode] = useState("");
     const [error, setError] = useState("");
     const [errorShake] = useState(new Animated.Value(0));
@@ -61,19 +63,36 @@ const ConfirmPassCodeScreen = ({
             setError("Passcodes do not match");
             Vibration.vibrate(200);
             triggerShake();
-            setConfirmCode(""); // Reset the entered passcode
+            setConfirmCode("");
             return;
         }
     
         try {
-            await AsyncStorage.setItem("passcode", passcode);
-            navigation.navigate("RegistrationDone");
+            const updatedUserData = { ...userData, passcode };
+    
+            console.log("updatedUserData:", updatedUserData);
+
+            axios
+                .post("http://192.168.129.119:5001/register", updatedUserData)
+                .then(res => {
+                    if (res.data.status === "OK") {
+                        navigation.navigate("RegistrationDone");
+                    } else {
+                        ToastAndroid.show("Registration failed: " + (res.data.data?.message || JSON.stringify(res.data.data)), ToastAndroid.SHORT);
+                    }
+                })
+                .catch(e => {
+                    ToastAndroid.show("Network error: " + (e.message || JSON.stringify(e)), ToastAndroid.SHORT);
+                });
         } catch (e) {
-            console.error("Failed to save passcode", e);
+            console.error("Failed to update passcode:", e);
             setError("Something went wrong. Please try again.");
         }
     };
     
+    
+
+
 
     const renderDots = () => {
         return (
@@ -146,62 +165,62 @@ const ConfirmPassCodeScreen = ({
 };
 
 const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
-  },
-  container: {
-    flex: 1,
-    justifyContent: "space-between",
-  },
-  topContainer: {
-    alignItems: "center",
-    marginTop: 80,
-  },
-  promptText: {
-    fontSize: 18,
-    fontWeight: "500",
-    marginBottom: 30,
-  },
-  dotsContainer: {
-    flexDirection: "row",
-    justifyContent: "center",
-    marginBottom: 12,
-    gap: 18,
-  },
-  dot: {
-    width: 12,
-    height: 12,
-    borderRadius: 6,
-  },
-  resetText: {
-    fontSize: 14,
-    marginTop: 10,
-    marginBottom: 20,
-  },
-  keypadContainer: {
-    paddingBottom: 30,
-  },
-  keypadRow: {
-    flexDirection: "row",
-    justifyContent: "space-evenly",
-    marginVertical: 10,
-  },
-  keypadKey: {
-    width: 70,
-    height: 70,
-    alignItems: "center",
-    justifyContent: "center",
-  },
-  keyText: {
-    fontSize: 26,
-    fontWeight: "400",
-  },
-  errorText: {
-    fontSize: 14,
-    marginTop: 10,
-    marginBottom: 20,
-},
+    safeArea: {
+        flex: 1,
+        paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
+    },
+    container: {
+        flex: 1,
+        justifyContent: "space-between",
+    },
+    topContainer: {
+        alignItems: "center",
+        marginTop: 80,
+    },
+    promptText: {
+        fontSize: 18,
+        fontWeight: "500",
+        marginBottom: 30,
+    },
+    dotsContainer: {
+        flexDirection: "row",
+        justifyContent: "center",
+        marginBottom: 12,
+        gap: 18,
+    },
+    dot: {
+        width: 12,
+        height: 12,
+        borderRadius: 6,
+    },
+    resetText: {
+        fontSize: 14,
+        marginTop: 10,
+        marginBottom: 20,
+    },
+    keypadContainer: {
+        paddingBottom: 30,
+    },
+    keypadRow: {
+        flexDirection: "row",
+        justifyContent: "space-evenly",
+        marginVertical: 10,
+    },
+    keypadKey: {
+        width: 70,
+        height: 70,
+        alignItems: "center",
+        justifyContent: "center",
+    },
+    keyText: {
+        fontSize: 26,
+        fontWeight: "400",
+    },
+    errorText: {
+        fontSize: 14,
+        marginTop: 10,
+        marginBottom: 20,
+    },
 });
 
 export default ConfirmPassCodeScreen;
