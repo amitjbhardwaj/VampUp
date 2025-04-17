@@ -4,7 +4,6 @@ import Icon from "react-native-vector-icons/Ionicons";
 import { NavigationProp, useNavigation } from '@react-navigation/native';
 import { RootStackParamList } from "../RootNavigator";
 import { useTheme } from "../context/ThemeContext";
-import axios from 'axios'
 
 type SignupScreenNavigationProp = NavigationProp<RootStackParamList>;
 

@@ -58,6 +58,8 @@ import PaymentModeScreen from "./screen/payment/PaymentModeScreen";
 import AdminAllocateFundsScreen from "./screen/admin/AdminAllocateFundsScreen";
 import PassCodeScreen from "./screen/PassCodeScreen";
 import ConfirmPassCodeScreen from "./screen/ConfirmPassCodeScreen";
+import PassCodeLoginScreen from "./screen/PassCodeLoginScreen";
+import VerifyAadharScreen from "./screen/VerifyAadharScreen";
 
 export type RootStackParamList = {
     LoginScreen: undefined;
@@ -65,6 +67,8 @@ export type RootStackParamList = {
     ReportIssue: undefined;
     ForgotPassword: undefined;
     Otp: { userData: Record<string, string> };
+    PassCodeLoginScreen: { aadhar: string };
+    VerifyAadharScreen: undefined;
 
     PassCodeScreen: { userData: Record<string, string> };
     ConfirmPassCodeScreen: { userData: Record<string, string>, passcode: string };
@@ -149,6 +153,8 @@ const RootNavigator: React.FC = () => {
                     <Stack.Screen name="LoginScreen" component={LoginScreen} />
                     <Stack.Screen name="Signup" component={SignupScreen} />
                     <Stack.Screen name="ForgotPassword" component={ForgotPasswordScreen} />
+                    <Stack.Screen name="PassCodeLoginScreen" component={PassCodeLoginScreen} />
+                    <Stack.Screen name="VerifyAadharScreen" component={VerifyAadharScreen} />
                     <Stack.Screen name="Otp" component={OtpScreen} />
                     <Stack.Screen name="RegistrationDone" component={RegistrationDoneScreen} />
                     <Stack.Screen name="RegistrationFailed" component={RegistrationFailedScreen} />

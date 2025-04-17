@@ -3,7 +3,6 @@ import { View, Text, TouchableOpacity, StyleSheet, Vibration, Animated, Platform
 import { RouteProp, NavigationProp } from "@react-navigation/native";
 import { RootStackParamList } from "../RootNavigator";
 import { useTheme } from "../context/ThemeContext";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import Header from "./Header";
 import axios from "axios";
 
@@ -70,8 +69,6 @@ const ConfirmPassCodeScreen = ({
         try {
             const updatedUserData = { ...userData, passcode };
     
-            console.log("updatedUserData:", updatedUserData);
-
             axios
                 .post("http://192.168.129.119:5001/register", updatedUserData)
                 .then(res => {

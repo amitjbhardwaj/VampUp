@@ -134,6 +134,16 @@ const LoginScreen = () => {
                     <Text style={styles.buttonText}>Login with Biometrics</Text>
                 </TouchableOpacity>
 
+                {/* Login with Passcode Button */}
+                <TouchableOpacity
+                    style={[styles.biometricButton, { backgroundColor: theme.primary }]}
+                    onPress={() => navigation.navigate("VerifyAadharScreen" as never)}
+                >
+                    <MaterialCommunityIcons name="lock" size={22} color="#fff" style={styles.buttonIcon} />
+                    <Text style={styles.buttonText}>Login with Passcode</Text>
+                </TouchableOpacity>
+
+
                 <TouchableOpacity onPress={() => navigation.navigate("Signup")}>
                     <Text style={[styles.footerText, { color: theme.text }]}>
                         Don't have an account? <Text style={styles.createText}>Create</Text>
