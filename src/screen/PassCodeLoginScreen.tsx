@@ -40,23 +40,46 @@ const PassCodeLoginScreen = ({ navigation }: { navigation: NavigationProps }) =>
 
   const validatePasscode = async () => {
     try {
-      const response = await axios.get(`http://192.168.129.119:5001/get-passcode/${aadhar}`);
-      const userData = response.data;
+      const response = await axios.post('http://192.168.129.119:5001/verify-passcode', {
+        aadhar,
+        passcode,
+      });
   
-      if (userData.passcode === passcode) {
-        await AsyncStorage.setItem("userData", JSON.stringify(userData));
-        navigation.navigate("WorkerHomeScreen" as never);
+      if (response.data.status === "OK") {
+        const { token, role, firstName, lastName } = response.data;
+  
+        // Save token locally (e.g., AsyncStorage in React Native)
+        await AsyncStorage.setItem('authToken', token);
+  
+        // Navigate to the role-based screen
+        if (role === "Worker") {
+          await AsyncStorage.setItem("workerName", `${firstName ?? ""} ${lastName ?? ""}`.trim());
+          navigation.navigate("WorkerHomeScreen" as never);
+        } else if (role === "Contractor") {
+          await AsyncStorage.setItem("contractorName", `${firstName ?? ""} ${lastName ?? ""}`.trim());
+          navigation.navigate("ContractorHomeScreen" as never);
+        } else if (role === "Admin") {
+          await AsyncStorage.setItem("adminName", `${firstName ?? ""} ${lastName ?? ""}`.trim());
+          navigation.navigate("AdminHomeScreen" as never);
+        } else {
+          Alert.alert("Unknown role detected");
+        }
+  
       } else {
-        triggerShake();
-        Alert.alert("Incorrect Passcode", "Please try again.");
-        setPasscode("");
+        console.warn("Unexpected response:", response.data);
       }
-    } catch (error) {
-      console.error("Error during passcode verification:", error);
-      Alert.alert("Login Error", "Something went wrong. Please try again later.");
+  
+    } catch (error: any) {
+      if (error.response && error.response.data?.error) {
+        triggerShake();
+        handleReset();
+        Alert.alert(error.response.data.error); // e.g., "Invalid passcode"
+      } else {
+        console.error("Login error:", error);
+        Alert.alert("Something went wrong. Please try again.");
+      }
     }
   };
-  
 
   useEffect(() => {
     if (passcode.length === 4) {
@@ -78,6 +101,8 @@ const PassCodeLoginScreen = ({ navigation }: { navigation: NavigationProps }) =>
     setPressedKey("←");
     setTimeout(() => setPressedKey(null), 200);
   };
+
+  const handleReset = () => setPasscode("");
 
   const keypadLayout = [["1", "2", "3"], ["4", "5", "6"], ["7", "8", "9"], ["", "0", "←"]];
 
