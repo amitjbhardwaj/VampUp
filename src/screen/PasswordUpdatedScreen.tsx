@@ -42,7 +42,7 @@ const PasswordUpdatedScreen = () => {
 
                 {/* Manual navigation button */}
                 <TouchableOpacity
-                    style={[styles.button, { backgroundColor: isDarkMode ? theme.buttonBackgroundColor : "#2C786C" }]}
+                    style={[styles.button, { backgroundColor: isDarkMode ? theme.primary : "#2C786C" }]}
                     onPress={() => navigation.navigate("LoginScreen")}
                 >
                     <Text style={styles.buttonText}>Go to Login</Text>

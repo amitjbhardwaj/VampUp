@@ -9,12 +9,15 @@ import {
   KeyboardAvoidingView,
   Platform,
   ScrollView,
+  SafeAreaView,
+  StatusBar,
 } from "react-native";
 import { useNavigation } from "@react-navigation/native";
 import { NavigationProp } from "@react-navigation/native";
 import { useTheme } from "../context/ThemeContext";
 import axios from "axios";
 import { RootStackParamList } from "../RootNavigator";
+import Header from "./Header";
 
 type VerifyAadharScreenNavigationProp = NavigationProp<RootStackParamList, "VerifyAadharScreen">;
 
@@ -54,33 +57,36 @@ const VerifyAadharScreen = () => {
 
 
   return (
-    <KeyboardAvoidingView
-      style={{ flex: 1 }}
-      behavior={Platform.OS === "ios" ? "padding" : undefined}
-    >
-      <ScrollView contentContainerStyle={[styles.container, { backgroundColor: theme.background }]}>
-        <Text style={[styles.title, { color: theme.text }]}>Verify Aadhaar</Text>
+    <SafeAreaView style={[styles.safeArea, { backgroundColor: theme.background }]}>
+      <Header title="Log in" />
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
+      >
+        <ScrollView contentContainerStyle={[styles.container, { backgroundColor: theme.background }]}>
+          <Text style={[styles.title, { color: theme.text }]}>Verify Aadhaar</Text>
 
-        <Text style={[styles.label, { color: theme.text }]}>Enter your 12-digit Aadhaar number</Text>
+          <Text style={[styles.label, { color: theme.text }]}>Enter your 12-digit Aadhaar number</Text>
 
-        <TextInput
-          style={[styles.input, { color: theme.text, borderColor: theme.primary }]}
-          keyboardType="numeric"
-          maxLength={12}
-          placeholder="XXXX XXXX XXXX"
-          value={aadhar}
-          onChangeText={setAadhar}
-          placeholderTextColor={theme.icon}
-        />
+          <TextInput
+            style={[styles.input, { color: theme.text, borderColor: theme.primary }]}
+            keyboardType="numeric"
+            maxLength={12}
+            placeholder="XXXX XXXX XXXX"
+            value={aadhar}
+            onChangeText={setAadhar}
+            placeholderTextColor={theme.icon}
+          />
 
-        <TouchableOpacity
-          style={[styles.button, { backgroundColor: theme.primary }]}
-          onPress={handleVerify}
-        >
-          <Text style={styles.buttonText}>Continue</Text>
-        </TouchableOpacity>
-      </ScrollView>
-    </KeyboardAvoidingView>
+          <TouchableOpacity
+            style={[styles.button, { backgroundColor: theme.primary }]}
+            onPress={handleVerify}
+          >
+            <Text style={styles.buttonText}>Continue</Text>
+          </TouchableOpacity>
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 };
 
@@ -116,6 +122,10 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontSize: 16,
     fontWeight: "bold",
+  },
+  safeArea: {
+    flex: 1,
+    paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
   },
 });
 

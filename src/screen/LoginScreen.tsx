@@ -91,11 +91,11 @@ const LoginScreen = () => {
                     <Icon name="user" size={18} color={theme.icon} style={styles.icon} />
                     <TextInput
                         placeholder="Username"
+                        placeholderTextColor={theme.mode === "dark" ? "#fff" : "#999"}
                         style={[styles.input, { color: theme.text }]}
                         autoCapitalize="none"
                         value={username}
                         onChangeText={setUsername}
-                        placeholderTextColor={theme.icon}
                     />
                 </View>
 
@@ -109,7 +109,7 @@ const LoginScreen = () => {
                         autoCapitalize="none"
                         value={password}
                         onChangeText={setPassword}
-                        placeholderTextColor={theme.icon}
+                        placeholderTextColor={theme.mode === "dark" ? "#fff" : "#999"}
                     />
                     <TouchableOpacity onPress={() => setSecureText(!secureText)} style={styles.eyeIcon}>
                         <Icon name={secureText ? "eye-slash" : "eye"} size={18} color={theme.icon} />

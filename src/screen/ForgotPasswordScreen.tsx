@@ -10,7 +10,7 @@ import { useTheme } from "../context/ThemeContext";
 type ForgotPasswordNavigationProp = NavigationProp<RootStackParamList>;
 
 const ForgotPasswordScreen = () => {
-    const { theme } = useTheme(); 
+    const { theme } = useTheme();
     const navigation = useNavigation<ForgotPasswordNavigationProp>();
 
     // State variables
@@ -94,10 +94,28 @@ const ForgotPasswordScreen = () => {
                     loop={false}
                 />
                 <View style={styles.stepContainer}>
-                    <Text style={[styles.step, step === "aadhaar" && styles.activeStep]}>1</Text>
-                    <Text style={[styles.step, step === "otp" && styles.activeStep]}>2</Text>
-                    <Text style={[styles.step, step === "password" && styles.activeStep]}>3</Text>
+                    <View style={styles.stepItem}>
+                        <Text style={[styles.step, step === "aadhaar" && { backgroundColor: theme.primary, color: "#fff" }]}>1</Text>
+                        <View style={styles.stepLabelContainer}>
+                            <Text style={styles.stepLabel}>Aadhaar</Text>
+                        </View>
+                    </View>
+                    <View style={styles.line} />
+                    <View style={styles.stepItem}>
+                        <Text style={[styles.step, step === "otp" && { backgroundColor: theme.primary, color: "#fff" }]}>2</Text>
+                        <View style={styles.stepLabelContainer}>
+                            <Text style={styles.stepLabel}>OTP</Text>
+                        </View>
+                    </View>
+                    <View style={styles.line} />
+                    <View style={styles.stepItem}>
+                        <Text style={[styles.step, step === "password" && { backgroundColor: theme.primary, color: "#fff" }]}>3</Text>
+                        <View style={styles.stepLabelContainer}>
+                            <Text style={styles.stepLabel}>Password</Text>
+                        </View>
+                    </View>
                 </View>
+
 
                 {/* Aadhaar Step */}
                 {step === "aadhaar" && (
@@ -107,6 +125,7 @@ const ForgotPasswordScreen = () => {
                             <FontAwesome name="id-card" size={24} color={theme.iconColor} style={styles.inputIcon} />
                             <TextInput
                                 placeholder="Aadhaar Number"
+                                placeholderTextColor={theme.mode === "dark" ? "#fff" : "#999"}
                                 keyboardType="numeric"
                                 maxLength={12}
                                 style={[styles.inputText, { color: theme.text }]}
@@ -115,7 +134,7 @@ const ForgotPasswordScreen = () => {
                             />
                         </View>
                         {aadhaarError ? <Text style={[styles.errorText, { color: theme.errorText }]}>{aadhaarError}</Text> : null}
-                        <TouchableOpacity style={[styles.actionBtn, { backgroundColor: theme.buttonBackground }]} onPress={handleSubmitAadhaar}>
+                        <TouchableOpacity style={[styles.actionBtn, { backgroundColor: theme.primary }]} onPress={handleSubmitAadhaar}>
                             <Text style={styles.actionBtnText}>Submit</Text>
                         </TouchableOpacity>
                     </View>
@@ -129,6 +148,7 @@ const ForgotPasswordScreen = () => {
                             <FontAwesome name="key" size={24} color={theme.iconColor} style={styles.inputIcon} />
                             <TextInput
                                 placeholder="OTP"
+                                placeholderTextColor={theme.mode === "dark" ? "#fff" : "#999"}
                                 keyboardType="numeric"
                                 maxLength={6}
                                 style={[styles.inputText, { color: theme.text }]}
@@ -137,7 +157,7 @@ const ForgotPasswordScreen = () => {
                             />
                         </View>
                         {otpError ? <Text style={[styles.errorText, { color: theme.errorText }]}>{otpError}</Text> : null}
-                        <TouchableOpacity style={[styles.actionBtn, { backgroundColor: theme.buttonBackground }]} onPress={handleSubmitOtp}>
+                        <TouchableOpacity style={[styles.actionBtn, { backgroundColor: theme.primary }]} onPress={handleSubmitOtp}>
                             <Text style={styles.actionBtnText}>Submit OTP</Text>
                         </TouchableOpacity>
                     </View>
@@ -151,6 +171,7 @@ const ForgotPasswordScreen = () => {
                             <FontAwesome name="lock" size={24} color={theme.iconColor} style={styles.inputIcon} />
                             <TextInput
                                 placeholder="New Password"
+                                placeholderTextColor={theme.mode === "dark" ? "#fff" : "#999"}
                                 secureTextEntry
                                 style={[styles.inputText, { color: theme.text }]}
                                 value={newPassword}
@@ -161,6 +182,7 @@ const ForgotPasswordScreen = () => {
                             <FontAwesome name="lock" size={24} color={theme.iconColor} style={styles.inputIcon} />
                             <TextInput
                                 placeholder="Confirm Password"
+                                placeholderTextColor={theme.mode === "dark" ? "#fff" : "#999"}
                                 secureTextEntry
                                 style={[styles.inputText, { color: theme.text }]}
                                 value={confirmPassword}
@@ -168,7 +190,7 @@ const ForgotPasswordScreen = () => {
                             />
                         </View>
                         {passwordError ? <Text style={[styles.errorText, { color: theme.errorText }]}>{passwordError}</Text> : null}
-                        <TouchableOpacity style={[styles.actionBtn, { backgroundColor: theme.buttonBackground }]} onPress={handleResetPassword}>
+                        <TouchableOpacity style={[styles.actionBtn, { backgroundColor: theme.primary }]} onPress={handleResetPassword}>
                             <Text style={styles.actionBtnText}>Reset Password</Text>
                         </TouchableOpacity>
                     </View>
@@ -189,6 +211,49 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         paddingHorizontal: 20,
     },
+    stepContainer: {
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "center",
+        marginVertical: 20,
+    },
+
+    stepItem: {
+        alignItems: "center",
+    },
+
+    step: {
+        width: 36,
+        height: 36,
+        borderRadius: 18,
+        backgroundColor: "#eee",
+        textAlign: "center",
+        textAlignVertical: "center",
+        fontSize: 18,
+        fontWeight: "600",
+        color: "#666",
+    },
+
+    activeStep: {
+        backgroundColor: "#1E90FF",
+        color: "#fff",
+    },
+
+    line: {
+        height: 2,
+        width: 40,
+        backgroundColor: "#ccc",
+        marginHorizontal: 8,
+    },
+
+    stepLabelContainer: {
+        marginTop: 4,
+    },
+
+    stepLabel: {
+        fontSize: 12,
+        color: "#888",
+    },
     title: {
         fontSize: 24,
         fontWeight: "bold",
@@ -200,25 +265,7 @@ const styles = StyleSheet.create({
         height: 200,
         alignSelf: "center",
     },
-    stepContainer: {
-        flexDirection: "row",
-        justifyContent: "center",
-        marginVertical: 20,
-    },
-    step: {
-        width: 30,
-        height: 30,
-        borderRadius: 15,
-        backgroundColor: "#ccc",
-        textAlign: "center",
-        lineHeight: 30,
-        color: "#fff",
-        fontSize: 18,
-        marginHorizontal: 5,
-    },
-    activeStep: {
-        backgroundColor: "#2C786C",
-    },
+
     inputContainer: {
         flexDirection: "row",
         alignItems: "center",
@@ -259,6 +306,7 @@ const styles = StyleSheet.create({
     inputIcon: {
         marginRight: 10,
     },
+
 });
 
 export default ForgotPasswordScreen;
