@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import {
     StyleSheet,
     Text,
@@ -8,7 +8,10 @@ import {
     Image,
     ScrollView,
     Alert,
-    ToastAndroid
+    ActivityIndicator,
+    Pressable,
+    TextInput as RNTextInput,
+    Platform
 } from "react-native";
 import Icon from "react-native-vector-icons/FontAwesome";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
@@ -29,33 +32,54 @@ const LoginScreen = () => {
     const [password, setPassword] = useState("");
     const [secureText, setSecureText] = useState(true);
     const [errorMessage, setErrorMessage] = useState("");
+    const [loading, setLoading] = useState(false);
+
+    const passwordRef = useRef<RNTextInput>(null);
+
+    const navigateToRoleScreen = async (role: string, fullName: string) => {
+        const trimmedName = fullName.trim();
+        if (role === "Worker") {
+            await AsyncStorage.setItem("workerName", trimmedName);
+            navigation.navigate("WorkerHomeScreen" as never);
+        } else if (role === "Contractor") {
+            await AsyncStorage.setItem("contractorName", trimmedName);
+            navigation.navigate("ContractorHomeScreen" as never);
+        } else if (role === "Admin") {
+            await AsyncStorage.setItem("adminName", trimmedName);
+            navigation.navigate("AdminHomeScreen" as never);
+        } else {
+            Alert.alert("Unknown role detected");
+        }
+    };
 
     const handleLogin = () => {
+        setErrorMessage("");
+
+        if (!username.trim() || !password.trim()) {
+            setErrorMessage("Please enter both username and password.");
+            return;
+        }
+
+        setLoading(true);
         const userData = { email: username, password };
 
         axios.post("http://192.168.129.119:5001/login-user", userData)
-            .then(res => {
+            .then(async res => {
+                setLoading(false);
                 if (res.data.status === "OK") {
                     const { token, role, firstName, lastName } = res.data;
-                    AsyncStorage.setItem("authToken", token);
-
-                    if (role === "Worker") {
-                        AsyncStorage.setItem("workerName", `${firstName ?? ""} ${lastName ?? ""}`.trim());
-                        navigation.navigate("WorkerHomeScreen" as never);
-                    } else if (role === "Contractor") {
-                        AsyncStorage.setItem("contractorName", `${firstName ?? ""} ${lastName ?? ""}`.trim());
-                        navigation.navigate("ContractorHomeScreen" as never);
-                    } else if (role === "Admin") {
-                        AsyncStorage.setItem("adminName", `${firstName ?? ""} ${lastName ?? ""}`.trim());
-                        navigation.navigate("AdminHomeScreen" as never);
-                    } else {
-                        Alert.alert("Unknown role detected");
-                    }
+                    await AsyncStorage.setItem("authToken", token);
+                    await navigateToRoleScreen(role, `${firstName ?? ""} ${lastName ?? ""}`);
                 } else {
-                    Alert.alert("Login failed: " + res.data.error);
+                    setPassword("");
+                    setErrorMessage(res.data.error || "Login failed.");
                 }
             })
-            .catch(() => Alert.alert("An error occurred while logging in."));
+            .catch(() => {
+                setLoading(false);
+                setPassword("");
+                setErrorMessage("An error occurred while logging in.");
+            });
     };
 
     const handleBiometricLogin = () => {
@@ -64,15 +88,8 @@ const LoginScreen = () => {
             sensorErrorDescription: "Biometric authentication failed",
         })
             .then(() => {
-                const userRole = "worker"; // Dynamically change based on authentication
-
-                if (userRole === "worker") {
-                    navigation.navigate("WorkerHomeScreen" as never);
-                } else if (userRole === "contractor") {
-                    navigation.navigate("ContractorHomeScreen" as never);
-                } else if (userRole === "admin") {
-                    navigation.navigate("AdminHomeScreen" as never);
-                }
+                const userRole = "worker"; // dynamically get from storage if needed
+                navigateToRoleScreen(userRole, "User");
             })
             .catch(() => {
                 Alert.alert("Authentication Failed", "Unable to authenticate using biometrics.");
@@ -80,13 +97,12 @@ const LoginScreen = () => {
     };
 
     return (
-        <ScrollView contentContainerStyle={{ flexGrow: 1 }} keyboardShouldPersistTaps={"always"}>
+        <ScrollView contentContainerStyle={{ flexGrow: 1 }} keyboardShouldPersistTaps="always">
             <View style={[styles.container, { backgroundColor: theme.background }]}>
                 <Image source={require("../assets/logo.png")} style={styles.logo} resizeMode="contain" />
                 <Text style={[styles.helloText, { color: theme.text }]}>Welcome</Text>
                 <Text style={[styles.signInText, { color: theme.text }]}>Sign in to your account</Text>
 
-                {/* Username Field */}
                 <View style={[styles.inputContainer, { backgroundColor: theme.inputBackground }]}>
                     <Icon name="user" size={18} color={theme.icon} style={styles.icon} />
                     <TextInput
@@ -96,13 +112,15 @@ const LoginScreen = () => {
                         autoCapitalize="none"
                         value={username}
                         onChangeText={setUsername}
+                        returnKeyType="next"
+                        onSubmitEditing={() => passwordRef.current?.focus()}
                     />
                 </View>
 
-                {/* Password Field */}
                 <View style={[styles.inputContainer, { backgroundColor: theme.inputBackground }]}>
                     <Icon name="lock" size={18} color={theme.icon} style={styles.icon} />
                     <TextInput
+                        ref={passwordRef}
                         placeholder="Password"
                         style={[styles.input, { color: theme.text }]}
                         secureTextEntry={secureText}
@@ -110,39 +128,69 @@ const LoginScreen = () => {
                         value={password}
                         onChangeText={setPassword}
                         placeholderTextColor={theme.mode === "dark" ? "#fff" : "#999"}
+                        returnKeyType="done"
                     />
-                    <TouchableOpacity onPress={() => setSecureText(!secureText)} style={styles.eyeIcon}>
-                        <Icon name={secureText ? "eye-slash" : "eye"} size={18} color={theme.icon} />
-                    </TouchableOpacity>
+                    {password !== "" && (
+                        <TouchableOpacity onPress={() => setSecureText(!secureText)} style={styles.eyeIcon}>
+                            <Icon name={secureText ? "eye-slash" : "eye"} size={18} color={theme.icon} />
+                        </TouchableOpacity>
+                    )}
                 </View>
 
-                {errorMessage ? <Text style={[styles.errorText, { color: theme.errorColor }]}>{errorMessage}</Text> : null}
+                {errorMessage ? (
+                    <View style={{ padding: 10, backgroundColor: "#f8d7da", borderRadius: 8, width: "100%", marginBottom: 10 }}>
+                        <Text style={[styles.errorText, { color: theme.errorColor }]}>{errorMessage}</Text>
+                    </View>
+                ) : null}
 
-                <TouchableOpacity onPress={() => navigation.navigate({ name: "ForgotPassword" } as never)}>
+                <TouchableOpacity onPress={() => navigation.navigate({ name: "ForgotPasswordScreen" } as never)}>
                     <Text style={[styles.forgotPassword, { color: theme.primary }]}>Forgot your password?</Text>
                 </TouchableOpacity>
 
                 {/* Login Button */}
-                <TouchableOpacity style={[styles.biometricButton, { backgroundColor: theme.primary }]} onPress={handleLogin}>
-                    <MaterialCommunityIcons name="login" size={22} color="#fff" style={styles.buttonIcon} />
-                    <Text style={styles.buttonText}>Login</Text>
-                </TouchableOpacity>
+                <Pressable
+                    android_ripple={{ color: "#ccc" }}
+                    style={({ pressed }) => [
+                        styles.biometricButton,
+                        { backgroundColor: theme.primary, opacity: pressed ? 0.9 : 1 }
+                    ]}
+                    onPress={handleLogin}
+                >
+                    {loading ? (
+                        <ActivityIndicator color="#fff" />
+                    ) : (
+                        <>
+                            <MaterialCommunityIcons name="login" size={22} color="#fff" style={styles.buttonIcon} />
+                            <Text style={styles.buttonText}>Login</Text>
+                        </>
+                    )}
+                </Pressable>
 
-                {/* Biometric Login Button */}
-                <TouchableOpacity style={[styles.biometricButton, { backgroundColor: theme.primary }]} onPress={handleBiometricLogin}>
+                {/* Biometric Login */}
+                <Pressable
+                    android_ripple={{ color: "#ccc" }}
+                    style={({ pressed }) => [
+                        styles.biometricButton,
+                        { backgroundColor: theme.primary, opacity: pressed ? 0.9 : 1 }
+                    ]}
+                    onPress={handleBiometricLogin}
+                >
                     <MaterialCommunityIcons name="fingerprint" size={22} color="#fff" style={styles.buttonIcon} />
                     <Text style={styles.buttonText}>Login with Biometrics</Text>
-                </TouchableOpacity>
+                </Pressable>
 
-                {/* Login with Passcode Button */}
-                <TouchableOpacity
-                    style={[styles.biometricButton, { backgroundColor: theme.primary }]}
+                {/* Login with Passcode */}
+                <Pressable
+                    android_ripple={{ color: "#ccc" }}
+                    style={({ pressed }) => [
+                        styles.biometricButton,
+                        { backgroundColor: theme.primary, opacity: pressed ? 0.9 : 1 }
+                    ]}
                     onPress={() => navigation.navigate("VerifyAadharScreen" as never)}
                 >
                     <MaterialCommunityIcons name="lock" size={22} color="#fff" style={styles.buttonIcon} />
                     <Text style={styles.buttonText}>Login with Passcode</Text>
-                </TouchableOpacity>
-
+                </Pressable>
 
                 <TouchableOpacity onPress={() => navigation.navigate("Signup")}>
                     <Text style={[styles.footerText, { color: theme.text }]}>
@@ -199,14 +247,6 @@ const styles = StyleSheet.create({
         fontWeight: "bold",
         marginBottom: 20,
     },
-    button: {
-        padding: 15,
-        borderRadius: 10,
-        alignItems: "center",
-        justifyContent: "center",
-        width: "80%",
-        marginTop: 20,
-    },
     biometricButton: {
         flexDirection: "row",
         padding: 15,
@@ -235,7 +275,6 @@ const styles = StyleSheet.create({
     errorText: {
         fontSize: 14,
         textAlign: "center",
-        marginBottom: 10,
     },
 });
 

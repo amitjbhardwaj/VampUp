@@ -9,6 +9,7 @@ import {
   KeyboardAvoidingView,
   Platform,
   SafeAreaView,
+  StatusBar,
 } from "react-native";
 import { NavigationProp, RouteProp, useNavigation } from "@react-navigation/native";
 import { RootStackParamList } from "../RootNavigator";
@@ -61,58 +62,60 @@ const OtpScreen = ({ route }: { route: OtpScreenRouteProp }) => {
   };
 
   return (
-
-    <KeyboardAvoidingView
-      behavior={Platform.OS === "ios" ? "padding" : undefined}
-      style={[styles.container, { backgroundColor: theme.background }]}
-    >
-     
-      <LottieView
-        source={require("../assets/phone-animation.json")}
-        autoPlay
-        loop={false}
-        speed={0.8}
-        style={styles.animation}
-      />
-
-      <Text style={[styles.title, { color: theme.text }]}>OTP Verification</Text>
-      <Text style={[styles.subtitle, { color: theme.text }]}>
-        Please enter the 6-digit code sent to your mobile.
-      </Text>
-
-      <View style={[styles.inputContainer, { backgroundColor: theme.inputBackground }]}>
-        <Icon name="key" size={20} color={theme.iconColor} style={styles.icon} />
-        <TextInput
-          placeholder="Enter OTP"
-          style={[
-            styles.input,
-            { color: theme.text },
-            inputFocused && { borderColor: theme.primary, borderWidth: 1.5 },
-          ]}
-          keyboardType="numeric"
-          maxLength={6}
-          onChangeText={handleOtpChange}
-          value={otp}
-          placeholderTextColor={theme.placeholderTextColor}
-          onFocus={() => setInputFocused(true)}
-          onBlur={() => setInputFocused(false)}
-        />
-      </View>
-
-      {error ? (
-        <Animated.View style={styles.errorWrapper}>
-          <Text style={[styles.errorText, { color: theme.errorText }]}>{error}</Text>
-        </Animated.View>
-      ) : null}
-
-      <TouchableOpacity
-        style={[styles.button, { backgroundColor: theme.primary }]}
-        onPress={handleOtpVerify}
+    <SafeAreaView style={[styles.safeArea, { backgroundColor: theme.background }]}>
+      <Header title="Create Account" />
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
+        style={[styles.container, { backgroundColor: theme.background }]}
       >
-        <Icon name="lock" size={18} color="#fff" style={styles.buttonIcon} />
-        <Text style={styles.buttonText}>Verify OTP</Text>
-      </TouchableOpacity>
-    </KeyboardAvoidingView>
+
+        <LottieView
+          source={require("../assets/phone-animation.json")}
+          autoPlay
+          loop={false}
+          speed={0.8}
+          style={styles.animation}
+        />
+
+        <Text style={[styles.title, { color: theme.text }]}>OTP Verification</Text>
+        <Text style={[styles.subtitle, { color: theme.text }]}>
+          Please enter the 6-digit code sent to your mobile.
+        </Text>
+
+        <View style={[styles.inputContainer, { backgroundColor: theme.inputBackground }]}>
+          <Icon name="key" size={20} color={theme.iconColor} style={styles.icon} />
+          <TextInput
+            placeholder="Enter OTP"
+            style={[
+              styles.input,
+              { color: theme.text },
+              inputFocused && { borderColor: theme.primary, borderWidth: 1.5 },
+            ]}
+            keyboardType="numeric"
+            maxLength={6}
+            onChangeText={handleOtpChange}
+            value={otp}
+            placeholderTextColor={theme.placeholderTextColor}
+            onFocus={() => setInputFocused(true)}
+            onBlur={() => setInputFocused(false)}
+          />
+        </View>
+
+        {error ? (
+          <Animated.View style={styles.errorWrapper}>
+            <Text style={[styles.errorText, { color: theme.errorText }]}>{error}</Text>
+          </Animated.View>
+        ) : null}
+
+        <TouchableOpacity
+          style={[styles.button, { backgroundColor: theme.primary }]}
+          onPress={handleOtpVerify}
+        >
+          <Icon name="lock" size={18} color="#fff" style={styles.buttonIcon} />
+          <Text style={styles.buttonText}>Verify OTP</Text>
+        </TouchableOpacity>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 };
 
@@ -190,6 +193,10 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "600",
     color: "#fff",
+  },
+  safeArea: {
+    flex: 1,
+    paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
   },
 });
 

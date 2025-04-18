@@ -65,7 +65,7 @@ export type RootStackParamList = {
     LoginScreen: undefined;
     Signup: undefined;
     ReportIssue: undefined;
-    ForgotPassword: undefined;
+    ForgotPasswordScreen: undefined;
     Otp: { userData: Record<string, string> };
     PassCodeLoginScreen: { aadhar: string };
     VerifyAadharScreen: undefined;
@@ -152,7 +152,7 @@ const RootNavigator: React.FC = () => {
                 <Stack.Navigator initialRouteName="LoginScreen" screenOptions={{ headerShown: false }}>
                     <Stack.Screen name="LoginScreen" component={LoginScreen} />
                     <Stack.Screen name="Signup" component={SignupScreen} />
-                    <Stack.Screen name="ForgotPassword" component={ForgotPasswordScreen} />
+                    <Stack.Screen name="ForgotPasswordScreen" component={ForgotPasswordScreen} />
                     <Stack.Screen name="PassCodeLoginScreen" component={PassCodeLoginScreen} />
                     <Stack.Screen name="VerifyAadharScreen" component={VerifyAadharScreen} />
                     <Stack.Screen name="Otp" component={OtpScreen} />

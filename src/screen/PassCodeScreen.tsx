@@ -41,16 +41,15 @@ const PassCodeScreen = ({ navigation }: { navigation: PassCodeScreenNavigationPr
       setTimeout(async () => {
         await AsyncStorage.setItem("userData", JSON.stringify(userData));
         navigation.navigate("ConfirmPassCodeScreen", { userData: userData, passcode });
-      }, 150); // small delay to let the UI finish highlighting the last key
+      }, 150);
     }
   }, [passcode]);
-  
+
   const handleKeyPress = (key: string) => {
     if (passcode.length < 4) {
       setPasscode(prev => prev + key);
     }
 
-    // Set key highlight
     setPressedKey(key);
     setTimeout(() => setPressedKey(null), 200);
   };
@@ -61,7 +60,11 @@ const PassCodeScreen = ({ navigation }: { navigation: PassCodeScreenNavigationPr
     setTimeout(() => setPressedKey(null), 200);
   };
 
-  const handleReset = () => setPasscode("");
+  const handleReset = () => {
+    setPasscode("");
+    triggerShake();
+    Vibration.vibrate(100);
+  };
 
   const renderDots = () => (
     <Animated.View style={[styles.dotsContainer, { transform: [{ translateX: errorShake }] }]}>
@@ -82,55 +85,48 @@ const PassCodeScreen = ({ navigation }: { navigation: PassCodeScreenNavigationPr
   const keypadLayout = [["1", "2", "3"], ["4", "5", "6"], ["7", "8", "9"], ["", "0", "←"]];
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: theme.background }]}>
-      <View style={{ marginTop: 25 }}>
-        <Header title="" />
-      </View>
+    <SafeAreaView style={[styles.safeArea, { backgroundColor: theme.background }]}>
+      <Header title="Otp" />
 
+      <View style={[styles.container, { backgroundColor: theme.background }]}>
+        <View style={styles.topContainer}>
+          <Text style={[styles.promptText, { color: theme.text }]}>Set Your Passcode</Text>
+          {renderDots()}
+          <TouchableOpacity onPress={handleReset}>
+            <Text style={[styles.resetText, { color: theme.primary }]}>Reset</Text>
+          </TouchableOpacity>
+        </View>
 
-      <View style={styles.topContainer}>
-        <Text style={[styles.promptText, { color: theme.text }]}>Set Your Passcode</Text>
-        {renderDots()}
-        <TouchableOpacity onPress={handleReset}>
-          <Text style={[styles.resetText, { color: theme.primary }]}>Reset</Text>
-        </TouchableOpacity>
-      </View>
-
-      <View style={styles.keypadContainer}>
-        {keypadLayout.map((row, rowIndex) => (
-          <View key={rowIndex} style={styles.keypadRow}>
-            {row.map((key, index) => {
-              const isHighlighted = pressedKey === key;
-              return (
-                <TouchableOpacity
-                  key={index}
-                  style={[
-                    styles.keypadKey,
-                    isHighlighted && { backgroundColor: theme.primary, borderRadius: 12 },
-                  ]}
-                  onPress={() => {
-                    if (key === "←") handleBackspace();
-                    else if (key !== "") handleKeyPress(key);
-                  }}
-                  disabled={key === ""}
-                  activeOpacity={0.6}
-                >
-                  <Text
+        <View style={styles.keypadContainer}>
+          {keypadLayout.map((row, rowIndex) => (
+            <View key={rowIndex} style={styles.keypadRow}>
+              {row.map((key, index) => {
+                const isHighlighted = pressedKey === key;
+                return (
+                  <TouchableOpacity
+                    key={index}
                     style={[
-                      styles.keyText,
-                      { color: isHighlighted ? "#fff" : theme.text },
+                      styles.keypadKey,
+                      isHighlighted && { backgroundColor: theme.primary, borderRadius: 12 },
                     ]}
+                    onPress={() => {
+                      if (key === "←") handleBackspace();
+                      else if (key !== "") handleKeyPress(key);
+                    }}
+                    disabled={key === ""}
+                    activeOpacity={0.6}
                   >
-                    {key}
-                  </Text>
-                </TouchableOpacity>
-              );
-            })}
-          </View>
-        ))}
+                    <Text style={[styles.keyText, { color: isHighlighted ? "#fff" : theme.text }]}>
+                      {key}
+                    </Text>
+                  </TouchableOpacity>
+                );
+              })}
+            </View>
+          ))}
+        </View>
       </View>
     </SafeAreaView>
-
   );
 };
 
@@ -166,7 +162,15 @@ const styles = StyleSheet.create({
   resetText: {
     fontSize: 14,
     marginTop: 10,
-    marginBottom: 20,
+  },
+  resendText: {
+    fontSize: 14,
+    marginTop: 10,
+    fontWeight: "600",
+  },
+  countdownText: {
+    fontSize: 14,
+    marginTop: 10,
   },
   keypadContainer: {
     paddingBottom: 30,

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Text, TouchableOpacity, StyleSheet, Vibration, Animated, Platform, StatusBar, ToastAndroid } from "react-native";
+import { View, Text, TouchableOpacity, StyleSheet, Vibration, Animated, Platform, StatusBar, ToastAndroid, SafeAreaView } from "react-native";
 import { RouteProp, NavigationProp } from "@react-navigation/native";
 import { RootStackParamList } from "../RootNavigator";
 import { useTheme } from "../context/ThemeContext";
@@ -57,7 +57,7 @@ const ConfirmPassCodeScreen = ({
             triggerShake();
             return;
         }
-    
+
         if (confirmCode !== passcode) {
             setError("Passcodes do not match");
             Vibration.vibrate(200);
@@ -65,10 +65,10 @@ const ConfirmPassCodeScreen = ({
             setConfirmCode("");
             return;
         }
-    
+
         try {
             const updatedUserData = { ...userData, passcode };
-    
+
             axios
                 .post("http://192.168.129.119:5001/register", updatedUserData)
                 .then(res => {
@@ -86,8 +86,8 @@ const ConfirmPassCodeScreen = ({
             setError("Something went wrong. Please try again.");
         }
     };
-    
-    
+
+
 
 
 
@@ -112,52 +112,52 @@ const ConfirmPassCodeScreen = ({
     const keypadLayout = [["1", "2", "3"], ["4", "5", "6"], ["7", "8", "9"], ["←", "0", "✓"]];
 
     return (
-        <View style={[styles.container, { backgroundColor: theme.background }]}>
-            <View style={{ marginTop: 25 }}>
-                <Header title="" />
-            </View>
+        <SafeAreaView style={[styles.safeArea, { backgroundColor: theme.background }]}>
+            <Header title="Passcode" />
+            <View style={[styles.container, { backgroundColor: theme.background }]}>
 
-            <View style={styles.topContainer}>
-                <Text style={[styles.promptText, { color: theme.text }]}>Confirm Your Passcode</Text>
-                {renderDots()}
-                {error !== "" && <Text style={[styles.errorText, { color: theme.errorText }]}>{error}</Text>}
-            </View>
+                <View style={styles.topContainer}>
+                    <Text style={[styles.promptText, { color: theme.text }]}>Confirm Your Passcode</Text>
+                    {renderDots()}
+                    {error !== "" && <Text style={[styles.errorText, { color: theme.errorText }]}>{error}</Text>}
+                </View>
 
-            <View style={styles.keypadContainer}>
-                {keypadLayout.map((row, rowIndex) => (
-                    <View key={rowIndex} style={styles.keypadRow}>
-                        {row.map(key => {
-                            const isHighlighted = pressedKey === key;
-                            return (
-                                <TouchableOpacity
-                                    key={key}
-                                    style={[
-                                        styles.keypadKey,
-                                        isHighlighted && { backgroundColor: theme.primary, borderRadius: 12 },
-                                    ]}
-                                    onPress={() => {
-                                        if (key === "←") handleBackspace();
-                                        else if (key === "✓") handleSubmit();
-                                        else handleKeyPress(key);
-                                    }}
-                                    disabled={key === ""}
-                                    activeOpacity={0.6}
-                                >
-                                    <Text
+                <View style={styles.keypadContainer}>
+                    {keypadLayout.map((row, rowIndex) => (
+                        <View key={rowIndex} style={styles.keypadRow}>
+                            {row.map(key => {
+                                const isHighlighted = pressedKey === key;
+                                return (
+                                    <TouchableOpacity
+                                        key={key}
                                         style={[
-                                            styles.keyText,
-                                            { color: isHighlighted ? "#fff" : theme.text },
+                                            styles.keypadKey,
+                                            isHighlighted && { backgroundColor: theme.primary, borderRadius: 12 },
                                         ]}
+                                        onPress={() => {
+                                            if (key === "←") handleBackspace();
+                                            else if (key === "✓") handleSubmit();
+                                            else handleKeyPress(key);
+                                        }}
+                                        disabled={key === ""}
+                                        activeOpacity={0.6}
                                     >
-                                        {key}
-                                    </Text>
-                                </TouchableOpacity>
-                            );
-                        })}
-                    </View>
-                ))}
+                                        <Text
+                                            style={[
+                                                styles.keyText,
+                                                { color: isHighlighted ? "#fff" : theme.text },
+                                            ]}
+                                        >
+                                            {key}
+                                        </Text>
+                                    </TouchableOpacity>
+                                );
+                            })}
+                        </View>
+                    ))}
+                </View>
             </View>
-        </View>
+        </SafeAreaView>
     );
 };
 

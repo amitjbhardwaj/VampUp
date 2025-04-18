@@ -1,10 +1,16 @@
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Animated } from "react-native";
-import { useNavigation } from "@react-navigation/native";
-import { NavigationProp } from "@react-navigation/native";
-import { RootStackParamList } from "../RootNavigator";
+import {
+    View,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    StyleSheet,
+    Animated,
+} from "react-native";
+import { useNavigation, NavigationProp } from "@react-navigation/native";
 import { useState, useRef, useEffect } from "react";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import LottieView from "lottie-react-native";
+import { RootStackParamList } from "../RootNavigator";
 import { useTheme } from "../context/ThemeContext";
 
 type ForgotPasswordNavigationProp = NavigationProp<RootStackParamList>;
@@ -13,20 +19,75 @@ const ForgotPasswordScreen = () => {
     const { theme } = useTheme();
     const navigation = useNavigation<ForgotPasswordNavigationProp>();
 
-    // State variables
+    const [step, setStep] = useState<"aadhaar" | "otp" | "password">("aadhaar");
+
     const [aadhaar, setAadhaar] = useState("");
     const [otp, setOtp] = useState("");
     const [newPassword, setNewPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
-    const [step, setStep] = useState<"aadhaar" | "otp" | "password">("aadhaar");
 
-    // Error states
     const [aadhaarError, setAadhaarError] = useState("");
     const [otpError, setOtpError] = useState("");
     const [passwordError, setPasswordError] = useState("");
 
-    // Animation for smooth transition
     const fadeAnim = useRef(new Animated.Value(0)).current;
+
+    const aadhaarShakeAnim = useRef(new Animated.Value(0)).current;
+    const otpShakeAnim = useRef(new Animated.Value(0)).current;
+    const passwordShakeAnim = useRef(new Animated.Value(0)).current;
+
+    const [countdown, setCountdown] = useState(60);
+    const [showResend, setShowResend] = useState(false);
+
+
+    useEffect(() => {
+        let interval: NodeJS.Timeout;
+
+        if (step === "otp" && countdown > 0) {
+            interval = setInterval(() => {
+                setCountdown(prev => {
+                    if (prev === 1) {
+                        clearInterval(interval);
+                        setShowResend(true);
+                    }
+                    return prev - 1;
+                });
+            }, 1000);
+        }
+
+        return () => clearInterval(interval);
+    }, [step, countdown]);
+
+    const handleResendOtp = () => {
+        // TODO: add actual resend API call here if needed
+        setCountdown(30);
+        setShowResend(false);
+    };
+
+    const triggerShake = (anim: Animated.Value) => {
+        Animated.sequence([
+            Animated.timing(anim, {
+                toValue: 10,
+                duration: 50,
+                useNativeDriver: true,
+            }),
+            Animated.timing(anim, {
+                toValue: -10,
+                duration: 50,
+                useNativeDriver: true,
+            }),
+            Animated.timing(anim, {
+                toValue: 6,
+                duration: 50,
+                useNativeDriver: true,
+            }),
+            Animated.timing(anim, {
+                toValue: 0,
+                duration: 50,
+                useNativeDriver: true,
+            }),
+        ]).start();
+    };
 
     useEffect(() => {
         Animated.timing(fadeAnim, {
@@ -36,10 +97,10 @@ const ForgotPasswordScreen = () => {
         }).start();
     }, [step]);
 
-    // Handle Aadhaar Submission
     const handleSubmitAadhaar = () => {
         if (!/^\d{12}$/.test(aadhaar)) {
-            setAadhaarError("Invalid Aadhaar number!");
+            setAadhaarError("Enter a valid 12-digit Aadhaar number.");
+            triggerShake(aadhaarShakeAnim);
         } else {
             setAadhaarError("");
             setStep("otp");
@@ -47,10 +108,10 @@ const ForgotPasswordScreen = () => {
         }
     };
 
-    // Handle OTP Submission
     const handleSubmitOtp = () => {
         if (!/^\d{6}$/.test(otp)) {
-            setOtpError("Invalid OTP!");
+            setOtpError("Enter a valid 6-digit OTP.");
+            triggerShake(otpShakeAnim);
         } else {
             setOtpError("");
             setStep("password");
@@ -58,19 +119,19 @@ const ForgotPasswordScreen = () => {
         }
     };
 
-    // Handle Password Reset
     const handleResetPassword = () => {
         if (!newPassword || !confirmPassword) {
-            setPasswordError("Please enter a new password!");
+            setPasswordError("Please enter and confirm your new password.");
+            triggerShake(passwordShakeAnim);
         } else if (newPassword !== confirmPassword) {
-            setPasswordError("Passwords do not match!");
+            setPasswordError("Passwords do not match.");
+            triggerShake(passwordShakeAnim);
         } else {
             setPasswordError("");
             navigation.navigate("PasswordUpdatedScreen");
         }
     };
 
-    // Determine which Lottie file to show
     const getLottieSource = () => {
         switch (step) {
             case "aadhaar":
@@ -87,41 +148,39 @@ const ForgotPasswordScreen = () => {
     return (
         <View style={[styles.container, { backgroundColor: theme.background }]}>
             <Animated.View style={{ opacity: fadeAnim }}>
-                <LottieView
-                    source={getLottieSource()}
-                    style={styles.lottie}
-                    autoPlay
-                    loop={false}
-                />
+                <LottieView source={getLottieSource()} style={styles.lottie} autoPlay loop={false} />
+
+                {/* Steps */}
                 <View style={styles.stepContainer}>
-                    <View style={styles.stepItem}>
-                        <Text style={[styles.step, step === "aadhaar" && { backgroundColor: theme.primary, color: "#fff" }]}>1</Text>
-                        <View style={styles.stepLabelContainer}>
-                            <Text style={styles.stepLabel}>Aadhaar</Text>
+                    {["aadhaar", "otp", "password"].map((s, index) => (
+                        <View key={s} style={styles.stepItem}>
+                            <Text
+                                style={[
+                                    styles.step,
+                                    step === s && { backgroundColor: theme.primary, color: "#fff" },
+                                ]}
+                            >
+                                {index + 1}
+                            </Text>
+                            <View style={styles.stepLabelContainer}>
+                                <Text style={styles.stepLabel}>{s.charAt(0).toUpperCase() + s.slice(1)}</Text>
+                            </View>
+                            {index < 2 && <View style={styles.line} />}
                         </View>
-                    </View>
-                    <View style={styles.line} />
-                    <View style={styles.stepItem}>
-                        <Text style={[styles.step, step === "otp" && { backgroundColor: theme.primary, color: "#fff" }]}>2</Text>
-                        <View style={styles.stepLabelContainer}>
-                            <Text style={styles.stepLabel}>OTP</Text>
-                        </View>
-                    </View>
-                    <View style={styles.line} />
-                    <View style={styles.stepItem}>
-                        <Text style={[styles.step, step === "password" && { backgroundColor: theme.primary, color: "#fff" }]}>3</Text>
-                        <View style={styles.stepLabelContainer}>
-                            <Text style={styles.stepLabel}>Password</Text>
-                        </View>
-                    </View>
+                    ))}
                 </View>
 
-
-                {/* Aadhaar Step */}
+                {/* Aadhaar Input */}
                 {step === "aadhaar" && (
-                    <View>
+                    <Animated.View style={{ transform: [{ translateX: aadhaarShakeAnim }] }}>
                         <Text style={[styles.title, { color: theme.text }]}>Enter Aadhaar Number</Text>
-                        <View style={[styles.inputContainer, { backgroundColor: theme.inputBackground }]}>
+                        <View
+                            style={[
+                                styles.inputContainer,
+                                { backgroundColor: theme.inputBackground },
+                                aadhaarError && { borderColor: theme.errorText, borderWidth: 1 },
+                            ]}
+                        >
                             <FontAwesome name="id-card" size={24} color={theme.iconColor} style={styles.inputIcon} />
                             <TextInput
                                 placeholder="Aadhaar Number"
@@ -133,18 +192,27 @@ const ForgotPasswordScreen = () => {
                                 onChangeText={setAadhaar}
                             />
                         </View>
-                        {aadhaarError ? <Text style={[styles.errorText, { color: theme.errorText }]}>{aadhaarError}</Text> : null}
+                        {aadhaarError ? (
+                            <Text style={[styles.errorText, { color: theme.errorText }]}>{aadhaarError}</Text>
+                        ) : null}
                         <TouchableOpacity style={[styles.actionBtn, { backgroundColor: theme.primary }]} onPress={handleSubmitAadhaar}>
                             <Text style={styles.actionBtnText}>Submit</Text>
                         </TouchableOpacity>
-                    </View>
+                    </Animated.View>
                 )}
 
-                {/* OTP Step */}
+                {/* OTP Input */}
                 {step === "otp" && (
-                    <View>
+                    <Animated.View style={{ transform: [{ translateX: otpShakeAnim }] }}>
                         <Text style={[styles.title, { color: theme.text }]}>Enter OTP</Text>
-                        <View style={[styles.inputContainer, { backgroundColor: theme.inputBackground }]}>
+
+                        <View
+                            style={[
+                                styles.inputContainer,
+                                { backgroundColor: theme.inputBackground },
+                                otpError && { borderColor: theme.errorText, borderWidth: 1 },
+                            ]}
+                        >
                             <FontAwesome name="key" size={24} color={theme.iconColor} style={styles.inputIcon} />
                             <TextInput
                                 placeholder="OTP"
@@ -156,18 +224,44 @@ const ForgotPasswordScreen = () => {
                                 onChangeText={setOtp}
                             />
                         </View>
-                        {otpError ? <Text style={[styles.errorText, { color: theme.errorText }]}>{otpError}</Text> : null}
-                        <TouchableOpacity style={[styles.actionBtn, { backgroundColor: theme.primary }]} onPress={handleSubmitOtp}>
+
+                        {otpError ? (
+                            <Text style={[styles.errorText, { color: theme.errorText }]}>{otpError}</Text>
+                        ) : null}
+
+                        {!showResend ? (
+                            <Text style={{ textAlign: "center", color: theme.text, marginTop: 5 }}>
+                                Resend OTP in {countdown}s
+                            </Text>
+                        ) : (
+                            <TouchableOpacity onPress={handleResendOtp}>
+                                <Text style={{ textAlign: "center", color: theme.primary, marginTop: 5 }}>
+                                    Resend OTP
+                                </Text>
+                            </TouchableOpacity>
+                        )}
+
+                        <TouchableOpacity
+                            style={[styles.actionBtn, { backgroundColor: theme.primary }]}
+                            onPress={handleSubmitOtp}
+                        >
                             <Text style={styles.actionBtnText}>Submit OTP</Text>
                         </TouchableOpacity>
-                    </View>
+                    </Animated.View>
                 )}
 
-                {/* Password Step */}
+
+                {/* Password Reset */}
                 {step === "password" && (
-                    <View>
+                    <Animated.View style={{ transform: [{ translateX: passwordShakeAnim }] }}>
                         <Text style={[styles.title, { color: theme.text }]}>Reset Password</Text>
-                        <View style={[styles.inputContainer, { backgroundColor: theme.inputBackground }]}>
+                        <View
+                            style={[
+                                styles.inputContainer,
+                                { backgroundColor: theme.inputBackground },
+                                passwordError && { borderColor: theme.errorText, borderWidth: 1 },
+                            ]}
+                        >
                             <FontAwesome name="lock" size={24} color={theme.iconColor} style={styles.inputIcon} />
                             <TextInput
                                 placeholder="New Password"
@@ -178,7 +272,13 @@ const ForgotPasswordScreen = () => {
                                 onChangeText={setNewPassword}
                             />
                         </View>
-                        <View style={[styles.inputContainer, { backgroundColor: theme.inputBackground }]}>
+                        <View
+                            style={[
+                                styles.inputContainer,
+                                { backgroundColor: theme.inputBackground },
+                                passwordError && { borderColor: theme.errorText, borderWidth: 1 },
+                            ]}
+                        >
                             <FontAwesome name="lock" size={24} color={theme.iconColor} style={styles.inputIcon} />
                             <TextInput
                                 placeholder="Confirm Password"
@@ -189,11 +289,13 @@ const ForgotPasswordScreen = () => {
                                 onChangeText={setConfirmPassword}
                             />
                         </View>
-                        {passwordError ? <Text style={[styles.errorText, { color: theme.errorText }]}>{passwordError}</Text> : null}
+                        {passwordError ? (
+                            <Text style={[styles.errorText, { color: theme.errorText }]}>{passwordError}</Text>
+                        ) : null}
                         <TouchableOpacity style={[styles.actionBtn, { backgroundColor: theme.primary }]} onPress={handleResetPassword}>
                             <Text style={styles.actionBtnText}>Reset Password</Text>
                         </TouchableOpacity>
-                    </View>
+                    </Animated.View>
                 )}
 
                 <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
@@ -203,7 +305,6 @@ const ForgotPasswordScreen = () => {
         </View>
     );
 };
-
 
 const styles = StyleSheet.create({
     container: {
@@ -217,11 +318,9 @@ const styles = StyleSheet.create({
         justifyContent: "center",
         marginVertical: 20,
     },
-
     stepItem: {
         alignItems: "center",
     },
-
     step: {
         width: 36,
         height: 36,
@@ -233,23 +332,15 @@ const styles = StyleSheet.create({
         fontWeight: "600",
         color: "#666",
     },
-
-    activeStep: {
-        backgroundColor: "#1E90FF",
-        color: "#fff",
-    },
-
     line: {
         height: 2,
         width: 40,
         backgroundColor: "#ccc",
         marginHorizontal: 8,
     },
-
     stepLabelContainer: {
         marginTop: 4,
     },
-
     stepLabel: {
         fontSize: 12,
         color: "#888",
@@ -265,7 +356,6 @@ const styles = StyleSheet.create({
         height: 200,
         alignSelf: "center",
     },
-
     inputContainer: {
         flexDirection: "row",
         alignItems: "center",
@@ -283,6 +373,7 @@ const styles = StyleSheet.create({
     errorText: {
         fontSize: 14,
         textAlign: "center",
+        marginBottom: 10,
     },
     actionBtn: {
         paddingVertical: 12,
@@ -306,7 +397,6 @@ const styles = StyleSheet.create({
     inputIcon: {
         marginRight: 10,
     },
-
 });
 
 export default ForgotPasswordScreen;

@@ -8,6 +8,8 @@ import {
   Animated,
   SafeAreaView,
   Alert,
+  Platform,
+  StatusBar,
 } from "react-native";
 import { NavigationProp, RouteProp, useRoute } from "@react-navigation/native";
 import { RootStackParamList } from "../RootNavigator";
@@ -44,13 +46,13 @@ const PassCodeLoginScreen = ({ navigation }: { navigation: NavigationProps }) =>
         aadhar,
         passcode,
       });
-  
+
       if (response.data.status === "OK") {
         const { token, role, firstName, lastName } = response.data;
-  
+
         // Save token locally (e.g., AsyncStorage in React Native)
         await AsyncStorage.setItem('authToken', token);
-  
+
         // Navigate to the role-based screen
         if (role === "Worker") {
           await AsyncStorage.setItem("workerName", `${firstName ?? ""} ${lastName ?? ""}`.trim());
@@ -64,11 +66,11 @@ const PassCodeLoginScreen = ({ navigation }: { navigation: NavigationProps }) =>
         } else {
           Alert.alert("Unknown role detected");
         }
-  
+
       } else {
         console.warn("Unexpected response:", response.data);
       }
-  
+
     } catch (error: any) {
       if (error.response && error.response.data?.error) {
         triggerShake();
@@ -107,56 +109,62 @@ const PassCodeLoginScreen = ({ navigation }: { navigation: NavigationProps }) =>
   const keypadLayout = [["1", "2", "3"], ["4", "5", "6"], ["7", "8", "9"], ["", "0", "←"]];
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: theme.background }]}>
-      <Header title="" />
+    <SafeAreaView style={[styles.safeArea, { backgroundColor: theme.background }]}>
+      <Header title="Verify Aadhar" />
 
-      <View style={styles.topContainer}>
-        <Text style={[styles.promptText, { color: theme.text }]}>Enter Passcode</Text>
-        <Animated.View style={[styles.dotsContainer, { transform: [{ translateX: errorShake }] }]}>
-          {[0, 1, 2, 3].map(index => (
-            <View
-              key={index}
-              style={[
-                styles.dot,
-                { backgroundColor: index < passcode.length ? theme.primary : "#ccc" },
-              ]}
-            />
+      <View style={[styles.container, { backgroundColor: theme.background }]}>
+        <View style={styles.topContainer}>
+          <Text style={[styles.promptText, { color: theme.text }]}>Enter Passcode</Text>
+          <Animated.View style={[styles.dotsContainer, { transform: [{ translateX: errorShake }] }]}>
+            {[0, 1, 2, 3].map(index => (
+              <View
+                key={index}
+                style={[
+                  styles.dot,
+                  { backgroundColor: index < passcode.length ? theme.primary : "#ccc" },
+                ]}
+              />
+            ))}
+          </Animated.View>
+        </View>
+
+        <View style={styles.keypadContainer}>
+          {keypadLayout.map((row, rowIndex) => (
+            <View key={rowIndex} style={styles.keypadRow}>
+              {row.map((key, index) => {
+                const isHighlighted = pressedKey === key;
+                return (
+                  <TouchableOpacity
+                    key={index}
+                    style={[
+                      styles.keypadKey,
+                      isHighlighted && { backgroundColor: theme.primary, borderRadius: 12 },
+                    ]}
+                    onPress={() => {
+                      if (key === "←") handleBackspace();
+                      else if (key !== "") handleKeyPress(key);
+                    }}
+                    disabled={key === ""}
+                  >
+                    <Text style={[styles.keyText, { color: isHighlighted ? "#fff" : theme.text }]}>
+                      {key}
+                    </Text>
+                  </TouchableOpacity>
+                );
+              })}
+            </View>
           ))}
-        </Animated.View>
-      </View>
-
-      <View style={styles.keypadContainer}>
-        {keypadLayout.map((row, rowIndex) => (
-          <View key={rowIndex} style={styles.keypadRow}>
-            {row.map((key, index) => {
-              const isHighlighted = pressedKey === key;
-              return (
-                <TouchableOpacity
-                  key={index}
-                  style={[
-                    styles.keypadKey,
-                    isHighlighted && { backgroundColor: theme.primary, borderRadius: 12 },
-                  ]}
-                  onPress={() => {
-                    if (key === "←") handleBackspace();
-                    else if (key !== "") handleKeyPress(key);
-                  }}
-                  disabled={key === ""}
-                >
-                  <Text style={[styles.keyText, { color: isHighlighted ? "#fff" : theme.text }]}>
-                    {key}
-                  </Text>
-                </TouchableOpacity>
-              );
-            })}
-          </View>
-        ))}
+        </View>
       </View>
     </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
+  },
   container: {
     flex: 1,
     justifyContent: "space-between",
