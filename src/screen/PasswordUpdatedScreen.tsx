@@ -33,7 +33,7 @@ const PasswordUpdatedScreen = () => {
                     loop={false}
                     style={styles.animation}
                 />
-                <Text style={[styles.successText, { color: isDarkMode ? theme.text : "#2C786C" }]}>
+                <Text style={[styles.successText, { color: isDarkMode ? theme.textColor : "#555" }]}>
                     Password Updated Successfully!
                 </Text>
                 <Text style={[styles.subText, { color: isDarkMode ? theme.textColor : "#555" }]}>
@@ -42,7 +42,7 @@ const PasswordUpdatedScreen = () => {
 
                 {/* Manual navigation button */}
                 <TouchableOpacity
-                    style={[styles.button, { backgroundColor: isDarkMode ? theme.primary : "#2C786C" }]}
+                    style={[styles.button, { backgroundColor: theme.primary }]}
                     onPress={() => navigation.navigate("LoginScreen")}
                 >
                     <Text style={styles.buttonText}>Go to Login</Text>

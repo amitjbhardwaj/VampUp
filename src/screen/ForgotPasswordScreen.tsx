@@ -165,7 +165,7 @@ const ForgotPasswordScreen = () => {
                             <View style={styles.stepLabelContainer}>
                                 <Text style={styles.stepLabel}>{s.charAt(0).toUpperCase() + s.slice(1)}</Text>
                             </View>
-                            {index < 2 && <View style={styles.line} />}
+                            {index < 3 && <View style={styles.line} />}
                         </View>
                     ))}
                 </View>
