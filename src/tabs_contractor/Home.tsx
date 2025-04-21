@@ -1,12 +1,17 @@
 import React, { useState, useEffect } from "react";
 import {
-    View, Text, StyleSheet, TouchableOpacity, ScrollView, RefreshControl
+    View,
+    Text,
+    StyleSheet,
+    TouchableOpacity,
+    ScrollView,
+    RefreshControl,
 } from "react-native";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import { RootStackParamList } from "../RootNavigator";
 import { useTheme } from "../context/ThemeContext";
-import AsyncStorage from '@react-native-async-storage/async-storage'; // Import AsyncStorage
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 type HomeNavigationProp = NavigationProp<RootStackParamList>;
 
@@ -20,7 +25,6 @@ const Home = () => {
     const { theme } = useTheme();
     const navigation = useNavigation<HomeNavigationProp>();
 
-    // States to hold project counts
     const [allProjectsCount, setAllProjectsCount] = useState<number | null>(null);
     const [activeProjectsCount, setActiveProjectsCount] = useState<number | null>(null);
     const [onHoldProjectsCount, setOnHoldProjectsCount] = useState<number | null>(null);
@@ -29,8 +33,6 @@ const Home = () => {
     const [isRefreshing, setIsRefreshing] = useState(false);
     const [initiatePaymentProjectCount, setInitiatePaymentProjectCount] = useState<number | null>(null);
 
-
-    // Fetch contractor name and project counts
     const fetchContractorNameAndProjectCounts = async () => {
         try {
             const storedName = await AsyncStorage.getItem("contractorName");
@@ -38,38 +40,29 @@ const Home = () => {
             if (storedName) {
                 setContractorName(storedName);
 
-                // Fetch all projects count
-                const allProjectsResponse = await fetch(`http://192.168.129.119:5001/get-projects-by-contractor?contractor_name=${storedName}`);
-                const allProjectsData = await allProjectsResponse.json();
-                setAllProjectsCount(allProjectsData.status === 'OK' ? allProjectsData.data.length : 0);
+                const fetchCount = async (status?: string) => {
+                    const url = `http://192.168.129.119:5001/get-projects-by-contractor?contractor_name=${storedName}${status ? `&status=${status}` : ""}`;
+                    const response = await fetch(url);
+                    const data = await response.json();
+                    return data.status === "OK" ? data.data : [];
+                };
 
-                // Fetch active projects count
-                const activeProjectsResponse = await fetch(`http://192.168.129.119:5001/get-projects-by-contractor?contractor_name=${storedName}&status=In-Progress`);
-                const activeProjectsData = await activeProjectsResponse.json();
-                setActiveProjectsCount(activeProjectsData.status === 'OK' ? activeProjectsData.data.length : 0);
+                const allProjects = await fetchCount();
+                setAllProjectsCount(allProjects.length);
 
-                // Fetch on hold projects count
-                const onHoldProjectsResponse = await fetch(`http://192.168.129.119:5001/get-projects-by-contractor?contractor_name=${storedName}&status=On-Hold`);
-                const onHoldProjectsData = await onHoldProjectsResponse.json();
-                setOnHoldProjectsCount(onHoldProjectsData.status === 'OK' ? onHoldProjectsData.data.length : 0);
+                const activeProjects = await fetchCount("In-Progress");
+                setActiveProjectsCount(activeProjects.length);
 
-                // Fetch completed projects count
-                const completedProjectsResponse = await fetch(`http://192.168.129.119:5001/get-projects-by-contractor?contractor_name=${storedName}&status=Completed`);
-                const completedProjectsData = await completedProjectsResponse.json();
-                setCompletedProjectsCount(completedProjectsData.status === 'OK' ? completedProjectsData.data.length : 0);
+                const onHoldProjects = await fetchCount("On-Hold");
+                setOnHoldProjectsCount(onHoldProjects.length);
 
-                // Fetch Initiate Payment count (if needed)
-                const initiatePaymentResponse = await fetch(`http://192.168.129.119:5001/get-projects-by-contractor?contractor_name=${storedName}&status=Completed`);
-                const initiatePaymentData = await initiatePaymentResponse.json();
-                if (initiatePaymentData.status === 'OK') {
-                    const initiateProjects = (initiatePaymentData.data as Project[]).filter(
-                        (project) => project.project_status === "Approved"
-                    );
-                    setInitiatePaymentProjectCount(initiateProjects.length);
-                } else {
-                    setInitiatePaymentProjectCount(0);
-                }
+                const completedProjects = await fetchCount("Completed");
+                setCompletedProjectsCount(completedProjects.length);
 
+                const approvedProjects = (completedProjects as Project[]).filter(
+                    (p) => p.project_status === "Approved"
+                );
+                setInitiatePaymentProjectCount(approvedProjects.length);
             } else {
                 setAllProjectsCount(0);
                 setActiveProjectsCount(0);
@@ -93,92 +86,102 @@ const Home = () => {
 
     const onRefresh = async () => {
         setIsRefreshing(true);
-        await fetchContractorNameAndProjectCounts();
-        setIsRefreshing(false);
+        try {
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            await fetchContractorNameAndProjectCounts();
+        } catch (error) {
+            console.error("Refresh failed", error);
+        } finally {
+            setIsRefreshing(false);
+        }
     };
 
     return (
-        <ScrollView
-            contentContainerStyle={[styles.screen, { backgroundColor: theme.background }]}
-            refreshControl={
-                <RefreshControl refreshing={isRefreshing} onRefresh={onRefresh} />
-            }
-        >
-            <View style={styles.iconContainer}>
-                {/* First Row: "All Projects" and "Active Projects" */}
-                <View style={styles.iconRow}>
-                    <View style={styles.iconItem}>
-                        <TouchableOpacity onPress={() => navigation.navigate('ContractorAllWorkScreen')}>
-                            <Ionicons name="list-circle" size={50} color={theme.text} />
-                            {allProjectsCount !== null && allProjectsCount > 0 && (
-                                <View style={styles.notificationBadge}>
-                                    <Text style={styles.notificationText}>{allProjectsCount}</Text>
-                                </View>
-                            )}
-                        </TouchableOpacity>
-                        <Text style={{ color: theme.text }}>All Projects</Text>
+        <View style={{ flex: 1, backgroundColor: theme.background }}>
+            <ScrollView
+                style={{ flex: 1 }}
+                contentContainerStyle={{ flexGrow: 1, justifyContent: "center", alignItems: "center" }}
+                refreshControl={
+                    <RefreshControl refreshing={isRefreshing} onRefresh={onRefresh} />
+                }
+            >
+                {/* Now put your UI content here */}
+                <View style={styles.iconContainer}>
+                    {/* Row 1 */}
+                    <View style={styles.iconRow}>
+                        <View style={styles.iconItem}>
+                            <TouchableOpacity onPress={() => navigation.navigate("ContractorAllWorkScreen")}>
+                                <Ionicons name="list-circle" size={50} color={theme.text} />
+                                {allProjectsCount !== null && allProjectsCount > 0 && (
+                                    <View style={styles.notificationBadge}>
+                                        <Text style={styles.notificationText}>{allProjectsCount}</Text>
+                                    </View>
+                                )}
+                            </TouchableOpacity>
+                            <Text style={{ color: theme.text }}>All Projects</Text>
+                        </View>
+                        <View style={styles.iconItem}>
+                            <TouchableOpacity onPress={() => navigation.navigate("ContractorActiveWorkScreen")}>
+                                <Ionicons name="briefcase" size={50} color={theme.text} />
+                                {activeProjectsCount !== null && activeProjectsCount > 0 && (
+                                    <View style={styles.notificationBadge}>
+                                        <Text style={styles.notificationText}>{activeProjectsCount}</Text>
+                                    </View>
+                                )}
+                            </TouchableOpacity>
+                            <Text style={{ color: theme.text }}>Active Projects</Text>
+                        </View>
                     </View>
-                    <View style={styles.iconItem}>
-                        <TouchableOpacity onPress={() => navigation.navigate('ContractorActiveWorkScreen')}>
-                            <Ionicons name="briefcase" size={50} color={theme.text} />
-                            {activeProjectsCount !== null && activeProjectsCount > 0 && (
-                                <View style={styles.notificationBadge}>
-                                    <Text style={styles.notificationText}>{activeProjectsCount}</Text>
-                                </View>
-                            )}
-                        </TouchableOpacity>
-                        <Text style={{ color: theme.text }}>Active Projects</Text>
-                    </View>
-                </View>
 
-                {/* Second Row: "On-board Workers" and "On Hold Projects" */}
-                <View style={styles.iconRow}>
-                    <View style={styles.iconItem}>
-                        <TouchableOpacity onPress={() => navigation.navigate('ContractorOnBoardWorkersScreen')}>
-                            <Ionicons name="people" size={50} color={theme.text} />
-                        </TouchableOpacity>
-                        <Text style={{ color: theme.text }}>On-board Workers</Text>
+                    {/* Row 2 */}
+                    <View style={styles.iconRow}>
+                        <View style={styles.iconItem}>
+                            <TouchableOpacity onPress={() => navigation.navigate("ContractorOnBoardWorkersScreen")}>
+                                <Ionicons name="people" size={50} color={theme.text} />
+                            </TouchableOpacity>
+                            <Text style={{ color: theme.text }}>On-board Workers</Text>
+                        </View>
+                        <View style={styles.iconItem}>
+                            <TouchableOpacity onPress={() => navigation.navigate("ContractorOnHoldProjectsScreen")}>
+                                <Ionicons name="pause-circle" size={50} color={theme.text} />
+                                {onHoldProjectsCount !== null && onHoldProjectsCount > 0 && (
+                                    <View style={styles.notificationBadge}>
+                                        <Text style={styles.notificationText}>{onHoldProjectsCount}</Text>
+                                    </View>
+                                )}
+                            </TouchableOpacity>
+                            <Text style={{ color: theme.text }}>On Hold Projects</Text>
+                        </View>
                     </View>
-                    <View style={styles.iconItem}>
-                        <TouchableOpacity onPress={() => navigation.navigate('ContractorOnHoldProjectsScreen')}>
-                            <Ionicons name="pause-circle" size={50} color={theme.text} />
-                            {onHoldProjectsCount !== null && onHoldProjectsCount > 0 && (
-                                <View style={styles.notificationBadge}>
-                                    <Text style={styles.notificationText}>{onHoldProjectsCount}</Text>
-                                </View>
-                            )}
-                        </TouchableOpacity>
-                        <Text style={{ color: theme.text }}>On Hold Projects</Text>
-                    </View>
-                </View>
 
-                {/* Third Row: "Completed Projects" and "Initiate Payment" */}
-                <View style={styles.iconRow}>
-                    <View style={styles.iconItem}>
-                        <TouchableOpacity onPress={() => navigation.navigate('ContractorCompletedProjectsScreen')}>
-                            <Ionicons name="checkmark-circle" size={50} color={theme.text} />
-                            {completedProjectsCount !== null && completedProjectsCount > 0 && (
-                                <View style={styles.notificationBadge}>
-                                    <Text style={styles.notificationText}>{completedProjectsCount}</Text>
-                                </View>
-                            )}
-                        </TouchableOpacity>
-                        <Text style={{ color: theme.text }}>Completed Projects</Text>
-                    </View>
-                    <View style={styles.iconItem}>
-                        <TouchableOpacity onPress={() => navigation.navigate('ContractorInitiatePaymentScreen')}>
-                            <Ionicons name="card" size={50} color={theme.text} />
-                            {initiatePaymentProjectCount !== null && initiatePaymentProjectCount > 0 && (
-                                <View style={styles.notificationBadge}>
-                                    <Text style={styles.notificationText}>{initiatePaymentProjectCount}</Text>
-                                </View>
-                            )}
-                        </TouchableOpacity>
-                        <Text style={{ color: theme.text }}>Initiate Payment</Text>
+                    {/* Row 3 */}
+                    <View style={styles.iconRow}>
+                        <View style={styles.iconItem}>
+                            <TouchableOpacity onPress={() => navigation.navigate("ContractorCompletedProjectsScreen")}>
+                                <Ionicons name="checkmark-circle" size={50} color={theme.text} />
+                                {completedProjectsCount !== null && completedProjectsCount > 0 && (
+                                    <View style={styles.notificationBadge}>
+                                        <Text style={styles.notificationText}>{completedProjectsCount}</Text>
+                                    </View>
+                                )}
+                            </TouchableOpacity>
+                            <Text style={{ color: theme.text }}>Completed Projects</Text>
+                        </View>
+                        <View style={styles.iconItem}>
+                            <TouchableOpacity onPress={() => navigation.navigate("ContractorInitiatePaymentScreen")}>
+                                <Ionicons name="card" size={50} color={theme.text} />
+                                {initiatePaymentProjectCount !== null && initiatePaymentProjectCount > 0 && (
+                                    <View style={styles.notificationBadge}>
+                                        <Text style={styles.notificationText}>{initiatePaymentProjectCount}</Text>
+                                    </View>
+                                )}
+                            </TouchableOpacity>
+                            <Text style={{ color: theme.text }}>Initiate Payment</Text>
+                        </View>
                     </View>
                 </View>
-            </View>
-        </ScrollView>
+            </ScrollView>
+        </View>
     );
 };
 
@@ -187,10 +190,12 @@ const styles = StyleSheet.create({
         flexGrow: 1,
         justifyContent: "center",
         alignItems: "center",
+        paddingBottom: 20,
     },
     iconContainer: {
         alignItems: "center",
         marginBottom: 20,
+        width: "100%",
     },
     iconRow: {
         flexDirection: "row",

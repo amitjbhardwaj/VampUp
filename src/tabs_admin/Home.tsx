@@ -67,7 +67,7 @@ const Home = () => {
                     const filteredProjects = completedProjectsData.data.filter((project: Project) =>
                         project.project_status !== 'Approved' && project.project_status !== 'Rejected'
                     );
-                    setCompletedProjectsCount(filteredProjects);
+                    setCompletedProjectsCount(filteredProjects.length);
                 } else {
                     setCompletedProjectsCount(0);
                 }
@@ -140,11 +140,17 @@ const Home = () => {
 
     return (
         <ScrollView
-            contentContainerStyle={[styles.screen, { backgroundColor: theme.background }]}
+            style={{ flex: 1 }}
+            contentContainerStyle={{
+                flexGrow: 1,
+                paddingVertical: 20,
+                backgroundColor: theme.background,
+            }}
             refreshControl={
                 <RefreshControl refreshing={isRefreshing} onRefresh={onRefresh} />
             }
         >
+
             <View style={styles.iconContainer}>
                 {/* First Row */}
                 <View style={styles.iconRow}>
@@ -253,14 +259,16 @@ const Home = () => {
                         <Text style={{ color: theme.text }}>Rejected Projects</Text>
                     </View>
                 </View>
-                {/* Fifth Row - Allocate Funds */}
                 <View style={styles.iconRow}>
-                    <View style={[styles.iconItem, styles.lastRowIcon]}>
+                    <View style={styles.iconItem}>
                         <TouchableOpacity onPress={() => navigation.navigate('AdminAllocateFundsScreen')}>
                             <Ionicons name="cash" size={50} color={theme.text} />
                         </TouchableOpacity>
                         <Text style={{ color: theme.text }}>Allocate Funds</Text>
                     </View>
+
+                    {/* Placeholder to balance the row */}
+                    <View style={styles.iconItem} />
                 </View>
             </View>
         </ScrollView>
@@ -270,12 +278,12 @@ const Home = () => {
 const styles = StyleSheet.create({
     screen: {
         flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
+
     },
     iconContainer: {
         alignItems: "center",
         marginBottom: 20,
+        paddingBottom: 100, // Give room to scroll
     },
     iconRow: {
         flexDirection: "row",

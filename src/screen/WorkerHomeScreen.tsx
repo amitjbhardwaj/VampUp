@@ -43,7 +43,11 @@ const withSwipe = (Component: React.ComponentType<any>, tabName: keyof TabParamL
     };
 
     return (
-      <PanGestureHandler onEnded={handleGesture}>
+      <PanGestureHandler
+        onEnded={handleGesture}
+        activeOffsetX={[-20, 20]} // Only trigger horizontally
+        activeOffsetY={[-9999, 9999]} // Allow vertical movement (doesn't block)
+      >
         <View style={{ flex: 1 }}>
           <Component {...props} />
         </View>
