@@ -63,11 +63,25 @@ const AdminAddNewProjectScreen = () => {
         axios.post("http://192.168.129.119:5001/create-project", projectData)
             .then(res => {
                 if (res.data.status === "OK") {
-                    Alert.alert("Success", "Project creation successfully");
-                    navigation.navigate("AdminHomeScreen");
+                    Alert.alert(
+                        "Success",
+                        "Project created successfully. Would you like to allocate this project to a contractor?",
+                        [
+                            {
+                                text: "No, later",
+                                onPress: () => navigation.navigate("AdminHomeScreen"),
+                                style: "cancel"
+                            },
+                            {
+                                text: "Yes",
+                                onPress: () => navigation.navigate("AdminAllocateProjectScreen")
+                            }
+                        ]
+                    );
                 } else {
                     Alert.alert("Project creation failed");
                 }
+
             })
             .catch(e => {
                 ToastAndroid.show("Error: " + e.message, ToastAndroid.SHORT);

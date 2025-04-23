@@ -1,10 +1,21 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet, ScrollView, ActivityIndicator, TouchableOpacity, Alert, SafeAreaView, Platform, StatusBar } from "react-native";
+import {
+    View,
+    Text,
+    StyleSheet,
+    ScrollView,
+    ActivityIndicator,
+    TouchableOpacity,
+    Alert,
+    SafeAreaView,
+    Platform,
+    StatusBar,
+    TextInput,
+} from "react-native";
 import { useTheme } from "../../context/ThemeContext";
-import { NavigationProp, useNavigation, useRoute } from "@react-navigation/native";
+import { NavigationProp, useNavigation } from "@react-navigation/native";
 import { RootStackParamList } from "../../RootNavigator";
-import axios from 'axios';
-import Icon from "react-native-vector-icons/MaterialCommunityIcons";
+import axios from "axios";
 import Header from "../Header";
 
 type AdminAllocateProjectScreenNavigationProp = NavigationProp<RootStackParamList, "AdminAllocateProjectScreen">;
@@ -29,6 +40,7 @@ const AdminAllocateProjectScreen = () => {
 
     const [projects, setProjects] = useState<Project[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
+    const [searchQuery, setSearchQuery] = useState<string>("");
 
     useEffect(() => {
         fetchProjects();
@@ -65,7 +77,6 @@ const AdminAllocateProjectScreen = () => {
                         try {
                             const response = await axios.delete(`http://192.168.129.119:5001/delete-project/${projectId}`);
                             if (response.data.status === "OK") {
-                                // Remove deleted project from state
                                 setProjects(prevProjects => prevProjects.filter(p => p._id !== projectId));
                                 console.log(`Project ${projectId} deleted successfully`);
                             } else {
@@ -78,19 +89,39 @@ const AdminAllocateProjectScreen = () => {
                 },
             ]
         );
-
     };
 
+    const filteredProjects = projects.filter((project) =>
+        project.project_description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        project.project_Id.toLowerCase().includes(searchQuery.toLowerCase())
+    );
 
     return (
         <SafeAreaView style={[styles.safeArea, { backgroundColor: theme.background }]}>
             <Header title="Allocate Project" />
-            {/* Scrollable Content */}
+    
+            <View style={{ paddingHorizontal: 20 }}>
+                <TextInput
+                    style={[
+                        styles.searchInput,
+                        {
+                            backgroundColor: theme.card,
+                            color: theme.text,
+                            borderColor: theme.text,
+                        },
+                    ]}
+                    placeholder="Search by description or ID..."
+                    placeholderTextColor={theme.mode === "dark" ? "#aaa" : "#666"}
+                    value={searchQuery}
+                    onChangeText={setSearchQuery}
+                />
+            </View>
+    
             <ScrollView contentContainerStyle={styles.scrollContainer}>
                 {loading ? (
                     <ActivityIndicator size="large" color={theme.primary} />
                 ) : (
-                    projects.map((project) => (
+                    filteredProjects.map((project) => (
                         <View key={project._id} style={[styles.projectCard, { backgroundColor: theme.card, shadowColor: theme.text }]}>
                             <Text style={[styles.projectTitle, { color: theme.text }]}>{project.project_description}</Text>
                             <Text style={[styles.projectDetail, { color: theme.text }]}>ID: {project.project_Id}</Text>
@@ -99,13 +130,13 @@ const AdminAllocateProjectScreen = () => {
                             <Text style={[styles.projectDetail, { color: theme.text }]}>End Date: {project.project_end_date}</Text>
                             <Text style={[styles.projectDetail, { color: theme.text }]}>Status: {project.status}</Text>
                             <Text style={[styles.projectDetail, { color: theme.text }]}>Completion: {project.completion_percentage}%</Text>
-                            {/* Displaying "Assign To" field */}
                             {project.contractor_name && (
                                 <Text style={[styles.projectDetail, { color: theme.text }]}>Assigned To: {project.contractor_name}</Text>
                             )}
+    
                             <View style={styles.buttonRow}>
                                 <TouchableOpacity
-                                    style={[styles.actionButton, { backgroundColor: theme.mode === 'dark' ? "#333" : "#000" }]}
+                                    style={[styles.actionButton, { backgroundColor: theme.primary }]}
                                     onPress={() => handleFindContractor(project._id)}
                                     activeOpacity={0.8}
                                 >
@@ -113,42 +144,40 @@ const AdminAllocateProjectScreen = () => {
                                         {project.contractor_name ? "Re-Allocate Project" : "Allocate Project"}
                                     </Text>
                                 </TouchableOpacity>
-
+    
                                 <TouchableOpacity
-                                    style={[styles.actionButton, { backgroundColor: "#e74c3c" }]} // Red color for delete
+                                    style={[styles.actionButton, { backgroundColor: theme.secondary }]}
                                     onPress={() => handleDeleteProject(project._id)}
                                     activeOpacity={0.8}
                                 >
                                     <Text style={styles.buttonText}>Delete</Text>
                                 </TouchableOpacity>
                             </View>
-
                         </View>
                     ))
                 )}
             </ScrollView>
         </SafeAreaView>
     );
+    
 };
 
 const styles = StyleSheet.create({
-    container: {
+    safeArea: {
         flex: 1,
-    },
-    header: {
-        paddingTop: 40, // For status bar
-        paddingBottom: 10,
-        alignItems: 'center',
-        borderBottomWidth: 1,
-        borderBottomColor: '#ccc',
+        paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
     },
     scrollContainer: {
         padding: 20,
-        paddingBottom: 100, // Leave space for Back button
+        paddingBottom: 100,
     },
-    title: {
-        fontSize: 24,
-        fontWeight: "bold",
+    searchInput: {
+        height: 45,
+        borderWidth: 1,
+        borderRadius: 10,
+        paddingHorizontal: 15,
+        marginBottom: 15,
+        fontSize: 14,
     },
     projectCard: {
         padding: 18,
@@ -170,49 +199,22 @@ const styles = StyleSheet.create({
     },
     buttonRow: {
         flexDirection: 'row',
-        justifyContent: 'space-between', // Ensures buttons are spaced evenly
+        justifyContent: 'space-between',
         marginTop: 15,
     },
     actionButton: {
-        flex: 0.45, // Adjusted for better button width balance
+        flex: 0.45,
         paddingVertical: 12,
         borderRadius: 8,
         alignItems: 'center',
         elevation: 2,
-        marginHorizontal: 5, // Add some space between the buttons
+        marginHorizontal: 5,
     },
     buttonText: {
         color: '#fff',
         fontWeight: 'bold',
         fontSize: 14,
     },
-    backButton1: {
-        padding: 14,
-        borderRadius: 10,
-        marginHorizontal: 20,
-        marginBottom: 20,
-        alignItems: 'center',
-    },
-    safeArea: {
-        flex: 1,
-        paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,
-    },
-    headerContainer: {
-        flexDirection: "row",
-        alignItems: "center", // Align items vertically in the center
-        paddingHorizontal: 16,
-        paddingBottom: 10,
-    },
-    backButton: {
-        marginRight: 10, // Space between the back button and the title
-        padding: 8,
-    },
-    screenTitle: {
-        fontSize: 20,
-        fontWeight: "bold",
-        marginLeft: 5, // Slight margin to ensure the text doesn't touch the back button
-    },
 });
-
 
 export default AdminAllocateProjectScreen;

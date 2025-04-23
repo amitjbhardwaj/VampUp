@@ -1,14 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet, ScrollView, ActivityIndicator, Alert, Linking, TouchableOpacity, SafeAreaView, Platform, StatusBar } from "react-native";
-import { useTheme } from "../../context/ThemeContext"; // Import your theme context
+import { useTheme } from "../../context/ThemeContext";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import FontAwesome from 'react-native-vector-icons/FontAwesome'; // Import Icon component from react-native-vector-icons
+import FontAwesome from 'react-native-vector-icons/FontAwesome'; 
 import { useNavigation } from "@react-navigation/native";
 import Header from "../Header";
+import axios from "axios";
 
 
 const AdminOngoingProjectsScreen = () => {
-    const { theme } = useTheme(); // Get theme for dark mode handling
+    const { theme } = useTheme();
     const navigation = useNavigation();
     const [projects, setProjects] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -35,7 +36,6 @@ const AdminOngoingProjectsScreen = () => {
 
         setFunds(fundMap);
     };
-
 
     const fetchOngoingProjects = async () => {
         try {
@@ -70,14 +70,14 @@ const AdminOngoingProjectsScreen = () => {
     const handleMarkCompleted = (projectId: string) => {
         Alert.alert("Confirm", "Are you sure you want to mark this project as completed?", [
             { text: "Cancel", style: "cancel" },
-            { text: "OK", onPress: () => updateProjectStatus(projectId, "Completed") },
+            { text: "OK", onPress: () => markProjectCompleted(projectId, "Completed", 100) },
         ]);
     };
 
     const handleOnHold = (projectId: string) => {
         Alert.alert("Confirm", "Are you sure you want to put this project on hold?", [
             { text: "Cancel", style: "cancel" },
-            { text: "OK", onPress: () => updateProjectStatus(projectId, "On-Hold") },
+            { text: "OK", onPress: () => putProjectOnHold(projectId, "On-Hold") },
         ]);
     };
 
@@ -94,47 +94,67 @@ const AdminOngoingProjectsScreen = () => {
         );
     };
 
-    const updateProjectStatus = async (projectId: string, newStatus: string) => {
+    const markProjectCompleted = async (projectId: string, newStatus: string, completionPercentage?: number) => {
         try {
-            // Make API call to update the project status
-            const response = await fetch(`http://192.168.129.119:5001/update-project-status`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ project_Id: projectId, status: newStatus }),
-            });
-            const data = await response.json();
-            if (data.status === "OK") {
-                fetchOngoingProjects(); // Reload the project list
+
+            const response = await axios.put(
+                `http://192.168.129.119:5001/update-project-completion/${projectId}`,
+                {
+                    completion_percentage: completionPercentage,
+                    status: newStatus
+                }
+            );
+
+            if (response.status === 200) {
+                Alert.alert("Project updated successfully");
+
+
             } else {
-                setError("Failed to update project status.");
+                Alert.alert("Failed to update project. Please try again.");
+            }
+        } catch (error) {
+            console.error("Error updating project:", error);
+            Alert.alert("An error occurred while updating. Please try again.");
+        }
+    };
+
+    const putProjectOnHold = async (projectId: string, newStatus: string) => {
+
+        try {
+            const response = await axios.put(
+                `http://192.168.129.119:5001/update-project-on-hold/${projectId}`,
+                {
+                    status: newStatus,
+                    project_end_date: "--",
+                    reason_on_hold: 'Project has been put on-hold',
+                }
+            );
+
+            if (response.status === 200) {
+                Alert.alert("Project marked as On-Hold successfully");
+                fetchOngoingProjects();
+            } else {
+                Alert.alert("Failed to update project status. Please try again.");
             }
         } catch (error) {
             console.error("Error updating project status:", error);
-            setError("Failed to update project status.");
+            Alert.alert("An error occurred while updating. Please try again.");
+        } finally {
+            setLoading(false);
         }
     };
 
     const deleteProject = async (projectId: string) => {
         try {
-            // Make API call to delete the project
-            const response = await fetch(`http://192.168.129.119:5001/delete-project`, {
-                method: "DELETE",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ project_Id: projectId }),
-            });
-            const data = await response.json();
-            if (data.status === "OK") {
-                fetchOngoingProjects(); // Reload the project list
+            const response = await axios.delete(`http://192.168.129.119:5001/delete-project/${projectId}`);
+            if (response.data.status === "OK") {
+                Alert.alert(`Project deleted successfully`);
+                fetchOngoingProjects();
             } else {
-                setError("Failed to delete project.");
+                console.log("Error deleting project", response.data);
             }
         } catch (error) {
-            console.error("Error deleting project:", error);
-            setError("Failed to delete project.");
+            console.log("Error deleting project:", error);
         }
     };
 
@@ -156,13 +176,13 @@ const AdminOngoingProjectsScreen = () => {
                 </Text>
                 {/* Buttons with custom padding */}
                 <View style={styles.buttonContainer}>
-                    <TouchableOpacity style={styles.button} onPress={() => handleMarkCompleted(project.project_Id)}>
+                    <TouchableOpacity style={styles.button} onPress={() => handleMarkCompleted(project._id)}>
                         <Text style={styles.buttonText}>Mark Completed</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity style={styles.button} onPress={() => handleOnHold(project.project_Id)}>
+                    <TouchableOpacity style={styles.button} onPress={() => handleOnHold(project._id)}>
                         <Text style={styles.buttonText}>On-Hold</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity style={styles.button} onPress={() => handleDelete(project.project_Id)}>
+                    <TouchableOpacity style={styles.button} onPress={() => handleDelete(project._id)}>
                         <Text style={styles.buttonText}>Delete</Text>
                     </TouchableOpacity>
                     <TouchableOpacity style={styles.button} onPress={() => handleCallContractor(project.contractor_phone)}>

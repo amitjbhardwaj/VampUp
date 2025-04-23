@@ -140,10 +140,6 @@ const ContractorOnHoldProjectsScreen = () => {
         }
     };
 
-    const handleBack = () => {
-        navigation.goBack();
-    };
-
     return (
         <SafeAreaView style={[styles.safeArea, { backgroundColor: theme.background }]}>
             <View style={styles.headerContainer}>

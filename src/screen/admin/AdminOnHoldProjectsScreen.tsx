@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet, ScrollView, ActivityIndicator, Alert, Linking, TouchableOpacity, SafeAreaView, Platform, StatusBar } from "react-native";
+import { View, Text, StyleSheet, ScrollView, ActivityIndicator, Alert, Linking, TouchableOpacity, SafeAreaView, Platform, StatusBar, Modal } from "react-native";
 import { useTheme } from "../../context/ThemeContext"; // Import your theme context
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import { useNavigation } from "@react-navigation/native";
 import Header from "../Header";
+import axios from "axios";
+import DatePicker from "react-native-date-picker";
 
 const AdminOnHoldProjectsScreen = () => {
     const { theme } = useTheme(); // Get theme for dark mode handling
@@ -14,6 +16,10 @@ const AdminOnHoldProjectsScreen = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [funds, setFunds] = useState<Record<string, number>>({});
+    const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
+    const [activateModalVisible, setActivateModalVisible] = useState<boolean>(false);
+    const [openEndDate, setOpenEndDate] = useState(false);
+    const [endDate, setEndDate] = useState<Date>(new Date()); // Store as Date object
 
     const fetchFundsForProjects = async (projects: any[]) => {
         const fundMap: Record<string, number> = {};
@@ -66,18 +72,10 @@ const AdminOnHoldProjectsScreen = () => {
         fetchOnHoldProjects();
     }, []);
 
-    const handleMarkCompleted = (projectId: string) => {
-        Alert.alert("Confirm", "Are you sure you want to mark this project as completed?", [
-            { text: "Cancel", style: "cancel" },
-            { text: "OK", onPress: () => updateProjectStatus(projectId, "Completed") },
-        ]);
-    };
-
     const handleActive = (projectId: string) => {
-        Alert.alert("Confirm", "Are you sure you want to put this project in-progress?", [
-            { text: "Cancel", style: "cancel" },
-            { text: "OK", onPress: () => updateProjectStatus(projectId, "In-Progress") },
-        ]);
+        setSelectedProjectId(projectId);
+        setActivateModalVisible(true);
+        setOpenEndDate(true);
     };
 
     const handleDelete = (projectId: string) => {
@@ -93,47 +91,48 @@ const AdminOnHoldProjectsScreen = () => {
         );
     };
 
-    const updateProjectStatus = async (projectId: string, newStatus: string) => {
+    const handleConfirmActivate = async () => {
+        if (!selectedProjectId || !endDate) {
+            Alert.alert("Please enter a valid end date.");
+            return;
+        }
+
+        // Format the date to yyyy-mm-dd format
+        const formattedEndDate = endDate.toISOString().split('T')[0]; // "yyyy-mm-dd"
+
         try {
-            // Make API call to update the project status
-            const response = await fetch(`http://192.168.129.119:5001/update-project-status`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ project_Id: projectId, status: newStatus }),
-            });
-            const data = await response.json();
-            if (data.status === "OK") {
-                fetchOnHoldProjects(); // Reload the project list
+            const response = await axios.put(
+                `http://192.168.129.119:5001/update-project-active/${selectedProjectId}`,
+                {
+                    project_end_date: formattedEndDate,
+                    status: "In-Progress",
+                    reason_on_hold: "N/A",
+                }
+            );
+
+            if (response.data.status === "OK") {
+                console.log(`Project ${selectedProjectId} activated!`);
+                fetchOnHoldProjects();
             } else {
-                setError("Failed to update project status.");
+                console.log("Error updating project:", response.data);
             }
         } catch (error) {
-            console.error("Error updating project status:", error);
-            setError("Failed to update project status.");
+            console.error("Error activating project:", error);
+        } finally {
+            setActivateModalVisible(false);
         }
     };
 
     const deleteProject = async (projectId: string) => {
         try {
-            // Make API call to delete the project
-            const response = await fetch(`http://192.168.129.119:5001/delete-project`, {
-                method: "DELETE",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ project_Id: projectId }),
-            });
-            const data = await response.json();
-            if (data.status === "OK") {
-                fetchOnHoldProjects(); // Reload the project list
+            const response = await axios.delete(`http://192.168.129.119:5001/delete-project/${projectId}`);
+            if (response.data.status === "OK") {
+                Alert.alert(`Project ${projectId} deleted successfully`);
             } else {
-                setError("Failed to delete project.");
+                console.log("Error deleting project", response.data);
             }
         } catch (error) {
-            console.error("Error deleting project:", error);
-            setError("Failed to delete project.");
+            console.log("Error deleting project:", error);
         }
     };
 
@@ -155,16 +154,18 @@ const AdminOnHoldProjectsScreen = () => {
                 </Text>
                 {/* Buttons with custom padding */}
                 <View style={styles.buttonContainer}>
-                    <TouchableOpacity style={styles.button} onPress={() => handleActive(project.project_Id)}>
+                    <TouchableOpacity style={styles.button} onPress={() => handleActive(project._id)}>
                         <Text style={styles.buttonText}>Active</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity style={styles.button} onPress={() => handleDelete(project.project_Id)}>
+                    <TouchableOpacity style={styles.button} onPress={() => handleDelete(project._id)}>
                         <Text style={styles.buttonText}>Delete</Text>
                     </TouchableOpacity>
                     <TouchableOpacity style={styles.button} onPress={() => handleCallContractor(project.contractor_phone)}>
                         <Text style={styles.buttonText}>Call Contractor</Text>
                     </TouchableOpacity>
                 </View>
+
+
             </View>
         );
     };
@@ -200,6 +201,42 @@ const AdminOnHoldProjectsScreen = () => {
                         No on-hold projects found.
                     </Text>
                 )}
+
+                {/* Modal */}
+                <Modal
+                    animationType="slide"
+                    transparent={true}
+                    visible={activateModalVisible}
+                    onRequestClose={() => setActivateModalVisible(false)}
+                >
+                    {/* Show DatePicker when openEndDate is true */}
+                    <DatePicker
+                        modal
+                        open={openEndDate}
+                        date={endDate}
+                        mode="date"
+                        onConfirm={(date) => {
+                            setEndDate(date);
+                            setOpenEndDate(false); // Close the DatePicker when a date is selected
+                        }}
+                        onCancel={() => setOpenEndDate(false)} // Close DatePicker if canceled
+                    />
+                    <View style={styles.modalContainer}>
+                        <View style={[styles.modalView, { backgroundColor: theme.card }]}>
+                            <Text style={[styles.modalTitle, { color: theme.text }]}>Confirm Activation</Text>
+                            {/* Display End Date in yyyy-mm-dd format */}
+                            <Text style={styles.dateText}>End Date: {endDate.toISOString().split('T')[0]}</Text>
+                            <View style={styles.buttonRow}>
+                                <TouchableOpacity style={[styles.modalButton, { backgroundColor: theme.primary }]} onPress={handleConfirmActivate}>
+                                    <Text style={styles.buttonText}>Confirm</Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity style={[styles.modalButton, { backgroundColor: theme.secondary }]} onPress={() => setActivateModalVisible(false)}>
+                                    <Text style={styles.buttonText}>Cancel</Text>
+                                </TouchableOpacity>
+                            </View>
+                        </View>
+                    </View>
+                </Modal>
 
             </ScrollView>
         </SafeAreaView>
@@ -278,6 +315,23 @@ const styles = StyleSheet.create({
     screenTitle: {
         fontSize: 20,
         fontWeight: "bold",
+    },
+    modalContainer: { flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'rgba(0,0,0,0.5)' },
+    modalView: { padding: 20, borderRadius: 10, width: '80%', alignItems: 'center' },
+    modalTitle: { fontSize: 18, fontWeight: 'bold', marginBottom: 10 },
+    input: { width: '100%', padding: 10, borderWidth: 1, borderRadius: 5, marginBottom: 10, textAlign: 'center' },
+    modalButton: { flex: 1, padding: 12, borderRadius: 5, marginHorizontal: 5, alignItems: 'center' },
+    dateText: {
+        fontSize: 16,
+        fontWeight: 'bold',
+        color: '#000',
+        textAlign: 'center',
+        marginVertical: 10,
+    },
+    buttonRow: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        marginTop: 15,
     },
 });
 
