@@ -2,58 +2,62 @@ import React, { createContext, useContext, useState, useEffect, ReactNode } from
 import { Appearance } from 'react-native';
 
 // Define Light and Dark theme structures
-const LightTheme = {
-  mode: 'light',
-  background: '#F5F7FA',  // Light, soft background
-  text: '#1A1A1A',         // Dark charcoal for better readability
-  inputBackground: '#FFFFFF', // Pure white inputs
-  primary: '#0066FF',     // Bright and accessible blue
-  secondary: '#6c757d',   // Subtle gray for secondary elements
-  success: '#2ECC71',     // Vibrant green
-  danger: '#E74C3C',      // Vibrant red for danger
-  errorColor: '#D32F2F',
-  errorText: '#C62828',   // Rich red for error text
-  buttonBackground: '#0066FF', // Match primary
-  buttonText: '#FFFFFF',
-  buttonTextColor: '#FFFFFF',
-  buttonBackgroundColor: '#0066FF',
-  card: '#FFFFFF',
-  cardBackground: '#FFFFFF',
-  border: '#E0E0E0',
-  placeholderTextColor: '#9E9E9E',
-  iconColor: '#606060',
-  shadow: 'rgba(0, 0, 0, 0.1)',
-  okButton: '#4CAF50',
-  cancelButton: '#F44336',
-  inactiveDot: '#D0D0D0',
-};
-
-
 const DarkTheme = {
   mode: 'dark',
-  background: '#121212',     // Deep dark background
-  text: '#EDEDED',           // Light gray for better contrast
-  inputBackground: '#1F1F1F', // Dark inputs
-  primary: '#82B1FF',        // Soft Material Blue
-  secondary: '#A9A9A9',      // Medium-light gray
-  success: '#4CAF50',
-  danger: '#F44336',
-  errorColor: '#EF5350',
+  background: '#181818',
+  text: '#F5F5F5',
+  textColor: '#F5F5F5',          // ✅ Added
+  inputBackground: '#2A2A2A',
+  primary: '#7986CB',
+  secondary: '#BDBDBD',
+  success: '#66BB6A',
+  danger: '#EF5350',
+  errorColor: '#FF5252',
   errorText: '#FF6B6B',
-  buttonBackground: '#2E7D32',
+  buttonBackground: '#5C6BC0',
   buttonText: '#FFFFFF',
   buttonTextColor: '#FFFFFF',
-  buttonBackgroundColor: '#2E7D32',
-  card: '#1E1E1E',
-  cardBackground: '#1E1E1E',
-  border: '#2C2C2C',
-  placeholderTextColor: '#9E9E9E',
-  iconColor: '#B0B0B0',
-  shadow: 'rgba(0, 0, 0, 0.5)',
-  okButton: '#66BB6A',
-  cancelButton: '#EF5350',
-  inactiveDot: '#555555',
+  buttonBackgroundColor: '#5C6BC0',
+  card: '#232323',
+  cardBackground: '#232323',
+  border: '#333333',
+  placeholderTextColor: '#AAAAAA',
+  icon: '#7986CB',               // ✅ Added
+  iconColor: '#C2C2C2',
+  shadow: 'rgba(0, 0, 0, 0.6)',
+  okButton: '#43A047',
+  cancelButton: '#E53935',
+  inactiveDot: '#5A5A5A',
 };
+
+const LightTheme = {
+  mode: 'light',
+  background: '#FAFAFA',
+  text: '#1E1E1E',
+  textColor: '#1E1E1E',          // ✅ Added
+  inputBackground: '#FFFFFF',
+  primary: '#3D5AFE',
+  secondary: '#9E9E9E',
+  success: '#43A047',
+  danger: '#E53935',
+  errorColor: '#E53935',
+  errorText: '#C62828',
+  buttonBackground: '#3D5AFE',
+  buttonText: '#FFFFFF',
+  buttonTextColor: '#FFFFFF',
+  buttonBackgroundColor: '#3D5AFE',
+  card: '#FFFFFF',
+  cardBackground: '#FFFFFF',
+  border: '#DDDDDD',
+  placeholderTextColor: '#A0A0A0',
+  icon: '#3D5AFE',               // ✅ Added
+  iconColor: '#7B7B7B',
+  shadow: 'rgba(0, 0, 0, 0.08)',
+  okButton: '#2E7D32',
+  cancelButton: '#D32F2F',
+  inactiveDot: '#C0C0C0',
+};
+
 
 
 // Type for theme structure
