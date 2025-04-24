@@ -203,7 +203,7 @@ const WorkUpdateStatusScreen = () => {
 
                     <TouchableOpacity
                         style={[
-                            styles.updateButton, { backgroundColor: theme.mode === 'dark' ? '#444' : '#000' },
+                            styles.updateButton, { backgroundColor: theme.primary },
                             (status === "On-Hold" || loading) && styles.disabledButton // Apply disabled styling
                         ]}
                         onPress={handleUpdate}
@@ -214,7 +214,7 @@ const WorkUpdateStatusScreen = () => {
 
 
                     <TouchableOpacity
-                        style={[styles.onHoldButton, { backgroundColor: theme.mode === 'dark' ? '#444' : '#000' }
+                        style={[styles.onHoldButton, { backgroundColor: theme.secondary }
                             , (status === "On-Hold" || loading) && styles.disabledButton
                         ]}
                         onPress={() => setIsModalVisible(true)}
@@ -225,8 +225,8 @@ const WorkUpdateStatusScreen = () => {
 
                     {/* Modal */}
                     <Modal visible={isModalVisible} animationType="fade" transparent={true} onRequestClose={handleCancel}>
-                        <ScrollView>
-                            <View style={styles.modalOverlay}>
+                        <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.5)' }}>
+                            <ScrollView contentContainerStyle={{ flexGrow: 1, justifyContent: 'center', alignItems: 'center' }}>
                                 <View style={[styles.modalContent, { backgroundColor: theme.mode === 'dark' ? '#333' : '#fff' }]}>
                                     <Text style={[styles.modalTitle, { color: theme.mode === 'dark' ? '#fff' : '#000' }]}>Project On Hold</Text>
 
@@ -249,18 +249,19 @@ const WorkUpdateStatusScreen = () => {
                                     />
 
                                     <View style={styles.modalButtons}>
-                                        <TouchableOpacity style={[styles.submitButton, { backgroundColor: theme.mode === 'dark' ? '#4CAF50' : '#4CAF50' }]} onPress={handleSubmitReason}>
+                                        <TouchableOpacity style={[styles.submitButton, { backgroundColor: theme.primary }]} onPress={handleSubmitReason}>
                                             <Text style={styles.submitButtonText}>Submit</Text>
                                         </TouchableOpacity>
 
-                                        <TouchableOpacity style={[styles.cancelButton, { backgroundColor: theme.mode === 'dark' ? '#000' : '#000' }]} onPress={handleCancel}>
+                                        <TouchableOpacity style={[styles.cancelButton, { backgroundColor: theme.secondary }]} onPress={handleCancel}>
                                             <Text style={styles.cancelButtonText}>Cancel</Text>
                                         </TouchableOpacity>
                                     </View>
                                 </View>
-                            </View>
-                        </ScrollView>
+                            </ScrollView>
+                        </View>
                     </Modal>
+
                 </View>
             </ScrollView>
         </SafeAreaView>

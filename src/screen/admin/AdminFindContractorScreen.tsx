@@ -144,7 +144,7 @@ const styles = StyleSheet.create({
         borderRadius: 12,
         alignItems: 'center',
         elevation: 2,
-        width: '60%', // optional: controls button width
+        width: '100%', // optional: controls button width
     },
     buttonText: {
         color: '#fff',

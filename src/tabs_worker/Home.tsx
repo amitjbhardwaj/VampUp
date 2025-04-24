@@ -46,7 +46,7 @@ const Home = () => {
             const data = await response.json();
 
             if (data.status === 'OK') {
-                setProjects(data.data); // Set the actual projects to the state
+                setProjects(data.data);
             } else {
                 setProjects([]);
             }

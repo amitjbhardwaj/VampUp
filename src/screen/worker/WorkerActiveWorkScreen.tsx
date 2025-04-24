@@ -160,7 +160,7 @@ const WorkerActiveWorkScreen = () => {
         <Text style={[styles.statusValue, { color: theme.mode === 'dark' ? "#007BFF" : "#007BFF" }]}>{project.status}</Text>
       </View>
       <TouchableOpacity
-        style={[styles.updateButton, { backgroundColor: theme.mode === 'dark' ? "#555" : "#000" }]}
+        style={[styles.updateButton, { backgroundColor: theme.primary }]}
         onPress={() =>
           navigation.navigate("WorkUpdateStatusScreen", {
             project,
@@ -171,7 +171,7 @@ const WorkerActiveWorkScreen = () => {
         <Text style={styles.updateButtonText}>Update Status</Text>
       </TouchableOpacity>
       <TouchableOpacity
-        style={[styles.callButton, { backgroundColor: theme.mode === 'dark' ? "#555" : "#000" }]}
+        style={[styles.callButton, { backgroundColor: theme.primary }]}
         onPress={() => Linking.openURL(`tel:${project.contractor_phone}`)}
       >
         <Text style={styles.callButtonText}>Call Contractor</Text>

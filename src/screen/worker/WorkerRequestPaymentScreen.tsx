@@ -208,7 +208,7 @@ const WorkerRequestPaymentScreen = () => {
 
 
                         <TouchableOpacity
-                            style={[styles.submitButton, { backgroundColor: theme.mode === 'dark' ? "#333" : "#000" }]}
+                            style={[styles.submitButton, { backgroundColor: theme.primary }]}
                             onPress={handleSubmit}
                         >
                             <Text style={[styles.submitButtonText, { color: isDarkMode ? "#fff" : "#fff" }]}>Submit</Text>

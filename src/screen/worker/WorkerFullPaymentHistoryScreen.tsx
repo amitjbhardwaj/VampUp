@@ -81,7 +81,7 @@ const WorkerFullPaymentHistoryScreen = () => {
                 )}
             />
             <TouchableOpacity
-                style={[styles.paymentButton, { backgroundColor: theme.mode === 'dark' ? '#555' : '#000' }]}
+                style={[styles.paymentButton, { backgroundColor: theme.primary }]}
                 onPress={() => navigation.navigate("WorkerPaymentDetailsScreen", { project })}
             >
                 <Text style={styles.paymentButtonText}>View Payment</Text>

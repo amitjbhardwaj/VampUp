@@ -241,7 +241,7 @@ const ContractorOnBoardWorkersScreen = () => {
                 {/* Submit Button */}
                 <View style={styles.buttonContainer}>
                     <TouchableOpacity
-                        style={[styles.button, { backgroundColor: theme.mode === 'dark' ? "#333" : "#000" }]}
+                        style={[styles.button, { backgroundColor: theme.primary }]}
                         onPress={handleSubmit}
                     >
                         <Text style={styles.buttonText}>Submit</Text>
@@ -299,7 +299,7 @@ const styles = StyleSheet.create({
         borderRadius: 12,
         alignItems: 'center',
         elevation: 2,
-        width: '60%', // optional: controls button width
+        width: '100%', // optional: controls button width
     },
 
     buttonText: {

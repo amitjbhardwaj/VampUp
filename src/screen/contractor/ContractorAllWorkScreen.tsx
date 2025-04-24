@@ -246,7 +246,7 @@ const ContractorAllWorkScreen = () => {
                         <View style={[styles.modalView, { backgroundColor: theme.card }]}>
                             <Text style={[styles.modalTitle, { color: theme.text }]}>Confirm Activation</Text>
                             {/* Display End Date in yyyy-mm-dd format */}
-                            <Text style={styles.dateText}>End Date: {endDate.toISOString().split('T')[0]}</Text>
+                            <Text style={[styles.dateText, { color: theme.text }]}>End Date: {endDate.toISOString().split('T')[0]}</Text>
                             <View style={styles.buttonRow}>
                                 <TouchableOpacity style={[styles.modalButton, { backgroundColor: theme.primary }]} onPress={handleConfirmActivate}>
                                     <Text style={styles.buttonText}>Confirm</Text>

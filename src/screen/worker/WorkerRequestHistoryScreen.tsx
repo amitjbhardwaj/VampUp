@@ -84,7 +84,7 @@ const WorkerRequestHistoryScreen = () => {
             <View style={styles.row}><Icon name="calendar-check-o" size={20} color={theme.text} style={styles.icon} /><Text style={[styles.itemText, { color: theme.text }]}>Date: {new Date(item.request_date).toLocaleDateString()}</Text></View>
 
             <View style={styles.buttonRow}>
-                <TouchableOpacity style={[styles.editButton, { backgroundColor: theme.mode === 'dark' ? '#444' : '#000' }]} onPress={() => { setSelectedRequest(item); setNewAmount(item.amount); setModalVisible(true); }}>
+                <TouchableOpacity style={[styles.editButton, { backgroundColor: theme.primary }]} onPress={() => { setSelectedRequest(item); setNewAmount(item.amount); setModalVisible(true); }}>
                     <Text style={[styles.buttonText, { color: theme.mode === 'dark' ? '#fff' : '#fff' }]}>Edit</Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.deleteButton} onPress={() => confirmDeleteRequest(item.requestId)}>
@@ -116,7 +116,7 @@ const WorkerRequestHistoryScreen = () => {
                                 onChangeText={setNewAmount}
                             />
                             <View style={styles.modalButtonRow}>
-                                <TouchableOpacity style={[styles.saveButton, { backgroundColor: theme.success }]} onPress={editRequest}>
+                                <TouchableOpacity style={[styles.saveButton, { backgroundColor: theme.primary }]} onPress={editRequest}>
                                     <Text style={styles.buttonText}>Save</Text>
                                 </TouchableOpacity>
                                 <TouchableOpacity style={[styles.cancelButton, { backgroundColor: theme.secondary }]} onPress={() => setModalVisible(false)}>
