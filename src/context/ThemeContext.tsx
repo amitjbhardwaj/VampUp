@@ -4,61 +4,59 @@ import { Appearance } from 'react-native';
 // Define Light and Dark theme structures
 const DarkTheme = {
   mode: 'dark',
-  background: '#181818',
-  text: '#F5F5F5',
-  textColor: '#F5F5F5',          // ✅ Added
-  inputBackground: '#2A2A2A',
-  primary: '#7986CB',
-  secondary: '#BDBDBD',
-  success: '#66BB6A',
-  danger: '#EF5350',
-  errorColor: '#FF5252',
-  errorText: '#FF6B6B',
-  buttonBackground: '#5C6BC0',
+  background: '#121212',
+  text: '#EAEAEA',
+  textColor: '#EAEAEA',
+  inputBackground: '#1E1E1E',
+  primary: '#82B1FF',               // soft blue for better visibility
+  secondary: '#A1A1A1',
+  success: '#4CAF50',
+  danger: '#FF5252',
+  errorColor: '#FF6E6E',
+  errorText: '#FF8A80',
+  buttonBackground: '#3949AB',      // elevated contrast button
   buttonText: '#FFFFFF',
   buttonTextColor: '#FFFFFF',
-  buttonBackgroundColor: '#5C6BC0',
-  card: '#232323',
-  cardBackground: '#232323',
-  border: '#333333',
-  placeholderTextColor: '#AAAAAA',
-  icon: '#7986CB',               // ✅ Added
-  iconColor: '#C2C2C2',
-  shadow: 'rgba(0, 0, 0, 0.6)',
-  okButton: '#43A047',
-  cancelButton: '#E53935',
-  inactiveDot: '#5A5A5A',
+  buttonBackgroundColor: '#3949AB',
+  card: '#1E1E1E',
+  cardBackground: '#1E1E1E',
+  border: '#2C2C2C',
+  placeholderTextColor: '#777777',
+  icon: '#82B1FF',
+  iconColor: '#B0BEC5',
+  shadow: 'rgba(0, 0, 0, 0.7)',
+  okButton: '#66BB6A',
+  cancelButton: '#EF5350',
+  inactiveDot: '#444444',
 };
 
 const LightTheme = {
   mode: 'light',
-  background: '#FAFAFA',
-  text: '#1E1E1E',
-  textColor: '#1E1E1E',          // ✅ Added
+  background: '#FDFDFD',
+  text: '#212121',
+  textColor: '#212121',
   inputBackground: '#FFFFFF',
-  primary: '#3D5AFE',
-  secondary: '#9E9E9E',
-  success: '#43A047',
-  danger: '#E53935',
+  primary: '#3D5AFE',              // strong indigo for brand consistency
+  secondary: '#757575',
+  success: '#2E7D32',
+  danger: '#C62828',
   errorColor: '#E53935',
-  errorText: '#C62828',
+  errorText: '#D32F2F',
   buttonBackground: '#3D5AFE',
   buttonText: '#FFFFFF',
   buttonTextColor: '#FFFFFF',
   buttonBackgroundColor: '#3D5AFE',
   card: '#FFFFFF',
   cardBackground: '#FFFFFF',
-  border: '#DDDDDD',
-  placeholderTextColor: '#A0A0A0',
-  icon: '#3D5AFE',               // ✅ Added
-  iconColor: '#7B7B7B',
-  shadow: 'rgba(0, 0, 0, 0.08)',
-  okButton: '#2E7D32',
+  border: '#E0E0E0',
+  placeholderTextColor: '#9E9E9E',
+  icon: '#3D5AFE',
+  iconColor: '#616161',
+  shadow: 'rgba(0, 0, 0, 0.1)',
+  okButton: '#388E3C',
   cancelButton: '#D32F2F',
-  inactiveDot: '#C0C0C0',
+  inactiveDot: '#BDBDBD',
 };
-
-
 
 // Type for theme structure
 type ThemeType = typeof LightTheme;
