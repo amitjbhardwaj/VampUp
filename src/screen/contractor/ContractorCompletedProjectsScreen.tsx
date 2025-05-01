@@ -15,7 +15,15 @@ import { RootStackParamList } from "../../RootNavigator";
 import { StackNavigationProp } from "@react-navigation/stack";
 import { useNavigation } from "@react-navigation/native";
 import Header from "../Header";
+import axios from "axios";
 
+type Admin = {
+    _id: string;
+    firstName: string;
+    lastName: string;
+    role: string;
+    mobile: Number,
+};
 
 type Project = {
     project_Id: string;
@@ -43,6 +51,10 @@ const ContractorCompletedProjectsScreen = () => {
     const [projects, setProjects] = useState<Project[]>([]);
     const [selectedImages, setSelectedImages] = useState<string[]>([]);
     const [funds, setFunds] = useState<Record<string, number>>({});
+    const [admin, setAdmin] = useState<string>('');
+    const [showAdminModal, setShowAdminModal] = useState(false);
+    const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
+
 
     const IMAGE_BASE_URL = 'http://192.168.129.119:5001'; // Adjust this base URL to your image server base URL.
 
@@ -51,7 +63,7 @@ const ContractorCompletedProjectsScreen = () => {
 
         for (const project of projects) {
             try {
-                const response = await fetch(`http://192.168.129.119:5001/get-fund-by-project?project_Id=${project.project_Id}`);
+                const response = await fetch(IMAGE_BASE_URL + `/get-fund-by-project?project_Id=${project.project_Id}`);
                 const data = await response.json();
                 if (data.status === "OK") {
                     fundMap[project.project_Id] = data.data.new_amount_allocated || 0;
@@ -68,8 +80,16 @@ const ContractorCompletedProjectsScreen = () => {
     };
 
     useEffect(() => {
-        fetchCompletedProjects();
+        let isMounted = true;
+        const fetchData = async () => {
+            if (isMounted) {
+                await fetchCompletedProjects();
+            }
+        };
+        fetchData();
+        return () => { isMounted = false };
     }, []);
+
 
     const fetchCompletedProjects = async () => {
         try {
@@ -88,6 +108,62 @@ const ContractorCompletedProjectsScreen = () => {
             setError("Failed to load completed projects.");
         } finally {
             setLoading(false);
+        }
+    };
+
+    const fetchAdmins = async (projectId: string) => {
+        if (!projectId) {
+            console.error("Invalid project ID");
+            return;
+        }
+    
+        setLoading(true);
+        try {
+            const response = await axios.get(IMAGE_BASE_URL + `/get-project/${projectId}`);
+            if (response.data.status === "OK") {
+                const createdBy = response.data.data.created_by;    
+                setAdmin(createdBy);
+            }
+        } catch (error) {
+            console.error("Error fetching project:", error);
+        } finally {
+            setLoading(false);
+        }
+    };
+    
+
+
+
+    const handleSecondLevelApproval = async (projectId: string) => {
+        setSelectedProjectId(projectId);
+        await fetchAdmins(projectId);
+        setShowAdminModal(true);
+    };
+
+    const handleUpdateApprovers = async (adminFullName: string) => {
+        console.log("Selected project ", selectedProjectId)
+        if (!selectedProjectId) return;
+
+        try {
+            const contractorName = await AsyncStorage.getItem("contractorName");
+            const response = await axios.put(IMAGE_BASE_URL + `/update-approvers/${selectedProjectId}`,
+                {
+                    first_level_approver: contractorName,
+                    second_level_approver: adminFullName,
+                }
+            );
+
+            if (response.data.status === "OK") {
+                Alert.alert("Success", "Approvers updated successfully.");
+                setShowAdminModal(false);
+                setSelectedProjectId(null);
+                fetchCompletedProjects(); // Refresh project data
+            } else {
+                Alert.alert("Error", response.data.message);
+            }
+        } catch (error) {
+            console.error("Error updating approvers:", error);
+            Alert.alert("Error", "Failed to update approvers.");
         }
     };
 
@@ -249,7 +325,7 @@ const ContractorCompletedProjectsScreen = () => {
                             <Text style={[styles.projectDetail, { color: theme.text }]}><FontAwesome name="user" size={20} /> Worker Name: {project.worker_name}</Text>
                             <Text style={[styles.projectDetail, { color: theme.mode === 'dark' ? '#fff' : '#000' }]}>
                                 <FontAwesome name="money" size={20} /> Fund Allocated: ₹{funds[project.project_Id] ?? 0}
-                            </Text>                            
+                            </Text>
                             {project.images && project.images.length > 0 && (
                                 <FlatList
                                     data={project.images}
@@ -277,6 +353,9 @@ const ContractorCompletedProjectsScreen = () => {
                                 <TouchableOpacity style={[styles.viewDetailsButton, { backgroundColor: theme.primary }]} onPress={() => handleSendForReview(project.project_Id)}>
                                     <Text style={styles.buttonText}>Upload Evidence</Text>
                                 </TouchableOpacity>
+                                <TouchableOpacity style={[styles.onHoldButton, { backgroundColor: theme.primary }]} onPress={() => handleSecondLevelApproval(project.project_Id)}>
+                                    <Text style={styles.buttonText}>Second Level Approval</Text>
+                                </TouchableOpacity>
                                 <TouchableOpacity style={[styles.onHoldButton, { backgroundColor: '#28a745' }]} onPress={() => navigation.navigate("PaymentModeScreen", { projectId: project.project_Id })}>
                                     <Text style={styles.buttonText}>Make Payment</Text>
                                 </TouchableOpacity>
@@ -285,6 +364,23 @@ const ContractorCompletedProjectsScreen = () => {
                     )}
                 />
             </View>
+
+            {showAdminModal && (
+                <View style={[StyleSheet.absoluteFillObject, styles.modalOverlay]}>
+                    <View style={[styles.modalContent, { backgroundColor: theme.card }]}>
+                        <Text style={[styles.modalTitle, { color: theme.text }]}>Select an Admin</Text>
+                        <ScrollView>
+                            <TouchableOpacity onPress={() => handleUpdateApprovers(admin)}>
+                                <Text style={[styles.adminName, { color: theme.text }]}>{admin}</Text>
+                            </TouchableOpacity>
+                        </ScrollView>
+                        <TouchableOpacity style={styles.modalCloseButton} onPress={() => setShowAdminModal(false)}>
+                            <Text style={styles.modalCloseButtonText}>Close</Text>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+            )}
+
         </SafeAreaView>
     );
 };
@@ -405,6 +501,42 @@ const styles = StyleSheet.create({
         fontSize: 20,
         fontWeight: "bold",
     },
+    modalOverlay: {
+        backgroundColor: "rgba(0, 0, 0, 0.5)",
+        justifyContent: "center",
+        alignItems: "center",
+        zIndex: 1000,
+    },
+    modalContent: {
+        width: '80%',
+        padding: 20,
+        borderRadius: 10,
+        maxHeight: '60%',
+    },
+    modalTitle: {
+        fontSize: 20,
+        fontWeight: "bold",
+        marginBottom: 10,
+        textAlign: 'center',
+    },
+    adminName: {
+        fontSize: 16,
+        paddingVertical: 8,
+        borderBottomWidth: 1,
+        borderBottomColor: "#ccc",
+    },
+    modalCloseButton: {
+        marginTop: 20,
+        backgroundColor: "#007bff",
+        padding: 10,
+        borderRadius: 8,
+        alignItems: 'center',
+    },
+    modalCloseButtonText: {
+        color: "#fff",
+        fontWeight: "bold",
+    },
+
 });
 
 export default ContractorCompletedProjectsScreen;
