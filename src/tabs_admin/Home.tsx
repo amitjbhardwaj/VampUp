@@ -60,7 +60,7 @@ const Home = () => {
                 }
 
                 // Fetch Completed Projects count
-                const completedProjectsResponse = await fetch(`http://192.168.129.119:5001/get-projects-by-admin?created_by=${storedName}&status=Completed`);
+                const completedProjectsResponse = await fetch(`http://192.168.129.119:5001/get-projects-by-admin?second_level_approver=${storedName}`);
                 const completedProjectsData = await completedProjectsResponse.json();
                 if (completedProjectsData.status === "OK") {
                     // Filter out projects that have status 'Approved' or 'Rejected'

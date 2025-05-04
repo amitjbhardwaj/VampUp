@@ -13,18 +13,18 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import Icon from "react-native-vector-icons/MaterialIcons"; // Using vector icons
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import axios from "axios";
-import { useNavigation } from "@react-navigation/native";
 import Header from "../Header";
 
 interface Project {
     _id: string;
     project_status: string,
+    first_level_approver: string,
+    second_level_approver: string,
 }
 
 
 const AdminReviewProjectsScreen = () => {
     const { theme } = useTheme();
-    const navigation = useNavigation();
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [selectedImage, setSelectedImage] = useState<string | null>(null);
@@ -60,13 +60,16 @@ const AdminReviewProjectsScreen = () => {
             const storedName = await AsyncStorage.getItem("adminName");
 
             if (storedName) {
-                const response = await fetch(`http://192.168.129.119:5001/get-projects-by-admin?created_by=${storedName}&status=Completed`);
+                const response = await fetch(`http://192.168.129.119:5001/get-projects-by-admin?second_level_approver=${storedName}`);
+               
                 const data = await response.json();
+                
                 if (data.status === "OK") {
                     // Filter out projects that have status 'Approved' or 'Rejected'
                     const filteredProjects = data.data.filter((project: Project) =>
                         project.project_status !== 'Approved' && project.project_status !== 'Rejected'
                     );
+                    console.log("-----------",filteredProjects)
                     setProjects(filteredProjects);
                     fetchFundsForProjects(data.data); // Fetch funds after projects load
                 } else {

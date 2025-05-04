@@ -67,13 +67,6 @@ const AdminOngoingProjectsScreen = () => {
         fetchOngoingProjects();
     }, []);
 
-    const handleMarkCompleted = (projectId: string) => {
-        Alert.alert("Confirm", "Are you sure you want to mark this project as completed?", [
-            { text: "Cancel", style: "cancel" },
-            { text: "OK", onPress: () => markProjectCompleted(projectId, "Completed", 100) },
-        ]);
-    };
-
     const handleOnHold = (projectId: string) => {
         Alert.alert("Confirm", "Are you sure you want to put this project on hold?", [
             { text: "Cancel", style: "cancel" },
@@ -176,9 +169,6 @@ const AdminOngoingProjectsScreen = () => {
                 </Text>
                 {/* Buttons with custom padding */}
                 <View style={styles.buttonContainer}>
-                    <TouchableOpacity style={styles.button} onPress={() => handleMarkCompleted(project._id)}>
-                        <Text style={styles.buttonText}>Mark Completed</Text>
-                    </TouchableOpacity>
                     <TouchableOpacity style={styles.button} onPress={() => handleOnHold(project._id)}>
                         <Text style={styles.buttonText}>On-Hold</Text>
                     </TouchableOpacity>
