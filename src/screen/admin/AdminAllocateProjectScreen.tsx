@@ -17,6 +17,7 @@ import { NavigationProp, useNavigation } from "@react-navigation/native";
 import { RootStackParamList } from "../../RootNavigator";
 import axios from "axios";
 import Header from "../Header";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 type AdminAllocateProjectScreenNavigationProp = NavigationProp<RootStackParamList, "AdminAllocateProjectScreen">;
 
@@ -47,8 +48,9 @@ const AdminAllocateProjectScreen = () => {
     }, []);
 
     const fetchProjects = async () => {
+        const storedName = await AsyncStorage.getItem("adminName");
         try {
-            const response = await axios.get('http://192.168.129.119:5001/get-all-projects');
+            const response = await axios.get(`http://192.168.129.119:5001/get-projects-by-admin?created_by=${storedName}`);
             if (response.data.status === "OK") {
                 const filteredProjects = response.data.data.filter((project: Project) => project.status !== "Completed");
                 setProjects(filteredProjects);

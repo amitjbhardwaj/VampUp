@@ -69,7 +69,6 @@ const AdminReviewProjectsScreen = () => {
                     const filteredProjects = data.data.filter((project: Project) =>
                         project.project_status !== 'Approved' && project.project_status !== 'Rejected'
                     );
-                    console.log("-----------",filteredProjects)
                     setProjects(filteredProjects);
                     fetchFundsForProjects(data.data); // Fetch funds after projects load
                 } else {

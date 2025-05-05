@@ -171,7 +171,7 @@ const ContractorCompletedProjectsScreen = () => {
         Linking.openURL(`tel:${workerPhone}`).catch((err) => console.error("Error calling worker:", err));
     };
 
-    const handleSendForReview = async (projectId: string) => {
+    const handleUploadEvidence = async (projectId: string) => {
         setSelectedImages([]); // Reset previously selected images
 
         Alert.alert(
@@ -350,7 +350,7 @@ const ContractorCompletedProjectsScreen = () => {
                                 <TouchableOpacity style={[styles.onHoldButton, { backgroundColor: theme.primary }]} onPress={() => Alert.alert("Need More Work", `Requesting more work for ${project.project_Id}`)}>
                                     <Text style={styles.buttonText}>Need More Work</Text>
                                 </TouchableOpacity>
-                                <TouchableOpacity style={[styles.viewDetailsButton, { backgroundColor: theme.primary }]} onPress={() => handleSendForReview(project.project_Id)}>
+                                <TouchableOpacity style={[styles.viewDetailsButton, { backgroundColor: theme.primary }]} onPress={() => handleUploadEvidence(project.project_Id)}>
                                     <Text style={styles.buttonText}>Upload Evidence</Text>
                                 </TouchableOpacity>
                                 <TouchableOpacity style={[styles.onHoldButton, { backgroundColor: theme.primary }]} onPress={() => handleSecondLevelApproval(project.project_Id)}>
