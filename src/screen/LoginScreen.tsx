@@ -33,6 +33,9 @@ const LoginScreen = () => {
     const [secureText, setSecureText] = useState(true);
     const [errorMessage, setErrorMessage] = useState("");
     const [loading, setLoading] = useState(false);
+    const [usernameFocused, setUsernameFocused] = useState(false);
+    const [passwordFocused, setPasswordFocused] = useState(false);
+
 
     const passwordRef = useRef<RNTextInput>(null);
 
@@ -106,7 +109,7 @@ const LoginScreen = () => {
                 <View style={[styles.inputContainer, { backgroundColor: theme.inputBackground }]}>
                     <Icon name="user" size={18} color={theme.icon} style={styles.icon} />
                     <TextInput
-                        placeholder="Username"
+                        placeholder={usernameFocused ? "" : "Username"}
                         placeholderTextColor={theme.mode === "dark" ? "#fff" : "#999"}
                         style={[styles.input, { color: theme.text }]}
                         autoCapitalize="none"
@@ -114,14 +117,17 @@ const LoginScreen = () => {
                         onChangeText={setUsername}
                         returnKeyType="next"
                         onSubmitEditing={() => passwordRef.current?.focus()}
+                        onFocus={() => setUsernameFocused(true)}
+                        onBlur={() => setUsernameFocused(false)}
                     />
+
                 </View>
 
                 <View style={[styles.inputContainer, { backgroundColor: theme.inputBackground }]}>
                     <Icon name="lock" size={18} color={theme.icon} style={styles.icon} />
                     <TextInput
                         ref={passwordRef}
-                        placeholder="Password"
+                        placeholder={passwordFocused ? "" : "Password"}
                         style={[styles.input, { color: theme.text }]}
                         secureTextEntry={secureText}
                         autoCapitalize="none"
@@ -129,7 +135,10 @@ const LoginScreen = () => {
                         onChangeText={setPassword}
                         placeholderTextColor={theme.mode === "dark" ? "#fff" : "#999"}
                         returnKeyType="done"
+                        onFocus={() => setPasswordFocused(true)}
+                        onBlur={() => setPasswordFocused(false)}
                     />
+
                     {password !== "" && (
                         <TouchableOpacity onPress={() => setSecureText(!secureText)} style={styles.eyeIcon}>
                             <Icon name={secureText ? "eye-slash" : "eye"} size={18} color={theme.icon} />

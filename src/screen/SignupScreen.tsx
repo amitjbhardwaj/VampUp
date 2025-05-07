@@ -25,6 +25,7 @@ const SignupScreen = () => {
 
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [showRolePicker, setShowRolePicker] = useState(false);
+  const [focusedFields, setFocusedFields] = useState<Record<string, boolean>>({});
 
   const navigation = useNavigation<SignupScreenNavigationProp>();
 
@@ -38,6 +39,15 @@ const SignupScreen = () => {
       setErrors(updatedErrors);
     }
   };
+
+  const handleFocus = (field: string) => {
+    setFocusedFields((prev) => ({ ...prev, [field]: true }));
+  };
+
+  const handleBlur = (field: string) => {
+    setFocusedFields((prev) => ({ ...prev, [field]: false }));
+  };
+
 
   const validateForm = () => {
     let newErrors: Record<string, string> = {};
@@ -59,7 +69,7 @@ const SignupScreen = () => {
 
   const handleSubmit = () => {
     if (!validateForm()) return; // Run validation, stop if there are errors
-  
+
     const userData = {
       role: form.role,
       firstName: form.firstName,
@@ -73,16 +83,13 @@ const SignupScreen = () => {
       branch: form.branch,
       mobile: form.mobile,
     };
-  
+
     navigation.navigate("Otp", { userData: form });
   };
-  
+
   const handleBackPress = () => {
     navigation.goBack();
   };
-
-
-
 
   return (
     <ScrollView contentContainerStyle={[styles.container, { backgroundColor: theme.background }]}>
@@ -147,14 +154,15 @@ const SignupScreen = () => {
           <View style={[styles.inputContainer, errors[key] && styles.inputError, { backgroundColor: theme.inputBackground }]}>
             <Icon name={icon} size={20} style={[styles.icon, { color: theme.icon }]} />
             <TextInput
-              placeholder={placeholder}
-              placeholderTextColor={theme.mode === "dark" ? "#fff" : "#999"} // Set placeholder color based on theme
+              placeholder={focusedFields[key] ? "" : placeholder}
+              placeholderTextColor={theme.mode === "dark" ? "#fff" : "#999"}
               secureTextEntry={secureTextEntry}
               style={[styles.input, { color: theme.text }]}
               onChangeText={(value) => handleChange(key, value)}
               value={form[key as keyof typeof form]}
+              onFocus={() => handleFocus(key)}
+              onBlur={() => handleBlur(key)}
             />
-
           </View>
           {errors[key] && <Text style={[styles.errorText, { color: theme.errorColor }]}>{errors[key]}</Text>}
         </View>
@@ -167,12 +175,14 @@ const SignupScreen = () => {
             <Text style={[styles.countryCodeText, { color: theme.text }]}>+91 ▼</Text>
           </TouchableOpacity>
           <TextInput
-            placeholder="Mobile number *"
+            placeholder={focusedFields["mobile"] ? "" : "Mobile number *"}
             placeholderTextColor={theme.mode === "dark" ? "#fff" : "#999"}
             keyboardType="phone-pad"
             style={[styles.input, { flex: 1, color: theme.text }]}
             onChangeText={(value) => handleChange("mobile", value)}
             value={form.mobile}
+            onFocus={() => handleFocus("mobile")}
+            onBlur={() => handleBlur("mobile")}
           />
         </View>
         {errors.mobile && <Text style={[styles.errorText, { color: theme.errorColor }]}>{errors.mobile}</Text>}
