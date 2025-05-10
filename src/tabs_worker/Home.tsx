@@ -17,6 +17,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Picker } from "@react-native-picker/picker";
 import { useTheme } from "../context/ThemeContext";
 import axios from "axios";
+import LinearGradient from 'react-native-linear-gradient';
 
 type HomeNavigationProp = NavigationProp<RootStackParamList>;
 
@@ -174,9 +175,17 @@ const Home = () => {
             }
         >
             {name ? (
-                <Text style={[styles.welcomeText, { color: theme.text }]}>
-                    Welcome!! {name}
-                </Text>
+                <LinearGradient
+                colors={['transparent', '#5f2c82', '#49a09d', 'transparent']}
+                    style={styles.welcomeGradient}
+                    start={{ x: 0, y: 0 }}
+                    end={{ x: 1, y: 0 }}
+                >
+                    <Text style={styles.welcomeText}>
+                        Welcome!! {name}
+                    </Text>
+                </LinearGradient>
+
             ) : null}
 
             <View style={styles.iconContainer}>
@@ -447,12 +456,35 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: 'bold',
     },
-    welcomeText: {
-        fontSize: 24,
-        fontWeight: "bold",
+    welcomeGradient: {
         marginTop: 40,
         marginBottom: 50,
-        textAlign: "center",
+        paddingVertical: 10,
+        paddingHorizontal: 20,
+        borderRadius: 30,
+        alignSelf: 'center',
+        backgroundColor: 'transparent',
+        // No hard background shape
+    },
+    
+    welcomeText: {
+        fontSize: 26,
+        fontWeight: 'bold',
+        textAlign: 'center',
+        color: '#fff',
+        textShadowColor: 'rgba(0, 0, 0, 0.4)',
+        textShadowOffset: { width: 1, height: 1 },
+        textShadowRadius: 3,
+    },
+    
+    gradientWelcome: {
+        paddingVertical: 15,
+        paddingHorizontal: 30,
+        borderRadius: 12,
+        marginTop: 40,
+        marginBottom: 50,
+        alignSelf: 'center',
+        elevation: 3,
     },
 
 });

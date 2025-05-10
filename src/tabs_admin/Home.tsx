@@ -9,6 +9,7 @@ import Ionicons from "react-native-vector-icons/Ionicons";
 import { RootStackParamList } from "../RootNavigator";
 import { useTheme } from "../context/ThemeContext";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import LinearGradient from "react-native-linear-gradient";
 
 type HomeNavigationProp = NavigationProp<RootStackParamList>;
 
@@ -151,11 +152,20 @@ const Home = () => {
             }
         >
             {adminName ? (
-                <Text style={[styles.welcomeText, { color: theme.text }]}>
-                    Welcome!! {adminName}
-                </Text>
+                <LinearGradient
+                colors={['transparent', '#5f2c82', '#49a09d', '#5f2c82', 'transparent']}
+                style={styles.welcomeGradient}
+                    start={{ x: 0, y: 0 }}
+                    end={{ x: 1, y: 1 }}
+                >
+                    <Text style={styles.welcomeText}>
+                        Welcome!! {adminName}
+                    </Text>
+                </LinearGradient>
+
+
             ) : null}
-            
+
             <View style={styles.iconContainer}>
                 {/* First Row */}
                 <View style={styles.iconRow}>
@@ -319,13 +329,37 @@ const styles = StyleSheet.create({
     lastRowIcon: {
         marginLeft: "-145%",
     },
-    welcomeText: {
-        fontSize: 24,
-        fontWeight: "bold",
+    welcomeGradient: {
         marginTop: 40,
         marginBottom: 50,
-        textAlign: "center",
+        paddingVertical: 10,
+        paddingHorizontal: 20,
+        borderRadius: 30,
+        alignSelf: 'center',
+        backgroundColor: 'transparent',
+        // No hard background shape
     },
+
+    welcomeText: {
+        fontSize: 26,
+        fontWeight: 'bold',
+        textAlign: 'center',
+        color: '#fff',
+        textShadowColor: 'rgba(0, 0, 0, 0.4)',
+        textShadowOffset: { width: 1, height: 1 },
+        textShadowRadius: 3,
+    },
+
+    gradientWelcome: {
+        paddingVertical: 15,
+        paddingHorizontal: 30,
+        borderRadius: 12,
+        marginTop: 40,
+        marginBottom: 50,
+        alignSelf: 'center',
+        elevation: 3,
+    },
+
 });
 
 export default Home;
