@@ -36,13 +36,13 @@ const Home = () => {
     const fetchAdminNameAndProjectCounts = async () => {
         try {
             // Get contractor name from AsyncStorage
-            const storedName = await AsyncStorage.getItem("adminName");
+            const adminName = await AsyncStorage.getItem("adminName");
 
-            if (storedName) {
-                setAdminName(storedName); // Store the contractor name
+            if (adminName) {
+                setAdminName(adminName); // Store the contractor name
 
                 // Fetch Active Projects count
-                const activeProjectsResponse = await fetch(`http://192.168.129.119:5001/get-projects-by-admin?created_by=${storedName}&status=In-Progress`);
+                const activeProjectsResponse = await fetch(`http://192.168.129.119:5001/get-projects-by-admin?created_by=${adminName}&status=In-Progress`);
                 const activeProjectsData = await activeProjectsResponse.json();
                 if (activeProjectsData.status === 'OK') {
                     setActiveProjectsCount(activeProjectsData.data.length);
@@ -51,7 +51,7 @@ const Home = () => {
                 }
 
                 // Fetch On Hold Projects count
-                const onHoldProjectsResponse = await fetch(`http://192.168.129.119:5001/get-projects-by-admin?created_by=${storedName}&status=On-Hold`);
+                const onHoldProjectsResponse = await fetch(`http://192.168.129.119:5001/get-projects-by-admin?created_by=${adminName}&status=On-Hold`);
                 const onHoldProjectsData = await onHoldProjectsResponse.json();
                 if (onHoldProjectsData.status === 'OK') {
                     setOnHoldProjectsCount(onHoldProjectsData.data.length);
@@ -60,7 +60,7 @@ const Home = () => {
                 }
 
                 // Fetch Completed Projects count
-                const completedProjectsResponse = await fetch(`http://192.168.129.119:5001/get-projects-by-admin?second_level_approver=${storedName}`);
+                const completedProjectsResponse = await fetch(`http://192.168.129.119:5001/get-projects-by-admin?second_level_approver=${adminName}`);
                 const completedProjectsData = await completedProjectsResponse.json();
                 if (completedProjectsData.status === "OK") {
                     // Filter out projects that have status 'Approved' or 'Rejected'
@@ -73,7 +73,7 @@ const Home = () => {
                 }
 
                 // Fetch Approved Projects count
-                const approvedProjectsResponse = await fetch(`http://192.168.129.119:5001/get-projects-by-admin?created_by=${storedName}&status=Completed`);
+                const approvedProjectsResponse = await fetch(`http://192.168.129.119:5001/get-projects-by-admin?created_by=${adminName}&status=Completed`);
                 const approvedProjectsData = await approvedProjectsResponse.json();
                 if (approvedProjectsData.status === 'OK') {
                     const approvedProjects = (approvedProjectsData.data as Project[]).filter(
@@ -85,7 +85,7 @@ const Home = () => {
                 }
 
                 // Fetch Rejected Projects count (if needed)
-                const rejectedProjectsResponse = await fetch(`http://192.168.129.119:5001/get-projects-by-admin?created_by=${storedName}&status=Completed`);
+                const rejectedProjectsResponse = await fetch(`http://192.168.129.119:5001/get-projects-by-admin?created_by=${adminName}&status=Completed`);
                 const rejectedProjectsData = await rejectedProjectsResponse.json();
                 if (rejectedProjectsData.status === 'OK') {
                     const rejectedProjects = (rejectedProjectsData.data as Project[]).filter(
@@ -97,7 +97,7 @@ const Home = () => {
                 }
 
                 // Fetch Initiate Payment count (if needed)
-                const initiatePaymentResponse = await fetch(`http://192.168.129.119:5001/get-projects-by-admin?created_by=${storedName}&status=Completed`);
+                const initiatePaymentResponse = await fetch(`http://192.168.129.119:5001/get-projects-by-admin?created_by=${adminName}&status=Completed`);
                 const initiatePaymentData = await initiatePaymentResponse.json();
                 if (initiatePaymentData.status === 'OK') {
                     const initiateProjects = (initiatePaymentData.data as Project[]).filter(
@@ -150,7 +150,12 @@ const Home = () => {
                 <RefreshControl refreshing={isRefreshing} onRefresh={onRefresh} />
             }
         >
-
+            {adminName ? (
+                <Text style={[styles.welcomeText, { color: theme.text }]}>
+                    Welcome!! {adminName}
+                </Text>
+            ) : null}
+            
             <View style={styles.iconContainer}>
                 {/* First Row */}
                 <View style={styles.iconRow}>
@@ -313,6 +318,13 @@ const styles = StyleSheet.create({
     },
     lastRowIcon: {
         marginLeft: "-145%",
+    },
+    welcomeText: {
+        fontSize: 24,
+        fontWeight: "bold",
+        marginTop: 40,
+        marginBottom: 50,
+        textAlign: "center",
     },
 });
 

@@ -35,13 +35,13 @@ const Home = () => {
 
     const fetchContractorNameAndProjectCounts = async () => {
         try {
-            const storedName = await AsyncStorage.getItem("contractorName");
+            const contractorName = await AsyncStorage.getItem("contractorName");
 
-            if (storedName) {
-                setContractorName(storedName);
+            if (contractorName) {
+                setContractorName(contractorName);
 
                 const fetchCount = async (status?: string) => {
-                    const url = `http://192.168.129.119:5001/get-projects-by-contractor?contractor_name=${storedName}${status ? `&status=${status}` : ""}`;
+                    const url = `http://192.168.129.119:5001/get-projects-by-contractor?contractor_name=${contractorName}${status ? `&status=${status}` : ""}`;
                     const response = await fetch(url);
                     const data = await response.json();
                     return data.status === "OK" ? data.data : [];
@@ -105,6 +105,12 @@ const Home = () => {
                     <RefreshControl refreshing={isRefreshing} onRefresh={onRefresh} />
                 }
             >
+                {contractorName ? (
+                    <Text style={[styles.welcomeText, { color: theme.text }]}>
+                        Welcome!! {contractorName}
+                    </Text>
+                ) : null}
+
                 {/* Now put your UI content here */}
                 <View style={styles.iconContainer}>
                     {/* Row 1 */}
@@ -222,6 +228,13 @@ const styles = StyleSheet.create({
         color: "white",
         fontSize: 12,
         fontWeight: "bold",
+    },
+    welcomeText: {
+        fontSize: 24,
+        fontWeight: "bold",
+        marginTop: 40,
+        marginBottom: 50,
+        textAlign: "center",
     },
 });
 

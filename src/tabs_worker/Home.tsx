@@ -37,10 +37,11 @@ const Home = () => {
     const [isRefreshing, setIsRefreshing] = useState(false);
     const [name, setName] = useState("");
 
+
     const fetchOngoingProjects = async () => {
         try {
             const name = await AsyncStorage.getItem("workerName");
-            
+
 
             const response = await fetch(`http://192.168.129.119:5001/get-projects-by-worker?worker_name=${name}&status=In-Progress`);
             const data = await response.json();
@@ -63,10 +64,10 @@ const Home = () => {
                 setName(storedName);
             }
         };
-    
+
         getWorkerName();
     }, []);
-    
+
 
 
     const handleProjectChange = (selectedDescription: string) => {
@@ -172,7 +173,15 @@ const Home = () => {
                 <RefreshControl refreshing={isRefreshing} onRefresh={onRefresh} />
             }
         >
+            {name ? (
+                <Text style={[styles.welcomeText, { color: theme.text }]}>
+                    Welcome!! {name}
+                </Text>
+            ) : null}
+
             <View style={styles.iconContainer}>
+
+
                 <View style={styles.iconRow}>
                     <View style={styles.iconItem}>
                         <TouchableOpacity onPress={() => navigation.navigate('WorkerActiveWorkScreen')}>
@@ -438,6 +447,14 @@ const styles = StyleSheet.create({
         fontSize: 16,
         fontWeight: 'bold',
     },
+    welcomeText: {
+        fontSize: 24,
+        fontWeight: "bold",
+        marginTop: 40,
+        marginBottom: 50,
+        textAlign: "center",
+    },
+
 });
 
 export default Home;
