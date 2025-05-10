@@ -209,7 +209,7 @@ const WorkUpdateStatusScreen = () => {
                         onPress={handleUpdate}
                         disabled={status === "On-Hold" || loading} // Disable when On-Hold or loading
                     >
-                        <Text style={styles.updateButtonText}>Update</Text>
+                        <Text style={[styles.updateButtonText, { color: theme.buttonText }]}>Update</Text>
                     </TouchableOpacity>
 
 
@@ -220,7 +220,7 @@ const WorkUpdateStatusScreen = () => {
                         onPress={() => setIsModalVisible(true)}
                         disabled={status === "On-Hold" || loading} // Disable when loading is true
                     >
-                        <Text style={styles.onHoldButtonText}>Hold Work</Text>
+                        <Text style={[styles.onHoldButtonText, { color: theme.buttonText }]}>Hold Work</Text>
                     </TouchableOpacity>
 
                     {/* Modal */}
@@ -250,11 +250,11 @@ const WorkUpdateStatusScreen = () => {
 
                                     <View style={styles.modalButtons}>
                                         <TouchableOpacity style={[styles.submitButton, { backgroundColor: theme.primary }]} onPress={handleSubmitReason}>
-                                            <Text style={styles.submitButtonText}>Submit</Text>
+                                            <Text style={[styles.submitButtonText, { color: theme.buttonText }]}>Submit</Text>
                                         </TouchableOpacity>
 
                                         <TouchableOpacity style={[styles.cancelButton, { backgroundColor: theme.secondary }]} onPress={handleCancel}>
-                                            <Text style={styles.cancelButtonText}>Cancel</Text>
+                                            <Text style={[styles.cancelButtonText, { color: theme.buttonText }]}>Cancel</Text>
                                         </TouchableOpacity>
                                     </View>
                                 </View>
@@ -294,21 +294,21 @@ const styles = StyleSheet.create({
         borderRadius: 5,
         alignItems: "center",
     },
-    updateButtonText: { color: "#fff", fontWeight: "600", fontSize: 16 },
+    updateButtonText: { fontWeight: "600", fontSize: 16 },
     onHoldButton: {
         paddingVertical: 12,
         borderRadius: 5,
         alignItems: "center",
         marginTop: 10,
     },
-    onHoldButtonText: { color: "#fff", fontWeight: "600", fontSize: 16 },
+    onHoldButtonText: { fontWeight: "600", fontSize: 16 },
     goBackButton: {
         paddingVertical: 12,
         borderRadius: 5,
         alignItems: "center",
         marginTop: 10,
     },
-    goBackButtonText: { color: "#fff", fontWeight: "600", fontSize: 16 },
+    goBackButtonText: { fontWeight: "600", fontSize: 16 },
     modalOverlay: { flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: "rgba(0, 0, 0, 0.5)" },
     modalContent: { padding: 16, borderRadius: 10, width: "80%" },
     modalTitle: { fontSize: 20, fontWeight: "bold", marginBottom: 16 },
@@ -326,14 +326,14 @@ const styles = StyleSheet.create({
         width: "48%",
         alignItems: "center",
     },
-    submitButtonText: { color: "#fff", fontWeight: "600", fontSize: 16 },
+    submitButtonText: { fontWeight: "600", fontSize: 16 },
     cancelButton: {
         paddingVertical: 12,
         borderRadius: 5,
         width: "48%",
         alignItems: "center",
     },
-    cancelButtonText: { color: "#fff", fontWeight: "600", fontSize: 16 },
+    cancelButtonText: { fontWeight: "600", fontSize: 16 },
 
     card: {
         padding: 3,

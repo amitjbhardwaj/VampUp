@@ -64,13 +64,13 @@ const IMPSPaymentScreen = () => {
                     onPress={handlePayment}
                 >
                 
-                <Text style={styles.buttonText}>Pay Now</Text>
+                <Text style={[styles.buttonText, { color: theme.buttonText }]}>Pay Now</Text>
                 </Pressable>
                 <Pressable
                     style={[styles.payButton, { backgroundColor: theme.primary }]}
                     onPress={handleCancel}
                 >
-                    <Text style={styles.buttonText}>Cancel</Text>
+                    <Text style={[styles.buttonText, { color: theme.buttonText }]}>Cancel</Text>
                 </Pressable>
             </View>
         </View>
@@ -97,7 +97,7 @@ const styles = StyleSheet.create({
         padding: 15,
         borderRadius: 8,
         alignItems: "center",
-    },    buttonText: { color: "white", fontWeight: "bold", fontSize: 16 },
+    },    buttonText: { fontWeight: "bold", fontSize: 16 },
 });
 
 export default IMPSPaymentScreen;

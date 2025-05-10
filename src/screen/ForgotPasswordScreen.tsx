@@ -39,6 +39,10 @@ const ForgotPasswordScreen = () => {
     const [countdown, setCountdown] = useState(60);
     const [showResend, setShowResend] = useState(false);
 
+    const [aadharFocused, setAadharFocused] = useState(false);
+    const [otpFocused, setOtpFocused] = useState(false);
+    const [passwordFocused, setPasswordFocused] = useState(false);
+    const [confirmPasswordFocused, setConfirmPasswordFocused] = useState(false);
 
     useEffect(() => {
         let interval: NodeJS.Timeout;
@@ -183,20 +187,22 @@ const ForgotPasswordScreen = () => {
                         >
                             <FontAwesome name="id-card" size={24} color={theme.iconColor} style={styles.inputIcon} />
                             <TextInput
-                                placeholder="Aadhaar Number"
+                                placeholder={aadharFocused ? "" : "Aadhaar Number"}
                                 placeholderTextColor={theme.mode === "dark" ? "#fff" : "#999"}
                                 keyboardType="numeric"
                                 maxLength={12}
                                 style={[styles.inputText, { color: theme.text }]}
                                 value={aadhaar}
                                 onChangeText={setAadhaar}
+                                onFocus={() => setAadharFocused(true)}
+                                onBlur={() => setAadharFocused(false)}
                             />
                         </View>
                         {aadhaarError ? (
                             <Text style={[styles.errorText, { color: theme.errorText }]}>{aadhaarError}</Text>
                         ) : null}
                         <TouchableOpacity style={[styles.actionBtn, { backgroundColor: theme.primary }]} onPress={handleSubmitAadhaar}>
-                            <Text style={styles.actionBtnText}>Submit</Text>
+                            <Text style={[styles.actionBtnText, { color: theme.buttonText }]}>Submit</Text>
                         </TouchableOpacity>
                     </Animated.View>
                 )}
@@ -215,13 +221,15 @@ const ForgotPasswordScreen = () => {
                         >
                             <FontAwesome name="key" size={24} color={theme.iconColor} style={styles.inputIcon} />
                             <TextInput
-                                placeholder="OTP"
+                                placeholder={otpFocused ? "" : "OTP"}
                                 placeholderTextColor={theme.mode === "dark" ? "#fff" : "#999"}
                                 keyboardType="numeric"
                                 maxLength={6}
                                 style={[styles.inputText, { color: theme.text }]}
                                 value={otp}
                                 onChangeText={setOtp}
+                                onFocus={() => setOtpFocused(true)}
+                                onBlur={() => setOtpFocused(false)}
                             />
                         </View>
 
@@ -245,7 +253,7 @@ const ForgotPasswordScreen = () => {
                             style={[styles.actionBtn, { backgroundColor: theme.primary }]}
                             onPress={handleSubmitOtp}
                         >
-                            <Text style={styles.actionBtnText}>Submit OTP</Text>
+                            <Text style={[styles.actionBtnText, { color: theme.buttonText }]}>Submit OTP</Text>
                         </TouchableOpacity>
                     </Animated.View>
                 )}
@@ -254,7 +262,7 @@ const ForgotPasswordScreen = () => {
                 {/* Password Reset */}
                 {step === "password" && (
                     <Animated.View style={{ transform: [{ translateX: passwordShakeAnim }] }}>
-                        <Text style={[styles.title, { color: theme.text }]}>Reset Password</Text>
+                        <Text style={[styles.actionBtnText, { color: theme.buttonText }]}>Reset Password</Text>
                         <View
                             style={[
                                 styles.inputContainer,
@@ -264,12 +272,14 @@ const ForgotPasswordScreen = () => {
                         >
                             <FontAwesome name="lock" size={24} color={theme.iconColor} style={styles.inputIcon} />
                             <TextInput
-                                placeholder="New Password"
+                                placeholder={passwordFocused ? "" : "New Password"}
                                 placeholderTextColor={theme.mode === "dark" ? "#fff" : "#999"}
                                 secureTextEntry
                                 style={[styles.inputText, { color: theme.text }]}
                                 value={newPassword}
                                 onChangeText={setNewPassword}
+                                onFocus={() => setPasswordFocused(true)}
+                                onBlur={() => setPasswordFocused(false)}
                             />
                         </View>
                         <View
@@ -281,19 +291,21 @@ const ForgotPasswordScreen = () => {
                         >
                             <FontAwesome name="lock" size={24} color={theme.iconColor} style={styles.inputIcon} />
                             <TextInput
-                                placeholder="Confirm Password"
+                                placeholder={confirmPasswordFocused ? "" : "Confirm Password"}
                                 placeholderTextColor={theme.mode === "dark" ? "#fff" : "#999"}
                                 secureTextEntry
                                 style={[styles.inputText, { color: theme.text }]}
                                 value={confirmPassword}
                                 onChangeText={setConfirmPassword}
+                                onFocus={() => setConfirmPasswordFocused(true)}
+                                onBlur={() => setConfirmPasswordFocused(false)}
                             />
                         </View>
                         {passwordError ? (
                             <Text style={[styles.errorText, { color: theme.errorText }]}>{passwordError}</Text>
                         ) : null}
                         <TouchableOpacity style={[styles.actionBtn, { backgroundColor: theme.primary }]} onPress={handleResetPassword}>
-                            <Text style={styles.actionBtnText}>Reset Password</Text>
+                            <Text style={[styles.actionBtnText, { color: theme.buttonText }]}>Reset Password</Text>
                         </TouchableOpacity>
                     </Animated.View>
                 )}
@@ -382,7 +394,6 @@ const styles = StyleSheet.create({
         marginTop: 15,
     },
     actionBtnText: {
-        color: "white",
         fontSize: 18,
         fontWeight: "bold",
     },

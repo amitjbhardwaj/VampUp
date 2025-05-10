@@ -175,7 +175,7 @@ const ContractorInitiatePaymentScreen = () => {
                                 style={[styles.paymentButton, { backgroundColor: theme.primary }]}
                                 onPress={() => navigation.navigate("PaymentModeScreen", { projectId: item.project_Id })}
                             >
-                                <Text style={styles.buttonText}>Make Payment</Text>
+                                <Text style={[styles.buttonText, { color: theme.buttonText }]}>Make Payment</Text>
                             </Pressable>
                         </View>
                     )}
@@ -260,7 +260,6 @@ const styles = StyleSheet.create({
         alignItems: "center",
     },
     buttonText: {
-        color: "white",
         fontWeight: "bold",
         fontSize: 16,
     },

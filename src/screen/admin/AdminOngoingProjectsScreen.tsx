@@ -169,14 +169,14 @@ const AdminOngoingProjectsScreen = () => {
                 </Text>
                 {/* Buttons with custom padding */}
                 <View style={styles.buttonContainer}>
-                    <TouchableOpacity style={styles.button} onPress={() => handleOnHold(project._id)}>
-                        <Text style={styles.buttonText}>On-Hold</Text>
+                    <TouchableOpacity  style={[styles.button, { backgroundColor: theme.primary }]} onPress={() => handleOnHold(project._id)}>
+                        <Text style={[styles.buttonText, { color: theme.buttonText }]}>On-Hold</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity style={styles.button} onPress={() => handleDelete(project._id)}>
-                        <Text style={styles.buttonText}>Delete</Text>
+                    <TouchableOpacity  style={[styles.button, { backgroundColor: theme.primary }]} onPress={() => handleDelete(project._id)}>
+                        <Text style={[styles.buttonText, { color: theme.buttonText }]}>Delete</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity style={styles.button} onPress={() => handleCallContractor(project.contractor_phone)}>
-                        <Text style={styles.buttonText}>Call Contractor</Text>
+                    <TouchableOpacity  style={[styles.button, { backgroundColor: theme.primary }]} onPress={() => handleCallContractor(project.contractor_phone)}>
+                        <Text style={[styles.buttonText, { color: theme.buttonText }]}>Call Contractor</Text>
                     </TouchableOpacity>
                 </View>
             </View>
@@ -254,7 +254,6 @@ const styles = StyleSheet.create({
         alignItems: "center",
     },
     buttonText: {
-        color: "#fff",
         fontSize: 16,
         fontWeight: "600",
     },

@@ -345,19 +345,19 @@ const ContractorCompletedProjectsScreen = () => {
 
                             <View style={styles.buttonRow}>
                                 <TouchableOpacity style={[styles.viewDetailsButton, { backgroundColor: theme.primary }]} onPress={() => handleCallWorker(project.worker_phone)}>
-                                    <Text style={styles.buttonText}>Call Worker</Text>
+                                    <Text style={[styles.buttonText, { color: theme.buttonText }]}>Call Worker</Text>
                                 </TouchableOpacity>
                                 <TouchableOpacity style={[styles.onHoldButton, { backgroundColor: theme.primary }]} onPress={() => Alert.alert("Need More Work", `Requesting more work for ${project.project_Id}`)}>
-                                    <Text style={styles.buttonText}>Need More Work</Text>
+                                    <Text style={[styles.buttonText, { color: theme.buttonText }]}>Need More Work</Text>
                                 </TouchableOpacity>
                                 <TouchableOpacity style={[styles.viewDetailsButton, { backgroundColor: theme.primary }]} onPress={() => handleUploadEvidence(project.project_Id)}>
-                                    <Text style={styles.buttonText}>Upload Evidence</Text>
+                                    <Text style={[styles.buttonText, { color: theme.buttonText }]}>Upload Evidence</Text>
                                 </TouchableOpacity>
                                 <TouchableOpacity style={[styles.onHoldButton, { backgroundColor: theme.primary }]} onPress={() => handleSecondLevelApproval(project.project_Id)}>
-                                    <Text style={styles.buttonText}>Second Level Approval</Text>
+                                    <Text style={[styles.buttonText, { color: theme.buttonText }]}>Second Level Approval</Text>
                                 </TouchableOpacity>
                                 <TouchableOpacity style={[styles.onHoldButton, { backgroundColor: '#28a745' }]} onPress={() => navigation.navigate("PaymentModeScreen", { projectId: project.project_Id })}>
-                                    <Text style={styles.buttonText}>Make Payment</Text>
+                                    <Text style={[styles.buttonText, { color: theme.buttonText }]}>Make Payment</Text>
                                 </TouchableOpacity>
                             </View>
                         </View>
@@ -374,8 +374,8 @@ const ContractorCompletedProjectsScreen = () => {
                                 <Text style={[styles.adminName, { color: theme.text }]}>{admin}</Text>
                             </TouchableOpacity>
                         </ScrollView>
-                        <TouchableOpacity style={styles.modalCloseButton} onPress={() => setShowAdminModal(false)}>
-                            <Text style={styles.modalCloseButtonText}>Close</Text>
+                        <TouchableOpacity style={[styles.modalCloseButton, { backgroundColor: theme.primary }]} onPress={() => setShowAdminModal(false)}>
+                            <Text style={[styles.buttonText, { color: theme.buttonText }]}>Close</Text>
                         </TouchableOpacity>
                     </View>
                 </View>
@@ -459,7 +459,6 @@ const styles = StyleSheet.create({
         marginBottom: 10,
     },
     buttonText: {
-        color: '#fff',
         fontWeight: 'bold',
         fontSize: 16,
     },
@@ -527,16 +526,10 @@ const styles = StyleSheet.create({
     },
     modalCloseButton: {
         marginTop: 20,
-        backgroundColor: "#007bff",
         padding: 10,
         borderRadius: 8,
         alignItems: 'center',
     },
-    modalCloseButtonText: {
-        color: "#fff",
-        fontWeight: "bold",
-    },
-
 });
 
 export default ContractorCompletedProjectsScreen;

@@ -179,8 +179,8 @@ const WorkerComplaintHistoryScreen = () => {
                     </TouchableOpacity>
 
                     <TouchableOpacity style={[styles.button, styles.deleteButton]} onPress={() => handleDelete(item.complaint_Id)}>
-                        <Icon name="trash" size={18} color="#fff" />
-                        <Text style={styles.buttonText}>Delete</Text>
+                        <Icon name="trash" size={18} color={theme.buttonText} />
+                        <Text style={[styles.buttonText, { color: theme.buttonText }]}>Delete</Text>
                     </TouchableOpacity>
                 </View>
 

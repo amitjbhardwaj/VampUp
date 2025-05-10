@@ -238,7 +238,7 @@ const AdminAddNewProjectScreen = () => {
                     style={[styles.button, { backgroundColor: theme.primary }]}
                     onPress={handleSubmit}
                 >
-                    <Text style={styles.buttonText}>Add</Text>
+                    <Text style={[styles.buttonText, { color: theme.buttonText }]}>Add</Text>
                 </TouchableOpacity>
             </View>
 
@@ -288,7 +288,6 @@ const styles = StyleSheet.create({
     },
 
     buttonText: {
-        color: "#fff",
         fontSize: 16,
         fontWeight: "600",
     },

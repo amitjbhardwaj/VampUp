@@ -35,6 +35,7 @@ const WorkerRequestPaymentScreen = () => {
     const [error, setError] = useState<string | null>(null); // Error state
     const [workerName, setWorkerName] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(true);  // Loading state
+    const [amountFocused, setAmountFocused] = useState(false);
 
     useEffect(() => {
         const fetchCompletedProjects = async () => {
@@ -202,8 +203,10 @@ const WorkerRequestPaymentScreen = () => {
                             keyboardType="numeric"
                             value={amount}
                             onChangeText={setAmount}
-                            placeholder="Enter Amount"
+                            placeholder={amountFocused ? "" : "Enter Amount"}
                             placeholderTextColor={isDarkMode ? "#fff" : "#888"} // Set placeholder color
+                            onFocus={() => setAmountFocused(true)}
+                            onBlur={() => setAmountFocused(false)}
                         />
 
 
@@ -211,9 +214,9 @@ const WorkerRequestPaymentScreen = () => {
                             style={[styles.submitButton, { backgroundColor: theme.primary }]}
                             onPress={handleSubmit}
                         >
-                            <Text style={[styles.submitButtonText, { color: isDarkMode ? "#fff" : "#fff" }]}>Submit</Text>
+                            <Text style={[styles.submitButtonText, { color: theme.buttonText }]}>Submit</Text>
                         </TouchableOpacity>
-                    </View>
+                    </View> 
                 </View>
             </ScrollView>
         </SafeAreaView>

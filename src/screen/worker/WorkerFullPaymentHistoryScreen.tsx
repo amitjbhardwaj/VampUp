@@ -84,7 +84,7 @@ const WorkerFullPaymentHistoryScreen = () => {
                 style={[styles.paymentButton, { backgroundColor: theme.primary }]}
                 onPress={() => navigation.navigate("WorkerPaymentDetailsScreen", { project })}
             >
-                <Text style={styles.paymentButtonText}>View Payment</Text>
+                <Text style={[styles.paymentButtonText, { color: theme.buttonText }]}>View Payment</Text>
             </TouchableOpacity>
         </View>
     );
@@ -137,7 +137,6 @@ const styles = StyleSheet.create({
         borderRadius: 10,
     },
     paymentButtonText: {
-        color: '#fff',
         fontWeight: 'bold',
         fontSize: 16,
     },

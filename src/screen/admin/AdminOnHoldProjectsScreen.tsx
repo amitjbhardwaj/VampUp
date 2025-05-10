@@ -154,14 +154,14 @@ const AdminOnHoldProjectsScreen = () => {
                 </Text>
                 {/* Buttons with custom padding */}
                 <View style={styles.buttonContainer}>
-                    <TouchableOpacity style={styles.button} onPress={() => handleActive(project._id)}>
-                        <Text style={styles.buttonText}>Active</Text>
+                    <TouchableOpacity  style={[styles.button, { backgroundColor: theme.primary }]} onPress={() => handleActive(project._id)}>
+                        <Text style={[styles.buttonText, { color: theme.buttonText }]}>Active</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity style={styles.button} onPress={() => handleDelete(project._id)}>
-                        <Text style={styles.buttonText}>Delete</Text>
+                    <TouchableOpacity  style={[styles.button, { backgroundColor: theme.primary }]} onPress={() => handleDelete(project._id)}>
+                        <Text style={[styles.buttonText, { color: theme.buttonText }]}>Delete</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity style={styles.button} onPress={() => handleCallContractor(project.contractor_phone)}>
-                        <Text style={styles.buttonText}>Call Contractor</Text>
+                    <TouchableOpacity  style={[styles.button, { backgroundColor: theme.primary }]} onPress={() => handleCallContractor(project.contractor_phone)}>
+                        <Text style={[styles.buttonText, { color: theme.buttonText }]}>Call Contractor</Text>
                     </TouchableOpacity>
                 </View>
 
@@ -225,13 +225,13 @@ const AdminOnHoldProjectsScreen = () => {
                         <View style={[styles.modalView, { backgroundColor: theme.card }]}>
                             <Text style={[styles.modalTitle, { color: theme.text }]}>Confirm Activation</Text>
                             {/* Display End Date in yyyy-mm-dd format */}
-                            <Text style={styles.dateText}>End Date: {endDate.toISOString().split('T')[0]}</Text>
+                            <Text style={[styles.dateText, { color: theme.text }]}>End Date: {endDate.toISOString().split('T')[0]}</Text>
                             <View style={styles.buttonRow}>
                                 <TouchableOpacity style={[styles.modalButton, { backgroundColor: theme.primary }]} onPress={handleConfirmActivate}>
-                                    <Text style={styles.buttonText}>Confirm</Text>
+                                    <Text style={[styles.buttonText, { color: theme.buttonText }]}>Confirm</Text>
                                 </TouchableOpacity>
                                 <TouchableOpacity style={[styles.modalButton, { backgroundColor: theme.secondary }]} onPress={() => setActivateModalVisible(false)}>
-                                    <Text style={styles.buttonText}>Cancel</Text>
+                                    <Text style={[styles.buttonText, { color: theme.buttonText }]}>Cancel</Text>
                                 </TouchableOpacity>
                             </View>
                         </View>
@@ -277,7 +277,6 @@ const styles = StyleSheet.create({
         alignItems: "center",
     },
     buttonText: {
-        color: "#fff",
         fontSize: 16,
         fontWeight: "600",
     },

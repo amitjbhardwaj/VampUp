@@ -8,15 +8,15 @@ const DarkTheme = {
   text: '#EAEAEA',
   textColor: '#EAEAEA',
   inputBackground: '#1E1E1E',
-  primary: '#82B1FF',               // soft blue for better visibility
+  primary: '#82B1FF', 
   secondary: '#A1A1A1',
   success: '#4CAF50',
   danger: '#FF5252',
   errorColor: '#FF6E6E',
   errorText: '#FF8A80',
-  buttonBackground: '#3949AB',      // elevated contrast button
-  buttonText: '#FFFFFF',
-  buttonTextColor: '#FFFFFF',
+  buttonBackground: '#3949AB',
+  buttonText: '#000000',
+  buttonTextColor: '#000000',
   buttonBackgroundColor: '#3949AB',
   card: '#1E1E1E',
   cardBackground: '#1E1E1E',
@@ -36,7 +36,7 @@ const LightTheme = {
   text: '#212121',
   textColor: '#212121',
   inputBackground: '#FFFFFF',
-  primary: '#3D5AFE',              // strong indigo for brand consistency
+  primary: '#3D5AFE',
   secondary: '#757575',
   success: '#2E7D32',
   danger: '#C62828',

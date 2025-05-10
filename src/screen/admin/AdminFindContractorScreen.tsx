@@ -106,7 +106,7 @@ const AdminFindContractorScreen = () => {
 
                 <View style={styles.buttonContainer}>
                     <TouchableOpacity style={[styles.button, { backgroundColor: theme.primary }]} onPress={handleOkay}>
-                        <Text style={styles.buttonText}>Okay</Text>
+                        <Text style={[styles.buttonText, { color: theme.buttonText }]}>Okay</Text>
                     </TouchableOpacity>
 
 
@@ -147,7 +147,6 @@ const styles = StyleSheet.create({
         width: '100%', // optional: controls button width
     },
     buttonText: {
-        color: '#fff',
         fontWeight: 'bold',
         fontSize: 16,
     },

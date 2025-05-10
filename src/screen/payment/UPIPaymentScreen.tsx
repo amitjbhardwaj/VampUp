@@ -43,13 +43,13 @@ const UPIPaymentScreen = () => {
                     style={[styles.payButton, { backgroundColor: theme.primary, marginRight: 10 }]}
                     onPress={handlePayment}
                 >
-                    <Text style={styles.buttonText}>Pay Now</Text>
+                    <Text style={[styles.buttonText, { color: theme.buttonText }]}>Pay Now</Text>
                 </Pressable>
                 <Pressable
                     style={[styles.payButton, { backgroundColor: theme.primary }]}
                     onPress={handleCancel}
                 >
-                    <Text style={styles.buttonText}>Cancel</Text>
+                    <Text style={[styles.buttonText, { color: theme.buttonText }]}>Cancel</Text>
                 </Pressable>
             </View>
 
@@ -68,7 +68,7 @@ const styles = StyleSheet.create({
         fontSize: 16,
         marginBottom: 20
     },
-    buttonText: { color: "white", fontWeight: "bold", fontSize: 16 },
+    buttonText: { fontWeight: "bold", fontSize: 16 },
     buttonContainer: {
         flexDirection: "row",
         justifyContent: "space-between",

@@ -15,8 +15,7 @@ import {
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useTheme } from "../../context/ThemeContext";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
-import axios, { isAxiosError } from "axios";
-import { useNavigation } from "@react-navigation/native";
+import axios from "axios";
 import Header from "../Header";
 
 type Project = {
@@ -267,13 +266,13 @@ const AdminAllocateFundsScreen = () => {
                         style={[styles.button, styles.saveButton]}
                         onPress={() => handleSaveFunds(item.project_Id)}
                     >
-                        <Text style={styles.buttonText}>Save</Text>
+                        <Text style={[styles.buttonText, { color: theme.buttonText }]}>Save</Text>
                     </TouchableOpacity>
                     <TouchableOpacity
                         style={[styles.button, styles.cancelButton]}
                         onPress={handleCancel} // Cancel the allocation action
                     >
-                        <Text style={styles.buttonText}>Cancel</Text>
+                        <Text style={[styles.buttonText, { color: theme.buttonText }]}>Cancel</Text>
                     </TouchableOpacity>
                 </View>
             )}
@@ -292,13 +291,13 @@ const AdminAllocateFundsScreen = () => {
                         style={[styles.button, styles.saveButton]}
                         onPress={() => handleSaveUpdatedFunds(item.project_Id)}
                     >
-                        <Text style={styles.buttonText}>Save Updated Funds</Text>
+                        <Text style={[styles.buttonText, { color: theme.buttonText }]}>Save Updated Funds</Text>
                     </TouchableOpacity>
                     <TouchableOpacity
                         style={[styles.button, styles.cancelButton]}
                         onPress={handleCancel} // Cancel the update action
                     >
-                        <Text style={styles.buttonText}>Cancel</Text>
+                        <Text style={[styles.buttonText, { color: theme.buttonText }]}>Cancel</Text>
                     </TouchableOpacity>
                 </View>
             )}
@@ -307,7 +306,7 @@ const AdminAllocateFundsScreen = () => {
                 style={[styles.button, { backgroundColor: allocatedFunds[item.project_Id] ? "#3498DB" : "#2ECC71" }]}
                 onPress={() => allocatedFunds[item.project_Id] ? handleUpdateFunds(item.project_Id) : handleAllocateFunds(item.project_Id)}
             >
-                <Text style={styles.buttonText}>
+                <Text style={[styles.buttonText, { color: theme.buttonText }]}>
                     {allocatedFunds[item.project_Id] ? "Update Funds" : "Allocate Funds"}
                 </Text>
             </TouchableOpacity>
@@ -400,7 +399,6 @@ const styles = StyleSheet.create({
         alignItems: "center",
     },
     buttonText: {
-        color: "#fff",
         fontWeight: "600",
         fontSize: 14,
     },

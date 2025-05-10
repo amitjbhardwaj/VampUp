@@ -178,7 +178,7 @@ const ContractorOnHoldProjectsScreen = () => {
                                         style={[styles.resumeButton, { backgroundColor: theme.primary }]}
                                         activeOpacity={0.8}
                                     >
-                                        <Text style={styles.buttonText}>View Details</Text>
+                                        <Text style={[styles.buttonText, { color: theme.buttonText }]}>View Details</Text>
                                     </TouchableOpacity>
 
                                     <TouchableOpacity
@@ -186,7 +186,7 @@ const ContractorOnHoldProjectsScreen = () => {
                                         onPress={() => openActivateModal(project._id)}
                                         activeOpacity={0.8}
                                     >
-                                        <Text style={styles.buttonText}>Resume Project</Text>
+                                        <Text style={[styles.buttonText, { color: theme.buttonText }]}>Resume Project</Text>
                                     </TouchableOpacity>
                                 </View>
                             </View>
@@ -217,13 +217,13 @@ const ContractorOnHoldProjectsScreen = () => {
                         <View style={[styles.modalView, { backgroundColor: theme.card }]}>
                             <Text style={[styles.modalTitle, { color: theme.text }]}>Confirm Activation</Text>
                             {/* Display End Date in yyyy-mm-dd format */}
-                            <Text style={styles.dateText}>End Date: {endDate.toISOString().split('T')[0]}</Text>
+                            <Text style={[styles.dateText, { color: theme.text }]}>End Date: {endDate.toISOString().split('T')[0]}</Text>
                             <View style={styles.buttonRow}>
                                 <TouchableOpacity style={[styles.modalButton, { backgroundColor: theme.primary }]} onPress={handleConfirmActivate}>
-                                    <Text style={styles.buttonText}>Confirm</Text>
+                                    <Text style={[styles.buttonText, { color: theme.buttonText }]}>Confirm</Text>
                                 </TouchableOpacity>
                                 <TouchableOpacity style={[styles.modalButton, { backgroundColor: theme.secondary }]} onPress={() => setActivateModalVisible(false)}>
-                                    <Text style={styles.buttonText}>Cancel</Text>
+                                    <Text style={[styles.buttonText, { color: theme.buttonText }]}>Cancel</Text>
                                 </TouchableOpacity>
                             </View>
                         </View>
@@ -303,7 +303,6 @@ const styles = StyleSheet.create({
         width: '48%',
     },
     buttonText: {
-        color: '#fff',
         fontWeight: 'bold',
         fontSize: 16,
     },
@@ -339,7 +338,6 @@ const styles = StyleSheet.create({
     dateText: {
         fontSize: 16,
         fontWeight: 'bold',
-        color: '#000',
         textAlign: 'center',
         marginVertical: 10,
     },

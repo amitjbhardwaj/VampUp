@@ -287,7 +287,7 @@ const WorkerClockOutScreen: React.FC = () => {
                             onPress={handleClockOut}
                             disabled={!selectedProject || !attendanceType || (attendanceType === "Manually" && !selectedDate)}
                         >
-                            <Text style={styles.submitButtonText}>Clock Out</Text>
+                            <Text style={[styles.submitButtonText, { color: theme.buttonText }]}>Submit</Text>
                         </TouchableOpacity>
                     </View>
                 </View>
@@ -366,7 +366,6 @@ const getStyles = (theme: any) => StyleSheet.create({
         elevation: 5,
     },
     submitButtonText: {
-        color: "#fff",
         fontSize: 16,
         fontWeight: "bold",
     },

@@ -2,8 +2,6 @@ import React, { useEffect, useState } from "react";
 import { View, Text, FlatList, ActivityIndicator, StyleSheet, ScrollView, SafeAreaView, Platform, StatusBar, TouchableOpacity } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useTheme } from "../../context/ThemeContext";
-import { useNavigation } from "@react-navigation/native";
-import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import Header from "../Header";
 
 interface Project {

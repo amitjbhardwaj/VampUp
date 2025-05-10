@@ -2,7 +2,7 @@ import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import React from "react";
 import Icon from "react-native-vector-icons/MaterialIcons";
-import { View, Text, StyleSheet, TouchableOpacity, StatusBar, ScrollView, Platform, SafeAreaView } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, StatusBar, Platform, SafeAreaView } from "react-native";
 import { useTheme } from "../../context/ThemeContext";
 import Header from "../Header";
 

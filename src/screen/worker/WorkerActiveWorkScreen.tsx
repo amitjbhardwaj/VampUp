@@ -168,13 +168,13 @@ const WorkerActiveWorkScreen = () => {
           })
         }
       >
-        <Text style={styles.updateButtonText}>Update Status</Text>
+        <Text style={[styles.updateButtonText, { color: theme.buttonText }]}>Update Status</Text>
       </TouchableOpacity>
       <TouchableOpacity
         style={[styles.callButton, { backgroundColor: theme.primary }]}
         onPress={() => Linking.openURL(`tel:${project.contractor_phone}`)}
       >
-        <Text style={styles.callButtonText}>Call Contractor</Text>
+        <Text style={[styles.callButtonText, { color: theme.buttonText }]}>Call Contractor</Text>
       </TouchableOpacity>
     </Animated.View>
   );
@@ -245,9 +245,9 @@ const styles = StyleSheet.create({
   backButton: { padding: 13, marginTop: 20, alignItems: "center", borderRadius: 10 },
   backButtonText: { color: "#fff", fontWeight: "bold", fontSize: 16 },
   updateButton: { padding: 10, marginTop: 15, alignItems: "center", borderRadius: 10 },
-  updateButtonText: { color: "#fff", fontWeight: "bold", fontSize: 16 },
+  updateButtonText: { fontWeight: "bold", fontSize: 16 },
   callButton: { padding: 10, marginTop: 10, alignItems: "center", borderRadius: 10 },
-  callButtonText: { color: "#fff", fontWeight: "bold", fontSize: 16 },
+  callButtonText: { fontWeight: "bold", fontSize: 16 },
   safeArea: {
     flex: 1,
     paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,

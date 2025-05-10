@@ -169,8 +169,8 @@ const LoginScreen = () => {
                         <ActivityIndicator color="#fff" />
                     ) : (
                         <>
-                            <MaterialCommunityIcons name="login" size={22} color="#fff" style={styles.buttonIcon} />
-                            <Text style={styles.buttonText}>Login</Text>
+                            <MaterialCommunityIcons name="login" size={22} color={theme.buttonTextColor} style={styles.buttonIcon} />
+                            <Text style={[styles.buttonText, { color: theme.buttonText }]}>Login</Text>
                         </>
                     )}
                 </Pressable>
@@ -184,8 +184,8 @@ const LoginScreen = () => {
                     ]}
                     onPress={handleBiometricLogin}
                 >
-                    <MaterialCommunityIcons name="fingerprint" size={22} color="#fff" style={styles.buttonIcon} />
-                    <Text style={styles.buttonText}>Login with Biometrics</Text>
+                    <MaterialCommunityIcons name="fingerprint" size={22} color={theme.buttonTextColor} style={styles.buttonIcon} />
+                    <Text style={[styles.buttonText, { color: theme.buttonTextColor }]}>Login with Biometrics</Text>
                 </Pressable>
 
                 {/* Login with Passcode */}
@@ -197,14 +197,15 @@ const LoginScreen = () => {
                     ]}
                     onPress={() => navigation.navigate("VerifyAadharScreen" as never)}
                 >
-                    <MaterialCommunityIcons name="lock" size={22} color="#fff" style={styles.buttonIcon} />
-                    <Text style={styles.buttonText}>Login with Passcode</Text>
+                    <MaterialCommunityIcons name="lock" size={22} color={theme.buttonTextColor} style={styles.buttonIcon} />
+                    <Text style={[styles.buttonText, { color: theme.buttonText }]}>Login with Passcode</Text>
                 </Pressable>
 
                 <TouchableOpacity onPress={() => navigation.navigate("Signup")}>
                     <Text style={[styles.footerText, { color: theme.text }]}>
-                        Don't have an account? <Text style={styles.createText}>Create</Text>
+                        Don't have an account? <Text style={[styles.createText, { color: theme.text }]}>Create</Text>
                     </Text>
+
                 </TouchableOpacity>
             </View>
         </ScrollView>
@@ -269,7 +270,6 @@ const styles = StyleSheet.create({
         marginRight: 8,
     },
     buttonText: {
-        color: "#fff",
         fontSize: 18,
         fontWeight: "bold",
     },

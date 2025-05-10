@@ -207,7 +207,7 @@ const ContractorAllWorkScreen = () => {
                                         activeOpacity={0.8}
                                         disabled={project.status === "In-Progress"} // Disable if project is In-Progress
                                     >
-                                        <Text style={styles.buttonText}>Activate Project</Text>
+                                        <Text style={[styles.buttonText, { color: theme.buttonText }]}>Activate Project</Text>
                                     </TouchableOpacity>
 
                                     <TouchableOpacity
@@ -215,7 +215,7 @@ const ContractorAllWorkScreen = () => {
                                         onPress={() => openOnHoldModal(project._id)}
                                         activeOpacity={0.8}
                                     >
-                                        <Text style={styles.buttonText}>On-Hold</Text>
+                                        <Text style={[styles.buttonText, { color: theme.buttonText }]}>On-Hold</Text>
                                     </TouchableOpacity>
                                 </View>
                             </View>
@@ -249,10 +249,10 @@ const ContractorAllWorkScreen = () => {
                             <Text style={[styles.dateText, { color: theme.text }]}>End Date: {endDate.toISOString().split('T')[0]}</Text>
                             <View style={styles.buttonRow}>
                                 <TouchableOpacity style={[styles.modalButton, { backgroundColor: theme.primary }]} onPress={handleConfirmActivate}>
-                                    <Text style={styles.buttonText}>Confirm</Text>
+                                    <Text style={[styles.buttonText, { color: theme.buttonText }]}>Confirm</Text>
                                 </TouchableOpacity>
                                 <TouchableOpacity style={[styles.modalButton, { backgroundColor: theme.secondary }]} onPress={() => setActivateModalVisible(false)}>
-                                    <Text style={styles.buttonText}>Cancel</Text>
+                                    <Text style={[styles.buttonText, { color: theme.buttonText }]}>Cancel</Text>
                                 </TouchableOpacity>
                             </View>
                         </View>
@@ -278,10 +278,10 @@ const ContractorAllWorkScreen = () => {
                             />
                             <View style={styles.buttonRow}>
                                 <TouchableOpacity style={[styles.modalButton, { backgroundColor: theme.primary }]} onPress={handleConfirmOnHold}>
-                                    <Text style={styles.buttonText}>OK</Text>
+                                    <Text style={[styles.buttonText, { color: theme.buttonText }]}>OK</Text>
                                 </TouchableOpacity>
                                 <TouchableOpacity style={[styles.modalButton, { backgroundColor: theme.secondary }]} onPress={() => setOnHoldModalVisible(false)}>
-                                    <Text style={styles.buttonText}>Cancel</Text>
+                                    <Text style={[styles.buttonText, { color: theme.buttonText }]}>Cancel</Text>
                                 </TouchableOpacity>
                             </View>
                         </View>
@@ -350,7 +350,6 @@ const styles = StyleSheet.create({
         width: '48%',
     },
     buttonText: {
-        color: '#fff',
         fontWeight: 'bold',
         fontSize: 14,
     },

@@ -297,13 +297,13 @@ const Home = () => {
                                 style={[styles.submitButton, { backgroundColor: theme.primary }]}
                                 onPress={handleSubmit}
                             >
-                                <Text style={styles.submitButtonText}>Submit</Text>
+                                <Text style={[styles.submitButtonText, { color: theme.buttonText }]}>Submit</Text>
                             </TouchableOpacity>
                             <TouchableOpacity
                                 style={[styles.submitButton, { backgroundColor: theme.secondary }]}
                                 onPress={() => setModalVisible(false)}
                             >
-                                <Text style={[styles.submitButtonText]}>Back</Text>
+                                <Text style={[styles.submitButtonText, { color: theme.buttonText }]}>Back</Text>
                             </TouchableOpacity>
                         </View>
 
@@ -435,7 +435,6 @@ const styles = StyleSheet.create({
         marginBottom: 10
     },
     submitButtonText: {
-        color: '#fff',
         fontSize: 16,
         fontWeight: 'bold',
     },

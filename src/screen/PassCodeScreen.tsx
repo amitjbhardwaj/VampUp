@@ -160,7 +160,7 @@ const styles = StyleSheet.create({
     borderRadius: 6,
   },
   resetText: {
-    fontSize: 14,
+    fontSize: 18,
     marginTop: 10,
   },
   resendText: {

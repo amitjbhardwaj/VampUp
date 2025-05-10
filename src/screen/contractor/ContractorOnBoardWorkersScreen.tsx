@@ -167,12 +167,6 @@ const ContractorOnBoardWorkersScreen = () => {
         }
     };
 
-
-    const handleBackPress = () => {
-        navigation.goBack();
-    };
-
-
     return (
 
         <SafeAreaView style={[styles.safeArea, { backgroundColor: theme.background }]}>
@@ -244,7 +238,7 @@ const ContractorOnBoardWorkersScreen = () => {
                         style={[styles.button, { backgroundColor: theme.primary }]}
                         onPress={handleSubmit}
                     >
-                        <Text style={styles.buttonText}>Submit</Text>
+                        <Text style={[styles.buttonText, { color: theme.buttonText }]}>Submit</Text>
                     </TouchableOpacity>
                 </View>
 
@@ -303,7 +297,6 @@ const styles = StyleSheet.create({
     },
 
     buttonText: {
-        color: '#fff',
         fontWeight: 'bold',
         fontSize: 16,
     },

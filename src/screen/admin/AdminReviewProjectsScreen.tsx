@@ -58,6 +58,7 @@ const AdminReviewProjectsScreen = () => {
     const fetchCompletedProjects = async () => {
         try {
             const storedName = await AsyncStorage.getItem("adminName");
+            console.log(storedName)
 
             if (storedName) {
                 const response = await fetch(`http://192.168.129.119:5001/get-projects-by-admin?second_level_approver=${storedName}`);
@@ -240,14 +241,14 @@ const AdminReviewProjectsScreen = () => {
 
                 {/* Buttons Section */}
                 <View style={styles.buttonContainer}>
-                    <TouchableOpacity style={[styles.button, styles.callButton]} onPress={() => handleCallContractor(project.contractor_phone)}>
-                        <Text style={styles.buttonText}>Call Contractor</Text>
+                    <TouchableOpacity style={[styles.button, { backgroundColor: theme.primary }]} onPress={() => handleCallContractor(project.contractor_phone)}>
+                        <Text style={[styles.buttonText, { color: theme.buttonText }]}>Call Contractor</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity style={[styles.button, styles.approveButton]} onPress={() => handleApprove(project._id)}>
-                        <Text style={styles.buttonText}>Approve</Text>
+                    <TouchableOpacity style={[styles.button, { backgroundColor: theme.primary }]} onPress={() => handleApprove(project._id)}>
+                        <Text style={[styles.buttonText, { color: theme.buttonText }]}>Approve</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity style={[styles.button, styles.rejectButton]} onPress={() => handleReject(project._id)}>
-                        <Text style={styles.buttonText}>Reject</Text>
+                    <TouchableOpacity style={[styles.button, { backgroundColor: theme.primary }]} onPress={() => handleReject(project._id)}>
+                        <Text style={[styles.buttonText, { color: theme.buttonText }]}>Reject</Text>
                     </TouchableOpacity>
                 </View>
             </View>
@@ -318,17 +319,7 @@ const styles = StyleSheet.create({
         marginVertical: 8,
         alignItems: "center",
     },
-    callButton: {
-        backgroundColor: "#007bff", // Blue
-    },
-    approveButton: {
-        backgroundColor: "#28a745", // Green
-    },
-    rejectButton: {
-        backgroundColor: "#ff3b30", // Red
-    },
     buttonText: {
-        color: "#fff",
         fontSize: 16,
         fontWeight: "600",
     },

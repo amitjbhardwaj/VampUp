@@ -85,7 +85,7 @@ const PaymentModeScreen = () => {
                             }
                         }}
                     >
-                        <Text style={styles.buttonText}>Proceed with {selectedMode}</Text>
+                        <Text style={[styles.buttonText, { color: theme.buttonText }]}>Proceed with {selectedMode}</Text>
                     </Pressable>
                 )}
             </View>
@@ -107,7 +107,7 @@ const styles = StyleSheet.create({
     },
     optionText: { fontSize: 16, fontWeight: "bold", flex: 1, marginLeft: 10 },
     proceedButton: { padding: 15, borderRadius: 8, alignItems: "center", marginTop: 15 },
-    buttonText: { color: "white", fontWeight: "bold", fontSize: 16 },
+    buttonText: { fontWeight: "bold", fontSize: 16 },
     safeArea: {
         flex: 1,
         paddingTop: Platform.OS === "android" ? StatusBar.currentHeight : 0,

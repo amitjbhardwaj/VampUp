@@ -45,7 +45,7 @@ const PasswordUpdatedScreen = () => {
                     style={[styles.button, { backgroundColor: theme.primary }]}
                     onPress={() => navigation.navigate("LoginScreen")}
                 >
-                    <Text style={styles.buttonText}>Go to Login</Text>
+                    <Text style={[styles.buttonText, { color: theme.buttonText }]}>Go to Login</Text>
                 </TouchableOpacity>
             </Animated.View>
         </View>
@@ -88,7 +88,6 @@ const styles = StyleSheet.create({
         elevation: 3,
     },
     buttonText: {
-        color: "#fff",
         fontSize: 16,
         fontWeight: "bold",
     },

@@ -142,7 +142,7 @@ const AdminAllocateProjectScreen = () => {
                                     onPress={() => handleFindContractor(project._id)}
                                     activeOpacity={0.8}
                                 >
-                                    <Text style={styles.buttonText}>
+                                    <Text style={[styles.buttonText, { color: theme.buttonText }]}>
                                         {project.contractor_name ? "Re-Allocate Project" : "Allocate Project"}
                                     </Text>
                                 </TouchableOpacity>
@@ -152,7 +152,7 @@ const AdminAllocateProjectScreen = () => {
                                     onPress={() => handleDeleteProject(project._id)}
                                     activeOpacity={0.8}
                                 >
-                                    <Text style={styles.buttonText}>Delete</Text>
+                                    <Text style={[styles.buttonText, { color: theme.buttonText }]}>Delete</Text>
                                 </TouchableOpacity>
                             </View>
                         </View>
@@ -213,7 +213,6 @@ const styles = StyleSheet.create({
         marginHorizontal: 5,
     },
     buttonText: {
-        color: '#fff',
         fontWeight: 'bold',
         fontSize: 14,
     },

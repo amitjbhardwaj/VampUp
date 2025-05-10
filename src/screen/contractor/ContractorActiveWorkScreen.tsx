@@ -24,7 +24,6 @@ type Project = {
 
 const ContractorActiveWorkScreen = () => {
     const { theme } = useTheme();
-    const navigation = useNavigation();
     const [projects, setProjects] = useState<Project[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [contractorName, setContractorName] = useState<string | null>(null);
@@ -32,6 +31,7 @@ const ContractorActiveWorkScreen = () => {
     const [onHoldModalVisible, setOnHoldModalVisible] = useState<boolean>(false);
     const [reason, setReason] = useState<string>("");
     const [funds, setFunds] = useState<Record<string, number>>({});
+    const [reasonFocused, setReasonFocused] = useState(false);
 
 
     useEffect(() => {
@@ -171,7 +171,7 @@ const ContractorActiveWorkScreen = () => {
                                         style={[styles.viewDetailsButton, { backgroundColor: theme.primary }]}
                                         activeOpacity={0.8}
                                     >
-                                        <Text style={styles.buttonText}>View Details</Text>
+                                        <Text style={[styles.buttonText, { color: theme.buttonText }]}>View Details</Text>
                                     </TouchableOpacity>
 
                                     <TouchableOpacity
@@ -179,7 +179,7 @@ const ContractorActiveWorkScreen = () => {
                                         activeOpacity={0.8}
                                         onPress={() => openOnHoldModal(project._id)}
                                     >
-                                        <Text style={styles.buttonText}>On-Hold</Text>
+                                        <Text style={[styles.buttonText, { color: theme.buttonText }]}>On-Hold</Text>
                                     </TouchableOpacity>
                                 </View>
                             </View>
@@ -199,17 +199,19 @@ const ContractorActiveWorkScreen = () => {
                             <Text style={[styles.modalTitle, { color: theme.text }]}>Reason To On-Hold</Text>
                             <TextInput
                                 style={[styles.input, { color: theme.text, borderColor: theme.primary }]}
-                                placeholder="Enter reason"
+                                placeholder={reasonFocused ? "" : "Enter reason"}
                                 placeholderTextColor={theme.text}
                                 value={reason}
                                 onChangeText={setReason}
+                                onFocus={() => setReasonFocused(true)}
+                                onBlur={() => setReasonFocused(false)}
                             />
                             <View style={styles.buttonRow}>
                                 <TouchableOpacity style={[styles.modalButton, { backgroundColor: theme.primary }]} onPress={handleConfirmOnHold}>
-                                    <Text style={styles.buttonText}>OK</Text>
+                                    <Text style={[styles.buttonText, { color: theme.buttonText }]}>OK</Text>
                                 </TouchableOpacity>
                                 <TouchableOpacity style={[styles.modalButton, { backgroundColor: theme.secondary }]} onPress={() => setOnHoldModalVisible(false)}>
-                                    <Text style={styles.buttonText}>Cancel</Text>
+                                    <Text style={[styles.buttonText, { color: theme.buttonText }]}>Cancel</Text>
                                 </TouchableOpacity>
                             </View>
                         </View>
@@ -292,7 +294,6 @@ const styles = StyleSheet.create({
         width: '48%', // Adjust width to ensure buttons are aligned
     },
     buttonText: {
-        color: '#fff',
         fontWeight: 'bold',
         fontSize: 16,
     },

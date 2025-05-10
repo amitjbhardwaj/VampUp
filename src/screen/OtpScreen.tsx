@@ -111,8 +111,8 @@ const OtpScreen = ({ route }: { route: OtpScreenRouteProp }) => {
           style={[styles.button, { backgroundColor: theme.primary }]}
           onPress={handleOtpVerify}
         >
-          <Icon name="lock" size={18} color="#fff" style={styles.buttonIcon} />
-          <Text style={styles.buttonText}>Verify OTP</Text>
+          <Icon name="lock" size={18} color={theme.buttonTextColor} style={styles.buttonIcon} />
+          <Text style={[styles.buttonText, { color: theme.buttonText }]}>Verify OTP</Text>
         </TouchableOpacity>
       </KeyboardAvoidingView>
     </SafeAreaView>
@@ -192,7 +192,6 @@ const styles = StyleSheet.create({
   buttonText: {
     fontSize: 16,
     fontWeight: "600",
-    color: "#fff",
   },
   safeArea: {
     flex: 1,

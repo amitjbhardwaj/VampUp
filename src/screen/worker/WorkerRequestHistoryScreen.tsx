@@ -85,10 +85,10 @@ const WorkerRequestHistoryScreen = () => {
 
             <View style={styles.buttonRow}>
                 <TouchableOpacity style={[styles.editButton, { backgroundColor: theme.primary }]} onPress={() => { setSelectedRequest(item); setNewAmount(item.amount); setModalVisible(true); }}>
-                    <Text style={[styles.buttonText, { color: theme.mode === 'dark' ? '#fff' : '#fff' }]}>Edit</Text>
+                    <Text style={[styles.buttonText, { color: theme.buttonText }]}>Edit</Text>
                 </TouchableOpacity>
                 <TouchableOpacity style={styles.deleteButton} onPress={() => confirmDeleteRequest(item.requestId)}>
-                    <Text style={styles.buttonText}>Delete</Text>
+                    <Text style={[styles.buttonText, { color: theme.buttonText }]}>Delete</Text>
                 </TouchableOpacity>
             </View>
         </View>
@@ -117,10 +117,10 @@ const WorkerRequestHistoryScreen = () => {
                             />
                             <View style={styles.modalButtonRow}>
                                 <TouchableOpacity style={[styles.saveButton, { backgroundColor: theme.primary }]} onPress={editRequest}>
-                                    <Text style={styles.buttonText}>Save</Text>
+                                    <Text style={[styles.buttonText, { color: theme.buttonText }]}>Save</Text>
                                 </TouchableOpacity>
                                 <TouchableOpacity style={[styles.cancelButton, { backgroundColor: theme.secondary }]} onPress={() => setModalVisible(false)}>
-                                    <Text style={styles.buttonText}>Cancel</Text>
+                                    <Text style={[styles.buttonText, { color: theme.buttonText }]}>Cancel</Text>
                                 </TouchableOpacity>
                             </View>
                         </View>
@@ -153,7 +153,7 @@ const styles = StyleSheet.create({
     buttonRow: { flexDirection: "row", justifyContent: "space-between", marginTop: 10 },
     editButton: { backgroundColor: "#000", padding: 10, borderRadius: 5, flex: 1, marginRight: 5 },
     deleteButton: { backgroundColor: "#dc3545", padding: 10, borderRadius: 5, flex: 1 },
-    buttonText: { color: "#fff", textAlign: "center", fontWeight: "bold" },
+    buttonText: { textAlign: "center", fontWeight: "bold" },
 
     // Modal Styles
     modalContainer: { flex: 1, justifyContent: "center", alignItems: "center", backgroundColor: "rgba(0,0,0,0.5)" },
