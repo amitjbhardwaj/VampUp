@@ -36,6 +36,7 @@ const Settings = () => {
               <Icon name={option.icon} size={24} color={theme.text} />
               <Text style={[styles.optionText, { color: theme.text }]}>
                 {option.name}
+
               </Text>
               <Switch
                 value={theme.mode === "dark"}
@@ -54,6 +55,12 @@ const Settings = () => {
               <Text style={[styles.optionText, { color: theme.mode === "dark" ? "#fff" : "#000" }]}>
                 {option.name}
               </Text>
+              <Icon
+                name="chevron-right"
+                size={24}
+                color={theme.text}
+                style={styles.chevronIcon}
+              />
             </TouchableOpacity>
           )}
         </View>
@@ -102,6 +109,9 @@ const styles = StyleSheet.create({
   logoutText: {
     color: "#d32f2f",
     fontWeight: "bold",
+  },
+  chevronIcon: {
+    marginLeft: "auto",
   },
 });
 

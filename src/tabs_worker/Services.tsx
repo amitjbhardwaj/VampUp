@@ -92,6 +92,12 @@ const Services = () => {
               <Text style={styles.notificationText}>{completedProjectsCount}</Text>
             </View>
           )}
+          <Icon
+            name="chevron-right"
+            size={24}
+            color={theme.text}
+            style={styles.chevronIcon}
+          />
         </TouchableOpacity>
       ))}
     </View>
@@ -118,8 +124,8 @@ const styles = StyleSheet.create({
   },
   notificationBadge: {
     position: "absolute",
-    top: 16,  // Adjusted top to position it slightly down
-    right: 20,  // Adjusted left to position it slightly to the left
+    top: 18,  // Adjusted top to position it slightly down
+    right: 40,  // Adjusted left to position it slightly to the left
     backgroundColor: "red",
     width: 20,
     height: 20,
@@ -131,6 +137,9 @@ const styles = StyleSheet.create({
     color: "white",
     fontSize: 12,
     fontWeight: "bold",
+  },
+  chevronIcon: {
+    marginLeft: "auto",
   },
 });
 

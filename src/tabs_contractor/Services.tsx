@@ -35,6 +35,12 @@ const Services = () => {
         >
           <Icon name={option.icon} size={24} color={theme.text} />
           <Text style={[styles.optionText, { color: theme.text }]}>{option.name}</Text>
+          <Icon
+            name="chevron-right"
+            size={24}
+            color={theme.text}
+            style={styles.chevronIcon}
+          />
         </TouchableOpacity>
       ))}
     </View>
@@ -57,6 +63,9 @@ const styles = StyleSheet.create({
   optionText: {
     fontSize: 16,
     marginLeft: 10,
+  },
+  chevronIcon: {
+    marginLeft: "auto",
   },
 });
 

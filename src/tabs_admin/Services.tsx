@@ -30,13 +30,25 @@ const Services = () => {
       {settingsOptions.map((option, index) => (
         <TouchableOpacity
           key={index}
-          style={[styles.option, { backgroundColor: theme.mode === 'dark' ? "#333" : "#fff" }]}
+          style={[
+            styles.option,
+            { backgroundColor: theme.mode === 'dark' ? "#333" : "#fff" },
+          ]}
           onPress={() => navigation.navigate(option.screen as keyof SettingsStackParamList)}
         >
           <Icon name={option.icon} size={24} color={theme.text} />
-          <Text style={[styles.optionText, { color: theme.text }]}>{option.name}</Text>
+          <Text style={[styles.optionText, { color: theme.text }]}>
+            {option.name}
+          </Text>
+          <Icon
+            name="chevron-right"
+            size={24}
+            color={theme.text}
+            style={styles.chevronIcon}
+          />
         </TouchableOpacity>
       ))}
+
     </View>
   );
 };
@@ -58,6 +70,10 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginLeft: 10,
   },
+  chevronIcon: {
+    marginLeft: "auto",
+  },
+
 });
 
 export default Services;
