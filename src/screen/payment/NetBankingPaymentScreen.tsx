@@ -1,18 +1,30 @@
 import React, { useState } from "react";
 import { View, Text, TextInput, Pressable, StyleSheet, Alert } from "react-native";
 import { useTheme } from "../../context/ThemeContext";
-import { useNavigation, useRoute } from "@react-navigation/native";
+import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import { Picker } from "@react-native-picker/picker";
+
+type NetBankingPaymentRouteParams = {
+    NetBankingPaymentScreen: {
+        projectId: string;
+        fund: number;
+    };
+};
+
+type NetBankingPaymentRouteProp = RouteProp<NetBankingPaymentRouteParams, "NetBankingPaymentScreen">;
+
+
 
 const NetBankingPaymentScreen = () => {
     const { theme } = useTheme();
     const navigation = useNavigation();
-    const route = useRoute();
-    const { projectId } = route.params as { projectId: string };
+    const route = useRoute<NetBankingPaymentRouteProp>();
+    const { projectId, fund } = route.params as { projectId: string; fund: number; };
 
     const [selectedBank, setSelectedBank] = useState<string | null>(null);
     const [accountNumber, setAccountNumber] = useState<string>("");
     const [ifscCode, setIfscCode] = useState<string>("");
+    const [amount, setAmount] = useState<string>(route?.params?.fund?.toString() || "");
 
     const handlePayment = () => {
         if (!selectedBank || !accountNumber || !ifscCode) {
@@ -21,12 +33,12 @@ const NetBankingPaymentScreen = () => {
         }
 
         // Simulating a successful transaction
-        Alert.alert("Payment Successful", `Payment for Project ID ${projectId} completed through ${selectedBank}`, [
+        Alert.alert("Payment Successful", `Payment for Project ID ${projectId} completed through ${selectedBank} of amount ${fund}`, [
             { text: "OK", onPress: () => navigation.goBack() }
         ]);
     };
 
-    const handleCancel = ()=>{
+    const handleCancel = () => {
         navigation.goBack();
     }
 
@@ -62,6 +74,15 @@ const NetBankingPaymentScreen = () => {
                 placeholder="IFSC Code"
                 value={ifscCode}
                 onChangeText={setIfscCode}
+            />
+
+            <Text style={[styles.label, { color: theme.text }]}>Amount</Text>
+            <TextInput
+                style={[styles.input, { borderColor: theme.primary, color: theme.text }]}
+                placeholder="Enter Amount"
+                keyboardType="numeric"
+                value={amount}
+                onChangeText={setAmount}
             />
 
             <View style={styles.buttonContainer}>
@@ -103,7 +124,7 @@ const styles = StyleSheet.create({
         padding: 15,
         borderRadius: 8,
         alignItems: "center",
-    },    
+    },
     buttonText: { fontWeight: "bold", fontSize: 16 },
 });
 

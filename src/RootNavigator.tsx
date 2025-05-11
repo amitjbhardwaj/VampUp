@@ -132,15 +132,15 @@ export type RootStackParamList = {
     AdminRejectedProjectsScreen: undefined;
     AdminAllocateFundsScreen: undefined;
 
-    PaymentModeScreen: { projectId: string };
-    UPIPaymentScreen: { projectId: string };
-    NetBankingPaymentScreen: { projectId: string };
-    DebitCardPaymentScreen: { projectId: string };
-    CreditCardPaymentScreen: { projectId: string };
-    WalletsPaymentScreen: { projectId: string };
-    NEFTPaymentScreen: { projectId: string };
-    RTGSPaymentScreen: { projectId: string };
-    IMPSPaymentScreen: { projectId: string };
+    PaymentModeScreen: { projectId: string; fund: number; };
+    UPIPaymentScreen: { projectId: string; fund: number; };
+    NetBankingPaymentScreen: { projectId: string; fund: number; };
+    DebitCardPaymentScreen: { projectId: string; fund: number; };
+    CreditCardPaymentScreen: { projectId: string; fund: number; };
+    WalletsPaymentScreen: { projectId: string; fund: number; };
+    NEFTPaymentScreen: { projectId: string; fund: number; };
+    RTGSPaymentScreen: { projectId: string; fund: number; };
+    IMPSPaymentScreen: { projectId: string; fund: number; };
 };
 
 const Stack = createStackNavigator<RootStackParamList>();

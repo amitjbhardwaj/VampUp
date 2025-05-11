@@ -1,18 +1,28 @@
 import React, { useState } from "react";
 import { View, Text, TextInput, Pressable, StyleSheet, Alert } from "react-native";
 import { useTheme } from "../../context/ThemeContext";
-import { useNavigation, useRoute } from "@react-navigation/native";
+import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
+
+type RTGSPaymentRouteParams = {
+    RTGSPaymentScreen: {
+        projectId: string;
+        fund: number;
+    };
+};
+
+type RTGSPaymentRouteProp = RouteProp<RTGSPaymentRouteParams, "RTGSPaymentScreen">;
+
 
 const RTGSPaymentScreen = () => {
     const { theme } = useTheme();
     const navigation = useNavigation();
-    const route = useRoute();
-    const { projectId } = route.params as { projectId: string };
+    const route = useRoute<RTGSPaymentRouteProp>();
+    const { projectId, fund } = route.params as { projectId: string; fund: number; };
 
     const [bankName, setBankName] = useState<string>("");
     const [accountNumber, setAccountNumber] = useState<string>("");
     const [ifscCode, setIfscCode] = useState<string>("");
-    const [amount, setAmount] = useState<string>("");
+    const [amount, setAmount] = useState<string>(route?.params?.fund?.toString() || "");
 
     const handlePayment = () => {
         if (!bankName || !accountNumber || !ifscCode || !amount) {
@@ -21,7 +31,7 @@ const RTGSPaymentScreen = () => {
         }
 
         // Simulating a successful transaction
-        Alert.alert("Payment Successful", `Payment for Project ID ${projectId} completed using RTGS`, [
+        Alert.alert("Payment Successful", `Payment for Project ID ${projectId} completed using RTGS of amount ${fund}`, [
             { text: "OK", onPress: () => navigation.goBack() }
         ]);
     };

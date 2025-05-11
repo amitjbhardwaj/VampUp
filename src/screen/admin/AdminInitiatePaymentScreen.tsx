@@ -165,7 +165,10 @@ const AdminInitiatePaymentScreen = () => {
 
                             <Pressable
                                 style={[styles.paymentButton, { backgroundColor: theme.primary }]}
-                                onPress={() => navigation.navigate("PaymentModeScreen", { projectId: item.project_Id })}
+                                onPress={() => {
+                                    const fund = funds[item.project_Id] ?? 0; // Get the fund allocated for this project
+                                    navigation.navigate("PaymentModeScreen", { projectId: item.project_Id, fund: fund });
+                                }}
                             >
                                 <Text style={[styles.buttonText, { color: theme.buttonText }]}>Make Payment</Text>
                             </Pressable>

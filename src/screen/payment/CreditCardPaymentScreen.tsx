@@ -1,17 +1,29 @@
 import React, { useState } from "react";
 import { View, Text, TextInput, Pressable, StyleSheet, Alert } from "react-native";
 import { useTheme } from "../../context/ThemeContext";
-import { useNavigation, useRoute } from "@react-navigation/native";
+import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
+
+type CreditCardPaymentRouteParams = {
+    CreditCardPaymentScreen: {
+        projectId: string;
+        fund: number;
+    };
+};
+
+type CreditCardPaymentRouteProp = RouteProp<CreditCardPaymentRouteParams, "CreditCardPaymentScreen">;
+
 
 const CreditCardPaymentScreen = () => {
     const { theme } = useTheme();
     const navigation = useNavigation();
-    const route = useRoute();
-    const { projectId } = route.params as { projectId: string };
+    const route = useRoute<CreditCardPaymentRouteProp>();
+    const { projectId, fund } = route.params as { projectId: string; fund: number; };
 
     const [cardNumber, setCardNumber] = useState<string>("");
     const [expiryDate, setExpiryDate] = useState<string>("");
     const [cvv, setCvv] = useState<string>("");
+    const [amount, setAmount] = useState<string>(route?.params?.fund?.toString() || "");
+
 
     const handlePayment = () => {
         if (!cardNumber || !expiryDate || !cvv) {
@@ -20,7 +32,7 @@ const CreditCardPaymentScreen = () => {
         }
 
         // Simulating a successful transaction
-        Alert.alert("Payment Successful", `Payment for Project ID ${projectId} completed using Credit Card`, [
+        Alert.alert("Payment Successful", `Payment for Project ID ${projectId} completed using Credit Card of amount ${fund}`, [
             { text: "OK", onPress: () => navigation.goBack() }
         ]);
     };
@@ -57,6 +69,15 @@ const CreditCardPaymentScreen = () => {
                 keyboardType="numeric"
                 value={cvv}
                 onChangeText={setCvv}
+            />
+
+            <Text style={[styles.label, { color: theme.text }]}>Amount</Text>
+            <TextInput
+                style={[styles.input, { borderColor: theme.primary, color: theme.text }]}
+                placeholder="Enter Amount"
+                keyboardType="numeric"
+                value={amount}
+                onChangeText={setAmount}
             />
 
             <View style={styles.buttonContainer}>

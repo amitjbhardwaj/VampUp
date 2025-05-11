@@ -1,15 +1,26 @@
 import React, { useState } from "react";
 import { View, Text, TextInput, Pressable, StyleSheet, Alert } from "react-native";
 import { useTheme } from "../../context/ThemeContext";
-import { useNavigation, useRoute } from "@react-navigation/native";
+import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
+
+type UPIPaymentRouteParams = {
+    UPIPaymentScreen: {
+        projectId: string;
+        fund: number;
+    };
+};
+
+type UPIPaymentRouteProp = RouteProp<UPIPaymentRouteParams, "UPIPaymentScreen">;
+
 
 const UPIPaymentScreen = () => {
     const { theme } = useTheme();
     const navigation = useNavigation();
-    const route = useRoute();
-    const { projectId } = route.params as { projectId: string };
-
+    const route = useRoute<UPIPaymentRouteProp>();
+    const { projectId, fund } = route.params as { projectId: string; fund: number; };
     const [upiId, setUpiId] = useState("");
+    const [amount, setAmount] = useState<string>(route?.params?.fund?.toString() || "");
+    
 
     const handlePayment = () => {
         if (!upiId.includes("@")) {
@@ -17,7 +28,7 @@ const UPIPaymentScreen = () => {
             return;
         }
 
-        Alert.alert("Payment Successful", `Payment for Project ID ${projectId} completed via ${upiId}`, [
+        Alert.alert("Payment Successful", `Payment for Project ID ${projectId} completed via ${upiId} of amount ${fund}`, [
             { text: "OK", onPress: () => navigation.goBack() }
         ]);
     };
@@ -38,6 +49,16 @@ const UPIPaymentScreen = () => {
                 value={upiId}
                 onChangeText={setUpiId}
             />
+
+            <Text style={[styles.label, { color: theme.text }]}>Amount</Text>
+            <TextInput
+                style={[styles.input, { borderColor: theme.primary, color: theme.text }]}
+                placeholder="Enter Amount"
+                keyboardType="numeric"
+                value={amount}
+                onChangeText={setAmount}
+            />
+            
             <View style={styles.buttonContainer}>
                 <Pressable
                     style={[styles.payButton, { backgroundColor: theme.primary, marginRight: 10 }]}

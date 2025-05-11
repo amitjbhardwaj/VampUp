@@ -68,54 +68,27 @@ const WorkerWorkHistoryScreen = () => {
     ];
 
     const renderProjectCard = ({ item: project }: { item: any }) => (
-        <Animated.View
-            style={[styles.projectCard, { backgroundColor: theme.mode === 'dark' ? '#444' : '#fff', opacity: fadeAnim }]}
-        >
+        <View style={[styles.projectCard, { backgroundColor: theme.mode === 'dark' ? '#333' : '#fff' }]}>
             <FlatList
                 data={projectDetails(project)}
                 keyExtractor={(item) => item.label}
                 renderItem={({ item }) => (
                     <View style={styles.card}>
-                        <Icon
-                            name={item.icon}
-                            size={20}
-                            color={theme.mode === 'dark' ? '#fff' : '#000'}
-                            style={styles.icon}
-                        />
+                        <Icon name={item.icon} size={20} color={theme.mode === 'dark' ? '#fff' : '#000'} style={styles.icon} />
                         <View style={{ flex: 1 }}>
-                            <Text
-                                style={[styles.label, { color: theme.mode === 'dark' ? '#fff' : '#333' }]}
-                            >
-                                {item.label}
-                            </Text>
-                            <Text
-                                style={[styles.value, { color: theme.mode === 'dark' ? '#aaa' : '#555' }]}
-                            >
-                                {item.value}
-                            </Text>
+                            <Text style={[styles.label, { color: theme.mode === 'dark' ? '#fff' : '#000' }]}>{item.label}</Text>
+                            <Text style={[styles.value, { color: theme.mode === 'dark' ? '#fff' : '#000' }]}>{item.value}</Text>
                         </View>
                     </View>
                 )}
             />
-        </Animated.View>
+        </View>
     );
-
-    // Conditional rendering for loading, error, and empty states
-    if (isLoading) {
-        return (
-            <View style={styles.loadingContainer}>
-                <ActivityIndicator size="large" color={theme.mode === 'dark' ? '#fff' : '#000'} />
-                <Text style={styles.loadingText}>Loading completed projects...</Text>
-            </View>
-        );
-    }
 
     if (error) {
         return (
             <View style={[styles.errorContainer, { backgroundColor: theme.mode === 'dark' ? '#000' : '#fff' }]}>
-                <Text style={[styles.errorText, { color: theme.mode === 'dark' ? '#fff' : '#000' }]}>
-                    {error}
-                </Text>
+                <Text style={[styles.errorText, { color: theme.mode === 'dark' ? '#fff' : '#000' }]}>{error}</Text>
             </View>
         );
     }
@@ -123,25 +96,22 @@ const WorkerWorkHistoryScreen = () => {
     return (
         <SafeAreaView style={[styles.safeArea, { backgroundColor: theme.background }]}>
             <Header title="Completed Projects" />
-            <View style={[styles.container, { backgroundColor: theme.mode === 'dark' ? '#333' : '#f9f9f9' }]}>
-
-
-                {/* FlatList handles the scrolling of the project list */}
+            <View style={[styles.container, { backgroundColor: theme.mode === 'dark' ? '#121212' : '#f9f9f9' }]}>
                 <FlatList
                     data={completedProjects}
                     keyExtractor={(item, index) => item.project_Id || index.toString()}
                     renderItem={renderProjectCard}
                     ListEmptyComponent={
-                        <Text style={[styles.emptyText, { color: theme.mode === 'dark' ? '#ccc' : '#777' }]}>
+                        <Text style={[styles.emptyText, { color: theme.mode === 'dark' ? '#fff' : '#777' }]}>
                             No completed projects yet.
                         </Text>
                     }
-                    contentContainerStyle={styles.listContent} // Add padding to the list
                 />
             </View>
         </SafeAreaView>
     );
 };
+
 
 const styles = StyleSheet.create({
     container: { flex: 1, padding: 20 },

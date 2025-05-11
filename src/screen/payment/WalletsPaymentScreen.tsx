@@ -1,16 +1,27 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { View, Text, TextInput, Pressable, StyleSheet, Alert } from "react-native";
 import { useTheme } from "../../context/ThemeContext";
-import { useNavigation, useRoute } from "@react-navigation/native";
+import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
+
+type WalletPaymentRouteParams = {
+    WalletsPaymentScreen: {
+        projectId: string;
+        fund: number;
+    };
+};
+
+type WalletPaymentRouteProp = RouteProp<WalletPaymentRouteParams, "WalletsPaymentScreen">;
+
 
 const WalletsPaymentScreen = () => {
     const { theme } = useTheme();
     const navigation = useNavigation();
-    const route = useRoute();
-    const { projectId } = route.params as { projectId: string };
+    const route = useRoute<WalletPaymentRouteProp>();
+    const { projectId, fund } = route.params as { projectId: string; fund: number; };
 
     const [walletBalance, setWalletBalance] = useState<string>("");
-    const [amount, setAmount] = useState<string>("");
+    const [amount, setAmount] = useState<string>(route?.params?.fund?.toString() || "");
+
 
     const handlePayment = () => {
         if (!amount || !walletBalance) {
@@ -19,12 +30,12 @@ const WalletsPaymentScreen = () => {
         }
 
         // Simulating a successful transaction
-        Alert.alert("Payment Successful", `Payment for Project ID ${projectId} completed using Wallets`, [
+        Alert.alert("Payment Successful", `Payment for Project ID ${projectId} completed using Wallets of amount ${fund}`, [
             { text: "OK", onPress: () => navigation.goBack() }
         ]);
     };
 
-    const handleCancel = ()=>{
+    const handleCancel = () => {
         navigation.goBack();
     }
 

@@ -28,15 +28,16 @@ type Admin = {
 type Project = {
     project_Id: string;
     project_description: string;
-    long_project_description: string,
+    long_project_description: string;
     worker_name: string;
     worker_phone: string;
-    project_start_date: string,
-    project_end_date: string
-    status: string,
+    project_start_date: string;
+    project_end_date: string;
+    status: string;
     completion_percentage: number;
-    contractor_name: string,
+    contractor_name: string;
     images?: string[];
+    project_status: string;
 };
 
 type NavigationProps = StackNavigationProp<RootStackParamList, "ContractorCompletedProjectsScreen">;
@@ -56,7 +57,7 @@ const ContractorCompletedProjectsScreen = () => {
     const [selectedProjectId, setSelectedProjectId] = useState<string | null>(null);
 
 
-    const IMAGE_BASE_URL = 'http://192.168.129.119:5001'; // Adjust this base URL to your image server base URL.
+    const IMAGE_BASE_URL = 'http://192.168.129.119:5001';
 
     const fetchFundsForProjects = async (projects: any[]) => {
         const fundMap: Record<string, number> = {};
@@ -116,12 +117,12 @@ const ContractorCompletedProjectsScreen = () => {
             console.error("Invalid project ID");
             return;
         }
-    
+
         setLoading(true);
         try {
             const response = await axios.get(IMAGE_BASE_URL + `/get-project/${projectId}`);
             if (response.data.status === "OK") {
-                const createdBy = response.data.data.created_by;    
+                const createdBy = response.data.data.created_by;
                 setAdmin(createdBy);
             }
         } catch (error) {
@@ -130,7 +131,7 @@ const ContractorCompletedProjectsScreen = () => {
             setLoading(false);
         }
     };
-    
+
 
 
 
@@ -356,9 +357,20 @@ const ContractorCompletedProjectsScreen = () => {
                                 <TouchableOpacity style={[styles.onHoldButton, { backgroundColor: theme.primary }]} onPress={() => handleSecondLevelApproval(project.project_Id)}>
                                     <Text style={[styles.buttonText, { color: theme.buttonText }]}>Second Level Approval</Text>
                                 </TouchableOpacity>
-                                <TouchableOpacity style={[styles.onHoldButton, { backgroundColor: '#28a745' }]} onPress={() => navigation.navigate("PaymentModeScreen", { projectId: project.project_Id })}>
-                                    <Text style={[styles.buttonText, { color: theme.buttonText }]}>Make Payment</Text>
+                                <TouchableOpacity
+                                    style={[styles.onHoldButton, { backgroundColor: project.project_status === 'Approved' ? '#28a745' : '#ccc' }]}
+                                    disabled={project.project_status !== 'Approved'}
+                                    onPress={() => {
+                                        const fund = funds[project.project_Id] ?? 0; // Get the fund allocated for this project
+                                        navigation.navigate("PaymentModeScreen", { projectId: project.project_Id, fund: fund });
+                                    }}
+                                >
+                                    <Text style={[styles.buttonText, { color: theme.buttonText }]}>
+                                        Make Payment
+                                    </Text>
                                 </TouchableOpacity>
+
+
                             </View>
                         </View>
                     )}
