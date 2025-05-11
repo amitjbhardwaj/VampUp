@@ -25,16 +25,12 @@ const PaymentModeScreen = () => {
     const navigation = useNavigation<NavigationProps>();
     const route = useRoute();
 
-    const { projectId, fund } = route.params as { projectId: string; fund: number; };
+    const { _id, projectId, fund } = route.params as { _id: string; projectId: string; fund: number; };
     const [selectedMode, setSelectedMode] = useState<string | null>(null);
 
     const handlePaymentSelection = (mode: string) => {
         setSelectedMode(mode);
     };
-
-    const handleCancel = () => {
-        navigation.goBack();
-    }
 
     return (
         <SafeAreaView style={[styles.safeArea, { backgroundColor: theme.background }]}>
@@ -65,21 +61,21 @@ const PaymentModeScreen = () => {
                         style={[styles.proceedButton, { backgroundColor: theme.primary }]}
                         onPress={() => {
                             if (selectedMode === "UPI") {
-                                navigation.navigate("UPIPaymentScreen", { projectId, fund });
+                                navigation.navigate("UPIPaymentScreen", { _id, projectId, fund });
                             } else if (selectedMode === "Net Banking") {
-                                navigation.navigate("NetBankingPaymentScreen", { projectId, fund });
+                                navigation.navigate("NetBankingPaymentScreen", { _id, projectId, fund });
                             } else if (selectedMode === "Debit Card") {
-                                navigation.navigate("DebitCardPaymentScreen", { projectId, fund });
+                                navigation.navigate("DebitCardPaymentScreen", { _id, projectId, fund });
                             } else if (selectedMode === "Credit Card") {
-                                navigation.navigate("CreditCardPaymentScreen", { projectId, fund });
+                                navigation.navigate("CreditCardPaymentScreen", { _id, projectId, fund });
                             } else if (selectedMode === "Wallets") {
-                                navigation.navigate("WalletsPaymentScreen", { projectId, fund });
+                                navigation.navigate("WalletsPaymentScreen", { _id, projectId, fund });
                             } else if (selectedMode === "NEFT") {
-                                navigation.navigate("NEFTPaymentScreen", { projectId, fund });
+                                navigation.navigate("NEFTPaymentScreen", { _id, projectId, fund });
                             } else if (selectedMode === "RTGS") {
-                                navigation.navigate("RTGSPaymentScreen", { projectId, fund });
+                                navigation.navigate("RTGSPaymentScreen", { _id, projectId, fund });
                             } else if (selectedMode === "IMPS") {
-                                navigation.navigate("IMPSPaymentScreen", { projectId, fund });
+                                navigation.navigate("IMPSPaymentScreen", { _id, projectId, fund });
                             } else {
                                 console.log(`Proceeding with ${selectedMode} for project ${projectId}`);
                             }

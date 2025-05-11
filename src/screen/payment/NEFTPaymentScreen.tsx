@@ -1,11 +1,14 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { View, Text, TextInput, Pressable, StyleSheet, Alert } from "react-native";
 import { useTheme } from "../../context/ThemeContext";
 import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import axios from "axios";
 
 
 type NEFTPaymentRouteParams = {
     NEFTPaymentScreen: {
+        _id: string;
         projectId: string;
         fund: number;
     };
@@ -18,14 +21,25 @@ const NEFTPaymentScreen = () => {
     const { theme } = useTheme();
     const navigation = useNavigation();
     const route = useRoute<NEFTPaymentRouteProp>();
-    const { projectId, fund } = route.params as { projectId: string; fund: number; };
+    const { _id, projectId, fund } = route.params as { _id: string; projectId: string; fund: number; };
 
     const [bankName, setBankName] = useState<string>("");
     const [accountNumber, setAccountNumber] = useState<string>("");
     const [ifscCode, setIfscCode] = useState<string>("");
     const [amount, setAmount] = useState<string>(route?.params?.fund?.toString() || "");
+    const [admin, setAdmin] = useState<string | null>(null);
 
-    const handlePayment = () => {
+    useEffect(() => {
+        const fetchAdminName = async () => {
+            const storedName = await AsyncStorage.getItem("adminName");
+            setAdmin(storedName);
+        };
+
+        fetchAdminName();
+    }, []);
+
+
+    const handlePayment = async () => {
         if (!bankName || !accountNumber || !ifscCode || !amount) {
             Alert.alert("Error", "Please fill in all fields");
             return;
@@ -35,9 +49,22 @@ const NEFTPaymentScreen = () => {
         Alert.alert("Payment Successful", `Payment for Project ID ${projectId} completed using NEFT of amount ${fund}`, [
             { text: "OK", onPress: () => navigation.goBack() }
         ]);
+
+        try {
+            const response = await axios.put(
+                `http://192.168.129.119:5001/update-project-status/${_id}`,
+                {
+                    first_level_payment_approver: admin,
+                }
+            );
+
+            console.log("Update successful:", response.data);
+        } catch (error) {
+            console.error("Failed to update project approver:", error);
+        }
     };
 
-    const handleCancel = ()=>{
+    const handleCancel = () => {
         navigation.goBack();
     }
 
@@ -117,7 +144,7 @@ const styles = StyleSheet.create({
         padding: 15,
         borderRadius: 8,
         alignItems: "center",
-    },    buttonText: { fontWeight: "bold", fontSize: 16 },
+    }, buttonText: { fontWeight: "bold", fontSize: 16 },
 });
 
 export default NEFTPaymentScreen;

@@ -32,6 +32,7 @@ const AdminReviewProjectsScreen = () => {
     const [projectStatus, setProjectStatus] = useState<{ [key: string]: { success: boolean, reject: boolean } }>({});
     const [projects, setProjects] = useState<Project[]>([]);
     const [funds, setFunds] = useState<Record<string, number>>({});
+    const [admin, setAdmin] = useState<string | null>(null);
 
     const fetchFundsForProjects = async (projects: any[]) => {
         const fundMap: Record<string, number> = {};
@@ -58,13 +59,13 @@ const AdminReviewProjectsScreen = () => {
     const fetchCompletedProjects = async () => {
         try {
             const storedName = await AsyncStorage.getItem("adminName");
-            console.log(storedName)
+            setAdmin(storedName);
 
             if (storedName) {
                 const response = await fetch(`http://192.168.129.119:5001/get-projects-by-admin?second_level_approver=${storedName}`);
-               
+
                 const data = await response.json();
-                
+
                 if (data.status === "OK") {
                     // Filter out projects that have status 'Approved' or 'Rejected'
                     const filteredProjects = data.data.filter((project: Project) =>
@@ -332,7 +333,7 @@ const styles = StyleSheet.create({
     errorText: {
         fontSize: 18,
         color: "red",
-        textAlign: "center",     
+        textAlign: "center",
     },
     successMessageContainer: {
         backgroundColor: "green",

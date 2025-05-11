@@ -2,9 +2,12 @@ import React, { useEffect, useState } from "react";
 import { View, Text, TextInput, Pressable, StyleSheet, Alert } from "react-native";
 import { useTheme } from "../../context/ThemeContext";
 import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import axios from "axios";
 
 type WalletPaymentRouteParams = {
     WalletsPaymentScreen: {
+        _id: string;
         projectId: string;
         fund: number;
     };
@@ -17,13 +20,22 @@ const WalletsPaymentScreen = () => {
     const { theme } = useTheme();
     const navigation = useNavigation();
     const route = useRoute<WalletPaymentRouteProp>();
-    const { projectId, fund } = route.params as { projectId: string; fund: number; };
+    const { _id, projectId, fund } = route.params as { _id: string; projectId: string; fund: number; };
 
     const [walletBalance, setWalletBalance] = useState<string>("");
     const [amount, setAmount] = useState<string>(route?.params?.fund?.toString() || "");
+    const [admin, setAdmin] = useState<string | null>(null);
 
+    useEffect(() => {
+        const fetchAdminName = async () => {
+            const storedName = await AsyncStorage.getItem("adminName");
+            setAdmin(storedName);
+        };
 
-    const handlePayment = () => {
+        fetchAdminName();
+    }, []);
+
+    const handlePayment = async () => {
         if (!amount || !walletBalance) {
             Alert.alert("Error", "Please fill in all fields");
             return;
@@ -33,6 +45,19 @@ const WalletsPaymentScreen = () => {
         Alert.alert("Payment Successful", `Payment for Project ID ${projectId} completed using Wallets of amount ${fund}`, [
             { text: "OK", onPress: () => navigation.goBack() }
         ]);
+
+        try {
+            const response = await axios.put(
+                `http://192.168.129.119:5001/update-project-status/${_id}`,
+                {
+                    first_level_payment_approver: admin,
+                }
+            );
+
+            console.log("Update successful:", response.data);
+        } catch (error) {
+            console.error("Failed to update project approver:", error);
+        }
     };
 
     const handleCancel = () => {
