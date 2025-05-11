@@ -331,7 +331,7 @@ const styles = StyleSheet.create({
     },
     welcomeGradient: {
         marginTop: 50,
-        marginBottom: 70,
+        marginBottom: 50,
         paddingVertical: 10,
         paddingHorizontal: 20,
         borderRadius: 30,
