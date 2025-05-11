@@ -240,7 +240,7 @@ const styles = StyleSheet.create({
     },
     welcomeGradient: {
         marginTop: 40,
-        marginBottom: 50,
+        marginBottom: 80,
         paddingVertical: 10,
         paddingHorizontal: 20,
         borderRadius: 30,

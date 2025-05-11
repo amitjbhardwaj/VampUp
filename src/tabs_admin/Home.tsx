@@ -330,8 +330,8 @@ const styles = StyleSheet.create({
         marginLeft: "-145%",
     },
     welcomeGradient: {
-        marginTop: 40,
-        marginBottom: 50,
+        marginTop: 50,
+        marginBottom: 70,
         paddingVertical: 10,
         paddingHorizontal: 20,
         borderRadius: 30,

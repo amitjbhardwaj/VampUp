@@ -25,6 +25,7 @@ const VerifyAadharScreen = () => {
   const navigation = useNavigation<VerifyAadharScreenNavigationProp>();
   const { theme } = useTheme();
   const [aadhar, setAadhar] = useState("");
+  const [aadharFocused, setAadharFocused] = useState(false);
 
   const handleVerify = async () => {
     const aadharTrimmed = aadhar.replace(/\s/g, "");
@@ -72,17 +73,19 @@ const VerifyAadharScreen = () => {
             style={[styles.input, { color: theme.text, borderColor: theme.primary }]}
             keyboardType="numeric"
             maxLength={12}
-            placeholder="XXXX XXXX XXXX"
+            placeholder={aadharFocused ? "" : "XXXX XXXX XXXX"}
             value={aadhar}
             onChangeText={setAadhar}
             placeholderTextColor={theme.icon}
+            onFocus={() => setAadharFocused(true)}
+            onBlur={() => setAadharFocused(false)}
           />
 
           <TouchableOpacity
             style={[styles.button, { backgroundColor: theme.primary }]}
             onPress={handleVerify}
           >
-            <Text style={styles.buttonText}>Continue</Text>
+            <Text style={[styles.buttonText, { color: theme.buttonText }]}>Continue</Text>
           </TouchableOpacity>
         </ScrollView>
       </KeyboardAvoidingView>
@@ -119,7 +122,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   buttonText: {
-    color: "#fff",
     fontSize: 16,
     fontWeight: "bold",
   },
