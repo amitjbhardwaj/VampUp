@@ -14,9 +14,9 @@ import {
 import { NavigationProp, RouteProp, useRoute } from "@react-navigation/native";
 import { RootStackParamList } from "../RootNavigator";
 import { useTheme } from "../context/ThemeContext";
-import Header from "./Header";
 import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import Header from "./Header";
 
 type NavigationProps = NavigationProp<RootStackParamList, "PassCodeLoginScreen">;
 type RouteProps = RouteProp<RootStackParamList, "PassCodeLoginScreen">;
@@ -40,46 +40,49 @@ const PassCodeLoginScreen = ({ navigation }: { navigation: NavigationProps }) =>
     ]).start();
   };
 
+  const showAlert = (message: string) => {
+    if (Platform.OS === "android") {
+      Alert.alert(message, "", [
+        { text: "OK", style: "default" }
+      ]);
+    } else {
+      Alert.alert(message);
+    }
+  };
+
   const validatePasscode = async () => {
     try {
-      const response = await axios.post('http://192.168.129.119:5001/verify-passcode', {
+      const response = await axios.post("http://192.168.129.119:5001/verify-passcode", {
         aadhar,
         passcode,
       });
 
       if (response.data.status === "OK") {
         const { token, role, firstName, lastName } = response.data;
+        await AsyncStorage.setItem("authToken", token);
 
-        // Save token locally (e.g., AsyncStorage in React Native)
-        await AsyncStorage.setItem('authToken', token);
+        const fullName = `${firstName ?? ""} ${lastName ?? ""}`.trim();
 
-        // Navigate to the role-based screen
         if (role === "Worker") {
-          await AsyncStorage.setItem("workerName", `${firstName ?? ""} ${lastName ?? ""}`.trim());
+          await AsyncStorage.setItem("workerName", fullName);
           navigation.navigate("WorkerHomeScreen" as never);
         } else if (role === "Contractor") {
-          await AsyncStorage.setItem("contractorName", `${firstName ?? ""} ${lastName ?? ""}`.trim());
+          await AsyncStorage.setItem("contractorName", fullName);
           navigation.navigate("ContractorHomeScreen" as never);
         } else if (role === "Admin") {
-          await AsyncStorage.setItem("adminName", `${firstName ?? ""} ${lastName ?? ""}`.trim());
+          await AsyncStorage.setItem("adminName", fullName);
           navigation.navigate("AdminHomeScreen" as never);
         } else {
-          Alert.alert("Unknown role detected");
+          showAlert("Unknown role detected");
         }
-
       } else {
         console.warn("Unexpected response:", response.data);
       }
-
     } catch (error: any) {
-      if (error.response && error.response.data?.error) {
-        triggerShake();
-        handleReset();
-        Alert.alert(error.response.data.error); // e.g., "Invalid passcode"
-      } else {
-        console.error("Login error:", error);
-        Alert.alert("Something went wrong. Please try again.");
-      }
+      triggerShake();
+      handleReset();
+      const errorMessage = error.response?.data?.error ?? "Something went wrong. Please try again.";
+      showAlert(errorMessage);
     }
   };
 
@@ -91,17 +94,16 @@ const PassCodeLoginScreen = ({ navigation }: { navigation: NavigationProps }) =>
 
   const handleKeyPress = (key: string) => {
     if (passcode.length < 4) {
-      setPasscode(prev => prev + key);
+      setPasscode((prev) => prev + key);
+      setPressedKey(key);
+      setTimeout(() => setPressedKey(null), 150);
     }
-
-    setPressedKey(key);
-    setTimeout(() => setPressedKey(null), 200);
   };
 
   const handleBackspace = () => {
-    setPasscode(prev => prev.slice(0, -1));
+    setPasscode((prev) => prev.slice(0, -1));
     setPressedKey("←");
-    setTimeout(() => setPressedKey(null), 200);
+    setTimeout(() => setPressedKey(null), 150);
   };
 
   const handleReset = () => setPasscode("");
@@ -111,17 +113,21 @@ const PassCodeLoginScreen = ({ navigation }: { navigation: NavigationProps }) =>
   return (
     <SafeAreaView style={[styles.safeArea, { backgroundColor: theme.background }]}>
       <Header title="Verify Aadhar" />
-
-      <View style={[styles.container, { backgroundColor: theme.background }]}>
+      <View style={styles.container}>
         <View style={styles.topContainer}>
-          <Text style={[styles.promptText, { color: theme.text }]}>Enter Passcode</Text>
+          <Text style={[styles.promptText, { color: theme.text }]}>
+            Enter Passcode
+          </Text>
           <Animated.View style={[styles.dotsContainer, { transform: [{ translateX: errorShake }] }]}>
-            {[0, 1, 2, 3].map(index => (
+            {[0, 1, 2, 3].map((index) => (
               <View
                 key={index}
                 style={[
                   styles.dot,
-                  { backgroundColor: index < passcode.length ? theme.primary : "#ccc" },
+                  {
+                    backgroundColor:
+                      index < passcode.length ? theme.primary : theme.inactiveDot || "#999",
+                  },
                 ]}
               />
             ))}
@@ -138,13 +144,14 @@ const PassCodeLoginScreen = ({ navigation }: { navigation: NavigationProps }) =>
                     key={index}
                     style={[
                       styles.keypadKey,
-                      isHighlighted && { backgroundColor: theme.primary, borderRadius: 12 },
+                      isHighlighted && { backgroundColor: theme.primary },
                     ]}
                     onPress={() => {
                       if (key === "←") handleBackspace();
                       else if (key !== "") handleKeyPress(key);
                     }}
                     disabled={key === ""}
+                    activeOpacity={0.7}
                   >
                     <Text style={[styles.keyText, { color: isHighlighted ? "#fff" : theme.text }]}>
                       {key}
@@ -155,6 +162,10 @@ const PassCodeLoginScreen = ({ navigation }: { navigation: NavigationProps }) =>
             </View>
           ))}
         </View>
+
+        <TouchableOpacity onPress={() => showAlert("Redirect to passcode recovery")}>
+          <Text style={[styles.forgotText, { color: theme.primary }]}>Code forgotten?</Text>
+        </TouchableOpacity>
       </View>
     </SafeAreaView>
   );
@@ -168,6 +179,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: "space-between",
+    paddingHorizontal: 20,
   },
   topContainer: {
     alignItems: "center",
@@ -181,16 +193,16 @@ const styles = StyleSheet.create({
   dotsContainer: {
     flexDirection: "row",
     justifyContent: "center",
-    marginBottom: 12,
-    gap: 18,
+    marginBottom: 50,
+    gap: 25,
   },
   dot: {
-    width: 12,
-    height: 12,
-    borderRadius: 6,
+    width: 14,
+    height: 14,
+    borderRadius: 7,
   },
   keypadContainer: {
-    paddingBottom: 30,
+    marginBottom: 20,
   },
   keypadRow: {
     flexDirection: "row",
@@ -198,14 +210,19 @@ const styles = StyleSheet.create({
     marginVertical: 10,
   },
   keypadKey: {
-    width: 70,
-    height: 70,
+    width: 80,
+    height: 80,
     alignItems: "center",
     justifyContent: "center",
   },
   keyText: {
-    fontSize: 26,
-    fontWeight: "400",
+    fontSize: 30,
+    fontWeight: "500",
+  },
+  forgotText: {
+    textAlign: "center",
+    fontSize: 18,
+    marginBottom: 40,
   },
 });
 
