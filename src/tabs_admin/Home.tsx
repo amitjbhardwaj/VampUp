@@ -13,7 +13,7 @@ import {
     PlusCircle,
     Hammer, // for "construct"
     Clipboard,
-    CreditCard,
+    Wallet,
     MessageSquare,
     FileText,
     Users,
@@ -184,7 +184,7 @@ const Home = () => {
                         <TouchableOpacity onPress={() => navigation.navigate('AdminAddNewProjectScreen')}>
                             <PlusCircle size={50} color={theme.text} />
                         </TouchableOpacity>
-                        <Text style={{ color: theme.text }}>New Project</Text>
+                        <Text style={{ color: theme.text, fontSize: 15 }}>New Project</Text>
                     </View>
                     <View style={styles.iconItem}>
                         <TouchableOpacity onPress={() => navigation.navigate('AdminOngoingProjectsScreen')}>
@@ -195,7 +195,7 @@ const Home = () => {
                                 </View>
                             )}
                         </TouchableOpacity>
-                        <Text style={{ color: theme.text }}>Ongoing Projects</Text>
+                        <Text style={{ color: theme.text, fontSize: 15 }}>Ongoing Projects</Text>
                     </View>
                 </View>
 
@@ -210,18 +210,18 @@ const Home = () => {
                                 </View>
                             )}
                         </TouchableOpacity>
-                        <Text style={{ color: theme.text }}>Review Project</Text>
+                        <Text style={{ color: theme.text, fontSize: 15 }}>Review Project</Text>
                     </View>
                     <View style={styles.iconItem}>
                         <TouchableOpacity onPress={() => navigation.navigate('AdminInitiatePaymentScreen')}>
-                            <CreditCard size={50} color={theme.text} />
+                            <Wallet size={50} color={theme.text} />
                             {initiatePaymentProjectCount !== null && initiatePaymentProjectCount > 0 && (
                                 <View style={styles.notificationBadge}>
                                     <Text style={styles.notificationText}>{initiatePaymentProjectCount}</Text>
                                 </View>
                             )}
                         </TouchableOpacity>
-                        <Text style={{ color: theme.text }}>Initiate Payment</Text>
+                        <Text style={{ color: theme.text, fontSize: 15 }}>Initiate Payment</Text>
                     </View>
                 </View>
 
@@ -231,13 +231,13 @@ const Home = () => {
                         <TouchableOpacity onPress={() => navigation.navigate('AdminReviewRequestsScreen')}>
                             <MessageSquare size={50} color={theme.text} />
                         </TouchableOpacity>
-                        <Text style={{ color: theme.text }}>Review Requests</Text>
+                        <Text style={{ color: theme.text, fontSize: 15 }}>Review Requests</Text>
                     </View>
                     <View style={styles.iconItem}>
                         <TouchableOpacity onPress={() => navigation.navigate('AdminDocumentsScreen')}>
                             <FileText size={50} color={theme.text} />
                         </TouchableOpacity>
-                        <Text style={{ color: theme.text }}>Documents</Text>
+                        <Text style={{ color: theme.text, fontSize: 15 }}>Documents</Text>
                     </View>
                 </View>
 
@@ -247,7 +247,7 @@ const Home = () => {
                         <TouchableOpacity onPress={() => navigation.navigate('AdminAllocateProjectScreen')}>
                             <Users size={50} color={theme.text} />
                         </TouchableOpacity>
-                        <Text style={{ color: theme.text }}>Allocate Project</Text>
+                        <Text style={{ color: theme.text, fontSize: 15 }}>Allocate Project</Text>
                     </View>
                     <View style={styles.iconItem}>
                         <TouchableOpacity onPress={() => navigation.navigate('AdminOnHoldProjectsScreen')}>
@@ -258,7 +258,7 @@ const Home = () => {
                                 </View>
                             )}
                         </TouchableOpacity>
-                        <Text style={{ color: theme.text }}>On-Hold Projects</Text>
+                        <Text style={{ color: theme.text, fontSize: 15 }}>On-Hold Projects</Text>
                     </View>
                 </View>
                 <View style={styles.iconRow}>
@@ -271,7 +271,7 @@ const Home = () => {
                                 </View>
                             )}
                         </TouchableOpacity>
-                        <Text style={{ color: theme.text }}>Approved Projects</Text>
+                        <Text style={{ color: theme.text, fontSize: 15 }}>Approved Projects</Text>
                     </View>
                     <View style={styles.iconItem}>
                         <TouchableOpacity onPress={() => navigation.navigate('AdminRejectedProjectsScreen')}>
@@ -282,7 +282,7 @@ const Home = () => {
                                 </View>
                             )}
                         </TouchableOpacity>
-                        <Text style={{ color: theme.text }}>Rejected Projects</Text>
+                        <Text style={{ color: theme.text, fontSize: 15 }}>Rejected Projects</Text>
                     </View>
                 </View>
                 <View style={styles.iconRow}>
@@ -290,7 +290,7 @@ const Home = () => {
                         <TouchableOpacity onPress={() => navigation.navigate('AdminAllocateFundsScreen')}>
                             <Text style={{ fontSize: 50, color: theme.text, fontWeight: 'bold' }}>₹</Text>
                         </TouchableOpacity>
-                        <Text style={{ color: theme.text }}>Allocate Funds</Text>
+                        <Text style={{ color: theme.text, fontSize: 15 }}>Allocate Funds</Text>
                     </View>
 
                     {/* Placeholder to balance the row */}

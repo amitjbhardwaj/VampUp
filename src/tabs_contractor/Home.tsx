@@ -141,7 +141,7 @@ const Home = () => {
                                     </View>
                                 )}
                             </TouchableOpacity>
-                            <Text style={{ color: theme.text }}>All Projects</Text>
+                            <Text style={{ color: theme.text, fontSize: 15 }}>All Projects</Text>
                         </View>
                         <View style={styles.iconItem}>
                             <TouchableOpacity onPress={() => navigation.navigate("ContractorActiveWorkScreen")}>
@@ -152,7 +152,7 @@ const Home = () => {
                                     </View>
                                 )}
                             </TouchableOpacity>
-                            <Text style={{ color: theme.text }}>Active Projects</Text>
+                            <Text style={{ color: theme.text, fontSize: 15 }}>Active Projects</Text>
                         </View>
                     </View>
 
@@ -162,7 +162,7 @@ const Home = () => {
                             <TouchableOpacity onPress={() => navigation.navigate("ContractorOnBoardWorkersScreen")}>
                                 <Users size={50} color={theme.text} />
                             </TouchableOpacity>
-                            <Text style={{ color: theme.text }}>On-board Workers</Text>
+                            <Text style={{ color: theme.text, fontSize: 15 }}>On-board Workers</Text>
                         </View>
                         <View style={styles.iconItem}>
                             <TouchableOpacity onPress={() => navigation.navigate("ContractorOnHoldProjectsScreen")}>
@@ -173,7 +173,7 @@ const Home = () => {
                                     </View>
                                 )}
                             </TouchableOpacity>
-                            <Text style={{ color: theme.text }}>On Hold Projects</Text>
+                            <Text style={{ color: theme.text, fontSize: 15 }}>On Hold Projects</Text>
                         </View>
                     </View>
 
@@ -188,7 +188,7 @@ const Home = () => {
                                     </View>
                                 )}
                             </TouchableOpacity>
-                            <Text style={{ color: theme.text }}>Completed Projects</Text>
+                            <Text style={{ color: theme.text, fontSize: 15 }}>Completed Projects</Text>
                         </View>
                         <View style={styles.iconItem}>
                             <TouchableOpacity onPress={() => navigation.navigate("ContractorInitiatePaymentScreen")}>
@@ -199,7 +199,7 @@ const Home = () => {
                                     </View>
                                 )}
                             </TouchableOpacity>
-                            <Text style={{ color: theme.text }}>Initiate Payment</Text>
+                            <Text style={{ color: theme.text, fontSize: 15 }}>Initiate Payment</Text>
                         </View>
                     </View>
                 </View>

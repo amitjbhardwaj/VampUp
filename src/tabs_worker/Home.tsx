@@ -201,13 +201,13 @@ const Home = () => {
                                 </View>
                             )}
                         </TouchableOpacity>
-                        <Text style={{ color: theme.text }}>On-going Projects</Text>
+                        <Text style={{ color: theme.text, fontSize: 15 }}>On-going Projects</Text>
                     </View>
                     <View style={styles.iconItem}>
                         <TouchableOpacity onPress={() => navigation.navigate('WorkerClockInScreen')}>
                             <Clock size={50} color={theme.text} />
                         </TouchableOpacity>
-                        <Text style={{ color: theme.text }}>Clock-in</Text>
+                        <Text style={{ color: theme.text, fontSize: 15 }}>Clock-in</Text>
                     </View>
                 </View>
                 <View style={styles.iconRow}>
@@ -215,7 +215,7 @@ const Home = () => {
                         <TouchableOpacity onPress={() => navigation.navigate('WorkerClockOutScreen')}>
                             <LogOut size={50} color={theme.text} />
                         </TouchableOpacity>
-                        <Text style={{ color: theme.text }}>Clock-out</Text>
+                        <Text style={{ color: theme.text, fontSize: 15 }}>Clock-out</Text>
                     </View>
                 </View>
             </View>
