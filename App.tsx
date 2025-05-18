@@ -1,8 +1,5 @@
-import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import { StyleSheet } from "react-native";
-import SignupScreen from "./src/screen/SignupScreen";
-import LoginScreen from "./src/screen/LoginScreen";
 import RootNavigator from "./src/RootNavigator";
 
 export type RootStackParamList = {

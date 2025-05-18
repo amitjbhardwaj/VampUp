@@ -46,20 +46,30 @@ import AdminReviewRequestsScreen from "./screen/admin/AdminReviewRequestsScreen"
 import ContractorCompletedProjectsScreen from "./screen/contractor/ContractorCompletedProjectsScreen";
 import AdminApprovedProjectsScreen from "./screen/admin/AdminApprovedProjectsScreen";
 import AdminRejectedProjectsScreen from "./screen/admin/AdminRejectedProjectsScreen";
-import UPIPaymentScreen from "./screen/payment_admin/UPIPaymentScreen";
-import NetBankingPaymentScreen from "./screen/payment_admin/NetBankingPaymentScreen";
-import CreditCardPaymentScreen from "./screen/payment_admin/CreditCardPaymentScreen";
-import DebitCardPaymentScreen from "./screen/payment_admin/DebitCardPaymentScreen";
-import WalletsPaymentScreen from "./screen/payment_admin/WalletsPaymentScreen";
-import NEFTPaymentScreen from "./screen/payment_admin/NEFTPaymentScreen";
-import RTGSPaymentScreen from "./screen/payment_admin/RTGSPaymentScreen";
-import IMPSPaymentScreen from "./screen/payment_admin/IMPSPaymentScreen";
-import PaymentModeScreen from "./screen/payment_admin/PaymentModeScreen";
 import AdminAllocateFundsScreen from "./screen/admin/AdminAllocateFundsScreen";
 import PassCodeScreen from "./screen/PassCodeScreen";
 import ConfirmPassCodeScreen from "./screen/ConfirmPassCodeScreen";
 import PassCodeLoginScreen from "./screen/PassCodeLoginScreen";
 import VerifyAadharScreen from "./screen/VerifyAadharScreen";
+import PaymentModeContractorScreen from "./screen/payment_contractor/PaymentModeContractorScreen";
+import UPIPaymentContractorScreen from "./screen/payment_contractor/UPIPaymentContractorScreen";
+import NetBankingPaymentContractorScreen from "./screen/payment_contractor/NetBankingPaymentContractorScreen";
+import CreditCardPaymentContractorScreen from "./screen/payment_contractor/CreditCardPaymentContractorScreen";
+import DebitCardPaymentContractorScreen from "./screen/payment_contractor/DebitCardPaymentContractorScreen";
+import WalletsPaymentContractorScreen from "./screen/payment_contractor/WalletsPaymentContractorScreen";
+import NEFTPaymentContractorScreen from "./screen/payment_contractor/NEFTPaymentContractorScreen";
+import RTGSPaymentContractorScreen from "./screen/payment_contractor/RTGSPaymentContractorScreen";
+import IMPSPaymentContractorScreen from "./screen/payment_contractor/IMPSPaymentContractorScreen";
+import PaymentModeAdminScreen from "./screen/payment_admin/PaymentModeAdminScreen";
+import UPIPaymentAdminScreen from "./screen/payment_admin/UPIPaymentAdminScreen";
+import NetBankingPaymentAdminScreen from "./screen/payment_admin/NetBankingPaymentAdminScreen";
+import IMPSPaymentAdminScreen from "./screen/payment_admin/IMPSPaymentAdminScreen";
+import RTGSPaymentAdminScreen from "./screen/payment_admin/RTGSPaymentAdminScreen";
+import NEFTPaymentAdminScreen from "./screen/payment_admin/NEFTPaymentAdminScreen";
+import WalletsPaymentAdminScreen from "./screen/payment_admin/WalletsPaymentAdminScreen";
+import DebitCardPaymentAdminScreen from "./screen/payment_admin/DebitCardPaymentAdminScreen";
+import CreditCardPaymentAdminScreen from "./screen/payment_admin/CreditCardPaymentAdminScreen";
+
 
 export type RootStackParamList = {
     LoginScreen: undefined;
@@ -132,15 +142,25 @@ export type RootStackParamList = {
     AdminRejectedProjectsScreen: undefined;
     AdminAllocateFundsScreen: undefined;
 
-    PaymentModeScreen: { _id: string; projectId: string; fund: number; };
-    UPIPaymentScreen: { _id: string; projectId: string; fund: number; };
-    NetBankingPaymentScreen: { _id: string; projectId: string; fund: number; };
-    DebitCardPaymentScreen: { _id: string; projectId: string; fund: number; };
-    CreditCardPaymentScreen: { _id: string; projectId: string; fund: number; };
-    WalletsPaymentScreen:{ _id: string; projectId: string; fund: number; };
-    NEFTPaymentScreen: { _id: string; projectId: string; fund: number; };
-    RTGSPaymentScreen: { _id: string; projectId: string; fund: number; };
-    IMPSPaymentScreen: { _id: string; projectId: string; fund: number; };
+    PaymentModeAdminScreen: { _id: string; projectId: string; fund: number; };
+    UPIPaymentAdminScreen: { _id: string; projectId: string; fund: number; };
+    NetBankingPaymentAdminScreen: { _id: string; projectId: string; fund: number; };
+    DebitCardPaymentAdminScreen: { _id: string; projectId: string; fund: number; };
+    CreditCardPaymentAdminScreen: { _id: string; projectId: string; fund: number; };
+    WalletsPaymentAdminScreen:{ _id: string; projectId: string; fund: number; };
+    NEFTPaymentAdminScreen: { _id: string; projectId: string; fund: number; };
+    RTGSPaymentAdminScreen: { _id: string; projectId: string; fund: number; };
+    IMPSPaymentAdminScreen: { _id: string; projectId: string; fund: number; };
+
+    PaymentModeContractorScreen: { _id: string; projectId: string; fund: number; };
+    UPIPaymentContractorScreen: { _id: string; projectId: string; fund: number; };
+    NetBankingPaymentContractorScreen: { _id: string; projectId: string; fund: number; };
+    DebitCardPaymentContractorScreen: { _id: string; projectId: string; fund: number; };
+    CreditCardPaymentContractorScreen: { _id: string; projectId: string; fund: number; };
+    WalletsPaymentContractorScreen:{ _id: string; projectId: string; fund: number; };
+    NEFTPaymentContractorScreen: { _id: string; projectId: string; fund: number; };
+    RTGSPaymentContractorScreen: { _id: string; projectId: string; fund: number; };
+    IMPSPaymentContractorScreen: { _id: string; projectId: string; fund: number; };
 };
 
 const Stack = createStackNavigator<RootStackParamList>();
@@ -193,6 +213,15 @@ const RootNavigator: React.FC = () => {
                     <Stack.Screen name="ContractorCompletedProjectsScreen" component={ContractorCompletedProjectsScreen} />
 
 
+                    <Stack.Screen name="UPIPaymentContractorScreen" component={UPIPaymentContractorScreen} />
+                    <Stack.Screen name="NetBankingPaymentContractorScreen" component={NetBankingPaymentContractorScreen} />
+                    <Stack.Screen name="CreditCardPaymentContractorScreen" component={CreditCardPaymentContractorScreen} />
+                    <Stack.Screen name="DebitCardPaymentContractorScreen" component={DebitCardPaymentContractorScreen} />
+                    <Stack.Screen name="WalletsPaymentContractorScreen" component={WalletsPaymentContractorScreen} />
+                    <Stack.Screen name="NEFTPaymentContractorScreen" component={NEFTPaymentContractorScreen} />
+                    <Stack.Screen name="RTGSPaymentContractorScreen" component={RTGSPaymentContractorScreen} />
+                    <Stack.Screen name="IMPSPaymentContractorScreen" component={IMPSPaymentContractorScreen} />
+
 
                     <Stack.Screen name="AdminHomeScreen" component={AdminHomeScreen} />
                     <Stack.Screen name="AdminAddNewProjectScreen" component={AdminAddNewProjectScreen} />
@@ -206,18 +235,19 @@ const RootNavigator: React.FC = () => {
                     <Stack.Screen name="AdminReviewRequestsScreen" component={AdminReviewRequestsScreen} />
                     <Stack.Screen name="AdminApprovedProjectsScreen" component={AdminApprovedProjectsScreen} />
                     <Stack.Screen name="AdminRejectedProjectsScreen" component={AdminRejectedProjectsScreen} />
-                    <Stack.Screen name="PaymentModeScreen" component={PaymentModeScreen} />
+                    <Stack.Screen name="PaymentModeAdminScreen" component={PaymentModeAdminScreen} />
+                    <Stack.Screen name="PaymentModeContractorScreen" component={PaymentModeContractorScreen} />
                     <Stack.Screen name="AdminAllocateFundsScreen" component={AdminAllocateFundsScreen} />
 
 
-                    <Stack.Screen name="UPIPaymentScreen" component={UPIPaymentScreen} />
-                    <Stack.Screen name="NetBankingPaymentScreen" component={NetBankingPaymentScreen} />
-                    <Stack.Screen name="CreditCardPaymentScreen" component={CreditCardPaymentScreen} />
-                    <Stack.Screen name="DebitCardPaymentScreen" component={DebitCardPaymentScreen} />
-                    <Stack.Screen name="WalletsPaymentScreen" component={WalletsPaymentScreen} />
-                    <Stack.Screen name="NEFTPaymentScreen" component={NEFTPaymentScreen} />
-                    <Stack.Screen name="RTGSPaymentScreen" component={RTGSPaymentScreen} />
-                    <Stack.Screen name="IMPSPaymentScreen" component={IMPSPaymentScreen} />
+                    <Stack.Screen name="UPIPaymentAdminScreen" component={UPIPaymentAdminScreen} />
+                    <Stack.Screen name="NetBankingPaymentAdminScreen" component={NetBankingPaymentAdminScreen} />
+                    <Stack.Screen name="CreditCardPaymentAdminScreen" component={CreditCardPaymentAdminScreen} />
+                    <Stack.Screen name="DebitCardPaymentAdminScreen" component={DebitCardPaymentAdminScreen} />
+                    <Stack.Screen name="WalletsPaymentAdminScreen" component={WalletsPaymentAdminScreen} />
+                    <Stack.Screen name="NEFTPaymentAdminScreen" component={NEFTPaymentAdminScreen} />
+                    <Stack.Screen name="RTGSPaymentAdminScreen" component={RTGSPaymentAdminScreen} />
+                    <Stack.Screen name="IMPSPaymentAdminScreen" component={IMPSPaymentAdminScreen} />
 
 
                 </Stack.Navigator>

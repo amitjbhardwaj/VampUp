@@ -26,6 +26,8 @@ type Admin = {
 };
 
 type Project = {
+    first_level_payment_status: string;
+    _id: string;
     project_Id: string;
     project_description: string;
     long_project_description: string;
@@ -359,10 +361,10 @@ const ContractorCompletedProjectsScreen = () => {
                                 </TouchableOpacity>
                                 <TouchableOpacity
                                     style={[styles.onHoldButton, { backgroundColor: project.project_status === 'Approved' ? '#28a745' : '#ccc' }]}
-                                    disabled={project.project_status !== 'Approved'}
+                                    disabled={project.project_status !== 'Approved' && project.first_level_payment_status !== "Approved"}
                                     onPress={() => {
                                         const fund = funds[project.project_Id] ?? 0; // Get the fund allocated for this project
-                                        navigation.navigate("PaymentModeScreen", { projectId: project.project_Id, fund: fund });
+                                        navigation.navigate("PaymentModeContractorScreen",{ _id: project._id, projectId: project.project_Id, fund: fund });
                                     }}
                                 >
                                     <Text style={[styles.buttonText, { color: theme.buttonText }]}>

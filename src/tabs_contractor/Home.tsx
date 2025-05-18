@@ -28,6 +28,7 @@ type Project = {
     id: string;
     name: string;
     project_status: string;
+    first_level_payment_status: string;
 };
 
 const Home = () => {
@@ -69,7 +70,7 @@ const Home = () => {
                 setCompletedProjectsCount(completedProjects.length);
 
                 const approvedProjects = (completedProjects as Project[]).filter(
-                    (p) => p.project_status === "Approved"
+                    (p) => p.project_status === "Approved" &&  p.first_level_payment_status === "Approved"
                 );
                 setInitiatePaymentProjectCount(approvedProjects.length);
             } else {

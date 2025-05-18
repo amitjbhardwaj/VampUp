@@ -7,16 +7,16 @@ import axios from "axios";
 
 
 type IMPSPaymentRouteParams = {
-    IMPSPaymentScreen: {
+    IMPSPaymentContractorScreen: {
         _id: string;
         projectId: string;
         fund: number;
     };
 };
 
-type IMPSPaymentRouteProp = RouteProp<IMPSPaymentRouteParams, "IMPSPaymentScreen">;
+type IMPSPaymentRouteProp = RouteProp<IMPSPaymentRouteParams, "IMPSPaymentContractorScreen">;
 
-const IMPSPaymentScreen = () => {
+const IMPSPaymentContractorScreen = () => {
     const { theme } = useTheme();
     const navigation = useNavigation();
     const route = useRoute<IMPSPaymentRouteProp>();
@@ -25,16 +25,17 @@ const IMPSPaymentScreen = () => {
     const [accountNumber, setAccountNumber] = useState<string>("");
     const [ifscCode, setIfscCode] = useState<string>("");
     const [amount, setAmount] = useState<string>(route?.params?.fund?.toString() || "");
-    const [admin, setAdmin] = useState<string | null>(null);
+    const [contractor, setContractor] = useState<string | null>(null);
 
     useEffect(() => {
-        const fetchAdminName = async () => {
-            const storedName = await AsyncStorage.getItem("adminName");
-            setAdmin(storedName);
+        const fetchContractorName = async () => {
+            const storedName = await AsyncStorage.getItem("contractorName");
+            setContractor(storedName);
         };
 
-        fetchAdminName();
+        fetchContractorName();
     }, []);
+
     const handlePayment = async () => {
         if (!accountNumber || !ifscCode || !amount) {
             Alert.alert("Error", "Please fill in all fields");
@@ -50,7 +51,8 @@ const IMPSPaymentScreen = () => {
             const response = await axios.put(
                 `http://192.168.129.119:5001/update-project-status/${_id}`,
                 {
-                    first_level_payment_approver: admin,
+                    second_level_payment_approver: contractor,
+                    second_level_payment_status: "Approved",
                 }
             );
 
@@ -135,4 +137,4 @@ const styles = StyleSheet.create({
     },    buttonText: { fontWeight: "bold", fontSize: 16 },
 });
 
-export default IMPSPaymentScreen;
+export default IMPSPaymentContractorScreen;

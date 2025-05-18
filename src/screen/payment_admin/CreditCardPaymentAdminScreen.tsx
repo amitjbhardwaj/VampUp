@@ -6,17 +6,17 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 
 type CreditCardPaymentRouteParams = {
-    CreditCardPaymentScreen: {
+    CreditCardPaymentAdminScreen: {
         _id: string;
         projectId: string;
         fund: number;
     };
 };
 
-type CreditCardPaymentRouteProp = RouteProp<CreditCardPaymentRouteParams, "CreditCardPaymentScreen">;
+type CreditCardPaymentRouteProp = RouteProp<CreditCardPaymentRouteParams, "CreditCardPaymentAdminScreen">;
 
 
-const CreditCardPaymentScreen = () => {
+const CreditCardPaymentAdminScreen = () => {
     const { theme } = useTheme();
     const navigation = useNavigation();
     const route = useRoute<CreditCardPaymentRouteProp>();
@@ -53,6 +53,7 @@ const CreditCardPaymentScreen = () => {
                 `http://192.168.129.119:5001/update-project-status/${_id}`,
                 {
                     first_level_payment_approver: admin,
+                    first_level_payment_status: "Approved",
                 }
             );
 
@@ -146,4 +147,4 @@ const styles = StyleSheet.create({
     }, buttonText: { fontWeight: "bold", fontSize: 16 },
 });
 
-export default CreditCardPaymentScreen;
+export default CreditCardPaymentAdminScreen;

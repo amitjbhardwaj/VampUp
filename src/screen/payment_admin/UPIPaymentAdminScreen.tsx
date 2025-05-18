@@ -5,27 +5,23 @@ import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 
-
-type NEFTPaymentRouteParams = {
-    NEFTPaymentScreen: {
+type UPIPaymentRouteParams = {
+    UPIPaymentAdminScreen: {
         _id: string;
         projectId: string;
         fund: number;
     };
 };
 
-type NEFTPaymentRouteProp = RouteProp<NEFTPaymentRouteParams, "NEFTPaymentScreen">;
+type UPIPaymentRouteProp = RouteProp<UPIPaymentRouteParams, "UPIPaymentAdminScreen">;
 
 
-const NEFTPaymentScreen = () => {
+const UPIPaymentAdminScreen = () => {
     const { theme } = useTheme();
     const navigation = useNavigation();
-    const route = useRoute<NEFTPaymentRouteProp>();
+    const route = useRoute<UPIPaymentRouteProp>();
     const { _id, projectId, fund } = route.params as { _id: string; projectId: string; fund: number; };
-
-    const [bankName, setBankName] = useState<string>("");
-    const [accountNumber, setAccountNumber] = useState<string>("");
-    const [ifscCode, setIfscCode] = useState<string>("");
+    const [upiId, setUpiId] = useState("");
     const [amount, setAmount] = useState<string>(route?.params?.fund?.toString() || "");
     const [admin, setAdmin] = useState<string | null>(null);
 
@@ -40,13 +36,14 @@ const NEFTPaymentScreen = () => {
 
 
     const handlePayment = async () => {
-        if (!bankName || !accountNumber || !ifscCode || !amount) {
-            Alert.alert("Error", "Please fill in all fields");
+
+
+        if (!upiId.includes("@")) {
+            Alert.alert("Invalid UPI ID", "Please enter a valid UPI ID (e.g., example@upi)");
             return;
         }
 
-        // Simulating a successful transaction
-        Alert.alert("Payment Successful", `Payment for Project ID ${projectId} completed using NEFT of amount ${fund}`, [
+        Alert.alert("Payment Successful", `Payment for Project ID ${projectId} completed via ${upiId} of amount ${fund}`, [
             { text: "OK", onPress: () => navigation.goBack() }
         ]);
 
@@ -55,6 +52,7 @@ const NEFTPaymentScreen = () => {
                 `http://192.168.129.119:5001/update-project-status/${_id}`,
                 {
                     first_level_payment_approver: admin,
+                    first_level_payment_status: "Approved",
                 }
             );
 
@@ -70,31 +68,15 @@ const NEFTPaymentScreen = () => {
 
     return (
         <View style={[styles.container, { backgroundColor: theme.background }]}>
-            <Text style={[styles.header, { color: theme.primary }]}>NEFT Payment</Text>
+            <Text style={[styles.header, { color: theme.primary }]}>UPI Payment</Text>
 
-            <Text style={[styles.label, { color: theme.text }]}>Bank Name</Text>
+            <Text style={[styles.label, { color: theme.text }]}>Enter UPI ID</Text>
             <TextInput
                 style={[styles.input, { borderColor: theme.primary, color: theme.text }]}
-                placeholder="Enter Bank Name"
-                value={bankName}
-                onChangeText={setBankName}
-            />
-
-            <Text style={[styles.label, { color: theme.text }]}>Account Number</Text>
-            <TextInput
-                style={[styles.input, { borderColor: theme.primary, color: theme.text }]}
-                placeholder="Enter Account Number"
-                keyboardType="numeric"
-                value={accountNumber}
-                onChangeText={setAccountNumber}
-            />
-
-            <Text style={[styles.label, { color: theme.text }]}>IFSC Code</Text>
-            <TextInput
-                style={[styles.input, { borderColor: theme.primary, color: theme.text }]}
-                placeholder="Enter IFSC Code"
-                value={ifscCode}
-                onChangeText={setIfscCode}
+                placeholder="example@upi"
+                placeholderTextColor="gray"
+                value={upiId}
+                onChangeText={setUpiId}
             />
 
             <Text style={[styles.label, { color: theme.text }]}>Amount</Text>
@@ -120,6 +102,7 @@ const NEFTPaymentScreen = () => {
                     <Text style={[styles.buttonText, { color: theme.buttonText }]}>Cancel</Text>
                 </Pressable>
             </View>
+
         </View>
     );
 };
@@ -135,6 +118,7 @@ const styles = StyleSheet.create({
         fontSize: 16,
         marginBottom: 20
     },
+    buttonText: { fontWeight: "bold", fontSize: 16 },
     buttonContainer: {
         flexDirection: "row",
         justifyContent: "space-between",
@@ -144,7 +128,7 @@ const styles = StyleSheet.create({
         padding: 15,
         borderRadius: 8,
         alignItems: "center",
-    }, buttonText: { fontWeight: "bold", fontSize: 16 },
+    },
 });
 
-export default NEFTPaymentScreen;
+export default UPIPaymentAdminScreen;

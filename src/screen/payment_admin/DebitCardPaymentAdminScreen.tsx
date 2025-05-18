@@ -5,23 +5,26 @@ import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 
-type UPIPaymentRouteParams = {
-    UPIPaymentScreen: {
+type DebitCardPaymentRouteParams = {
+    DebitCardPaymentAdminScreen: {
         _id: string;
         projectId: string;
         fund: number;
     };
 };
 
-type UPIPaymentRouteProp = RouteProp<UPIPaymentRouteParams, "UPIPaymentScreen">;
+type DebitCardPaymentRouteProp = RouteProp<DebitCardPaymentRouteParams, "DebitCardPaymentAdminScreen">;
 
 
-const UPIPaymentScreen = () => {
+const DebitCardPaymentAdminScreen = () => {
     const { theme } = useTheme();
     const navigation = useNavigation();
-    const route = useRoute<UPIPaymentRouteProp>();
+    const route = useRoute<DebitCardPaymentRouteProp>();
     const { _id, projectId, fund } = route.params as { _id: string; projectId: string; fund: number; };
-    const [upiId, setUpiId] = useState("");
+
+    const [cardNumber, setCardNumber] = useState<string>("");
+    const [expiryDate, setExpiryDate] = useState<string>("");
+    const [cvv, setCvv] = useState<string>("");
     const [amount, setAmount] = useState<string>(route?.params?.fund?.toString() || "");
     const [admin, setAdmin] = useState<string | null>(null);
 
@@ -34,16 +37,14 @@ const UPIPaymentScreen = () => {
         fetchAdminName();
     }, []);
 
-
     const handlePayment = async () => {
-
-
-        if (!upiId.includes("@")) {
-            Alert.alert("Invalid UPI ID", "Please enter a valid UPI ID (e.g., example@upi)");
+        if (!cardNumber || !expiryDate || !cvv) {
+            Alert.alert("Error", "Please fill in all fields");
             return;
         }
 
-        Alert.alert("Payment Successful", `Payment for Project ID ${projectId} completed via ${upiId} of amount ${fund}`, [
+        // Simulating a successful transaction
+        Alert.alert("Payment Successful", `Payment for Project ID ${projectId} completed using Debit Card of amount ${fund}`, [
             { text: "OK", onPress: () => navigation.goBack() }
         ]);
 
@@ -52,6 +53,7 @@ const UPIPaymentScreen = () => {
                 `http://192.168.129.119:5001/update-project-status/${_id}`,
                 {
                     first_level_payment_approver: admin,
+                    first_level_payment_status: "Approved",
                 }
             );
 
@@ -67,15 +69,32 @@ const UPIPaymentScreen = () => {
 
     return (
         <View style={[styles.container, { backgroundColor: theme.background }]}>
-            <Text style={[styles.header, { color: theme.primary }]}>UPI Payment</Text>
+            <Text style={[styles.header, { color: theme.primary }]}>Debit Card Payment</Text>
 
-            <Text style={[styles.label, { color: theme.text }]}>Enter UPI ID</Text>
+            <Text style={[styles.label, { color: theme.text }]}>Card Number</Text>
             <TextInput
                 style={[styles.input, { borderColor: theme.primary, color: theme.text }]}
-                placeholder="example@upi"
-                placeholderTextColor="gray"
-                value={upiId}
-                onChangeText={setUpiId}
+                placeholder="XXXX XXXX XXXX XXXX"
+                keyboardType="numeric"
+                value={cardNumber}
+                onChangeText={setCardNumber}
+            />
+
+            <Text style={[styles.label, { color: theme.text }]}>Expiry Date</Text>
+            <TextInput
+                style={[styles.input, { borderColor: theme.primary, color: theme.text }]}
+                placeholder="MM/YY"
+                value={expiryDate}
+                onChangeText={setExpiryDate}
+            />
+
+            <Text style={[styles.label, { color: theme.text }]}>CVV</Text>
+            <TextInput
+                style={[styles.input, { borderColor: theme.primary, color: theme.text }]}
+                placeholder="CVV"
+                keyboardType="numeric"
+                value={cvv}
+                onChangeText={setCvv}
             />
 
             <Text style={[styles.label, { color: theme.text }]}>Amount</Text>
@@ -101,7 +120,6 @@ const UPIPaymentScreen = () => {
                     <Text style={[styles.buttonText, { color: theme.buttonText }]}>Cancel</Text>
                 </Pressable>
             </View>
-
         </View>
     );
 };
@@ -117,7 +135,6 @@ const styles = StyleSheet.create({
         fontSize: 16,
         marginBottom: 20
     },
-    buttonText: { fontWeight: "bold", fontSize: 16 },
     buttonContainer: {
         flexDirection: "row",
         justifyContent: "space-between",
@@ -127,7 +144,7 @@ const styles = StyleSheet.create({
         padding: 15,
         borderRadius: 8,
         alignItems: "center",
-    },
+    }, buttonText: { fontWeight: "bold", fontSize: 16 },
 });
 
-export default UPIPaymentScreen;
+export default DebitCardPaymentAdminScreen;

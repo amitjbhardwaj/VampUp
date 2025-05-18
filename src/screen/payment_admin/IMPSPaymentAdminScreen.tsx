@@ -5,24 +5,25 @@ import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 
-type WalletPaymentRouteParams = {
-    WalletsPaymentScreen: {
+
+type IMPSPaymentRouteParams = {
+    IMPSPaymentAdminScreen: {
         _id: string;
         projectId: string;
         fund: number;
     };
 };
 
-type WalletPaymentRouteProp = RouteProp<WalletPaymentRouteParams, "WalletsPaymentScreen">;
+type IMPSPaymentRouteProp = RouteProp<IMPSPaymentRouteParams, "IMPSPaymentAdminScreen">;
 
-
-const WalletsPaymentScreen = () => {
+const IMPSPaymentAdminScreen = () => {
     const { theme } = useTheme();
     const navigation = useNavigation();
-    const route = useRoute<WalletPaymentRouteProp>();
+    const route = useRoute<IMPSPaymentRouteProp>();
     const { _id, projectId, fund } = route.params as { _id: string; projectId: string; fund: number; };
 
-    const [walletBalance, setWalletBalance] = useState<string>("");
+    const [accountNumber, setAccountNumber] = useState<string>("");
+    const [ifscCode, setIfscCode] = useState<string>("");
     const [amount, setAmount] = useState<string>(route?.params?.fund?.toString() || "");
     const [admin, setAdmin] = useState<string | null>(null);
 
@@ -34,15 +35,14 @@ const WalletsPaymentScreen = () => {
 
         fetchAdminName();
     }, []);
-
     const handlePayment = async () => {
-        if (!amount || !walletBalance) {
+        if (!accountNumber || !ifscCode || !amount) {
             Alert.alert("Error", "Please fill in all fields");
             return;
         }
 
         // Simulating a successful transaction
-        Alert.alert("Payment Successful", `Payment for Project ID ${projectId} completed using Wallets of amount ${fund}`, [
+        Alert.alert("Payment Successful", `Payment for Project ID ${projectId} completed using IMPS of amount ${fund}`, [
             { text: "OK", onPress: () => navigation.goBack() }
         ]);
 
@@ -51,6 +51,7 @@ const WalletsPaymentScreen = () => {
                 `http://192.168.129.119:5001/update-project-status/${_id}`,
                 {
                     first_level_payment_approver: admin,
+                    first_level_payment_status: "Approved",
                 }
             );
 
@@ -60,21 +61,29 @@ const WalletsPaymentScreen = () => {
         }
     };
 
-    const handleCancel = () => {
+    const handleCancel = ()=>{
         navigation.goBack();
     }
 
     return (
         <View style={[styles.container, { backgroundColor: theme.background }]}>
-            <Text style={[styles.header, { color: theme.primary }]}>Wallet Payment</Text>
+            <Text style={[styles.header, { color: theme.primary }]}>IMPS Payment</Text>
 
-            <Text style={[styles.label, { color: theme.text }]}>Wallet Balance</Text>
+            <Text style={[styles.label, { color: theme.text }]}>Account Number</Text>
             <TextInput
                 style={[styles.input, { borderColor: theme.primary, color: theme.text }]}
-                placeholder="Enter Wallet Balance"
+                placeholder="Enter Account Number"
                 keyboardType="numeric"
-                value={walletBalance}
-                onChangeText={setWalletBalance}
+                value={accountNumber}
+                onChangeText={setAccountNumber}
+            />
+
+            <Text style={[styles.label, { color: theme.text }]}>IFSC Code</Text>
+            <TextInput
+                style={[styles.input, { borderColor: theme.primary, color: theme.text }]}
+                placeholder="Enter IFSC Code"
+                value={ifscCode}
+                onChangeText={setIfscCode}
             />
 
             <Text style={[styles.label, { color: theme.text }]}>Amount</Text>
@@ -85,13 +94,13 @@ const WalletsPaymentScreen = () => {
                 value={amount}
                 onChangeText={setAmount}
             />
-
             <View style={styles.buttonContainer}>
                 <Pressable
                     style={[styles.payButton, { backgroundColor: theme.primary, marginRight: 10 }]}
                     onPress={handlePayment}
                 >
-                    <Text style={[styles.buttonText, { color: theme.buttonText }]}>Pay Now</Text>
+                
+                <Text style={[styles.buttonText, { color: theme.buttonText }]}>Pay Now</Text>
                 </Pressable>
                 <Pressable
                     style={[styles.payButton, { backgroundColor: theme.primary }]}
@@ -124,8 +133,7 @@ const styles = StyleSheet.create({
         padding: 15,
         borderRadius: 8,
         alignItems: "center",
-    },
-    buttonText: { fontWeight: "bold", fontSize: 16 },
+    },    buttonText: { fontWeight: "bold", fontSize: 16 },
 });
 
-export default WalletsPaymentScreen;
+export default IMPSPaymentAdminScreen;

@@ -2,27 +2,29 @@ import React, { useEffect, useState } from "react";
 import { View, Text, TextInput, Pressable, StyleSheet, Alert } from "react-native";
 import { useTheme } from "../../context/ThemeContext";
 import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
+import { Picker } from "@react-native-picker/picker";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 
-type RTGSPaymentRouteParams = {
-    RTGSPaymentScreen: {
+type NetBankingPaymentRouteParams = {
+    NetBankingPaymentAdminScreen: {
         _id: string;
         projectId: string;
         fund: number;
     };
 };
 
-type RTGSPaymentRouteProp = RouteProp<RTGSPaymentRouteParams, "RTGSPaymentScreen">;
+type NetBankingPaymentRouteProp = RouteProp<NetBankingPaymentRouteParams, "NetBankingPaymentAdminScreen">;
 
 
-const RTGSPaymentScreen = () => {
+
+const NetBankingPaymentAdminScreen = () => {
     const { theme } = useTheme();
     const navigation = useNavigation();
-    const route = useRoute<RTGSPaymentRouteProp>();
+    const route = useRoute<NetBankingPaymentRouteProp>();
     const { _id, projectId, fund } = route.params as { _id: string; projectId: string; fund: number; };
 
-    const [bankName, setBankName] = useState<string>("");
+    const [selectedBank, setSelectedBank] = useState<string | null>(null);
     const [accountNumber, setAccountNumber] = useState<string>("");
     const [ifscCode, setIfscCode] = useState<string>("");
     const [amount, setAmount] = useState<string>(route?.params?.fund?.toString() || "");
@@ -38,13 +40,13 @@ const RTGSPaymentScreen = () => {
     }, []);
     
     const handlePayment = async () => {
-        if (!bankName || !accountNumber || !ifscCode || !amount) {
+        if (!selectedBank || !accountNumber || !ifscCode) {
             Alert.alert("Error", "Please fill in all fields");
             return;
         }
 
         // Simulating a successful transaction
-        Alert.alert("Payment Successful", `Payment for Project ID ${projectId} completed using RTGS of amount ${fund}`, [
+        Alert.alert("Payment Successful", `Payment for Project ID ${projectId} completed through ${selectedBank} of amount ${fund}`, [
             { text: "OK", onPress: () => navigation.goBack() }
         ]);
 
@@ -53,6 +55,7 @@ const RTGSPaymentScreen = () => {
                 `http://192.168.129.119:5001/update-project-status/${_id}`,
                 {
                     first_level_payment_approver: admin,
+                    first_level_payment_status: "Approved",
                 }
             );
 
@@ -62,35 +65,40 @@ const RTGSPaymentScreen = () => {
         }
     };
 
-    const handleCancel = ()=>{
+    const handleCancel = () => {
         navigation.goBack();
     }
 
     return (
         <View style={[styles.container, { backgroundColor: theme.background }]}>
-            <Text style={[styles.header, { color: theme.primary }]}>RTGS Payment</Text>
+            <Text style={[styles.header, { color: theme.primary }]}>Net Banking Payment</Text>
 
-            <Text style={[styles.label, { color: theme.text }]}>Bank Name</Text>
+            <Text style={[styles.label, { color: theme.text }]}>Select Bank</Text>
+            <Picker
+                selectedValue={selectedBank}
+                onValueChange={(itemValue) => setSelectedBank(itemValue)}
+                style={[styles.picker, { backgroundColor: theme.card, color: theme.text }]}
+            >
+                <Picker.Item label="Select Bank" value={null} />
+                <Picker.Item label="ICICI Bank" value="ICICI" />
+                <Picker.Item label="HDFC Bank" value="HDFC" />
+                <Picker.Item label="SBI" value="SBI" />
+                <Picker.Item label="Axis Bank" value="Axis" />
+            </Picker>
+
+            <Text style={[styles.label, { color: theme.text }]}>Enter Account Number</Text>
             <TextInput
                 style={[styles.input, { borderColor: theme.primary, color: theme.text }]}
-                placeholder="Enter Bank Name"
-                value={bankName}
-                onChangeText={setBankName}
-            />
-
-            <Text style={[styles.label, { color: theme.text }]}>Account Number</Text>
-            <TextInput
-                style={[styles.input, { borderColor: theme.primary, color: theme.text }]}
-                placeholder="Enter Account Number"
+                placeholder="Account Number"
                 keyboardType="numeric"
                 value={accountNumber}
                 onChangeText={setAccountNumber}
             />
 
-            <Text style={[styles.label, { color: theme.text }]}>IFSC Code</Text>
+            <Text style={[styles.label, { color: theme.text }]}>Enter IFSC Code</Text>
             <TextInput
                 style={[styles.input, { borderColor: theme.primary, color: theme.text }]}
-                placeholder="Enter IFSC Code"
+                placeholder="IFSC Code"
                 value={ifscCode}
                 onChangeText={setIfscCode}
             />
@@ -133,6 +141,7 @@ const styles = StyleSheet.create({
         fontSize: 16,
         marginBottom: 20
     },
+    picker: { borderWidth: 2, borderRadius: 8, padding: 10, fontSize: 16, marginBottom: 20 },
     buttonContainer: {
         flexDirection: "row",
         justifyContent: "space-between",
@@ -142,8 +151,8 @@ const styles = StyleSheet.create({
         padding: 15,
         borderRadius: 8,
         alignItems: "center",
-    },    
+    },
     buttonText: { fontWeight: "bold", fontSize: 16 },
 });
 
-export default RTGSPaymentScreen;
+export default NetBankingPaymentAdminScreen;

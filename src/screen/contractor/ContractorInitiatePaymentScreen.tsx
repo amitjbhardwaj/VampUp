@@ -23,6 +23,7 @@ interface Project {
     worker_phone: string;
     project_status: string;
     first_level_payment_approver: string,
+    first_level_payment_status: string,
 }
 
 type NavigationProps = StackNavigationProp<RootStackParamList, "ContractorInitiatePaymentScreen">;
@@ -67,7 +68,7 @@ const ContractorInitiatePaymentScreen = () => {
 
                 const responseData = await response.json();
                 const approvedProjects = (responseData.data as Project[]).filter(
-                    (project) => project.project_status === "Approved" ||  project.first_level_payment_approver === project.created_by
+                    (project) => project.project_status === "Approved" &&  project.first_level_payment_approver === project.created_by &&  project.first_level_payment_status === "Approved"
                 );
 
                 setProjects(approvedProjects);
@@ -175,7 +176,7 @@ const ContractorInitiatePaymentScreen = () => {
                                 style={[styles.paymentButton, { backgroundColor: theme.primary }]}
                                 onPress={() => {
                                     const fund = funds[item.project_Id] ?? 0; // Get the fund allocated for this project
-                                    navigation.navigate("PaymentModeScreen", { _id: item._id, projectId: item.project_Id, fund: fund });
+                                    navigation.navigate("PaymentModeContractorScreen", { _id: item._id, projectId: item.project_Id, fund: fund });
                                 }}
                             >
                                 <Text style={[styles.buttonText, { color: theme.buttonText }]}>Make Payment</Text>

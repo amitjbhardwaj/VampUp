@@ -18,9 +18,9 @@ const paymentModes = [
     { name: "IMPS", icon: "flash-on" }
 ];
 
-type NavigationProps = StackNavigationProp<RootStackParamList, "PaymentModeScreen">;
+type NavigationProps = StackNavigationProp<RootStackParamList, "PaymentModeContractorScreen">;
 
-const PaymentModeScreen = () => {
+const PaymentModeContractorScreen = () => {
     const { theme } = useTheme();
     const navigation = useNavigation<NavigationProps>();
     const route = useRoute();
@@ -61,21 +61,21 @@ const PaymentModeScreen = () => {
                         style={[styles.proceedButton, { backgroundColor: theme.primary }]}
                         onPress={() => {
                             if (selectedMode === "UPI") {
-                                navigation.navigate("UPIPaymentScreen", { _id, projectId, fund });
+                                navigation.navigate("UPIPaymentContractorScreen", { _id, projectId, fund });
                             } else if (selectedMode === "Net Banking") {
-                                navigation.navigate("NetBankingPaymentScreen", { _id, projectId, fund });
+                                navigation.navigate("NetBankingPaymentContractorScreen", { _id, projectId, fund });
                             } else if (selectedMode === "Debit Card") {
-                                navigation.navigate("DebitCardPaymentScreen", { _id, projectId, fund });
+                                navigation.navigate("DebitCardPaymentContractorScreen", { _id, projectId, fund });
                             } else if (selectedMode === "Credit Card") {
-                                navigation.navigate("CreditCardPaymentScreen", { _id, projectId, fund });
+                                navigation.navigate("CreditCardPaymentContractorScreen", { _id, projectId, fund });
                             } else if (selectedMode === "Wallets") {
-                                navigation.navigate("WalletsPaymentScreen", { _id, projectId, fund });
+                                navigation.navigate("WalletsPaymentContractorScreen", { _id, projectId, fund });
                             } else if (selectedMode === "NEFT") {
-                                navigation.navigate("NEFTPaymentScreen", { _id, projectId, fund });
+                                navigation.navigate("NEFTPaymentContractorScreen", { _id, projectId, fund });
                             } else if (selectedMode === "RTGS") {
-                                navigation.navigate("RTGSPaymentScreen", { _id, projectId, fund });
+                                navigation.navigate("RTGSPaymentContractorScreen", { _id, projectId, fund });
                             } else if (selectedMode === "IMPS") {
-                                navigation.navigate("IMPSPaymentScreen", { _id, projectId, fund });
+                                navigation.navigate("IMPSPaymentContractorScreen", { _id, projectId, fund });
                             } else {
                                 console.log(`Proceeding with ${selectedMode} for project ${projectId}`);
                             }
@@ -110,4 +110,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default PaymentModeScreen;
+export default PaymentModeContractorScreen;

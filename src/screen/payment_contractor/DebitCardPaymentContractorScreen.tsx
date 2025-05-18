@@ -6,17 +6,17 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
 
 type DebitCardPaymentRouteParams = {
-    DebitCardPaymentScreen: {
+    DebitCardPaymentContractorScreen: {
         _id: string;
         projectId: string;
         fund: number;
     };
 };
 
-type DebitCardPaymentRouteProp = RouteProp<DebitCardPaymentRouteParams, "DebitCardPaymentScreen">;
+type DebitCardPaymentRouteProp = RouteProp<DebitCardPaymentRouteParams, "DebitCardPaymentContractorScreen">;
 
 
-const DebitCardPaymentScreen = () => {
+const DebitCardPaymentContractorScreen = () => {
     const { theme } = useTheme();
     const navigation = useNavigation();
     const route = useRoute<DebitCardPaymentRouteProp>();
@@ -26,15 +26,15 @@ const DebitCardPaymentScreen = () => {
     const [expiryDate, setExpiryDate] = useState<string>("");
     const [cvv, setCvv] = useState<string>("");
     const [amount, setAmount] = useState<string>(route?.params?.fund?.toString() || "");
-    const [admin, setAdmin] = useState<string | null>(null);
+    const [contractor, setContractor] = useState<string | null>(null);
 
     useEffect(() => {
-        const fetchAdminName = async () => {
-            const storedName = await AsyncStorage.getItem("adminName");
-            setAdmin(storedName);
+        const fetchContractorName = async () => {
+            const storedName = await AsyncStorage.getItem("contractorName");
+            setContractor(storedName);
         };
 
-        fetchAdminName();
+        fetchContractorName();
     }, []);
 
     const handlePayment = async () => {
@@ -52,7 +52,8 @@ const DebitCardPaymentScreen = () => {
             const response = await axios.put(
                 `http://192.168.129.119:5001/update-project-status/${_id}`,
                 {
-                    first_level_payment_approver: admin,
+                    second_level_payment_approver: contractor,
+                    second_level_payment_status: "Approved",
                 }
             );
 
@@ -146,4 +147,4 @@ const styles = StyleSheet.create({
     }, buttonText: { fontWeight: "bold", fontSize: 16 },
 });
 
-export default DebitCardPaymentScreen;
+export default DebitCardPaymentContractorScreen;
