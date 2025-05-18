@@ -163,8 +163,6 @@ const PassCodeLoginScreen = ({ navigation }: { navigation: NavigationProps }) =>
                       {key}
                     </Text>
                   </TouchableOpacity>
-
-
                 );
               })}
             </View>
