@@ -96,7 +96,6 @@ const PassCodeScreen = ({ navigation }: { navigation: PassCodeScreenNavigationPr
             <Text style={[styles.resetText, { color: theme.primary }]}>Reset</Text>
           </TouchableOpacity>
         </View>
-
         <View style={styles.keypadContainer}>
           {keypadLayout.map((row, rowIndex) => (
             <View key={rowIndex} style={styles.keypadRow}>
@@ -107,19 +106,26 @@ const PassCodeScreen = ({ navigation }: { navigation: PassCodeScreenNavigationPr
                     key={index}
                     style={[
                       styles.keypadKey,
-                      isHighlighted && { backgroundColor: theme.primary, borderRadius: 12 },
+                      isHighlighted && {
+                        backgroundColor: theme.primary,
+                        transform: [{ scale: 1.25 }],
+                      },
                     ]}
                     onPress={() => {
                       if (key === "←") handleBackspace();
                       else if (key !== "") handleKeyPress(key);
                     }}
                     disabled={key === ""}
-                    activeOpacity={0.6}
+                    activeOpacity={0.7}
                   >
-                    <Text style={[styles.keyText, { color: isHighlighted ? "#fff" : theme.text }]}>
+                    <Text style={[
+                      styles.keyText,
+                      { color: isHighlighted ? "#fff" : theme.text }
+                    ]}>
                       {key}
                     </Text>
                   </TouchableOpacity>
+
                 );
               })}
             </View>

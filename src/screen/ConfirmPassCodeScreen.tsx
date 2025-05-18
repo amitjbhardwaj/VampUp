@@ -125,22 +125,25 @@ const ConfirmPassCodeScreen = ({
                 <View style={styles.keypadContainer}>
                     {keypadLayout.map((row, rowIndex) => (
                         <View key={rowIndex} style={styles.keypadRow}>
-                            {row.map(key => {
+                            {row.map((key, index) => {
                                 const isHighlighted = pressedKey === key;
                                 return (
                                     <TouchableOpacity
-                                        key={key}
+                                        key={index}
                                         style={[
                                             styles.keypadKey,
-                                            isHighlighted && { backgroundColor: theme.primary, borderRadius: 12 },
+                                            isHighlighted && {
+                                                backgroundColor: theme.primary,
+                                                transform: [{ scale: 1.25 }],
+                                            },
                                         ]}
                                         onPress={() => {
                                             if (key === "←") handleBackspace();
                                             else if (key === "✓") handleSubmit();
-                                            else handleKeyPress(key);
+                                            else if (key !== "") handleKeyPress(key);
                                         }}
                                         disabled={key === ""}
-                                        activeOpacity={0.6}
+                                        activeOpacity={0.7}
                                     >
                                         <Text
                                             style={[
@@ -156,6 +159,7 @@ const ConfirmPassCodeScreen = ({
                         </View>
                     ))}
                 </View>
+
             </View>
         </SafeAreaView>
     );

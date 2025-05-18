@@ -144,7 +144,10 @@ const PassCodeLoginScreen = ({ navigation }: { navigation: NavigationProps }) =>
                     key={index}
                     style={[
                       styles.keypadKey,
-                      isHighlighted && { backgroundColor: theme.primary },
+                      isHighlighted && {
+                        backgroundColor: theme.primary,
+                        transform: [{ scale: 1.25 }],
+                      },
                     ]}
                     onPress={() => {
                       if (key === "←") handleBackspace();
@@ -153,10 +156,15 @@ const PassCodeLoginScreen = ({ navigation }: { navigation: NavigationProps }) =>
                     disabled={key === ""}
                     activeOpacity={0.7}
                   >
-                    <Text style={[styles.keyText, { color: isHighlighted ? "#fff" : theme.text }]}>
+                    <Text style={[
+                      styles.keyText,
+                      { color: isHighlighted ? "#fff" : theme.text }
+                    ]}>
                       {key}
                     </Text>
                   </TouchableOpacity>
+
+
                 );
               })}
             </View>
