@@ -5,11 +5,22 @@ import {
     RefreshControl
 } from "react-native";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
-import Ionicons from "react-native-vector-icons/Ionicons";
 import { RootStackParamList } from "../RootNavigator";
 import { useTheme } from "../context/ThemeContext";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import LinearGradient from "react-native-linear-gradient";
+import {
+    PlusCircle,
+    Hammer, // for "construct"
+    Clipboard,
+    CreditCard,
+    MessageSquare,
+    FileText,
+    Users,
+    PauseCircle,
+    CheckCircle,
+    XCircle,
+} from "lucide-react-native";
 
 type HomeNavigationProp = NavigationProp<RootStackParamList>;
 
@@ -153,8 +164,8 @@ const Home = () => {
         >
             {adminName ? (
                 <LinearGradient
-                colors={['transparent', '#5f2c82', '#49a09d', '#5f2c82', 'transparent']}
-                style={styles.welcomeGradient}
+                    colors={['transparent', '#5f2c82', '#49a09d', '#5f2c82', 'transparent']}
+                    style={styles.welcomeGradient}
                     start={{ x: 0, y: 0 }}
                     end={{ x: 1, y: 1 }}
                 >
@@ -171,13 +182,13 @@ const Home = () => {
                 <View style={styles.iconRow}>
                     <View style={styles.iconItem}>
                         <TouchableOpacity onPress={() => navigation.navigate('AdminAddNewProjectScreen')}>
-                            <Ionicons name="add-circle" size={50} color={theme.text} />
+                            <PlusCircle size={50} color={theme.text} />
                         </TouchableOpacity>
                         <Text style={{ color: theme.text }}>New Project</Text>
                     </View>
                     <View style={styles.iconItem}>
                         <TouchableOpacity onPress={() => navigation.navigate('AdminOngoingProjectsScreen')}>
-                            <Ionicons name="construct" size={50} color={theme.text} />
+                            <Hammer size={50} color={theme.text} />
                             {activeProjectsCount !== null && activeProjectsCount > 0 && (
                                 <View style={styles.notificationBadge}>
                                     <Text style={styles.notificationText}>{activeProjectsCount}</Text>
@@ -192,7 +203,7 @@ const Home = () => {
                 <View style={styles.iconRow}>
                     <View style={styles.iconItem}>
                         <TouchableOpacity onPress={() => navigation.navigate('AdminReviewProjectsScreen')}>
-                            <Ionicons name="clipboard" size={50} color={theme.text} />
+                            <Clipboard size={50} color={theme.text} />
                             {completedProjectsCount !== null && completedProjectsCount > 0 && (
                                 <View style={styles.notificationBadge}>
                                     <Text style={styles.notificationText}>{completedProjectsCount}</Text>
@@ -203,7 +214,7 @@ const Home = () => {
                     </View>
                     <View style={styles.iconItem}>
                         <TouchableOpacity onPress={() => navigation.navigate('AdminInitiatePaymentScreen')}>
-                            <Ionicons name="card" size={50} color={theme.text} />
+                            <CreditCard size={50} color={theme.text} />
                             {initiatePaymentProjectCount !== null && initiatePaymentProjectCount > 0 && (
                                 <View style={styles.notificationBadge}>
                                     <Text style={styles.notificationText}>{initiatePaymentProjectCount}</Text>
@@ -218,13 +229,13 @@ const Home = () => {
                 <View style={styles.iconRow}>
                     <View style={styles.iconItem}>
                         <TouchableOpacity onPress={() => navigation.navigate('AdminReviewRequestsScreen')}>
-                            <Ionicons name="chatbox-ellipses" size={50} color={theme.text} />
+                            <MessageSquare size={50} color={theme.text} />
                         </TouchableOpacity>
                         <Text style={{ color: theme.text }}>Review Requests</Text>
                     </View>
                     <View style={styles.iconItem}>
                         <TouchableOpacity onPress={() => navigation.navigate('AdminDocumentsScreen')}>
-                            <Ionicons name="document-text" size={50} color={theme.text} />
+                            <FileText size={50} color={theme.text} />
                         </TouchableOpacity>
                         <Text style={{ color: theme.text }}>Documents</Text>
                     </View>
@@ -234,13 +245,13 @@ const Home = () => {
                 <View style={styles.iconRow}>
                     <View style={styles.iconItem}>
                         <TouchableOpacity onPress={() => navigation.navigate('AdminAllocateProjectScreen')}>
-                            <Ionicons name="people-circle" size={50} color={theme.text} />
+                            <Users size={50} color={theme.text} />
                         </TouchableOpacity>
                         <Text style={{ color: theme.text }}>Allocate Project</Text>
                     </View>
                     <View style={styles.iconItem}>
                         <TouchableOpacity onPress={() => navigation.navigate('AdminOnHoldProjectsScreen')}>
-                            <Ionicons name="pause-circle" size={50} color={theme.text} />
+                            <PauseCircle size={50} color={theme.text} />
                             {onHoldProjectsCount !== null && onHoldProjectsCount > 0 && (
                                 <View style={styles.notificationBadge}>
                                     <Text style={styles.notificationText}>{onHoldProjectsCount}</Text>
@@ -253,7 +264,7 @@ const Home = () => {
                 <View style={styles.iconRow}>
                     <View style={styles.iconItem}>
                         <TouchableOpacity onPress={() => navigation.navigate('AdminApprovedProjectsScreen')}>
-                            <Ionicons name="checkmark-circle" size={50} color={theme.text} />
+                            <CheckCircle size={50} color={theme.text} />
                             {approvedProjectsCount !== null && approvedProjectsCount > 0 && (
                                 <View style={styles.notificationBadge}>
                                     <Text style={styles.notificationText}>{approvedProjectsCount}</Text>
@@ -264,7 +275,7 @@ const Home = () => {
                     </View>
                     <View style={styles.iconItem}>
                         <TouchableOpacity onPress={() => navigation.navigate('AdminRejectedProjectsScreen')}>
-                            <Ionicons name="close-circle" size={50} color={theme.text} />
+                            <XCircle size={50} color={theme.text} />
                             {rejectedProjectsCount !== null && rejectedProjectsCount > 0 && (
                                 <View style={styles.notificationBadge}>
                                     <Text style={styles.notificationText}>{rejectedProjectsCount}</Text>
@@ -277,7 +288,7 @@ const Home = () => {
                 <View style={styles.iconRow}>
                     <View style={styles.iconItem}>
                         <TouchableOpacity onPress={() => navigation.navigate('AdminAllocateFundsScreen')}>
-                            <Ionicons name="cash" size={50} color={theme.text} />
+                            <Text style={{ fontSize: 50, color: theme.text, fontWeight: 'bold' }}>₹</Text>
                         </TouchableOpacity>
                         <Text style={{ color: theme.text }}>Allocate Funds</Text>
                     </View>

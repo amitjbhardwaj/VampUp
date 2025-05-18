@@ -13,6 +13,14 @@ import { RootStackParamList } from "../RootNavigator";
 import { useTheme } from "../context/ThemeContext";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import LinearGradient from "react-native-linear-gradient";
+import {
+    FolderOpen,
+    PlayCircle,
+    Users,
+    PauseCircle,
+    CheckCircle2,  // closest to "checkmark-done-circle"
+    Wallet,
+} from "lucide-react-native";
 
 type HomeNavigationProp = NavigationProp<RootStackParamList>;
 
@@ -106,19 +114,19 @@ const Home = () => {
                     <RefreshControl refreshing={isRefreshing} onRefresh={onRefresh} />
                 }
             >
-            {contractorName ? (
-                <LinearGradient
-                colors={['transparent', '#5f2c82', '#49a09d', 'transparent']}
-                    style={styles.welcomeGradient}
-                    start={{ x: 0, y: 0 }}
-                    end={{ x: 1, y: 0 }}
-                >
-                    <Text style={styles.welcomeText}>
-                        Welcome!! {contractorName}
-                    </Text>
-                </LinearGradient>
+                {contractorName ? (
+                    <LinearGradient
+                        colors={['transparent', '#5f2c82', '#49a09d', 'transparent']}
+                        style={styles.welcomeGradient}
+                        start={{ x: 0, y: 0 }}
+                        end={{ x: 1, y: 0 }}
+                    >
+                        <Text style={styles.welcomeText}>
+                            Welcome!! {contractorName}
+                        </Text>
+                    </LinearGradient>
 
-            ) : null}
+                ) : null}
 
                 {/* Now put your UI content here */}
                 <View style={styles.iconContainer}>
@@ -126,7 +134,7 @@ const Home = () => {
                     <View style={styles.iconRow}>
                         <View style={styles.iconItem}>
                             <TouchableOpacity onPress={() => navigation.navigate("ContractorAllWorkScreen")}>
-                                <Ionicons name="list-circle" size={50} color={theme.text} />
+                                <FolderOpen size={50} color={theme.text} />
                                 {allProjectsCount !== null && allProjectsCount > 0 && (
                                     <View style={styles.notificationBadge}>
                                         <Text style={styles.notificationText}>{allProjectsCount}</Text>
@@ -137,7 +145,7 @@ const Home = () => {
                         </View>
                         <View style={styles.iconItem}>
                             <TouchableOpacity onPress={() => navigation.navigate("ContractorActiveWorkScreen")}>
-                                <Ionicons name="briefcase" size={50} color={theme.text} />
+                                <PlayCircle size={50} color={theme.text} />
                                 {activeProjectsCount !== null && activeProjectsCount > 0 && (
                                     <View style={styles.notificationBadge}>
                                         <Text style={styles.notificationText}>{activeProjectsCount}</Text>
@@ -152,13 +160,13 @@ const Home = () => {
                     <View style={styles.iconRow}>
                         <View style={styles.iconItem}>
                             <TouchableOpacity onPress={() => navigation.navigate("ContractorOnBoardWorkersScreen")}>
-                                <Ionicons name="people" size={50} color={theme.text} />
+                                <Users size={50} color={theme.text} />
                             </TouchableOpacity>
                             <Text style={{ color: theme.text }}>On-board Workers</Text>
                         </View>
                         <View style={styles.iconItem}>
                             <TouchableOpacity onPress={() => navigation.navigate("ContractorOnHoldProjectsScreen")}>
-                                <Ionicons name="pause-circle" size={50} color={theme.text} />
+                                <PauseCircle size={50} color={theme.text} />
                                 {onHoldProjectsCount !== null && onHoldProjectsCount > 0 && (
                                     <View style={styles.notificationBadge}>
                                         <Text style={styles.notificationText}>{onHoldProjectsCount}</Text>
@@ -173,7 +181,7 @@ const Home = () => {
                     <View style={styles.iconRow}>
                         <View style={styles.iconItem}>
                             <TouchableOpacity onPress={() => navigation.navigate("ContractorCompletedProjectsScreen")}>
-                                <Ionicons name="checkmark-circle" size={50} color={theme.text} />
+                                <CheckCircle2 size={50} color={theme.text} />
                                 {completedProjectsCount !== null && completedProjectsCount > 0 && (
                                     <View style={styles.notificationBadge}>
                                         <Text style={styles.notificationText}>{completedProjectsCount}</Text>
@@ -184,7 +192,7 @@ const Home = () => {
                         </View>
                         <View style={styles.iconItem}>
                             <TouchableOpacity onPress={() => navigation.navigate("ContractorInitiatePaymentScreen")}>
-                                <Ionicons name="card" size={50} color={theme.text} />
+                                <Wallet size={50} color={theme.text} />
                                 {initiatePaymentProjectCount !== null && initiatePaymentProjectCount > 0 && (
                                     <View style={styles.notificationBadge}>
                                         <Text style={styles.notificationText}>{initiatePaymentProjectCount}</Text>
@@ -248,7 +256,7 @@ const styles = StyleSheet.create({
         backgroundColor: 'transparent',
         // No hard background shape
     },
-    
+
     welcomeText: {
         fontSize: 26,
         fontWeight: 'bold',
@@ -258,7 +266,7 @@ const styles = StyleSheet.create({
         textShadowOffset: { width: 1, height: 1 },
         textShadowRadius: 3,
     },
-    
+
     gradientWelcome: {
         paddingVertical: 15,
         paddingHorizontal: 30,

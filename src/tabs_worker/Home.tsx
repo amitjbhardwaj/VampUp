@@ -11,7 +11,7 @@ import {
     ScrollView
 } from "react-native";
 import { NavigationProp, useNavigation } from "@react-navigation/native";
-import Ionicons from "react-native-vector-icons/Ionicons";
+import { Briefcase, Clock, LogOut, PlusCircle, FileText, MessageSquare } from 'lucide-react-native';
 import { RootStackParamList } from "../RootNavigator";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Picker } from "@react-native-picker/picker";
@@ -176,7 +176,7 @@ const Home = () => {
         >
             {name ? (
                 <LinearGradient
-                colors={['transparent', '#5f2c82', '#49a09d', 'transparent']}
+                    colors={['transparent', '#5f2c82', '#49a09d', 'transparent']}
                     style={styles.welcomeGradient}
                     start={{ x: 0, y: 0 }}
                     end={{ x: 1, y: 0 }}
@@ -194,7 +194,7 @@ const Home = () => {
                 <View style={styles.iconRow}>
                     <View style={styles.iconItem}>
                         <TouchableOpacity onPress={() => navigation.navigate('WorkerActiveWorkScreen')}>
-                            <Ionicons name="briefcase" size={50} color={theme.text} />
+                            <Briefcase size={50} color={theme.text} />
                             {ongoingProjectsCount !== null && ongoingProjectsCount > 0 && (
                                 <View style={styles.notificationBadge}>
                                     <Text style={styles.notificationText}>{ongoingProjectsCount}</Text>
@@ -205,7 +205,7 @@ const Home = () => {
                     </View>
                     <View style={styles.iconItem}>
                         <TouchableOpacity onPress={() => navigation.navigate('WorkerClockInScreen')}>
-                            <Ionicons name="log-in" size={50} color={theme.text} />
+                            <Clock size={50} color={theme.text} />
                         </TouchableOpacity>
                         <Text style={{ color: theme.text }}>Clock-in</Text>
                     </View>
@@ -213,7 +213,7 @@ const Home = () => {
                 <View style={styles.iconRow}>
                     <View style={[styles.iconItem, styles.lastRowIcon]}>
                         <TouchableOpacity onPress={() => navigation.navigate('WorkerClockOutScreen')}>
-                            <Ionicons name="log-out" size={50} color={theme.text} />
+                            <LogOut size={50} color={theme.text} />
                         </TouchableOpacity>
                         <Text style={{ color: theme.text }}>Clock-out</Text>
                     </View>
@@ -224,7 +224,7 @@ const Home = () => {
                 style={[styles.floatingButton, { backgroundColor: theme.mode === 'dark' ? "#fff" : "#000" }]}
                 onPress={() => setModalVisible(true)}
             >
-                <Ionicons name="add" size={40} color={theme.mode === 'dark' ? "#000" : "#fff"} />
+                <PlusCircle size={40} color={theme.mode === 'dark' ? "#000" : "#fff"} />
             </TouchableOpacity>
 
             {/* Modal */}
@@ -465,7 +465,7 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
         backgroundColor: 'transparent',
     },
-    
+
     welcomeText: {
         fontSize: 26,
         fontWeight: 'bold',
@@ -475,7 +475,7 @@ const styles = StyleSheet.create({
         textShadowOffset: { width: 1, height: 1 },
         textShadowRadius: 3,
     },
-    
+
     gradientWelcome: {
         paddingVertical: 15,
         paddingHorizontal: 30,
