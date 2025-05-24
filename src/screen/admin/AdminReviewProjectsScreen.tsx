@@ -128,7 +128,7 @@ const AdminReviewProjectsScreen = () => {
                     }));
                 }, 2000);
             } else {
-                console.log("Error updating project:", response.data);
+                //console.log("Error updating project:", response.data);
             }
         } catch (error) {
             console.error("Error updating project:", error);
@@ -166,7 +166,7 @@ const AdminReviewProjectsScreen = () => {
                     }));
                 }, 2000);
             } else {
-                console.log("Error updating project:", response.data);
+                //console.log("Error updating project:", response.data);
             }
         } catch (error) {
             console.error("Error updating project:", error);

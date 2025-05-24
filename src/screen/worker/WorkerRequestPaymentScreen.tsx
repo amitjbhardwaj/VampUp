@@ -46,14 +46,14 @@ const WorkerRequestPaymentScreen = () => {
                     return;
                 }
 
-                console.log(`Retrieved Worker Name: ${storedWorkerName}`);
+                //console.log(`Retrieved Worker Name: ${storedWorkerName}`);
                 setWorkerName(storedWorkerName);
 
                 const response = await axios.get(
                     `http://192.168.129.119:5001/get-completed-projects?workerName=${storedWorkerName}`
                 );
 
-                console.log("API Response:", response.data);
+                //console.log("API Response:", response.data);
 
                 if (response.data.status === "OK" && Array.isArray(response.data.data) && response.data.data.length > 0) {
                     setProjects(response.data.data);

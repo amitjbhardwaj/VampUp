@@ -108,7 +108,7 @@ const ContractorOnBoardWorkersScreen = () => {
             const selectedWorker = workers.find(worker => worker._id === value);
 
             if (selectedWorker) {
-                //console.log("Selected Worker:", selectedWorker.firstName, selectedWorker.lastName); // Debugging
+                ////console.log("Selected Worker:", selectedWorker.firstName, selectedWorker.lastName); // Debugging
                 setForm(prev => ({
                     ...prev,
                     worker_name: `${selectedWorker.firstName} ${selectedWorker.lastName}`, // Store actual name
@@ -116,7 +116,7 @@ const ContractorOnBoardWorkersScreen = () => {
             }
         } else if (field === "project_description") {
             const parsedValue = JSON.parse(value);
-            console.log("Selected Project:", parsedValue); // Debugging
+            //console.log("Selected Project:", parsedValue); // Debugging
             setForm(prev => ({
                 ...prev,
                 project_description: parsedValue.description
@@ -144,7 +144,7 @@ const ContractorOnBoardWorkersScreen = () => {
             worker_phone: selectedWorker.mobile,
         };
 
-        console.log("Submitting Data:", projectData); // Debugging
+        //console.log("Submitting Data:", projectData); // Debugging
 
         setLoading(true);
         try {

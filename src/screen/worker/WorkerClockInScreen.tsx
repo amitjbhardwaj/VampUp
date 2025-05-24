@@ -94,7 +94,7 @@ const WorkerClockInScreen: React.FC = () => {
                 if (error.response?.status === 404) {
                     // If 404 occurs, just set an empty list of projects without logging an error
                     setProjects([]);
-                    console.log("No projects found for this worker.");
+                    //console.log("No projects found for this worker.");
                 } else {
                     console.error("Error fetching projects:", error.message);
                 }
@@ -152,7 +152,7 @@ const WorkerClockInScreen: React.FC = () => {
                         setCurrentTime(formattedTime);
                     })
                     .catch((error: any) => {
-                        console.log("Biometric authentication failed:", error);
+                        //console.log("Biometric authentication failed:", error);
                         ToastAndroid.show("Authentication failed. Try again.", ToastAndroid.SHORT);
                     });
             })

@@ -59,7 +59,7 @@ const NetBankingPaymentAdminScreen = () => {
                 }
             );
 
-            console.log("Update successful:", response.data);
+            //console.log("Update successful:", response.data);
         } catch (error) {
             console.error("Failed to update project approver:", error);
         }

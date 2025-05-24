@@ -101,10 +101,10 @@ const ContractorActiveWorkScreen = () => {
             );
 
             if (response.data.status === "OK") {
-                console.log(`Project ${selectedProjectId} put On-Hold!`);
+                //console.log(`Project ${selectedProjectId} put On-Hold!`);
                 fetchProjects(); // Re-fetch to reflect updated project info
             } else {
-                console.log("Error : couldn't put project On-Hold:", response.data);
+                //console.log("Error : couldn't put project On-Hold:", response.data);
             }
         } catch (error) {
             console.error("Error putting project On-Hold:", error);
@@ -128,10 +128,10 @@ const ContractorActiveWorkScreen = () => {
                 setProjects(activeProjects);
                 fetchFundsForProjects(activeProjects);
             } else {
-                console.log("Error fetching projects", response.data);
+                //console.log("Error fetching projects", response.data);
             }
         } catch (error) {
-            console.log("Error:", error);
+            //console.log("Error:", error);
         } finally {
             setLoading(false);
         }

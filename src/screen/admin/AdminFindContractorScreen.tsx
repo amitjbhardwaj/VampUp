@@ -65,7 +65,7 @@ const AdminFindContractorScreen = () => {
                 Alert.alert("Success", "Project assigned successfully");
                 navigation.goBack();
             } else {
-                console.log("Error updating project:", response.data);
+                //console.log("Error updating project:", response.data);
             }
         } catch (error) {
             console.error("Error updating project:", error);

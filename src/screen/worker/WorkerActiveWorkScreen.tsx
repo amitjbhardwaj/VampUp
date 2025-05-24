@@ -90,7 +90,7 @@ const WorkerActiveWorkScreen = () => {
         if (error.response?.status === 404) {
           // If 404 occurs, just set an empty list of projects without logging an error
           setProjects([]);
-          console.log("No projects found for this worker.");
+          //console.log("No projects found for this worker.");
         } else {
           console.error("Error fetching projects:", error.message);
         }
@@ -128,8 +128,8 @@ const WorkerActiveWorkScreen = () => {
       await AsyncStorage.setItem("activeProjects", JSON.stringify(activeProjects));
       await AsyncStorage.setItem("onHoldProjects", JSON.stringify(onHoldProjects));
 
-      console.log("Active Projects Saved:", activeProjects);
-      console.log("On-Hold Projects Saved:", onHoldProjects);
+      //console.log("Active Projects Saved:", activeProjects);
+      //console.log("On-Hold Projects Saved:", onHoldProjects);
 
       // Update state with only active projects
       setProjects(activeProjects);

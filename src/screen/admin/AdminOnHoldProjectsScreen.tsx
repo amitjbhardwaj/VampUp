@@ -111,10 +111,10 @@ const AdminOnHoldProjectsScreen = () => {
             );
 
             if (response.data.status === "OK") {
-                console.log(`Project ${selectedProjectId} activated!`);
+                //console.log(`Project ${selectedProjectId} activated!`);
                 fetchOnHoldProjects();
             } else {
-                console.log("Error updating project:", response.data);
+                //console.log("Error updating project:", response.data);
             }
         } catch (error) {
             console.error("Error activating project:", error);
@@ -129,10 +129,10 @@ const AdminOnHoldProjectsScreen = () => {
             if (response.data.status === "OK") {
                 Alert.alert(`Project ${projectId} deleted successfully`);
             } else {
-                console.log("Error deleting project", response.data);
+                //console.log("Error deleting project", response.data);
             }
         } catch (error) {
-            console.log("Error deleting project:", error);
+            //console.log("Error deleting project:", error);
         }
     };
 

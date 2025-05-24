@@ -151,7 +151,7 @@ const AdminAllocateFundsScreen = () => {
 
     const handleSaveUpdatedFunds = async (projectId: string) => {
 
-        console.log(`Updating ₹${allocationAmount} for project ID: ${projectId}`);
+        //console.log(`Updating ₹${allocationAmount} for project ID: ${projectId}`);
         if (!allocationAmount) {
             Alert.alert("Please enter an amount.");
             return;

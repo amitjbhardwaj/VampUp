@@ -27,7 +27,7 @@ const PersonalDetailsScreen = ({ route }: { route: WorkerPersonalDetailsRoutePro
                 // Get token from AsyncStorage
                 const token = await AsyncStorage.getItem("authToken");
                 if (!token) {
-                    console.log("No token found, user needs to log in.");
+                    //console.log("No token found, user needs to log in.");
                     setLoading(false);
                     return;
                 }

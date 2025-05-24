@@ -55,10 +55,10 @@ const AdminAllocateProjectScreen = () => {
                 const filteredProjects = response.data.data.filter((project: Project) => project.status !== "Completed");
                 setProjects(filteredProjects);
             } else {
-                console.log("Error fetching projects", response.data);
+                //console.log("Error fetching projects", response.data);
             }
         } catch (error) {
-            console.log("Error:", error);
+            //console.log("Error:", error);
         } finally {
             setLoading(false);
         }
@@ -80,12 +80,12 @@ const AdminAllocateProjectScreen = () => {
                             const response = await axios.delete(`http://192.168.129.119:5001/delete-project/${projectId}`);
                             if (response.data.status === "OK") {
                                 setProjects(prevProjects => prevProjects.filter(p => p._id !== projectId));
-                                console.log(`Project ${projectId} deleted successfully`);
+                                //console.log(`Project ${projectId} deleted successfully`);
                             } else {
-                                console.log("Error deleting project", response.data);
+                                //console.log("Error deleting project", response.data);
                             }
                         } catch (error) {
-                            console.log("Error deleting project:", error);
+                            //console.log("Error deleting project:", error);
                         }
                     }
                 },

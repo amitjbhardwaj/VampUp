@@ -144,10 +144,10 @@ const AdminOngoingProjectsScreen = () => {
                 Alert.alert(`Project deleted successfully`);
                 fetchOngoingProjects();
             } else {
-                console.log("Error deleting project", response.data);
+                //console.log("Error deleting project", response.data);
             }
         } catch (error) {
-            console.log("Error deleting project:", error);
+            //console.log("Error deleting project:", error);
         }
     };
 

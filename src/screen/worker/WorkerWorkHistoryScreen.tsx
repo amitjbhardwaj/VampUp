@@ -1,12 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet, FlatList, Animated, Easing, ActivityIndicator, SafeAreaView, Platform, StatusBar } from "react-native";
-import { NavigationProp, useNavigation } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Icon from "react-native-vector-icons/FontAwesome";
-import { RootStackParamList } from "../../RootNavigator";
 import { useTheme } from "../../context/ThemeContext";
 import axios from "axios";
 import Header from "../Header";
+
+interface Project {
+    project_status: string;
+    first_level_payment_status: string,
+    second_level_payment_status: string,
+}
 
 const WorkerWorkHistoryScreen = () => {
     const { theme } = useTheme();
@@ -17,44 +21,57 @@ const WorkerWorkHistoryScreen = () => {
     const [workerName, setWorkerName] = useState<string | null>(null);
 
     useEffect(() => {
-        const fetchCompletedProjects = async () => {
-            try {
-                const storedWorkerName = await AsyncStorage.getItem("workerName");
-                if (!storedWorkerName) {
-                    console.error("No worker name found in AsyncStorage.");
-                    return;
-                }
+    const fetchCompletedProjects = async () => {
+        try {
+            const storedWorkerName = await AsyncStorage.getItem("workerName");
+            if (!storedWorkerName) {
+                console.error("No worker name found in AsyncStorage.");
+                return;
+            }
 
-                console.log(`Retrieved Worker Name: ${storedWorkerName}`);
-                setWorkerName(storedWorkerName);
+            //console.log(`Retrieved Worker Name: ${storedWorkerName}`);
+            setWorkerName(storedWorkerName);
 
-                const response = await axios.get(
-                    `http://192.168.129.119:5001/get-completed-projects?workerName=${storedWorkerName}`
+            const response = await axios.get(
+                `http://192.168.129.119:5001/get-completed-projects?workerName=${storedWorkerName}`
+            );
+
+            ////console.log("API Response:", response.data);
+
+            if (
+                response.data.status === "OK" &&
+                Array.isArray(response.data.data) &&
+                response.data.data.length > 0
+            ) {
+                // Apply filter to include only approved projects
+                const filteredProjects = (response.data.data as Project[]).filter(
+                    (project) =>
+                        project.project_status === "Approved" &&
+                        project.first_level_payment_status === "Approved" &&
+                        project.second_level_payment_status === "Approved"
                 );
 
-                console.log("API Response:", response.data);
+                setCompletedProjects(filteredProjects);
 
-                if (response.data.status === "OK" && Array.isArray(response.data.data) && response.data.data.length > 0) {
-                    setCompletedProjects(response.data.data);
-
-                    // Trigger the fade-in animation when the data is loaded
-                    Animated.timing(fadeAnim, {
-                        toValue: 1, // Make it fully opaque
-                        duration: 500, // Adjust the duration of the fade-in effect
-                        easing: Easing.ease,
-                        useNativeDriver: true,
-                    }).start();
-                }
-            } catch (error) {
-                console.error("Error fetching completed projects", error);
-                setError("Failed to fetch completed projects. Please try again.");
-            } finally {
-                setIsLoading(false); // Hide the loading indicator after the fetch completes
+                // Trigger the fade-in animation when the data is loaded
+                Animated.timing(fadeAnim, {
+                    toValue: 1, // Make it fully opaque
+                    duration: 500, // Adjust the duration of the fade-in effect
+                    easing: Easing.ease,
+                    useNativeDriver: true,
+                }).start();
             }
-        };
+        } catch (error) {
+            console.error("Error fetching completed projects", error);
+            setError("Failed to fetch completed projects. Please try again.");
+        } finally {
+            setIsLoading(false); // Hide the loading indicator after the fetch completes
+        }
+    };
 
-        fetchCompletedProjects();
-    }, []);
+    fetchCompletedProjects();
+}, []);
+
 
     const projectDetails = (project: any) => [
         { label: 'Project ID', value: project.project_Id, icon: 'id-badge' },

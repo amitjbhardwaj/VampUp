@@ -147,7 +147,7 @@ const ContractorCompletedProjectsScreen = () => {
     };
 
     const handleUpdateApprovers = async (adminFullName: string) => {
-        console.log("Selected project ", selectedProjectId)
+        //console.log("Selected project ", selectedProjectId)
         if (!selectedProjectId) return;
 
         try {
@@ -194,7 +194,7 @@ const ContractorCompletedProjectsScreen = () => {
     const pickImage = (projectId: string) => {
         launchImageLibrary({ mediaType: "photo", quality: 1, selectionLimit: 5 }, (response) => {
             if (response.didCancel) {
-                console.log("User cancelled image picker");
+                //console.log("User cancelled image picker");
                 return;
             }
             if (response.errorMessage) {
@@ -214,7 +214,7 @@ const ContractorCompletedProjectsScreen = () => {
     const takePhoto = (projectId: string) => {
         launchCamera({ mediaType: "photo", quality: 1 }, (response) => {
             if (response.didCancel) {
-                console.log("User cancelled camera");
+                //console.log("User cancelled camera");
                 return;
             }
             if (response.errorMessage) {
@@ -279,9 +279,9 @@ const ContractorCompletedProjectsScreen = () => {
             });
 
             // Log the response status and text for debugging
-            console.log("Response Status:", response.status);
+            //console.log("Response Status:", response.status);
             const responseText = await response.text();
-            console.log("Response Body:", responseText);
+            //console.log("Response Body:", responseText);
 
             // Parse as JSON if valid, else handle error
             if (response.ok) {

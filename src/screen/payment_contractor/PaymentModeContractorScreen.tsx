@@ -77,7 +77,7 @@ const PaymentModeContractorScreen = () => {
                             } else if (selectedMode === "IMPS") {
                                 navigation.navigate("IMPSPaymentContractorScreen", { _id, projectId, fund });
                             } else {
-                                console.log(`Proceeding with ${selectedMode} for project ${projectId}`);
+                                //console.log(`Proceeding with ${selectedMode} for project ${projectId}`);
                             }
                         }}
                     >
