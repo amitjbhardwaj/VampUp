@@ -170,25 +170,25 @@ const WorkerRequestPaymentScreen = () => {
                                 <TextInput
                                     style={[styles.input, { backgroundColor: "transparent", color: isDarkMode ? "#fff" : "#000" }]}
                                     value={selectedProjectDetails.project_Id}
-                                    placeholderTextColor={isDarkMode ? "#fff" : "#888"}
+                                    placeholderTextColor={theme.placeholderTextColor}
                                     editable={false}
                                 />
                                 <TextInput
                                     style={[styles.input, { backgroundColor: "transparent", color: isDarkMode ? "#fff" : "#000" }]}
                                     value={selectedProjectDetails.long_project_description}
-                                    placeholderTextColor={isDarkMode ? "#fff" : "#888"}
+                                    placeholderTextColor={theme.placeholderTextColor}
                                     editable={false}
                                 />
                                 <TextInput
                                     style={[styles.input, { backgroundColor: "transparent", color: isDarkMode ? "#fff" : "#000" }]}
                                     value={selectedProjectDetails.project_start_date}
-                                    placeholderTextColor={isDarkMode ? "#fff" : "#888"}
+                                    placeholderTextColor={theme.placeholderTextColor}
                                     editable={false}
                                 />
                                 <TextInput
                                     style={[styles.input, { backgroundColor: "transparent", color: isDarkMode ? "#fff" : "#000" }]}
                                     value={selectedProjectDetails.project_end_date}
-                                    placeholderTextColor={isDarkMode ? "#fff" : "#888"}
+                                    placeholderTextColor={theme.placeholderTextColor}
                                     editable={false}
                                 />
 
@@ -202,7 +202,7 @@ const WorkerRequestPaymentScreen = () => {
                             value={amount}
                             onChangeText={setAmount}
                             placeholder={amountFocused ? "" : "Enter Amount"}
-                            placeholderTextColor={isDarkMode ? "#fff" : "#888"} // Set placeholder color
+                            placeholderTextColor={theme.placeholderTextColor} // Set placeholder color
                             onFocus={() => setAmountFocused(true)}
                             onBlur={() => setAmountFocused(false)}
                         />

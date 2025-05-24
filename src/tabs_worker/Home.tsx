@@ -264,14 +264,14 @@ const Home = () => {
                                 <TextInput
                                     style={[styles.input, { color: theme.text, borderColor: theme.text }]}
                                     placeholder="Project ID"
-                                    placeholderTextColor={theme.text}
+                                    placeholderTextColor={theme.placeholderTextColor}
                                     value={projectId}
                                     editable={false}
                                 />
                                 <TextInput
                                     style={[styles.textArea, { color: theme.text, borderColor: theme.text }]}
                                     placeholder="Long Project Description"
-                                    placeholderTextColor={theme.text}
+                                    placeholderTextColor={theme.placeholderTextColor}
                                     value={longProjectDescription}
                                     editable={false}
                                     multiline
@@ -279,7 +279,7 @@ const Home = () => {
                                 <TextInput
                                     style={[styles.input, { color: theme.text, borderColor: theme.text }]}
                                     placeholder="Phone"
-                                    placeholderTextColor={theme.text}
+                                    placeholderTextColor={theme.placeholderTextColor}
                                     value={phone}
                                     editable={false}
                                     multiline
@@ -287,7 +287,7 @@ const Home = () => {
                                 <TextInput
                                     style={[styles.input, { color: theme.text, borderColor: theme.text }]}
                                     placeholder="Start Date"
-                                    placeholderTextColor={theme.text}
+                                    placeholderTextColor={theme.placeholderTextColor}
                                     value={projectStartDate}
                                     editable={false}
                                 />
@@ -297,14 +297,14 @@ const Home = () => {
                         <TextInput
                             style={[styles.input, { color: theme.text, borderColor: theme.text }]}
                             placeholder="Complaint Subject"
-                            placeholderTextColor={theme.text}
+                            placeholderTextColor={theme.placeholderTextColor}
                             value={subject}
                             onChangeText={setSubject}
                         />
                         <TextInput
                             style={[styles.textArea, { color: theme.text, borderColor: theme.text }]}
                             placeholder="Complaint Description"
-                            placeholderTextColor={theme.text}
+                            placeholderTextColor={theme.placeholderTextColor}
                             value={complaintDescription}
                             onChangeText={setComplaintDescription}
                             multiline

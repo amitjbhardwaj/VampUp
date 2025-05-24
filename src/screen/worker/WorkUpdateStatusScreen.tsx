@@ -185,7 +185,7 @@ const WorkUpdateStatusScreen = () => {
                             value={editableEndDate}
                             onChangeText={setEditableEndDate}
                             placeholder="Enter End Date"
-                            placeholderTextColor={theme.mode === 'dark' ? '#bbb' : '#888'}
+                            placeholderTextColor={theme.placeholderTextColor}
                         />
                     </View>
 
@@ -243,7 +243,7 @@ const WorkUpdateStatusScreen = () => {
                                         value={reason}
                                         onChangeText={setReason}
                                         placeholder="Enter reason"
-                                        placeholderTextColor={theme.mode === 'dark' ? '#aaa' : '#888'}
+                                        placeholderTextColor={theme.placeholderTextColor}
                                         multiline
                                         numberOfLines={4}
                                     />

@@ -179,7 +179,7 @@ const ContractorOnBoardWorkersScreen = () => {
                     <View style={[styles.inputContainer, errors.contractor_name && styles.inputError, { backgroundColor: theme.inputBackground }]}>
                         <TextInput
                             placeholder="Contractor name"
-                            placeholderTextColor={theme.mode === "dark" ? "#fff" : "#999"}
+                            placeholderTextColor={theme.placeholderTextColor}
                             style={[styles.input, { color: theme.text }]}
                             onChangeText={(value) => handleChange("contractor_name", value)}
                             value={form.contractor_name} // Display the fetched contractor name

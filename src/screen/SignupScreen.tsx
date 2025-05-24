@@ -100,7 +100,7 @@ const SignupScreen = () => {
         <View style={[styles.inputContainer, errors.role && styles.inputError, { backgroundColor: theme.inputBackground }]}>
           <Icon name="person-outline" size={20} style={[styles.icon, { color: theme.icon }]} />
           <TouchableOpacity onPress={() => setShowRolePicker(true)} style={styles.roleDropdown}>
-            <Text style={[styles.input, { color: form.role ? theme.text : (theme.mode === "dark" ? "#fff" : "#999") }]}>
+            <Text style={[styles.input, { color: form.role ? theme.text : (theme.placeholderTextColor) }]}>
               {form.role || "Select Role *"}
             </Text>
 
@@ -118,7 +118,7 @@ const SignupScreen = () => {
       >
         <View style={styles.modalOverlay}>
           <View style={[styles.modalContent, { backgroundColor: theme.background }]}>
-            <Text style={[styles.modalTitle, { color: theme.text }]}>Select Role</Text>
+            <Text style={[styles.modalTitle, { color: theme.placeholderTextColor }]}>Select Role</Text>
             {["Worker", "Contractor", "Admin"].map((role) => (
               <TouchableOpacity
                 key={role}
@@ -155,7 +155,7 @@ const SignupScreen = () => {
             <Icon name={icon} size={20} style={[styles.icon, { color: theme.icon }]} />
             <TextInput
               placeholder={focusedFields[key] ? "" : placeholder}
-              placeholderTextColor={theme.mode === "dark" ? "#fff" : "#999"}
+              placeholderTextColor={theme.placeholderTextColor}
               secureTextEntry={secureTextEntry}
               style={[styles.input, { color: theme.text }]}
               onChangeText={(value) => handleChange(key, value)}
@@ -171,12 +171,12 @@ const SignupScreen = () => {
       {/* Mobile Number Field */}
       <View style={styles.fieldWrapper}>
         <View style={[styles.inputContainer, styles.row, errors.mobile && styles.inputError, { backgroundColor: theme.inputBackground }]}>
-          <TouchableOpacity style={styles.countryCode}>
-            <Text style={[styles.countryCodeText, { color: theme.text }]}>+91 ▼</Text>
+          <TouchableOpacity >
+            <Text style={[styles.countryCodeText, { color: theme.text }]}>+91</Text>
           </TouchableOpacity>
           <TextInput
             placeholder={focusedFields["mobile"] ? "" : "Mobile number *"}
-            placeholderTextColor={theme.mode === "dark" ? "#fff" : "#999"}
+            placeholderTextColor={theme.placeholderTextColor}
             keyboardType="phone-pad"
             style={[styles.input, { flex: 1, color: theme.text }]}
             onChangeText={(value) => handleChange("mobile", value)}
@@ -322,8 +322,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   countryCodeText: {
-    fontSize: 16,
+    fontSize: 20, // Increase this value as needed, e.g., 20 or 22
     fontWeight: "bold",
+    marginRight: 8,
   },
 });
 

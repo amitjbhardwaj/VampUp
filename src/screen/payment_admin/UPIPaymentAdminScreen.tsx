@@ -77,7 +77,7 @@ const UPIPaymentAdminScreen = () => {
             <TextInput
                 style={[styles.input, { borderColor: theme.primary, color: theme.text }]}
                 placeholder="example@upi"
-                placeholderTextColor="gray"
+                placeholderTextColor={theme.placeholderTextColor}
                 value={upiId}
                 onChangeText={setUpiId}
             />

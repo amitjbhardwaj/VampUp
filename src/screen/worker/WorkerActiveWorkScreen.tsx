@@ -193,7 +193,7 @@ const WorkerActiveWorkScreen = () => {
             },
           ]}
           placeholder="Search Projects..."
-          placeholderTextColor={theme.mode === 'dark' ? "#fff" : "#aaa"}  // Set the placeholder color
+          placeholderTextColor={theme.placeholderTextColor}
           value={searchText}
           onChangeText={setSearchText}
         />

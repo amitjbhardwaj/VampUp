@@ -257,7 +257,7 @@ const AdminAllocateFundsScreen = () => {
                     <TextInput
                         style={[styles.input, { color: theme.text, borderColor: theme.primary }]}
                         placeholder="Enter amount"
-                        placeholderTextColor="#888"
+                        placeholderTextColor={theme.placeholderTextColor}
                         keyboardType="numeric"
                         value={allocationAmount}
                         onChangeText={setAllocationAmount}
@@ -282,7 +282,7 @@ const AdminAllocateFundsScreen = () => {
                     <TextInput
                         style={[styles.input, { color: theme.text, borderColor: theme.primary }]}
                         placeholder="Enter updated amount"
-                        placeholderTextColor="#888"
+                        placeholderTextColor={theme.placeholderTextColor}
                         keyboardType="numeric"
                         value={allocationAmount}
                         onChangeText={setAllocationAmount}

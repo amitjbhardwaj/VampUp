@@ -110,7 +110,7 @@ const LoginScreen = () => {
                     <Icon name="user" size={18} color={theme.icon} style={styles.icon} />
                     <TextInput
                         placeholder={usernameFocused ? "" : "Username"}
-                        placeholderTextColor={theme.mode === "dark" ? "#fff" : "#999"}
+                        placeholderTextColor={theme.placeholderTextColor}
                         style={[styles.input, { color: theme.text }]}
                         autoCapitalize="none"
                         value={username}
@@ -133,7 +133,7 @@ const LoginScreen = () => {
                         autoCapitalize="none"
                         value={password}
                         onChangeText={setPassword}
-                        placeholderTextColor={theme.mode === "dark" ? "#fff" : "#999"}
+                        placeholderTextColor={theme.placeholderTextColor}
                         returnKeyType="done"
                         onFocus={() => setPasswordFocused(true)}
                         onBlur={() => setPasswordFocused(false)}

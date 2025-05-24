@@ -276,7 +276,7 @@ const ContractorAllWorkScreen = () => {
                             <TextInput
                                 style={[styles.input, { color: theme.text, borderColor: theme.primary }]}
                                 placeholder="Enter reason"
-                                placeholderTextColor={theme.text}
+                                placeholderTextColor={theme.placeholderTextColor}
                                 value={reason}
                                 onChangeText={setReason}
                             />

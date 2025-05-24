@@ -76,7 +76,7 @@ const VerifyAadharScreen = () => {
             placeholder={aadharFocused ? "" : "XXXX XXXX XXXX"}
             value={aadhar}
             onChangeText={setAadhar}
-            placeholderTextColor={theme.icon}
+            placeholderTextColor={theme.placeholderTextColor}
             onFocus={() => setAadharFocused(true)}
             onBlur={() => setAadharFocused(false)}
           />

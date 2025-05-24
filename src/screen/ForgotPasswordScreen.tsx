@@ -188,7 +188,7 @@ const ForgotPasswordScreen = () => {
                             <FontAwesome name="id-card" size={24} color={theme.iconColor} style={styles.inputIcon} />
                             <TextInput
                                 placeholder={aadharFocused ? "" : "Aadhaar Number"}
-                                placeholderTextColor={theme.mode === "dark" ? "#fff" : "#999"}
+                                placeholderTextColor={theme.placeholderTextColor}
                                 keyboardType="numeric"
                                 maxLength={12}
                                 style={[styles.inputText, { color: theme.text }]}
@@ -222,7 +222,7 @@ const ForgotPasswordScreen = () => {
                             <FontAwesome name="key" size={24} color={theme.iconColor} style={styles.inputIcon} />
                             <TextInput
                                 placeholder={otpFocused ? "" : "OTP"}
-                                placeholderTextColor={theme.mode === "dark" ? "#fff" : "#999"}
+                                placeholderTextColor={theme.placeholderTextColor}
                                 keyboardType="numeric"
                                 maxLength={6}
                                 style={[styles.inputText, { color: theme.text }]}
@@ -273,7 +273,7 @@ const ForgotPasswordScreen = () => {
                             <FontAwesome name="lock" size={24} color={theme.iconColor} style={styles.inputIcon} />
                             <TextInput
                                 placeholder={passwordFocused ? "" : "New Password"}
-                                placeholderTextColor={theme.mode === "dark" ? "#fff" : "#999"}
+                                placeholderTextColor={theme.placeholderTextColor}
                                 secureTextEntry
                                 style={[styles.inputText, { color: theme.text }]}
                                 value={newPassword}
@@ -292,7 +292,7 @@ const ForgotPasswordScreen = () => {
                             <FontAwesome name="lock" size={24} color={theme.iconColor} style={styles.inputIcon} />
                             <TextInput
                                 placeholder={confirmPasswordFocused ? "" : "Confirm Password"}
-                                placeholderTextColor={theme.mode === "dark" ? "#fff" : "#999"}
+                                placeholderTextColor={theme.placeholderTextColor}
                                 secureTextEntry
                                 style={[styles.inputText, { color: theme.text }]}
                                 value={confirmPassword}

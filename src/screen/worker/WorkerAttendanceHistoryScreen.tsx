@@ -109,7 +109,7 @@ const WorkerAttendanceHistoryScreen = () => {
                     <TextInput
                         style={[styles.searchInput, { color: theme.mode === 'dark' ? '#fff' : '#333' }]}
                         placeholder="Search by project, name, or date..."
-                        placeholderTextColor={theme.mode === 'dark' ? '#bbb' : '#888'}
+                        placeholderTextColor={theme.placeholderTextColor}
                         value={searchQuery}
                         onChangeText={handleSearch}
                     />

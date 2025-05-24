@@ -113,7 +113,7 @@ const AdminAllocateProjectScreen = () => {
                         },
                     ]}
                     placeholder="Search by description or ID..."
-                    placeholderTextColor={theme.mode === "dark" ? "#aaa" : "#666"}
+                    placeholderTextColor={theme.placeholderTextColor}
                     value={searchQuery}
                     onChangeText={setSearchQuery}
                 />

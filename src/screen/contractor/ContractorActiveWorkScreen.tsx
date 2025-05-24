@@ -200,7 +200,7 @@ const ContractorActiveWorkScreen = () => {
                             <TextInput
                                 style={[styles.input, { color: theme.text, borderColor: theme.primary }]}
                                 placeholder={reasonFocused ? "" : "Enter reason"}
-                                placeholderTextColor={theme.text}
+                                placeholderTextColor={theme.placeholderTextColor}
                                 value={reason}
                                 onChangeText={setReason}
                                 onFocus={() => setReasonFocused(true)}
