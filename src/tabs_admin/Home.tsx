@@ -28,6 +28,7 @@ type Project = {
     id: string;
     name: string;
     project_status: string;
+    first_level_payment_status: string;
 };
 
 
@@ -113,7 +114,9 @@ const Home = () => {
                 const initiatePaymentData = await initiatePaymentResponse.json();
                 if (initiatePaymentData.status === 'OK') {
                     const initiateProjects = (initiatePaymentData.data as Project[]).filter(
-                        (project) => project.project_status === "Approved"
+                        (project) =>
+                            project.project_status === "Approved" &&
+                            project.first_level_payment_status !== "Approved"
                     );
                     setInitiatePaymentProjectCount(initiateProjects.length);
                 } else {

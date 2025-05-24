@@ -16,6 +16,8 @@ import { StackNavigationProp } from "@react-navigation/stack";
 import { useNavigation } from "@react-navigation/native";
 import Header from "../Header";
 import axios from "axios";
+import Badge from 'react-native-vector-icons/FontAwesome';
+
 
 type Admin = {
     _id: string;
@@ -40,6 +42,7 @@ type Project = {
     contractor_name: string;
     images?: string[];
     project_status: string;
+    second_level_payment_status: string;
 };
 
 type NavigationProps = StackNavigationProp<RootStackParamList, "ContractorCompletedProjectsScreen">;
@@ -317,7 +320,15 @@ const ContractorCompletedProjectsScreen = () => {
                     )}
                     renderItem={({ item: project }) => (
                         <View style={[styles.projectCard, { backgroundColor: theme.card, shadowColor: theme.text }]}>
-                            <Text style={[styles.projectTitle, { color: theme.text }]}>{project.project_description}</Text>
+
+                            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                                <Text style={[styles.projectTitle, { color: theme.text }]}>
+                                    {project.project_description}
+                                </Text>
+                                {project.second_level_payment_status === "Approved" && (
+                                    <Badge name="check-circle" size={24} color="green" style={{ marginLeft: 10, marginBottom: 10 }} />
+                                )}
+                            </View>
                             <Text style={[styles.projectDetail, { color: theme.text }]}><FontAwesome name="id-card" size={20} /> ID: {project.project_Id}</Text>
                             <Text style={[styles.projectDetail, { color: theme.text }]}><FontAwesome name="info-circle" size={20} /> Project Description: {project.long_project_description}</Text>
                             <Text style={[styles.projectDetail, { color: theme.text }]}><FontAwesome name="calendar" size={20} /> Start Date: {project.project_start_date}</Text>
@@ -346,34 +357,34 @@ const ContractorCompletedProjectsScreen = () => {
                                 />
                             )}
 
-                            <View style={styles.buttonRow}>
-                                <TouchableOpacity style={[styles.viewDetailsButton, { backgroundColor: theme.primary }]} onPress={() => handleCallWorker(project.worker_phone)}>
-                                    <Text style={[styles.buttonText, { color: theme.buttonText }]}>Call Worker</Text>
-                                </TouchableOpacity>
-                                <TouchableOpacity style={[styles.onHoldButton, { backgroundColor: theme.primary }]} onPress={() => Alert.alert("Need More Work", `Requesting more work for ${project.project_Id}`)}>
-                                    <Text style={[styles.buttonText, { color: theme.buttonText }]}>Need More Work</Text>
-                                </TouchableOpacity>
-                                <TouchableOpacity style={[styles.viewDetailsButton, { backgroundColor: theme.primary }]} onPress={() => handleUploadEvidence(project.project_Id)}>
-                                    <Text style={[styles.buttonText, { color: theme.buttonText }]}>Upload Evidence</Text>
-                                </TouchableOpacity>
-                                <TouchableOpacity style={[styles.onHoldButton, { backgroundColor: theme.primary }]} onPress={() => handleSecondLevelApproval(project.project_Id)}>
-                                    <Text style={[styles.buttonText, { color: theme.buttonText }]}>Second Level Approval</Text>
-                                </TouchableOpacity>
-                                <TouchableOpacity
-                                    style={[styles.onHoldButton, { backgroundColor: project.project_status === 'Approved' ? '#28a745' : '#ccc' }]}
-                                    disabled={project.project_status !== 'Approved' && project.first_level_payment_status !== "Approved"}
-                                    onPress={() => {
-                                        const fund = funds[project.project_Id] ?? 0; // Get the fund allocated for this project
-                                        navigation.navigate("PaymentModeContractorScreen",{ _id: project._id, projectId: project.project_Id, fund: fund });
-                                    }}
-                                >
-                                    <Text style={[styles.buttonText, { color: theme.buttonText }]}>
-                                        Make Payment
-                                    </Text>
-                                </TouchableOpacity>
-
-
-                            </View>
+                            {project.second_level_payment_status !== "Approved" && (
+                                <View style={styles.buttonRow}>
+                                    <TouchableOpacity style={[styles.viewDetailsButton, { backgroundColor: theme.primary }]} onPress={() => handleCallWorker(project.worker_phone)}>
+                                        <Text style={[styles.buttonText, { color: theme.buttonText }]}>Call Worker</Text>
+                                    </TouchableOpacity>
+                                    <TouchableOpacity style={[styles.onHoldButton, { backgroundColor: theme.primary }]} onPress={() => Alert.alert("Need More Work", `Requesting more work for ${project.project_Id}`)}>
+                                        <Text style={[styles.buttonText, { color: theme.buttonText }]}>Need More Work</Text>
+                                    </TouchableOpacity>
+                                    <TouchableOpacity style={[styles.viewDetailsButton, { backgroundColor: theme.primary }]} onPress={() => handleUploadEvidence(project.project_Id)}>
+                                        <Text style={[styles.buttonText, { color: theme.buttonText }]}>Upload Evidence</Text>
+                                    </TouchableOpacity>
+                                    <TouchableOpacity style={[styles.onHoldButton, { backgroundColor: theme.primary }]} onPress={() => handleSecondLevelApproval(project.project_Id)}>
+                                        <Text style={[styles.buttonText, { color: theme.buttonText }]}>Second Level Approval</Text>
+                                    </TouchableOpacity>
+                                    <TouchableOpacity
+                                        style={[styles.onHoldButton, { backgroundColor: project.project_status === 'Approved' ? '#28a745' : '#ccc' }]}
+                                        disabled={project.project_status !== 'Approved' && project.first_level_payment_status !== "Approved"}
+                                        onPress={() => {
+                                            const fund = funds[project.project_Id] ?? 0;
+                                            navigation.navigate("PaymentModeContractorScreen", { _id: project._id, projectId: project.project_Id, fund: fund });
+                                        }}
+                                    >
+                                        <Text style={[styles.buttonText, { color: theme.buttonText }]}>
+                                            Make Payment
+                                        </Text>
+                                    </TouchableOpacity>
+                                </View>
+                            )}
                         </View>
                     )}
                 />
@@ -544,6 +555,20 @@ const styles = StyleSheet.create({
         borderRadius: 8,
         alignItems: 'center',
     },
+    paymentBadge: {
+        backgroundColor: '#28a745',
+        paddingHorizontal: 10,
+        paddingVertical: 4,
+        borderRadius: 12,
+        alignSelf: 'flex-start',
+        marginBottom: 10,
+    },
+    paymentBadgeText: {
+        color: '#fff',
+        fontWeight: 'bold',
+        fontSize: 14,
+    },
+
 });
 
 export default ContractorCompletedProjectsScreen;

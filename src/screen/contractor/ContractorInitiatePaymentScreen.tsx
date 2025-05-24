@@ -24,6 +24,7 @@ interface Project {
     project_status: string;
     first_level_payment_approver: string,
     first_level_payment_status: string,
+    second_level_payment_status: string,
 }
 
 type NavigationProps = StackNavigationProp<RootStackParamList, "ContractorInitiatePaymentScreen">;
@@ -68,7 +69,10 @@ const ContractorInitiatePaymentScreen = () => {
 
                 const responseData = await response.json();
                 const approvedProjects = (responseData.data as Project[]).filter(
-                    (project) => project.project_status === "Approved" &&  project.first_level_payment_approver === project.created_by &&  project.first_level_payment_status === "Approved"
+                    (project) => project.project_status === "Approved" &&
+                        project.first_level_payment_approver === project.created_by &&
+                        project.first_level_payment_status === "Approved" &&
+                        project.second_level_payment_status !== "Approved"
                 );
 
                 setProjects(approvedProjects);
@@ -164,7 +168,7 @@ const ContractorInitiatePaymentScreen = () => {
                                     {item.completion_percentage} %
                                 </Text>
                             </View>
-                            
+
                             <View style={styles.row}>
                                 <Text style={[styles.label, { color: theme.text }]}>💰 Amount Allocated:</Text>
                                 <Text style={[styles.value, { color: theme.text }]}>

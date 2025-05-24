@@ -21,6 +21,7 @@ interface Project {
     contractor_name: string;
     worker_name: string;
     project_status: string;
+    first_level_payment_status: string;
 }
 
 type NavigationProps = StackNavigationProp<RootStackParamList, "AdminInitiatePaymentScreen">;
@@ -65,8 +66,11 @@ const AdminInitiatePaymentScreen = () => {
 
                 const responseData = await response.json();
                 const approvedProjects = (responseData.data as Project[]).filter(
-                    (project) => project.project_status === "Approved"
+                    (project) =>
+                        project.project_status === "Approved" &&
+                        project.first_level_payment_status !== "Approved"
                 );
+
 
                 setProjects(approvedProjects);
                 fetchFundsForProjects(approvedProjects); // <-- Fetch funds after projects

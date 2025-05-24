@@ -20,6 +20,7 @@ type Project = {
     completion_percentage: number;
     status: string;
     contractor_name?: string;
+    second_level_payment_status?: string;
 };
 
 const ContractorAllWorkScreen = () => {
@@ -195,29 +196,32 @@ const ContractorAllWorkScreen = () => {
                                     <FontAwesome name="money" size={20} /> Fund Allocated: ₹{funds[project.project_Id] ?? 0}
                                 </Text>
 
-                                <View style={styles.buttonRow}>
-                                    <TouchableOpacity
-                                        style={[
-                                            styles.actionButton,
-                                            {
-                                                backgroundColor: project.status === "In-Progress" ? "gray" : theme.primary
-                                            }
-                                        ]}
-                                        onPress={() => openActivateModal(project._id)}
-                                        activeOpacity={0.8}
-                                        disabled={project.status === "In-Progress"} // Disable if project is In-Progress
-                                    >
-                                        <Text style={[styles.buttonText, { color: theme.buttonText }]}>Activate Project</Text>
-                                    </TouchableOpacity>
+                                {project.second_level_payment_status !== "Approved" && (
+                                    <View style={styles.buttonRow}>
+                                        <TouchableOpacity
+                                            style={[
+                                                styles.actionButton,
+                                                {
+                                                    backgroundColor: project.status === "In-Progress" ? "gray" : theme.primary
+                                                }
+                                            ]}
+                                            onPress={() => openActivateModal(project._id)}
+                                            activeOpacity={0.8}
+                                            disabled={project.status === "In-Progress"} // Disable if project is In-Progress
+                                        >
+                                            <Text style={[styles.buttonText, { color: theme.buttonText }]}>Activate Project</Text>
+                                        </TouchableOpacity>
 
-                                    <TouchableOpacity
-                                        style={[styles.actionButton, { backgroundColor: theme.secondary }]}
-                                        onPress={() => openOnHoldModal(project._id)}
-                                        activeOpacity={0.8}
-                                    >
-                                        <Text style={[styles.buttonText, { color: theme.buttonText }]}>On-Hold</Text>
-                                    </TouchableOpacity>
-                                </View>
+                                        <TouchableOpacity
+                                            style={[styles.actionButton, { backgroundColor: theme.secondary }]}
+                                            onPress={() => openOnHoldModal(project._id)}
+                                            activeOpacity={0.8}
+                                        >
+                                            <Text style={[styles.buttonText, { color: theme.buttonText }]}>On-Hold</Text>
+                                        </TouchableOpacity>
+                                    </View>
+                                )}
+
                             </View>
                         ))
                     )}
