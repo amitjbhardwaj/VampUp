@@ -116,7 +116,7 @@ const WorkUpdateStatusScreen = () => {
         onUpdateCompletion(project._id, updatedCompletion);
 
         if (updatedCompletion === 100) {
-            navigation.navigate("WorkerWorkHistoryScreen");
+            navigation.navigate("WorkerHomeScreen" as never);
         } else {
             navigation.goBack();
         }
