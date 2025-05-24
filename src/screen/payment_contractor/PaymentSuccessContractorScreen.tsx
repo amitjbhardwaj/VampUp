@@ -28,7 +28,7 @@ const PaymentSuccessContractorScreen = () => {
 
             <View style={styles.contentContainer}>
                 <LottieView
-                    source={require("../../assets/registration_successfully.json")}
+                    source={require("../../assets/payment_success.json")}
                     autoPlay
                     loop={false}
                     style={styles.animation}
