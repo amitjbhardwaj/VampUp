@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { View, Text, FlatList, ActivityIndicator, StyleSheet, ScrollView, Pressable, Platform, StatusBar, SafeAreaView, TouchableOpacity } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useTheme } from "../../context/ThemeContext";
-import { useNavigation } from "@react-navigation/native";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { RootStackParamList } from "../../RootNavigator";
 import { StackNavigationProp } from "@react-navigation/stack";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
@@ -58,35 +58,37 @@ const ContractorInitiatePaymentScreen = () => {
         setFunds(fundMap);
     };
 
-    useEffect(() => {
-        const fetchApprovedProjects = async () => {
-            try {
-                const storedName = await AsyncStorage.getItem("contractorName");
+    useFocusEffect(
+        useCallback(() => {
+            const fetchApprovedProjects = async () => {
+                setLoading(true); // ensure loader shows every time
+                try {
+                    const storedName = await AsyncStorage.getItem("contractorName");
 
-                const response = await fetch(
-                    `http://192.168.129.119:5001/get-projects-by-contractor?contractor_name=${storedName}&status=Completed`
-                );
+                    const response = await fetch(
+                        `http://192.168.129.119:5001/get-projects-by-contractor?contractor_name=${storedName}&status=Completed`
+                    );
 
-                const responseData = await response.json();
-                const approvedProjects = (responseData.data as Project[]).filter(
-                    (project) => project.project_status === "Approved" &&
-                        project.first_level_payment_approver === project.created_by &&
-                        project.first_level_payment_status === "Approved" &&
-                        project.second_level_payment_status !== "Approved"
-                );
+                    const responseData = await response.json();
+                    const approvedProjects = (responseData.data as Project[]).filter(
+                        (project) => project.project_status === "Approved" &&
+                            project.first_level_payment_approver === project.created_by &&
+                            project.first_level_payment_status === "Approved" &&
+                            project.second_level_payment_status !== "Approved"
+                    );
 
-                setProjects(approvedProjects);
-                fetchFundsForProjects(approvedProjects); // Fetch funds after projects load
+                    setProjects(approvedProjects);
+                    fetchFundsForProjects(approvedProjects); // Fetch funds after projects load
 
-            } catch (err) {
-                setProjects(null);
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchApprovedProjects();
-    }, []);
+                } catch (err) {
+                    setProjects(null);
+                } finally {
+                    setLoading(false);
+                }
+            };
+            fetchApprovedProjects();
+        }, [])
+    );
 
     if (loading) {
         return <ActivityIndicator size="large" color={theme.primary} style={styles.loader} />;
