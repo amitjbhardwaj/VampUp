@@ -8,6 +8,12 @@ import { useTheme } from "../../context/ThemeContext"; // Assuming you have this
 import axios from "axios";
 import Header from "../Header";
 
+interface Project {
+    project_status: string;
+    first_level_payment_status: string,
+    second_level_payment_status: string,
+}
+
 // Correctly type the navigation prop using RootStackParamList
 type WorkerFullPaymentHistoryScreenNavigationProp = NavigationProp<RootStackParamList, 'WorkerFullPaymentHistoryScreen'>;
 
@@ -36,12 +42,21 @@ const WorkerFullPaymentHistoryScreen = () => {
                     `http://192.168.129.119:5001/get-completed-projects?workerName=${storedWorkerName}`
                 );
 
-                //console.log("API Response:", response.data);
+                if (
+                    response.data.status === "OK" &&
+                    Array.isArray(response.data.data) &&
+                    response.data.data.length > 0
+                ) {
+                    // Apply filter to include only approved projects
+                    const filteredProjects = (response.data.data as Project[]).filter(
+                        (project) =>
+                            project.project_status === "Approved" &&
+                            project.first_level_payment_status === "Approved" &&
+                            project.second_level_payment_status === "Approved"
+                    );
 
-                if (response.data.status === "OK" && Array.isArray(response.data.data) && response.data.data.length > 0) {
-                    setCompletedProjects(response.data.data);
-
-                } 
+                    setCompletedProjects(filteredProjects);
+                }
             } catch (error) {
                 console.error("Error fetching completed projects", error);
                 setError("Failed to fetch completed projects. Please try again.");

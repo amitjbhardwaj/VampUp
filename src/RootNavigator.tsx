@@ -69,6 +69,8 @@ import NEFTPaymentAdminScreen from "./screen/payment_admin/NEFTPaymentAdminScree
 import WalletsPaymentAdminScreen from "./screen/payment_admin/WalletsPaymentAdminScreen";
 import DebitCardPaymentAdminScreen from "./screen/payment_admin/DebitCardPaymentAdminScreen";
 import CreditCardPaymentAdminScreen from "./screen/payment_admin/CreditCardPaymentAdminScreen";
+import PaymentSuccessContractorScreen from "./screen/payment_contractor/PaymentSuccessContractorScreen";
+import PaymentSuccessAdminScreen from "./screen/payment_admin/PaymentSuccessAdminScreen";
 
 
 export type RootStackParamList = {
@@ -161,6 +163,9 @@ export type RootStackParamList = {
     NEFTPaymentContractorScreen: { _id: string; projectId: string; fund: number; };
     RTGSPaymentContractorScreen: { _id: string; projectId: string; fund: number; };
     IMPSPaymentContractorScreen: { _id: string; projectId: string; fund: number; };
+
+    PaymentSuccessContractorScreen: { fund: number; name: string | null; };
+    PaymentSuccessAdminScreen: { fund: number; name: string | null; };
 };
 
 const Stack = createStackNavigator<RootStackParamList>();
@@ -249,6 +254,9 @@ const RootNavigator: React.FC = () => {
                     <Stack.Screen name="RTGSPaymentAdminScreen" component={RTGSPaymentAdminScreen} />
                     <Stack.Screen name="IMPSPaymentAdminScreen" component={IMPSPaymentAdminScreen} />
 
+
+                    <Stack.Screen name="PaymentSuccessContractorScreen" component={PaymentSuccessContractorScreen} />
+                    <Stack.Screen name="PaymentSuccessAdminScreen" component={PaymentSuccessAdminScreen} />
 
                 </Stack.Navigator>
             </NavigationContainer>

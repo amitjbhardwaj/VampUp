@@ -108,87 +108,85 @@ const ContractorInitiatePaymentScreen = () => {
                         keyExtractor={(item) => item.project_Id}
                         renderItem={({ item }) => (
                             <View style={[styles.projectCard, { backgroundColor: theme.card, borderLeftColor: theme.primary }]}>
-                                <View style={[styles.projectCard, { backgroundColor: theme.card, borderLeftColor: theme.primary }]}>
-                                    <Text style={[styles.title, { color: theme.text }]}>{item.project_description}</Text>
+                                <Text style={[styles.title, { color: theme.text }]}>{item.project_description}</Text>
 
-                                    <View style={styles.row}>
-                                        <Text style={[styles.label, { color: theme.text }]}>📌 Project ID:</Text>
-                                        <Text style={[styles.value, { color: theme.text }]}>{item.project_Id}</Text>
-                                    </View>
-
-                                    <ScrollView style={styles.descriptionContainer}>
-                                        <Text style={[styles.label, { color: theme.text }]}>📄 Description:</Text>
-                                        <Text style={[styles.description, { backgroundColor: theme.background, color: theme.text }]}>
-                                            {item.long_project_description}
-                                        </Text>
-                                    </ScrollView>
-
-                                    <View style={styles.row}>
-                                        <Text style={[styles.label, { color: theme.text }]}>👤 Created By:</Text>
-                                        <Text style={[styles.value, { color: theme.text }]}>{item.created_by}</Text>
-                                    </View>
-
-                                    <View style={styles.row}>
-                                        <Text style={[styles.label, { color: theme.text }]}>📅 Start Date:</Text>
-                                        <Text style={[styles.value, { color: theme.text }]}>{item.project_start_date}</Text>
-                                    </View>
-
-                                    <View style={styles.row}>
-                                        <Text style={[styles.label, { color: theme.text }]}>📅 End Date:</Text>
-                                        <Text style={[styles.value, { color: theme.text }]}>{item.project_end_date}</Text>
-                                    </View>
-
-                                    <View style={styles.row}>
-                                        <Text style={[styles.label, { color: theme.text }]}>🏗 Contractor Name:</Text>
-                                        <Text style={[styles.value, { color: theme.text }]}>{item.contractor_name}</Text>
-                                    </View>
-
-                                    <View style={styles.row}>
-                                        <Text style={[styles.label, { color: theme.text }]}>👷 Worker Name:</Text>
-                                        <Text style={[styles.value, { color: theme.text }]}>{item.worker_name}</Text>
-                                    </View>
-
-                                    <View style={styles.row}>
-                                        <Text style={[styles.label, { color: theme.text }]}>📞 Worker Phone:</Text>
-                                        <Text style={[styles.value, { color: theme.text }]}>{item.worker_phone}</Text>
-                                    </View>
-
-                                    <View style={styles.row}>
-                                        <Text style={[styles.label, { color: theme.text }]}>⚡ Status:</Text>
-                                        <Text style={[styles.value, { color: "green", fontWeight: "bold" }]}>
-                                            {item.status}
-                                        </Text>
-                                    </View>
-
-                                    <View style={styles.row}>
-                                        <Text style={[styles.label, { color: theme.text }]}>📊 Completion:</Text>
-                                        <Text
-                                            style={[
-                                                styles.value,
-                                                { color: item.completion_percentage < 50 ? "#ff9800" : "#28a745", fontWeight: "bold" },
-                                            ]}
-                                        >
-                                            {item.completion_percentage} %
-                                        </Text>
-                                    </View>
-
-                                    <View style={styles.row}>
-                                        <Text style={[styles.label, { color: theme.text }]}>💰 Amount Allocated:</Text>
-                                        <Text style={[styles.value, { color: theme.text }]}>
-                                            ₹ {funds[item.project_Id]?.toLocaleString("en-IN") || "0"}
-                                        </Text>
-                                    </View>
-
-                                    <Pressable
-                                        style={[styles.paymentButton, { backgroundColor: theme.primary }]}
-                                        onPress={() => {
-                                            const fund = funds[item.project_Id] ?? 0; // Get the fund allocated for this project
-                                            navigation.navigate("PaymentModeContractorScreen", { _id: item._id, projectId: item.project_Id, fund: fund });
-                                        }}
-                                    >
-                                        <Text style={[styles.buttonText, { color: theme.buttonText }]}>Make Payment</Text>
-                                    </Pressable>
+                                <View style={styles.row}>
+                                    <Text style={[styles.label, { color: theme.text }]}>📌 Project ID:</Text>
+                                    <Text style={[styles.value, { color: theme.text }]}>{item.project_Id}</Text>
                                 </View>
+
+                                <ScrollView style={styles.descriptionContainer}>
+                                    <Text style={[styles.label, { color: theme.text }]}>📄 Description:</Text>
+                                    <Text style={[styles.description, { backgroundColor: theme.background, color: theme.text }]}>
+                                        {item.long_project_description}
+                                    </Text>
+                                </ScrollView>
+
+                                <View style={styles.row}>
+                                    <Text style={[styles.label, { color: theme.text }]}>👤 Created By:</Text>
+                                    <Text style={[styles.value, { color: theme.text }]}>{item.created_by}</Text>
+                                </View>
+
+                                <View style={styles.row}>
+                                    <Text style={[styles.label, { color: theme.text }]}>📅 Start Date:</Text>
+                                    <Text style={[styles.value, { color: theme.text }]}>{item.project_start_date}</Text>
+                                </View>
+
+                                <View style={styles.row}>
+                                    <Text style={[styles.label, { color: theme.text }]}>📅 End Date:</Text>
+                                    <Text style={[styles.value, { color: theme.text }]}>{item.project_end_date}</Text>
+                                </View>
+
+                                <View style={styles.row}>
+                                    <Text style={[styles.label, { color: theme.text }]}>🏗 Contractor Name:</Text>
+                                    <Text style={[styles.value, { color: theme.text }]}>{item.contractor_name}</Text>
+                                </View>
+
+                                <View style={styles.row}>
+                                    <Text style={[styles.label, { color: theme.text }]}>👷 Worker Name:</Text>
+                                    <Text style={[styles.value, { color: theme.text }]}>{item.worker_name}</Text>
+                                </View>
+
+                                <View style={styles.row}>
+                                    <Text style={[styles.label, { color: theme.text }]}>📞 Worker Phone:</Text>
+                                    <Text style={[styles.value, { color: theme.text }]}>{item.worker_phone}</Text>
+                                </View>
+
+                                <View style={styles.row}>
+                                    <Text style={[styles.label, { color: theme.text }]}>⚡ Status:</Text>
+                                    <Text style={[styles.value, { color: "green", fontWeight: "bold" }]}>
+                                        {item.status}
+                                    </Text>
+                                </View>
+
+                                <View style={styles.row}>
+                                    <Text style={[styles.label, { color: theme.text }]}>📊 Completion:</Text>
+                                    <Text
+                                        style={[
+                                            styles.value,
+                                            { color: item.completion_percentage < 50 ? "#ff9800" : "#28a745", fontWeight: "bold" },
+                                        ]}
+                                    >
+                                        {item.completion_percentage} %
+                                    </Text>
+                                </View>
+
+                                <View style={styles.row}>
+                                    <Text style={[styles.label, { color: theme.text }]}>💰 Amount Allocated:</Text>
+                                    <Text style={[styles.value, { color: theme.text }]}>
+                                        ₹ {funds[item.project_Id]?.toLocaleString("en-IN") || "0"}
+                                    </Text>
+                                </View>
+
+                                <Pressable
+                                    style={[styles.paymentButton, { backgroundColor: theme.primary }]}
+                                    onPress={() => {
+                                        const fund = funds[item.project_Id] ?? 0; // Get the fund allocated for this project
+                                        navigation.navigate("PaymentModeContractorScreen", { _id: item._id, projectId: item.project_Id, fund: fund });
+                                    }}
+                                >
+                                    <Text style={[styles.buttonText, { color: theme.buttonText }]}>Make Payment</Text>
+                                </Pressable>
                             </View>
                         )}
                     />

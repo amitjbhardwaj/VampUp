@@ -36,8 +36,6 @@ const WorkerWorkHistoryScreen = () => {
                 `http://192.168.129.119:5001/get-completed-projects?workerName=${storedWorkerName}`
             );
 
-            ////console.log("API Response:", response.data);
-
             if (
                 response.data.status === "OK" &&
                 Array.isArray(response.data.data) &&

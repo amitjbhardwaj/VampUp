@@ -4,6 +4,8 @@ import { useTheme } from "../../context/ThemeContext";
 import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
+import { RootStackParamList } from "../../RootNavigator";
+import { StackNavigationProp } from "@react-navigation/stack";
 
 type UPIPaymentRouteParams = {
     UPIPaymentContractorScreen: {
@@ -14,11 +16,12 @@ type UPIPaymentRouteParams = {
 };
 
 type UPIPaymentRouteProp = RouteProp<UPIPaymentRouteParams, "UPIPaymentContractorScreen">;
+type NavigationProp = StackNavigationProp<RootStackParamList, 'UPIPaymentContractorScreen'>;
 
 
 const UPIPaymentContractorScreen = () => {
     const { theme } = useTheme();
-    const navigation = useNavigation();
+    const navigation = useNavigation<NavigationProp>();
     const route = useRoute<UPIPaymentRouteProp>();
     const { _id, projectId, fund } = route.params as { _id: string; projectId: string; fund: number; };
     const [upiId, setUpiId] = useState("");
@@ -36,19 +39,14 @@ const UPIPaymentContractorScreen = () => {
 
 
     const handlePayment = async () => {
-
-
         if (!upiId.includes("@")) {
             Alert.alert("Invalid UPI ID", "Please enter a valid UPI ID (e.g., example@upi)");
             return;
         }
 
-        Alert.alert("Payment Successful", `Payment for Project ID ${projectId} completed via ${upiId} of amount ${fund}`, [
-            { text: "OK", onPress: () => navigation.goBack() }
-        ]);
-
         try {
-            const response = await axios.put(
+            // Update project status
+            await axios.put(
                 `http://192.168.129.119:5001/update-project-status/${_id}`,
                 {
                     second_level_payment_approver: contractor,
@@ -56,11 +54,17 @@ const UPIPaymentContractorScreen = () => {
                 }
             );
 
-            //console.log("Update successful:", response.data);
+            // Navigate to success screen with fund and contractor name
+            navigation.navigate("PaymentSuccessContractorScreen", {
+                fund,
+                name: contractor,
+            });
         } catch (error) {
             console.error("Failed to update project approver:", error);
+            Alert.alert("Payment Error", "There was a problem updating the payment status.");
         }
     };
+
 
     const handleCancel = () => {
         navigation.goBack();

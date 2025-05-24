@@ -4,7 +4,8 @@ import { useTheme } from "../../context/ThemeContext";
 import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
-
+import { RootStackParamList } from "../../RootNavigator";
+import { StackNavigationProp } from "@react-navigation/stack";
 
 type IMPSPaymentRouteParams = {
     IMPSPaymentContractorScreen: {
@@ -15,10 +16,11 @@ type IMPSPaymentRouteParams = {
 };
 
 type IMPSPaymentRouteProp = RouteProp<IMPSPaymentRouteParams, "IMPSPaymentContractorScreen">;
+type NavigationProp = StackNavigationProp<RootStackParamList, 'IMPSPaymentContractorScreen'>;
 
 const IMPSPaymentContractorScreen = () => {
     const { theme } = useTheme();
-    const navigation = useNavigation();
+    const navigation = useNavigation<NavigationProp>();
     const route = useRoute<IMPSPaymentRouteProp>();
     const { _id, projectId, fund } = route.params as { _id: string; projectId: string; fund: number; };
 
@@ -42,11 +44,6 @@ const IMPSPaymentContractorScreen = () => {
             return;
         }
 
-        // Simulating a successful transaction
-        Alert.alert("Payment Successful", `Payment for Project ID ${projectId} completed using IMPS of amount ${fund}`, [
-            { text: "OK", onPress: () => navigation.goBack() }
-        ]);
-
         try {
             const response = await axios.put(
                 `http://192.168.129.119:5001/update-project-status/${_id}`,
@@ -56,13 +53,18 @@ const IMPSPaymentContractorScreen = () => {
                 }
             );
 
-            //console.log("Update successful:", response.data);
+            // Navigate to success screen with fund and contractor name
+            navigation.navigate("PaymentSuccessContractorScreen", {
+                fund,
+                name: contractor,
+            });
+
         } catch (error) {
             console.error("Failed to update project approver:", error);
         }
     };
 
-    const handleCancel = ()=>{
+    const handleCancel = () => {
         navigation.goBack();
     }
 
@@ -100,8 +102,8 @@ const IMPSPaymentContractorScreen = () => {
                     style={[styles.payButton, { backgroundColor: theme.primary, marginRight: 10 }]}
                     onPress={handlePayment}
                 >
-                
-                <Text style={[styles.buttonText, { color: theme.buttonText }]}>Pay Now</Text>
+
+                    <Text style={[styles.buttonText, { color: theme.buttonText }]}>Pay Now</Text>
                 </Pressable>
                 <Pressable
                     style={[styles.payButton, { backgroundColor: theme.primary }]}
@@ -134,7 +136,7 @@ const styles = StyleSheet.create({
         padding: 15,
         borderRadius: 8,
         alignItems: "center",
-    },    buttonText: { fontWeight: "bold", fontSize: 16 },
+    }, buttonText: { fontWeight: "bold", fontSize: 16 },
 });
 
 export default IMPSPaymentContractorScreen;

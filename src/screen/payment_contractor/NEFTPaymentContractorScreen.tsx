@@ -4,7 +4,8 @@ import { useTheme } from "../../context/ThemeContext";
 import { RouteProp, useNavigation, useRoute } from "@react-navigation/native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import axios from "axios";
-
+import { RootStackParamList } from "../../RootNavigator";
+import { StackNavigationProp } from "@react-navigation/stack";
 
 type NEFTPaymentRouteParams = {
     NEFTPaymentContractorScreen: {
@@ -15,11 +16,12 @@ type NEFTPaymentRouteParams = {
 };
 
 type NEFTPaymentRouteProp = RouteProp<NEFTPaymentRouteParams, "NEFTPaymentContractorScreen">;
+type NavigationProp = StackNavigationProp<RootStackParamList, 'NEFTPaymentContractorScreen'>;
 
 
 const NEFTPaymentContractorScreen = () => {
     const { theme } = useTheme();
-    const navigation = useNavigation();
+    const navigation = useNavigation<NavigationProp>();
     const route = useRoute<NEFTPaymentRouteProp>();
     const { _id, projectId, fund } = route.params as { _id: string; projectId: string; fund: number; };
 
@@ -45,11 +47,6 @@ const NEFTPaymentContractorScreen = () => {
             return;
         }
 
-        // Simulating a successful transaction
-        Alert.alert("Payment Successful", `Payment for Project ID ${projectId} completed using NEFT of amount ${fund}`, [
-            { text: "OK", onPress: () => navigation.goBack() }
-        ]);
-
         try {
             const response = await axios.put(
                 `http://192.168.129.119:5001/update-project-status/${_id}`,
@@ -59,7 +56,12 @@ const NEFTPaymentContractorScreen = () => {
                 }
             );
 
-            //console.log("Update successful:", response.data);
+            // Navigate to success screen with fund and contractor name
+            navigation.navigate("PaymentSuccessContractorScreen", {
+                fund,
+                name: contractor,
+            });
+
         } catch (error) {
             console.error("Failed to update project approver:", error);
         }
