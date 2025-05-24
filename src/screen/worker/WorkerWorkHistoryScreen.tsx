@@ -9,7 +9,7 @@ import axios from "axios";
 import Header from "../Header";
 
 const WorkerWorkHistoryScreen = () => {
-    const { theme } = useTheme(); // `theme` is expected to be an object
+    const { theme } = useTheme();
     const [completedProjects, setCompletedProjects] = useState<any[]>([]);
     const [isLoading, setIsLoading] = useState(true);  // Loading state
     const [error, setError] = useState<string | null>(null); // Error state
@@ -44,8 +44,6 @@ const WorkerWorkHistoryScreen = () => {
                         easing: Easing.ease,
                         useNativeDriver: true,
                     }).start();
-                } else {
-                    setError("No completed projects found.");
                 }
             } catch (error) {
                 console.error("Error fetching completed projects", error);
@@ -96,7 +94,7 @@ const WorkerWorkHistoryScreen = () => {
     return (
         <SafeAreaView style={[styles.safeArea, { backgroundColor: theme.background }]}>
             <Header title="Completed Projects" />
-            <View style={[styles.container, { backgroundColor: theme.mode === 'dark' ? '#121212' : '#f9f9f9' }]}>
+            <View style={[styles.container, { backgroundColor: theme.background }]}>
                 <FlatList
                     data={completedProjects}
                     keyExtractor={(item, index) => item.project_Id || index.toString()}

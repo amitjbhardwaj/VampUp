@@ -41,9 +41,7 @@ const WorkerFullPaymentHistoryScreen = () => {
                 if (response.data.status === "OK" && Array.isArray(response.data.data) && response.data.data.length > 0) {
                     setCompletedProjects(response.data.data);
 
-                } else {
-                    setError("No completed projects found.");
-                }
+                } 
             } catch (error) {
                 console.error("Error fetching completed projects", error);
                 setError("Failed to fetch completed projects. Please try again.");
@@ -103,8 +101,7 @@ const WorkerFullPaymentHistoryScreen = () => {
     return (
         <SafeAreaView style={[styles.safeArea, { backgroundColor: theme.background }]}>
             <Header title="Payment History" />
-            <View style={[styles.container, { backgroundColor: theme.mode === 'dark' ? '#121212' : '#f9f9f9' }]}>
-                {/* FlatList handles the scrolling of the project list */}
+            <View style={[styles.container, { backgroundColor: theme.background }]}>
                 <FlatList
                     data={completedProjects}
                     keyExtractor={(item, index) => item.project_Id || index.toString()}

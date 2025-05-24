@@ -58,9 +58,7 @@ const WorkerRequestPaymentScreen = () => {
                 if (response.data.status === "OK" && Array.isArray(response.data.data) && response.data.data.length > 0) {
                     setProjects(response.data.data);
 
-                } else {
-                    setError("No completed projects found.");
-                }
+                } 
             } catch (error) {
                 console.error("Error fetching completed projects", error);
                 setError("Failed to fetch completed projects. Please try again.");
